@@ -1,0 +1,4 @@
+---
+enforced_scanners:
+  - BundleAudit
+  - Brakeman

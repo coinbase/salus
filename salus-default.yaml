@@ -1,0 +1,29 @@
+# The default config file for Salus.
+#
+# You can specify a `salus.yaml` file in the root of your project to override any of these defaults.
+# For more complex configuration, including the concatenation of global and local files, you can
+# use use the --config flag to specify multiple files (local or remote) to parse.
+
+config_version: 1
+
+project_name: Project
+
+# What scanners should run. "all" or "none" are acceptable as well
+active_scanners: all
+
+# enforced_scanners are scanners that cause Salus to exit !0 when they fail.
+# Controlling this list will allow you to choose which scanners must pass for
+# a CI environment to show a successful build and, by omission, allow you to run new
+# scanners in test mode while they are being tuned or rolled out across a fleet of builds.
+#
+# By default, we enforce all scanners which we deem to have low false positive rates.
+# Strong defaults lowers the risk of misconfiguration that could fail closed if configuration
+# was necessary to ensure that certain scanners pass.
+# Other scanners may need to graduate from the testing phase or
+# should only be enforced explicitly by custom configuration.
+enforced_scanners:
+  - RepoNotEmpty
+  - Brakeman
+  - BundleAudit
+  - NPMAudit
+  - PatternSearch

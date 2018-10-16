@@ -1,0 +1,42 @@
+{
+  "project_name": "Project",
+  "scans": {
+  },
+  "info": {
+  },
+  "errors": {
+  },
+  "version": "1.0.0",
+  "custom_info": "",
+  "configuration": {
+    "sources": [
+      "file:///salus.yaml"
+    ],
+    "active_scanners": [
+      "Brakeman",
+      "BundleAudit",
+      "NPMAudit",
+      "PatternSearch",
+      "RepoNotEmpty",
+      "ReportGoDep",
+      "ReportNodeModules",
+      "ReportPythonModules",
+      "ReportRubyGems"
+    ],
+    "enforced_scanners": [
+      "RepoNotEmpty",
+      "Brakeman",
+      "BundleAudit",
+      "NPMAudit",
+      "PatternSearch"
+    ],
+    "scanner_configs": {
+    },
+    "reports": [
+      {
+        "uri": "file://spec/fixtures/processor/local_uri/salus_reports_folder/salus-report.json",
+        "format": "json"
+      }
+    ]
+  }
+}

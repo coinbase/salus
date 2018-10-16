@@ -1,0 +1,4 @@
+---
+reports:
+  - uri: file://salus_reports_folder/salus-report.json
+    format: json

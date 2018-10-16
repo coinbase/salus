@@ -1,0 +1,43 @@
+version: 2
+jobs:
+  build:
+    machine: true
+    shell: /bin/bash --login -eo pipefail # needed to use rvm
+    steps:
+      - checkout
+      # Ruby
+      - run: rvm uninstall 2.3.1 # we will point to this version unless we uninstall it
+      - run: rvm use 2.4.4
+      - run: gem install bundler
+      - run: bundle install
+      - run: bundle-audit update
+      # Node
+      - run: npm install -g npm
+      - run: npm install
+      # Go
+      - run: go get github.com/svent/sift
+      # install & tests
+      - run: bundle exec rspec --format documentation
+  salus:
+    machine: true
+    steps:
+      - checkout
+      - run: docker run -v $(pwd):/home/repo coinbase/salus
+  rubocop:
+    docker:
+      - image: ruby:2.4.4@sha256:99d10d192ac1df0873480b1e0262ff0295a15f1d97e5b7bd111a7bf61a808acc
+    steps:
+      - run: apt-get update
+      - run: apt-get install -y cmake
+      - checkout
+      - run: gem install bundler
+      - run: bundle install
+      - run: bundle exec rubocop
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build
+      - rubocop
+        # TODO: add Salus

@@ -1,0 +1,18 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    contracts (0.16.0)
+    kibana_url (1.0.1)
+      contracts (~> 0.14)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  kibana_url (~> 1.0)
+
+RUBY VERSION
+   ruby 2.3.0p0
+
+BUNDLED WITH
+   1.15.1

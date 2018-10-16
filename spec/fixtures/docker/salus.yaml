@@ -1,0 +1,18 @@
+---
+reports:
+  - uri: file://reports/salus_report.json
+    format: json
+
+active_scanners:
+  - PatternSearch
+
+enforced_scanners:
+  - PatternSearch
+
+scanner_configs:
+  PatternSearch:
+    exclude_extension:
+      - json
+      - yaml
+    matches:
+      - regex: placeholder

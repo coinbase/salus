@@ -1,0 +1,7 @@
+---
+project_name: '{{PROJECT_NAME}}'
+custom_info: '{{PROJECT_AUTHOR}}-{{PROJECT_DATE}}'
+reports:
+  - uri: '{{REPORT_URI}}'
+    format: json
+    verbose: true

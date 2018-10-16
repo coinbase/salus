@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+
+// Write a JSON string of the yarn.lock file to STDOUT.
+
+const path = require('path');
+const fs = require('fs');
+const yarnlock = require('@yarnpkg/lockfile');
+
+let file_path = process.argv[2];
+let file = fs.readFileSync(file_path, 'utf8');
+let file_object = yarnlock.parse(file);
+
+//make a real JSON object
+console.log(JSON.stringify(file_object));

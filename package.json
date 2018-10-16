@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@yarnpkg/lockfile": "^1.0.1"
+  }
+}

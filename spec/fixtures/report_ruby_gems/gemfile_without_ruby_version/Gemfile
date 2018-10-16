@@ -1,0 +1,5 @@
+source 'https://rubygems.org'
+
+gem 'kibana_url', '~> 1.0'
+gem 'rails'
+gem 'master_lock', git: 'git@github.com:coinbase/master_lock.git'

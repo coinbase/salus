@@ -1,0 +1,17 @@
+# [Bundle Audit](https://github.com/rubysec/bundler-audit)
+
+Finds CVEs in Ruby gems included in a project.
+
+## Configuration
+
+When a CVE is present in a dependency, the best course of action is to upgrade the dependency to a patched version. However, if there is currently no patch available, this will not be possible. Provided that the vulnerability is not relevant to the given project, you might want Salus to ignore this particular CVE.
+
+BundleAudit has a `--ignore` flag which allows you to ignore particular CVEs. To list CVEs that should be ignored, you can add a list to the Salus config.
+
+```yaml
+scanner_configs:
+  BundleAudit:
+    ignore:
+      - CVE-2018-3760
+      - CVE-XXXX-YYYY
+```

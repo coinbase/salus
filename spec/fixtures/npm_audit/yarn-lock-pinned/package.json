@@ -1,0 +1,16 @@
+{
+  "name": "testing",
+  "version": "1.0.0",
+  "description": "Test package.json file.",
+  "main": "index.js",
+  "license": "ISC",
+  "dependencies": {
+    "mandible": "0.1.0"
+  },
+  "resolutions": {
+    "mandible/**/uglify-js": ">=2.6.0",
+    "mandible/**/handlebars": ">=4.0.0",
+    "mandible/**/lodash": ">=4.17.5",
+    "mandible/**/request": ">=2.86.0"
+  }
+}

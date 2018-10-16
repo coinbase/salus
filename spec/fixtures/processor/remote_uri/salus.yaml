@@ -1,0 +1,4 @@
+---
+reports:
+  - uri: https://nerv.tk3/salus-report
+    format: json

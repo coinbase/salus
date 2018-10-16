@@ -1,0 +1,16 @@
+##
+# Used to test Salus is operating correctly in the docker container itself.
+##
+# docker build -t salus-local .
+# docker build -f Dockerfile.tests -t salus-integration-tests .
+# docker run salus-integration-tests
+
+FROM salus-local
+
+COPY spec /home/spec
+
+RUN bundle install --with test
+
+RUN rm ./spec/docker/docker_spec.rb && rm ./spec/static_analysis/rubocop_spec.rb
+
+ENTRYPOINT ["bundle", "exec", "rspec", "spec/"]

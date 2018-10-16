@@ -1,0 +1,61 @@
+{
+  "project_name": "Project",
+  "scans": {
+    "PatternSearch": {
+      "info": {
+        "pattern_search_hit": [
+          {
+            "regex": "placeholder",
+            "forbidden": false,
+            "required": false,
+            "msg": "",
+            "hit": "README.md:1:# placeholder"
+          }
+        ]
+      },
+      "passed": true
+    },
+    "overall": {
+      "passed": true
+    }
+  },
+  "info": {
+  },
+  "errors": {
+  },
+  "version": "1.0.0",
+  "custom_info": "",
+  "configuration": {
+    "sources": [
+      "file:///salus.yaml"
+    ],
+    "active_scanners": [
+      "PatternSearch"
+    ],
+    "enforced_scanners": [
+      "PatternSearch"
+    ],
+    "scanner_configs": {
+      "PatternSearch": {
+        "exclude_extension": [
+          "json",
+          "yaml"
+        ],
+        "matches": [
+          {
+            "regex": "placeholder",
+            "forbidden": false,
+            "required": false,
+            "message": ""
+          }
+        ]
+      }
+    },
+    "reports": [
+      {
+        "uri": "file://./repo/reports/salus_report.json",
+        "format": "json"
+      }
+    ]
+  }
+}

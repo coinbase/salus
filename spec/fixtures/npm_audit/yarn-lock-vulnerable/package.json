@@ -1,0 +1,10 @@
+{
+  "name": "testing",
+  "version": "1.0.0",
+  "description": "Test package.json file.",
+  "main": "index.js",
+  "license": "ISC",
+  "dependencies": {
+    "mandible": "0.1.0"
+  }
+}

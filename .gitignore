@@ -1,0 +1,18 @@
+# OSX
+.DS_Store
+
+# Vim swap files
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+
+# RubyMine project files
+.idea/
+
+# Coverage reports
+coverage/
+
+# Salus output
+salus_report.json
+
+# node modules
+node_modules

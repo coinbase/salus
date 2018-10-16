@@ -1,0 +1,11 @@
+---
+enforced_scanners:
+  - PatternSearch
+
+scanner_configs:
+  PatternSearch:
+    matches:
+      - regex: placeholder
+        forbidden: true
+      - regex: place
+

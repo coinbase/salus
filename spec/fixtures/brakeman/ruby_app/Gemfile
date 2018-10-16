@@ -1,0 +1,7 @@
+source 'https://rubygems.org'
+
+ruby '2.3.0'
+
+# NOTE: We expressely do not have rails in this Gemfile.
+
+gem 'kibana_url', '~> 1.0'
