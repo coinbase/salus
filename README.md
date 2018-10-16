@@ -7,6 +7,7 @@
    Salus: Guardian of Code Safety and Security
 </h3>
 
+
 [![CircleCI](https://circleci.com/gh/coinbase/salus/tree/master.svg?style=svg)](https://circleci.com/gh/coinbase/salus/tree/master)
 
 ## 🔍 Overview
