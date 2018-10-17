@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+
+# This is just a stub binary for dev/debug purposes;
+# Salus itself can run the wrapper manually
+
+require_relative '../lib/salus/npm_audit_wrapper'
+
+def parse_exceptions(string)
+  string.split(' ').flat_map { |s| s.split(',') }.map(&:strip)
+end
+
+exceptions = (ARGV.empty? ? [] : parse_exceptions(ARGV[0]))
+Salus::NpmAuditWrapper.new(stream: STDOUT, exceptions: exceptions, path: '.').run!
