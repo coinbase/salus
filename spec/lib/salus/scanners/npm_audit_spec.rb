@@ -1,58 +1,90 @@
 require_relative '../../../spec_helper.rb'
 
 describe Salus::Scanners::NPMAudit do
-  let(:report) { Salus::Report.new }
-  let(:scan_report) { json_report['scans']['NPMAudit'] }
-  let(:scan_errors) { json_report['errors']['NPMAudit'] }
-
   describe '#run' do
-    context 'CVEs in package.json' do
-      it 'should record failure and stderr from npm audit' do
-        scanner = Salus::Scanners::NPMAudit.new(
-          repository: Salus::Repo.new('spec/fixtures/npm_audit/failure'),
-          report: report,
-          config: {}
-        )
-        scanner.run
+    let(:report) { Salus::Report.new }
+    let(:scan_report) { json_report['scans']['NPMAudit'] }
+    let(:scan_errors) { json_report['errors']['NPMAudit'] }
 
-        expect(scan_report['passed']).to eq(false)
-        expect(scan_report['info'].keys).to eq(%w[package_lock_missing npm_audit_output])
-        expect(scan_report['info']['npm_audit_output'].length).to eq(1)
-        # Ensure 2 vulns were found
-        expect(scan_report['info']['npm_audit_output'][0]['advisories'].keys).to eq(%w[39 48])
-      end
+    # Make sure we get consistent timestamps to compare against
+    # the output fixtures
+    before(:each) do
+      allow(Process)
+        .to receive(:clock_gettime)
+        .with(Process::CLOCK_MONOTONIC).and_return(0.0)
     end
 
-    context 'no CVEs in package.json' do
-      it 'should record success' do
-        scanner = Salus::Scanners::NPMAudit.new(
-          repository: Salus::Repo.new('spec/fixtures/npm_audit/success'),
-          report: report,
-          config: {}
-        )
-        scanner.run
+    cases = [
+      [
+        'when all advisories apply only to dev deps',
+        'success_dev_advisories',
+        true
+      ],
+      [
+        'when there are exceptions for all advisories',
+        'success_excepted_advisories',
+        true
+      ],
+      [
+        'when there are exceptions for all advisories (and there is a lockfile)',
+        'success_excepted_advisories_with_lockfile',
+        true
+      ],
+      [
+        'when there are extraneous exceptions for dev advisories',
+        'success_extraneous_dev_exceptions',
+        true
+      ],
+      [
+        'when there are extraneous exceptions',
+        'success_extraneous_exceptions',
+        true
+      ],
+      [
+        'when there are no advisories',
+        'success_no_advisories',
+        true
+      ],
+      [
+        'when there are advisories and no exceptions',
+        'failure_no_exceptions',
+        false
+      ],
+      [
+        'when there are advisories and no exceptions (and there is a lockfile)',
+        'failure_no_exceptions_with_lockfile',
+        false
+      ],
+      [
+        'when there are exceptions, but not all advisories are covered',
+        'failure_missing_exceptions',
+        false
+      ]
+    ].freeze
 
-        expect(scan_report['passed']).to eq(true)
-        expect(scan_report['info'].keys).to eq(['package_lock_missing'])
-      end
-    end
+    cases.each do |description, fixture, success|
+      path_to_repo = "spec/fixtures/npm_audit/#{fixture}"
 
-    context 'no CVEs in package.json when ignoring CVEs' do
-      it 'should record success and report on the ignored CVEs' do
-        scanner = Salus::Scanners::NPMAudit.new(
-          repository: Salus::Repo.new('spec/fixtures/npm_audit/success_with_exceptions'),
+      config =
+        if File.exist?("#{path_to_repo}/salus.yaml")
+          YAML.load_file("#{path_to_repo}/salus.yaml")['scanner_configs']['NPMAudit']
+        else
+          {}
+        end
+
+      lockfile_existed = File.exist?("#{path_to_repo}/package-lock.json")
+      expected_output = File.read("#{path_to_repo}/expected_output.txt")
+
+      it "reports #{success ? 'success' : 'failure'} #{description}" do
+        Salus::Scanners::NPMAudit.new(
+          repository: Salus::Repo.new(path_to_repo),
           report: report,
-          config: YAML.load_file(
-            "spec/fixtures/npm_audit/success_with_exceptions/salus.yaml"
-          )['scanner_configs']['NPMAudit'] # Mock what Salus does under the hood
-        )
-        scanner.run
-        expect(scan_report['passed']).to eq(true)
-        expect(
-          scan_report['info'].keys.sort
-        ).to eq(%w[exceptions npm_audit_output package_lock_missing])
-        expect(scan_report['info']['exceptions'].length).to eq(2)
-        expect(scan_report['info']['exceptions'].map { |x| x['advisory_id'] }.sort).to eq(%w[39 48])
+          config: config
+        ).run
+
+        expect(scan_report['passed']).to eq(success)
+        expect(File.exist?("#{path_to_repo}/package-lock.json")).to eq(lockfile_existed)
+        expect(scan_report['stdout']).to eq(expected_output)
       end
     end
   end
@@ -62,16 +94,16 @@ describe Salus::Scanners::NPMAudit do
       it 'should return false' do
         repo = Salus::Repo.new('spec/fixtures/blank_repository')
         expect(repo.package_json_present?).to eq(false)
-        scanner = Salus::Scanners::NPMAudit.new(repository: repo, report: report, config: {})
+        scanner = Salus::Scanners::NPMAudit.new(repository: repo, report: nil, config: {})
         expect(scanner.should_run?).to eq(false)
       end
     end
 
     context 'package.json is present' do
       it 'should return true' do
-        repo = Salus::Repo.new('spec/fixtures/npm_audit/success')
+        repo = Salus::Repo.new('spec/fixtures/npm_audit/success_no_advisories')
         expect(repo.package_json_present?).to eq(true)
-        scanner = Salus::Scanners::NPMAudit.new(repository: repo, report: report, config: {})
+        scanner = Salus::Scanners::NPMAudit.new(repository: repo, report: nil, config: {})
         expect(scanner.should_run?).to eq(true)
       end
     end
