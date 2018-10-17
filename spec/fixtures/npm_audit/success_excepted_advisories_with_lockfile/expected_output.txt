@@ -1,0 +1,7 @@
+Ran `npm audit --json`; finished in 0.0s with exit code 1
+=================================================================================
+ ID | Module    | Title            | Sev. | URL                     | Prod | Ex. 
+---------------------------------------------------------------------------------
+[33m 39 | uglify-js | Incorrect Handl~ | low  | npmjs.com/advisories/39 | y    | y   [0m
+[33m 48 | uglify-js | Regex DoS        | low  | npmjs.com/advisories/48 | y    | y   [0m
+=================================================================================

@@ -1,0 +1,9 @@
+Ran `npm audit --json`; finished in 0.0s with exit code 1
+=================================================================================
+ ID | Module    | Title            | Sev. | URL                     | Prod | Ex. 
+---------------------------------------------------------------------------------
+[31m 39 | uglify-js | Incorrect Handl~ | low  | npmjs.com/advisories/39 | y    | n   [0m
+[31m 48 | uglify-js | Regex DoS        | low  | npmjs.com/advisories/48 | y    | n   [0m
+=================================================================================
+Audit failed pending the following advisory(s): 39, 48.
+To fix the build, please resolve the previous advisory(s), or add exceptions.

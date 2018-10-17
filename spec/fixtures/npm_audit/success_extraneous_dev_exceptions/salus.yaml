@@ -1,0 +1,9 @@
+scanner_configs:
+    NPMAudit:
+        exceptions:
+            - advisory_id: "39"
+              changed_by: "ryan.sears"
+              notes: "Meep meep"
+            - advisory_id: "48"
+              changed_by: "ryan.sears"
+              notes: "Meep meep"
