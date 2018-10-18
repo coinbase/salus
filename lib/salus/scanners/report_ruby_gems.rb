@@ -13,7 +13,7 @@ module Salus::Scanners
       elsif @repository.gemfile_present?
         record_dependencies_from_gemfile
       else
-        raise NotImplementedError,
+        raise InvalidScannerInvocationError,
               'Cannot report on Ruby gems without a Gemfile or Gemfile.lock'
       end
     end

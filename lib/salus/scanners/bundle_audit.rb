@@ -6,6 +6,8 @@ require 'salus/scanners/base'
 
 module Salus::Scanners
   class BundleAudit < Base
+    class UnvalidGemVulnError < StandardError; end
+
     def run
       # Ensure the DB is up to date
       unless Bundler::Audit::Database.update!(quiet: true)
@@ -72,7 +74,7 @@ module Salus::Scanners
         report_info("unpatched_gem", serialized_vuln)
         serialized_vuln
       else
-        raise NotImplementedError, "BundleAudit Scanner received a #{result} from the"\
+        raise UnvalidGemVulnError, "BundleAudit Scanner received a #{result} from the " \
                                    "bundler/audit gem, which it doesn't know how to handle"
       end
     end

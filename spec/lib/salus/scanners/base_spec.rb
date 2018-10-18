@@ -10,13 +10,13 @@ describe Salus::Scanners::Base do
 
   describe '#run' do
     it 'should raise an exception since this is an abstract function' do
-      expect { scanner.run }.to raise_error(NotImplementedError)
+      expect { scanner.run }.to raise_error(NoMethodError)
     end
   end
 
   describe '#should_run?' do
     it 'should raise an exception since this is an abstract function' do
-      expect { scanner.should_run? }.to raise_error(NotImplementedError)
+      expect { scanner.should_run? }.to raise_error(NoMethodError)
     end
   end
 

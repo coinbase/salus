@@ -14,7 +14,7 @@ describe Salus::Scanners::ReportGoDep do
           config: blank_config
         )
         expect { scanner.run }.to raise_error(
-          NotImplementedError,
+          Salus::Scanners::Base::InvalidScannerInvocationError,
           'Cannot report on Go dependencies without a Gopkg.lock file.'
         )
       end
