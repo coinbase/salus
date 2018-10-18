@@ -3,11 +3,21 @@
 # This is just a stub binary for dev/debug purposes;
 # Salus itself can run the wrapper manually
 
+require 'yaml'
 require_relative '../lib/salus/npm_audit_wrapper'
 
 def parse_exceptions(string)
+  return if string.nil?
   string.split(' ').flat_map { |s| s.split(',') }.map(&:strip)
 end
 
-exceptions = (ARGV.empty? ? [] : parse_exceptions(ARGV[0]))
+def read_exceptions_from_config
+  YAML.load_file('salus.yaml')['scanner_configs']['NPMAudit'].map do |ex|
+    ex['advisory_id']
+  end
+rescue StandardError
+  nil
+end
+
+exceptions = parse_exceptions(ARGV[0]) || read_exceptions_from_config || []
 Salus::NpmAuditWrapper.new(stream: STDOUT, exceptions: exceptions, path: '.').run!
