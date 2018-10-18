@@ -18,6 +18,8 @@ Salus also supports remote configuration files that can be fetched over HTTP. Th
 docker run --rm -v $(pwd):/home/repo coinbase/salus --config https://salus-config.internal.net/salus.yaml
 ```
 
+A third method of providing configuration URIs is via the environment variable `SALUS_CONFIGURATION`. If this envar is set, it will take precendence over the flag URI.
+
 ### Cascading Configurations
 
 When using a global configuration provided over HTTP, you might still want to modify Salus for special cases relevant only to the repository being scanned. To do this, you can append multiple configuration files by listing the configuration URIs in order of ascending precedence. Each top level directive will be overwritten by the directive present in later files. A space (`" "`) is used to delimit each URI.
