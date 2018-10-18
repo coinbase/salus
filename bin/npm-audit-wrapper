@@ -1,23 +1,41 @@
 #!/usr/bin/env ruby
 
-# This is just a stub binary for dev/debug purposes;
-# Salus itself can run the wrapper manually
+# This is just a stub binary for dev/debug purposes
+
+lib = File.expand_path('../lib', __dir__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
+require_relative '../lib/salus'
+require_relative '../lib/salus/scanners/npm_audit'
+require_relative '../lib/salus/repo'
+require_relative '../lib/salus/report'
 
 require 'yaml'
-require_relative '../lib/salus/npm_audit_wrapper'
 
-def parse_exceptions(string)
+def parse_exceptions_from_argv(string)
   return if string.nil?
-  string.split(' ').flat_map { |s| s.split(',') }.map(&:strip)
+  string.split(' ').flat_map { |part| part.split(',') }.map(&:strip)
 end
 
 def read_exceptions_from_config
-  YAML.load_file('salus.yaml')['scanner_configs']['NPMAudit'].map do |ex|
+  YAML.load_file('salus.yaml')['scanner_configs']['NPMAudit']['exceptions'].map do |ex|
     ex['advisory_id']
   end
 rescue StandardError
   nil
 end
 
-exceptions = parse_exceptions(ARGV[0]) || read_exceptions_from_config || []
-Salus::NpmAuditWrapper.new(stream: STDOUT, exceptions: exceptions, path: '.').run!
+exceptions = parse_exceptions_from_argv(ARGV[0]) || read_exceptions_from_config || []
+exceptions = exceptions.map do |ex|
+  { 'advisory_id' => ex }
+end
+
+config = { 'exceptions' => exceptions }
+
+repo = Salus::Repo.new('.')
+report = Salus::Report.new
+
+scanner = Salus::Scanners::NPMAudit.new(repository: repo, report: report, config: config)
+scanner.run
+
+print(JSON.parse(report.to_json)['scans']['NPMAudit']['stdout'])
