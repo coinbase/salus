@@ -1,6 +1,13 @@
 #!/usr/bin/env ruby
 
-# This is just a stub binary for dev/debug purposes
+# This is just a stub binary for dev/debug purposes. It runs the NPMAudit
+# scanner against the current directoy, using the list of exceptions passed in
+# the first command line argument, or the exceptions listed in salus.yaml
+# (if present). The scan's STDOUT is echoed verbatim.
+# usage:
+#   ~/path/to/salus/bin/npm-audit-wrapper
+# or
+#   ~/path/to/salus/bin/npm-audit-wrapper 13,37,42
 
 lib = File.expand_path('../lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
@@ -34,4 +41,9 @@ report = Salus::Report.new
 scanner = Salus::Scanners::NPMAudit.new(repository: repo, report: report, config: config)
 scanner.run
 
-print(JSON.parse(report.to_json)['scans']['NPMAudit']['stdout'])
+npm_audit_report = report.to_h.fetch(:scans).fetch('NPMAudit')
+
+print(npm_audit_report.fetch('stdout'))
+
+exit_code = (npm_audit_report.fetch('passed') ? 0 : 1)
+exit(exit_code)
