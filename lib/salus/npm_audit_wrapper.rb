@@ -57,20 +57,20 @@ module Salus
 
           raw_advisories = json.fetch(:advisories).values
 
-          advisories = raw_advisories.map do |radv|
+          advisories = raw_advisories.map do |advisory|
             # If the advisory exists in a prod dependency, there'll be some finding
             # where dev is false
-            prod = radv.fetch(:findings).any? { |finding| !finding.fetch(:dev) }
+            prod = advisory.fetch(:findings).any? { |finding| !finding.fetch(:dev) }
 
-            id = radv.fetch(:id).to_s
+            id = advisory.fetch(:id).to_s
             excepted = @exceptions.include?(id)
 
             Advisory.new(
               id,
-              radv.fetch(:module_name),
-              radv.fetch(:title),
-              radv.fetch(:severity),
-              radv.fetch(:url),
+              advisory.fetch(:module_name),
+              advisory.fetch(:title),
+              advisory.fetch(:severity),
+              advisory.fetch(:url),
               prod,
               excepted
             )
@@ -90,7 +90,7 @@ module Salus
 
           # For informational purposes, we record any exceptions that don't refer
           # to an actual advisory
-          extraneous_exceptions = @exceptions.reject { |id| advisories_by_id.key?(id) }
+          extraneous_exceptions = @exceptions - advisories_by_id.keys
 
           # Also, we record any exceptions that apply only to dev dependencies
           extraneous_dev_exceptions = @exceptions.select do |id|
@@ -105,8 +105,8 @@ module Salus
           end
 
           if failing_advisory_ids.any?
-            s = failing_advisory_ids.join(', ')
-            log("Audit failed pending the following advisory(s): #{s}.")
+            stringified_ids = failing_advisory_ids.join(', ')
+            log("Audit failed pending the following advisory(s): #{stringified_ids}.")
             log('To fix the build, please resolve the previous advisory(s), or add exceptions.')
           end
 
