@@ -27,8 +27,8 @@ module Salus
       green: 32
     }.freeze
 
-    AUDIT_COMMAND = 'npm audit --json'
-    LOCKFILE_COMMAND = 'npm install --package-lock-only'
+    AUDIT_COMMAND = 'npm audit --json'.freeze
+    LOCKFILE_COMMAND = 'npm install --package-lock-only'.freeze
 
     def initialize(stream:, exceptions:, path:, colors: true)
       @stream = stream
