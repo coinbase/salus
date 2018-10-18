@@ -1,6 +1,6 @@
 require 'json'
 require 'stringio'
-require_relative 'base'
+require 'salus/scanners/base'
 
 # NPM Audit scanner integration. Replaces the NSP module and flags known malicious or vulnerable
 # dependencies in javascript projects.
