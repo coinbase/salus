@@ -172,6 +172,14 @@ module Salus::Scanners
             log('These exceptions can safely be removed.')
           end
 
+          advisories.select(&:prod?).map(&:id).each do |id|
+            report_info('npm_audit_prod_advisory', id)
+          end
+
+          advisories.select(&:prod?).select(&:excepted?).map(&:id).each do |id|
+            report_info('npm_audit_excepted_prod_advisory', id)
+          end
+
           failing_advisory_ids.empty?
         end
       end

@@ -84,6 +84,43 @@ describe Salus::Scanners::NPMAudit do
         expect(scan_report['stdout']).to eq(expected_output)
       end
     end
+
+    it 'emits info for prod advisories, and excepted prod advisories in particular' do
+      path_to_repo = "spec/fixtures/npm_audit/failure_missing_exceptions"
+      config = YAML.load_file("#{path_to_repo}/salus.yaml")['scanner_configs']['NPMAudit']
+
+      Salus::Scanners::NPMAudit.new(
+        repository: Salus::Repo.new(path_to_repo),
+        report: report,
+        config: config
+      ).run
+
+      info = scan_report['info']
+      expect(info['npm_audit_prod_advisory']).to contain_exactly('48', '39')
+      expect(info['npm_audit_excepted_prod_advisory']).to contain_exactly('39')
+    end
+
+    it 'emits errors for malformed exceptions in the configuration' do
+      path_to_repo = "spec/fixtures/npm_audit/success_excepted_advisories"
+
+      bad_exceptions = [
+        { 'merp' => 'derp' },
+        { 'ADVISORY_ID' => 'AHHHH' }
+      ]
+
+      Salus::Scanners::NPMAudit.new(
+        repository: Salus::Repo.new(path_to_repo),
+        report: report,
+        config: { 'exceptions' => bad_exceptions }
+      ).run
+
+      expect(scan_errors.length).to eq(2)
+
+      scan_errors.each do |error|
+        expect(error.keys).to contain_exactly('message')
+        expect(error['message']).to include('malformed exception')
+      end
+    end
   end
 
   describe '#should_run?' do
