@@ -95,8 +95,15 @@ module Salus::Scanners
           raw_advisories = json.fetch(:advisories).values
 
           advisories = raw_advisories.map do |advisory|
-            # If the advisory exists in a prod dependency, there'll be some finding
-            # where dev is false
+            # findings is an array of objects looking roughly like
+            # [
+            #   { "version": "1.0.5", ..., "dev": false },
+            #   { "version": "1.0.5", ..., "dev": true }
+            # ]
+            # where each element records an instance of the vulnerable package
+            # in the dependency tree. If, for some finding, dev is false,
+            # then there exists a vulnerable version of the module in the prod
+            # dependency tree
             prod = advisory.fetch(:findings).any? { |finding| !finding.fetch(:dev) }
 
             id = advisory.fetch(:id).to_s
