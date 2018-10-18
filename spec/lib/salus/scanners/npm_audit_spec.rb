@@ -59,6 +59,11 @@ describe Salus::Scanners::NPMAudit do
         'when there are exceptions, but not all advisories are covered',
         'failure_missing_exceptions',
         false
+      ],
+      [
+        'when an error condition causes npm audit to fail in an unusual way',
+        'failure_bad_lockfile',
+        false
       ]
     ].freeze
 

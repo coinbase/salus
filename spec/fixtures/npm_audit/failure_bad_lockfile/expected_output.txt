@@ -1,0 +1,6 @@
+Ran `npm audit --json`; finished in 0.0s with exit code 1
+[31m`npm audit --json` failed unexpectedly (error code ELOCKVERIFY):
+```
+Errors were found in your package-lock.json, run  npm install  to fix them.
+    Invalid: lock file's uglify-js@1.2.3 does not satisfy uglify-js@^3.4.9
+```[0m

@@ -27,6 +27,9 @@ module Salus
       green: 32
     }.freeze
 
+    AUDIT_COMMAND = 'npm audit --json'
+    LOCKFILE_COMMAND = 'npm install --package-lock-only'
+
     def initialize(stream:, exceptions:, path:, colors: true)
       @stream = stream
       @exceptions = exceptions.map(&:to_s).sort_by(&:to_i)
@@ -37,8 +40,22 @@ module Salus
     def run!
       Dir.chdir(@path) do
         ensure_package_lock! do
-          raw = run_command!('npm audit --json')
-          raw_advisories = JSON.parse(raw, symbolize_names: true).fetch(:advisories).values
+          raw = run_command!(AUDIT_COMMAND)
+          json = JSON.parse(raw, symbolize_names: true)
+
+          if json.key?(:error)
+            code = json[:error][:code] || '<none>'
+            summary = json[:error][:summary] || '<none>'
+
+            message =
+              "`#{AUDIT_COMMAND}` failed unexpectedly (error code #{code}):\n" \
+              "```\n#{summary}\n```"
+
+            log(colorize(message, :red))
+            return false
+          end
+
+          raw_advisories = json.fetch(:advisories).values
 
           advisories = raw_advisories.map do |radv|
             # If the advisory exists in a prod dependency, there'll be some finding
@@ -127,7 +144,7 @@ module Salus
 
       if !File.exist?('package-lock.json')
         log('Creating a temporary package-lock.json...')
-        run_command!('npm install --package-lock-only', raise_on_failure: true)
+        run_command!(LOCKFILE_COMMAND, raise_on_failure: true)
         created_package_lock = true
       end
 
