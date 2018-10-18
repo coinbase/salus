@@ -22,7 +22,7 @@ jobs:
     machine: true
     steps:
       - checkout
-      - run: docker run -v $(pwd):/home/repo coinbase/salus
+      - run: docker run -t -v $(pwd):/home/repo coinbase/salus
   rubocop:
     docker:
       - image: ruby:2.4.4@sha256:99d10d192ac1df0873480b1e0262ff0295a15f1d97e5b7bd111a7bf61a808acc
@@ -40,4 +40,4 @@ workflows:
     jobs:
       - tests
       - rubocop
-        # TODO: add Salus
+      - salus
