@@ -1,4 +1,3 @@
-Ran `npm audit --json`; finished in 0.0s with exit code 1
 [31m`npm audit --json` failed unexpectedly (error code ELOCKVERIFY):
 ```
 Errors were found in your package-lock.json, run  npm install  to fix them.

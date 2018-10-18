@@ -6,14 +6,6 @@ describe Salus::Scanners::NPMAudit do
     let(:scan_report) { json_report['scans']['NPMAudit'] }
     let(:scan_errors) { json_report['errors']['NPMAudit'] }
 
-    # Make sure we get consistent timestamps to compare against
-    # the output fixtures
-    before(:each) do
-      allow(Process)
-        .to receive(:clock_gettime)
-        .with(Process::CLOCK_MONOTONIC).and_return(0.0)
-    end
-
     cases = [
       [
         'when all advisories apply only to dev deps',

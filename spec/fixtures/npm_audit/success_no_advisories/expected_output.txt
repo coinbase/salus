@@ -1,5 +1,1 @@
-Creating a temporary package-lock.json...
-Ran `npm install --package-lock-only`; finished in 0.0s with exit code 0
-Ran `npm audit --json`; finished in 0.0s with exit code 0
 [32mThere are no advisories against your dependencies. Hooray![0m
-Removed temporary package-lock.json

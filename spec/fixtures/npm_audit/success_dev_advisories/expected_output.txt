@@ -1,10 +1,6 @@
-Creating a temporary package-lock.json...
-Ran `npm install --package-lock-only`; finished in 0.0s with exit code 0
-Ran `npm audit --json`; finished in 0.0s with exit code 1
 =================================================================================
  ID | Module    | Title            | Sev. | URL                     | Prod | Ex. 
 ---------------------------------------------------------------------------------
  39 | uglify-js | Incorrect Handl~ | low  | npmjs.com/advisories/39 | n    | n   
  48 | uglify-js | Regex DoS        | low  | npmjs.com/advisories/48 | n    | n   
 =================================================================================
-Removed temporary package-lock.json
