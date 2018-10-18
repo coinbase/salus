@@ -3,6 +3,9 @@ require 'open3'
 module Salus::Scanners
   # Super class for all scanner objects.
   class Base
+    class UnhandledExitStatusError < StandardError; end
+    class InvalidScannerInvocationError < StandardError; end
+
     def initialize(repository:, report:, config:)
       @repository = repository
       @report = report
@@ -15,12 +18,12 @@ module Salus::Scanners
 
     # The scanning logic or something that calls a scanner.
     def run
-      raise NotImplementedError
+      raise NoMethodError
     end
 
     # Returns TRUE if this scanner is appropriate for this repo, ELSE false.
     def should_run?
-      raise NotImplementedError
+      raise NoMethodError
     end
 
     # Runs a command on the terminal.

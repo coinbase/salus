@@ -3,6 +3,8 @@ require 'salus/report'
 
 module Salus
   class Processor
+    class InvalidConfigSourceError < StandardError; end
+
     attr_reader :config, :report
 
     DEFAULT_CONFIG_SOURCE = "file:///salus.yaml".freeze
@@ -45,7 +47,7 @@ module Salus
       when Salus::Config::REMOTE_URI_SCHEME_REGEX
         Faraday.get(source_uri).body
       else
-        raise NotImplementedError, 'Unknown config file source.'
+        raise InvalidConfigSourceError, 'Unknown config file source.'
       end
     end
 
@@ -61,9 +63,10 @@ module Salus
 
         begin
           scanner.run if scanner.should_run? && @config.scanner_active?(scanner_name)
-        rescue => e # rubocop:disable Style/RescueStandardError
+        rescue StandardError => e
           # We rescue any failure (and report them) to allow the other scanners to run.
           raise e if ENV['RUNNING_SALUS_TESTS']
+
           @report.salus_runtime_error(
             type: e.class.name,
             message: e.message,

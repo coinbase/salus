@@ -9,7 +9,7 @@ module Salus::Scanners
     def run
       unless should_run?
         raise(
-          NotImplementedError,
+          InvalidScannerInvocationError,
           'Cannot report on Go dependencies without a Gopkg.lock file.'
         )
       end

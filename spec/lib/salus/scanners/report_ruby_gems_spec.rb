@@ -14,7 +14,7 @@ describe Salus::Scanners::ReportRubyGems do
           config: blank_config
         )
         expect { scanner.run }.to raise_error(
-          NotImplementedError,
+          Salus::Scanners::Base::InvalidScannerInvocationError,
           'Cannot report on Ruby gems without a Gemfile or Gemfile.lock'
         )
       end

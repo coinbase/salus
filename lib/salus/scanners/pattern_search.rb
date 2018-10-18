@@ -81,7 +81,7 @@ module Salus::Scanners
               errors << shell_return[:stderr]
             end
           else
-            raise NotImplementedError,
+            raise UnhandledExitStatusError,
                   "Unknown exit status #{shell_return[:exit_status].exitstatus} from sift "\
                     "(grep alternative).\n" \
                     "STDOUT: #{shell_return[:stdout]}\n" \

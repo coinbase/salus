@@ -45,7 +45,7 @@ module Salus
       # Try to send Salus reports to remote server or local files.
       begin
         processor.export_report
-      rescue => e # rubocop:disable Style/RescueStandardError
+      rescue StandardError => e
         raise e if ENV['RUNNING_SALUS_TESTS']
         puts "Could not send Salus report: (#{e.class}: #{e.message})"
       end
