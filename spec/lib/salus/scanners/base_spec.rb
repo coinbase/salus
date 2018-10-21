@@ -21,13 +21,23 @@ describe Salus::Scanners::Base do
   end
 
   describe '#run_shell' do
-    it 'should execute a shell command and give a hash with expected values' do
+    it 'should execute a shell command and yield a ShellResult with appropriate values' do
+      fake_process_status = instance_double('Process::Status')
+      allow(fake_process_status).to receive(:success?).and_return(false)
+      allow(fake_process_status).to receive(:exitstatus).and_return(255)
+
       expect(Open3).to receive(:capture3).with({}, 'ls', stdin_data: '').and_return(
-        ["file_a\nfile_b\nfile_c", 'error string', 1] # last value is actually a Process::Status
+        [
+          "file_a\nfile_b\nfile_c",
+          'error string',
+          fake_process_status
+        ]
       )
-      expect(scanner.run_shell('ls')).to eq(
-        stdout: "file_a\nfile_b\nfile_c", stderr: 'error string', exit_status: 1
-      )
+      result = scanner.run_shell('ls')
+      expect(result.stdout).to eq("file_a\nfile_b\nfile_c")
+      expect(result.stderr).to eq('error string')
+      expect(result.success?).to eq(false)
+      expect(result.status).to eq(255)
     end
   end
 

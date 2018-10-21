@@ -10,8 +10,8 @@ module Salus::Scanners
       Dir.chdir(@repository.path_to_repo) do
         shell_return = run_shell('python', stdin_data: DEP_PARSER)
 
-        if shell_return[:exit_status].success?
-          dependencies = JSON.parse(shell_return[:stdout])
+        if shell_return.success?
+          dependencies = JSON.parse(shell_return.stdout)
           dependencies.each do |name, version|
             record_dependency_info(
               {
@@ -23,7 +23,7 @@ module Salus::Scanners
             )
           end
         else
-          report_error('message' => shell_return[:stderr])
+          report_error('message' => shell_return.stderr)
         end
       end
     end

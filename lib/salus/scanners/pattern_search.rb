@@ -48,13 +48,13 @@ module Salus::Scanners
           match['required'] ||= false
           match['message'] ||= ''
 
-          if shell_return[:exit_status].success? # hit
+          if shell_return.success? # hit
             if match['forbidden']
               failure_messages << "Forbidden pattern \"#{match['regex']}\" was found " \
                 "- #{match['message']}"
             end
 
-            hits = shell_return[:stdout].encode(
+            hits = shell_return.stdout.encode(
               "utf-8",
               invalid: :replace,
               undef: :replace
@@ -70,22 +70,22 @@ module Salus::Scanners
               )
             end
 
-          elsif [1, 2].include? shell_return[:exit_status].exitstatus
-            if shell_return[:stderr].empty?
+          elsif [1, 2].include?(shell_return.status)
+            if shell_return.stderr.empty?
               # If there were no hits, but the pattern was required add an error message.
               if match['required']
                 failure_messages << "Required pattern \"#{match['regex']}\" was not found " \
                   "- #{match['message']}"
               end
             else
-              errors << shell_return[:stderr]
+              errors << shell_return.stderr
             end
           else
             raise UnhandledExitStatusError,
-                  "Unknown exit status #{shell_return[:exit_status].exitstatus} from sift "\
+                  "Unknown exit status #{shell_return.status} from sift "\
                     "(grep alternative).\n" \
-                    "STDOUT: #{shell_return[:stdout]}\n" \
-                    "STDERR: #{shell_return[:stderr]}"
+                    "STDOUT: #{shell_return.stdout}\n" \
+                    "STDERR: #{shell_return.stderr}"
           end
         end
       end

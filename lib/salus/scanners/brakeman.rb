@@ -22,17 +22,17 @@ module Salus::Scanners
         #   - vulns found    - exit 3 and log to STDOUT
         #   - exception      - exit 1 and log to STDERR
 
-        if shell_return[:exit_status].success?
+        if shell_return.success?
           report_success
-        elsif shell_return[:exit_status].exitstatus == 3
+        elsif shell_return.status == 3
           report_failure
-          brakeman_report = JSON.parse(shell_return[:stdout])
-          report_stdout(shell_return[:stdout])
+          brakeman_report = JSON.parse(shell_return.stdout)
+          report_stdout(shell_return.stdout)
           report_info('brakeman_report', brakeman_report)
         else
-          report_info('exit_code', shell_return[:exit_status])
-          report_error('message' => shell_return[:stderr])
-          report_stderr(shell_return[:stderr])
+          report_info('exit_code', shell_return.status)
+          report_error('message' => shell_return.stderr)
+          report_stderr(shell_return.stderr)
         end
       end
     end

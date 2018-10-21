@@ -27,12 +27,12 @@ module Salus::Scanners
       Dir.chdir(@repository.path_to_repo) do
         shell_return = run_shell('npm audit --json')
 
-        if shell_return[:exit_status].success?
+        if shell_return.success?
           report_success
         else
           # Parse output
-          npm_audit_report = JSON.parse(shell_return[:stdout])
-          report_stdout(shell_return[:stdout])
+          npm_audit_report = JSON.parse(shell_return.stdout)
+          report_stdout(shell_return.stdout)
 
           # Report scan output
           report_info('npm_audit_output', npm_audit_report)
