@@ -70,10 +70,6 @@ module Salus
       @errors[error_origin] << error_data
     end
 
-    def has_failure?(source)
-      @scans.key?(source) && @scans[source].key?("passed") && @scans[source]["passed"] == false
-    end
-
     def configuration_source(source)
       @configuration['sources'] ||= []
       @configuration['sources'] << source

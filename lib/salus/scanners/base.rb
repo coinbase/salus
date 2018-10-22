@@ -68,10 +68,6 @@ module Salus::Scanners
       @report.salus_error(name, error_data)
     end
 
-    def report_recorded_failure?
-      @report.has_failure?(name)
-    end
-
     def record_dependency_info(info, dependency_file)
       report_info('dependency', { dependency_file: dependency_file }.merge(info))
     end
