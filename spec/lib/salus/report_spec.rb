@@ -17,11 +17,6 @@ describe Salus::Report do
   let(:scanner_1_info_type_2_message_1) { 'Casper unit anomaly' }
   let(:scanner_1_stdout)                { 'Operational: C, B, M' }
   let(:scanner_2_stderr)                { 'Cannot scan full ratio.' }
-  let(:salus_info_type_1)               { 'Angel' }
-  let(:salus_info_type_2)               { 'Entry Plug' }
-  let(:salus_info_type_1_message_1)     { 'Approaching Tokyo 3.' }
-  let(:salus_info_type_1_message_2)     { 'Origins of Adam detected.' }
-  let(:salus_info_type_2_message_1)     { 'Malfunction ...' }
   let(:salus_error_1_class)             { 'EvaError' }
   let(:salus_error_2_class)             { 'SalusRuntime' }
   let(:salus_error_1_data)              { { 'message' => 'Cannot locate EVA02.', 'count' => 2 } }
@@ -44,9 +39,6 @@ describe Salus::Report do
     report.scan_stdout(scanner_1, scanner_1_stdout)
     report.scan_info(scanner_2, scanner_1_info_type_1, scanner_1_info_type_1_message_1)
     report.scan_stderr(scanner_2, scanner_2_stderr)
-    report.salus_info(salus_info_type_1, salus_info_type_1_message_1)
-    report.salus_info(salus_info_type_1, salus_info_type_1_message_2)
-    report.salus_info(salus_info_type_2, salus_info_type_2_message_1)
     report.salus_error(salus_error_1_class, salus_error_1_data)
     report.salus_error(salus_error_2_class, salus_error_2_data)
     report.salus_runtime_error(salus_runtime_error_data)
@@ -92,10 +84,6 @@ describe Salus::Report do
         }
       )
 
-      expect(obj['info'][salus_info_type_1]).to include(salus_info_type_1_message_1)
-      expect(obj['info'][salus_info_type_1]).to include(salus_info_type_1_message_2)
-      expect(obj['info'][salus_info_type_2]).to include(salus_info_type_2_message_1)
-
       expect(obj['errors'][salus_error_1_class]).to include(salus_error_1_data)
       expect(obj['errors'][salus_error_2_class]).to include(salus_error_2_data)
       expect(obj['errors']['Salus']).to include(salus_runtime_error_data)
@@ -120,8 +108,6 @@ describe Salus::Report do
       [
         scanner_1_info_type_1,
         scanner_1_info_type_1_message_1,
-        salus_info_type_1,
-        salus_info_type_1_message_2,
         config_source_1,
         config_source_2,
         config_directive,

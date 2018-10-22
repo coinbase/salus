@@ -54,11 +54,6 @@ module Salus
       @scans[scanner][log_type] = log
     end
 
-    def salus_info(type, message)
-      @info[type] ||= []
-      @info[type] << message
-    end
-
     def salus_runtime_error(error_data)
       salus_error('Salus', error_data)
     end
