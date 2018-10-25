@@ -17,7 +17,7 @@ scanner_configs:
           - node_modules
         exclude_extension:
           - md
-      - regex: "# Thread Model"
+      - regex: "# Threat Model"
         message: All repos must contain a documented threat model.
         required: true
         exclude_extension:
