@@ -30,6 +30,33 @@ module Salus::Scanners
       raise NoMethodError
     end
 
+    # Wraps the actual workhorse #run method with some boilerplate:
+    # - appends the scan report to the given global salus report
+    # - uses the #record method of @report to record the running time of the scan,
+    #   and also to pass/fail the scan if #run failed to do so
+    # - catches any exceptions, appending them to both the scan report's error
+    #   collection and the global salus scan's error collection
+    def run!(salus_report:, required:, reraise:)
+      salus_report.add_scan_report(@report, required: required)
+
+      begin
+        @report.record { run }
+      rescue StandardError => exception
+        error_data = {
+          message: "Unhandled exception running #{name}: #{exception.class}: #{exception}",
+          klass: exception.class,
+          backtrace: exception.backtrace.take(5)
+        }
+
+        @report.error(error_data)
+        @report.fail
+
+        salus_report.error(error_data)
+
+        raise if reraise
+      end
+    end
+
     # Runs a command on the terminal.
     def run_shell(command, env: {}, stdin_data: '')
       # If we're passed a string, convert it to an array beofre passing to capture3

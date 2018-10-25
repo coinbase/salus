@@ -5,14 +5,8 @@ module Salus
   class Report
     class ExportReportError < StandardError; end
 
-    NUM_CHAR_IN_BAR = 20
-    BAR = ('=' * NUM_CHAR_IN_BAR).freeze
-    SPECIAL_BAR = ('#' * NUM_CHAR_IN_BAR).freeze
-
-    SCAN_RESULT_WORD = {
-      true => 'passed',
-      false => 'failed'
-    }.freeze
+    # FIXME(as3richa): make wrapping behaviour configurable
+    WRAP = 100
 
     CONTENT_TYPE_FOR_FORMAT = {
       'json' => 'application/json',
@@ -20,134 +14,98 @@ module Salus
       'txt'  => 'text/plain'
     }.freeze
 
-    def initialize(report_uris: [], project_name: '', custom_info: '')
-      @report_uris = report_uris   # where we will send this report
-      @project_name = project_name # the project_name we are scanning
-      @scans = {}                  # scan logs
-      @info = {}                   # info about Salus execution
-      @errors = {}                 # errors from Salus execution
-      @custom_info = custom_info   # some additional info to send
-      @configuration = {}          # the configuration for this run
+    def initialize(report_uris: [], project_name: nil, custom_info: nil, config: nil)
+      @report_uris = report_uris     # where we will send this report
+      @project_name = project_name   # the project_name we are scanning
+      @scan_reports = []             # ScanReports for each scan run
+      @errors = []                   # errors from Salus execution
+      @custom_info = custom_info     # some additional info to send
+      @config = config               # the configuration for this run
     end
 
-    def scan_passed(scanner, result)
-      scan_log(scanner, 'passed', result)
+    def passed?
+      @scan_reports.all? { |scan_report, required| !required || scan_report.passed? }
     end
 
-    def scan_stdout(scanner, stdout)
-      scan_log(scanner, 'stdout', stdout)
+    def add_scan_report(scan_report, required:)
+      @scan_reports << [scan_report, required]
     end
 
-    def scan_stderr(scanner, stderr)
-      scan_log(scanner, 'stderr', stderr)
-    end
-
-    def scan_info(scanner, type, message)
-      @scans[scanner] ||= {}
-      @scans[scanner]['info'] ||= {}
-      @scans[scanner]['info'][type] ||= []
-      @scans[scanner]['info'][type] << message
-    end
-
-    def scan_log(scanner, log_type, log)
-      @scans[scanner] ||= {}
-      @scans[scanner][log_type] = log
-    end
-
-    def salus_runtime_error(error_data)
-      salus_error('Salus', error_data)
-    end
-
-    # Record a list of any errors that Salus encounters.
-    # These might be Salus code or from scanners.
-    def salus_error(error_origin, error_data)
-      # If we have a bugsnag api key and we're not running tests
-      if ENV['BUGSNAG_API_KEY'] && !ENV['RUNNING_SALUS_TESTS']
-        Bugsnag.notify([error_origin, error_data])
-      end
-
-      @errors[error_origin] ||= []
-      @errors[error_origin] << error_data
-    end
-
-    def configuration_source(source)
-      @configuration['sources'] ||= []
-      @configuration['sources'] << source
-    end
-
-    def configuration_directive(directive, value)
-      @configuration[directive] = value
+    def error(hsh)
+      @errors << hsh
     end
 
     def to_h
-      {
-        project_name: @project_name,
-        scans: @scans,
-        info: @info,
-        errors: @errors,
-        version: VERSION,
-        custom_info: @custom_info,
-        configuration: @configuration
-      }
-    end
+      scans = @scan_reports.map { |report, _required| [report.scanner_name, report.to_h] }.to_h
 
-    def to_json
-      JSON.pretty_generate(to_h)
+      {
+        version: VERSION,
+        project_name: @project_name,
+        passed: passed?,
+        scans: scans,
+        errors: @errors,
+        custom_info: @custom_info,
+        config: @config
+      }.compact
     end
 
     # Generates the text report.
-    def to_s(verbose: false)
-      lines = []
-      lines << "#{SPECIAL_BAR} Salus Scan v#{VERSION} for #{@project_name} #{SPECIAL_BAR}"
+    def to_s(verbose: false, wrap: WRAP)
+      output = "==== Salus Scan v#{VERSION}"
+      output += " for #{@project_name}" unless @project_name.nil?
 
-      if @scans.any?
-        @scans.each do |scanner, scan_data|
-          # Scanner title which gives the high level picture
-          scanner_title = "\t#{scanner}"
-          scan_result = SCAN_RESULT_WORD[scan_data['passed']]
-          scanner_title += " => #{scan_result}" unless scan_result.nil?
-          lines << scanner_title
-
-          # Additional data about the scan. Give stdout, stderr and if verbose, also give info.
-          lines << "STDOUT:\n#{scan_data['stdout']}" unless scan_data['stdout'].nil?
-          lines << "STDERR:\n#{scan_data['stderr']}" unless scan_data['stderr'].nil?
-
-          if verbose
-            scan_data['info']&.each do |type, messages|
-              lines << "INFO - #{type}"
-              lines += messages.map { |message| "\t#{message}" }
-            end
-          end
-        end
+      # Sort scan reports required before optional, failed before passed,
+      # and alphabetically by scanner name
+      scan_reports = @scan_reports.sort_by do |report, required|
+        [
+          required ? 0 : 1,
+          report.passed? ? 1 : 0,
+          report.scanner_name
+        ]
       end
 
-      if verbose && @info.any?
-        lines << "#{BAR} Scan Info #{BAR}"
-        @info.each do |type, messages|
-          lines << type
-          lines += messages.each { |message| "\t#{message}" }
-        end
+      # Print a summary of the scan results
+      # FIXME(as3richa): this should be a pretty table :)
+      output += "\n\nRan #{scan_reports.length} scanner(s):"
+      scan_reports.each do |report, required|
+        output += "\n- #{report.scanner_name}: #{report.passed? ? 'PASSED' : 'FAILED'}"
+        output += " in #{report.running_time}s" unless report.running_time.nil?
+        output += required ? ' (required)' : ' (not required)'
       end
 
-      # Only add configuration if verbose mode is on.
+      scan_reports.each do |report, _required|
+        output += "\n\n#{report.to_s(verbose: verbose, wrap: wrap)}"
+      end
+
+      # Adjust the wrap by 2 because we're wrapping indented paragraphs
+      wrap = (wrap.nil? ? nil : wrap - 2)
+
+      # Only add config if verbose mode is on.
       if verbose
-        lines << "\n"
-        lines << "#{BAR} Salus Configuration #{BAR}"
-        lines += @configuration.map { |type, value| "#{type}: #{value}" }
+        # Dump config in particular as YAML rather than JSON, because salus
+        # config files are YAML. Also, stringify the keys before serializing,
+        # because the YAML module is sensitive to symbols vs strings. It's
+        # annoying
+        stringified_config = YAML.dump(deep_stringify_keys(@config), indentation: 2)
+        output += "\n\n==== Salus Configuration\n\n"
+        output += indent(wrapify(stringified_config, wrap))
       end
 
-      if @errors.any?
-        lines << "\n"
-        lines << "#{BAR} Salus Errors #{BAR}"
-        lines += @errors.map { |klass, data| "\t#{klass} - #{data}" }
+      if !@errors.empty?
+        stringified_errors = JSON.pretty_generate(@errors)
+        output += "\n\n==== Salus Errors\n\n"
+        output += indent(wrapify(stringified_errors, wrap))
       end
 
-      lines.map! { |line| wrap(line) }
-      lines.join("\n")
+      output
     end
 
     def to_yaml
       YAML.dump(to_h)
+    end
+
+    def to_json
+      JSON.pretty_generate(to_h)
     end
 
     # Send the report to given URIs (which could be remove or local).
@@ -178,9 +136,44 @@ module Salus
 
     private
 
-    # Wrap lines to 100 chars by default
-    def wrap(text, line_width = 100)
-      text.gsub(/(.{1,#{line_width}})/, "\\1\n")
+    def deep_stringify_keys(datum)
+      case datum
+      when Hash then datum.map { |key, value| [key.to_s, deep_stringify_keys(value)] }.to_h
+      when Array then datum.map { |value| deep_stringify_keys(value) }
+      else datum
+      end
+    end
+
+    # FIXME(as3richa): factor this out along with the identical version
+    # in scan_report.rb. Maybe have a Formatting mixin module for wrapping,
+    # indentation, coloring, tabulation...
+    def wrapify(string, wrap)
+      return string if wrap.nil?
+
+      parts = []
+
+      string.each_line("\n").each do |line|
+        if line == "\n"
+          parts << "\n"
+          next
+        end
+
+        line = line.chomp
+        index = 0
+
+        while index < line.length
+          parts << line.slice(index, wrap) + "\n"
+          index += wrap
+        end
+      end
+
+      parts.join
+    end
+
+    def indent(text)
+      # each_line("\n") rather than split("\n") because the latter
+      # discards trailing empty lines. Also, don't indent empty lines
+      text.each_line("\n").map { |line| line == "\n" ? "\n" : ("  " + line) }.join
     end
 
     def write_report_to_file(report_file_path, report_string)
