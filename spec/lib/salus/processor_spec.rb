@@ -22,9 +22,9 @@ describe Salus::Processor do
         Dir.chdir('spec/fixtures/processor/explicit_config') do
           processor = Salus::Processor.new([file_config_uri, http_config_uri])
 
-          reported_config = processor.report.to_h[:configuration]
-          expect(reported_config['sources']).to include(file_config_uri, http_config_uri)
-          expect(reported_config['active_scanners']).to include(
+          reported_config = processor.report.to_h[:config]
+          expect(reported_config[:sources]).to include(file_config_uri, http_config_uri)
+          expect(reported_config[:active_scanners]).to include(
             'BundleAudit',
             'Brakeman',
             'PatternSearch',
@@ -32,7 +32,7 @@ describe Salus::Processor do
             'ReportNodeModules',
             'ReportRubyGems'
           )
-          expect(reported_config['enforced_scanners']).to include('BundleAudit', 'Brakeman')
+          expect(reported_config[:enforced_scanners]).to include('BundleAudit', 'Brakeman')
         end
       end
     end
@@ -43,9 +43,9 @@ describe Salus::Processor do
         Dir.chdir('spec/fixtures/processor') do
           processor = Salus::Processor.new
 
-          reported_config = processor.report.to_h[:configuration]
-          expect(reported_config['sources']).to eq(['file:///salus.yaml'])
-          expect(reported_config['active_scanners']).to include(
+          reported_config = processor.report.to_h[:config]
+          expect(reported_config[:sources]).to eq(['file:///salus.yaml'])
+          expect(reported_config[:active_scanners]).to include(
             'BundleAudit',
             'Brakeman',
             'PatternSearch',
@@ -53,7 +53,7 @@ describe Salus::Processor do
             'ReportNodeModules',
             'ReportRubyGems'
           )
-          expect(reported_config['enforced_scanners']).to include('BundleAudit', 'Brakeman')
+          expect(reported_config[:enforced_scanners]).to include('BundleAudit', 'Brakeman')
         end
       end
     end
@@ -64,9 +64,9 @@ describe Salus::Processor do
         Dir.chdir('spec/fixtures/blank_repository') do
           processor = Salus::Processor.new
 
-          reported_config = processor.report.to_h[:configuration]
-          expect(reported_config['sources']).to eq(['file:///salus.yaml'])
-          expect(reported_config['active_scanners']).to include(
+          reported_config = processor.report.to_h[:config]
+          expect(reported_config[:sources]).to eq(['file:///salus.yaml'])
+          expect(reported_config[:active_scanners]).to include(
             'BundleAudit',
             'Brakeman',
             'PatternSearch',
@@ -74,7 +74,7 @@ describe Salus::Processor do
             'ReportNodeModules',
             'ReportRubyGems'
           )
-          expect(reported_config['enforced_scanners']).not_to be_empty
+          expect(reported_config[:enforced_scanners]).not_to be_empty
         end
       end
     end
@@ -84,41 +84,33 @@ describe Salus::Processor do
     it 'should scan the project given by a particular path' do
       processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/explicit_path')
       processor.scan_project
-      report = processor.report_hash
-      bundle_audit_info = report[:scans]['BundleAudit']['info']
 
-      expect(report[:project_name]).to eq('EVA-01')
-      expect(report[:custom_info]).to eq('Purple unit')
-      expect(report[:scans]['BundleAudit']['passed']).to eq(false)
+      expect(processor.passed?).to eq(false)
 
-      expect(bundle_audit_info).to have_key('unpatched_gem')
-      expect(bundle_audit_info['unpatched_gem'].length).not_to eq(0)
-      expect(
-        bundle_audit_info['unpatched_gem'][0][:cve]
-      ).to eq("CVE-2016-6316")
+      report_hsh = processor.report.to_h
 
-      expect(report[:scans]['overall']['passed']).to eq(false)
-      expect(report[:info]).to eq({})
-      expect(report[:errors]).to eq({})
-      expect(report[:version]).to eq('1.0.0')
+      expect(report_hsh[:project_name]).to eq('EVA-01')
+      expect(report_hsh[:custom_info]).to eq('Purple unit')
+      expect(report_hsh[:version]).to eq('1.0.0')
+      expect(report_hsh[:passed]).to eq(false)
+      expect(report_hsh[:errors]).to eq([])
+
+      expect(report_hsh[:scans]['BundleAudit'][:passed]).to eq(false)
+      expect(report_hsh[:scans]['BundleAudit'][:info][:vulnerabilities].length).to be_positive
     end
   end
 
-  describe '#scan_succeeded?' do
+  describe '#passed?' do
     it 'should return false if the overall scan did not pass' do
       processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/explicit_path_failure')
       processor.scan_project
-      expect(processor.report_hash[:scans]['overall']).not_to be_nil
-      expect(processor.report_hash[:scans]['overall']['passed']).to eq(false)
-      expect(processor.scan_succeeded?).to eq(false)
+      expect(processor.passed?).to eq(false)
     end
 
     it 'should return true if the overall scan passed' do
       processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/explicit_path_success')
       processor.scan_project
-      expect(processor.report_hash[:scans]['overall']).not_to be_nil
-      expect(processor.report_hash[:scans]['overall']['passed']).to eq(true)
-      expect(processor.scan_succeeded?).to eq(true)
+      expect(processor.passed?).to eq(true)
     end
   end
 
@@ -134,16 +126,15 @@ describe Salus::Processor do
           .with(headers: { 'Content-Type' => 'application/json' })
           .to_return(status: 202)
 
-        processor = Salus::Processor.new(
-          repo_path: 'spec/fixtures/processor/remote_uri'
-        )
+        processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/remote_uri')
+        processor.scan_project
         processor.export_report
 
         assert_requested(
           :post,
           remote_uri,
           headers: { 'Content-Type' => 'application/json' },
-          body: expected_report.strip,
+          body: expected_report,
           times: 1
         )
       end
@@ -162,7 +153,9 @@ describe Salus::Processor do
         remove_file(local_uri)
 
         processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/local_uri')
+        processor.scan_project
         processor.export_report
+
         expect(File.read(local_uri)).to eq(expected_report)
 
         # remove report file that was generated from Salus execution

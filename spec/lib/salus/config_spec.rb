@@ -23,7 +23,8 @@ describe Salus::Config do
     context 'no initialization file given' do
       it 'should use the default config file' do
         config = Salus::Config.new
-        expect(config.project_name).to eq('Project')
+        expect(config.project_name).to be_nil
+        expect(config.custom_info).to be_nil
         expect(config.active_scanners).to eq(Set.new(Salus::Config::SCANNERS.keys))
         expect(config.enforced_scanners).not_to be_empty
         expect(config.scanner_configs).to be_empty
