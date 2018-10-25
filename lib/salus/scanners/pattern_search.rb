@@ -18,10 +18,11 @@ module Salus::Scanners
       global_exclude_directory_flags = flag_list('--exclude-dirs', @config['exclude_directory'])
       global_exclude_extension_flags = extension_flag(@config['exclude_extension'])
 
-      # For each pattern, keep a running history of failures and errors.
+      # For each pattern, keep a running history of failures, errors, and hits
       # These will be reported on at the end.
       failure_messages = []
       errors = []
+      all_hits = []
 
       Dir.chdir(@repository.path_to_repo) do
         @config['matches']&.each do |match|
@@ -61,13 +62,13 @@ module Salus::Scanners
             ).split("\n")
 
             hits.each do |hit|
-              record_pattern_search_hit(
+              all_hits << {
                 regex: match['regex'],
                 forbidden: match['forbidden'],
                 required: match['required'],
                 msg: match['message'],
                 hit: hit
-              )
+              }
             end
 
           elsif [1, 2].include?(shell_return.status)
@@ -78,7 +79,7 @@ module Salus::Scanners
                   "- #{match['message']}"
               end
             else
-              errors << shell_return.stderr
+              errors << { status: shell_return.status, stderr: shell_return.stderr }
             end
           else
             raise UnhandledExitStatusError,
@@ -90,13 +91,15 @@ module Salus::Scanners
         end
       end
 
-      if failure_messages.empty?
+      report_info(:hits, all_hits)
+      errors.each { |error| report_error('Call to sift failed', error) }
+      failure_messages.each { |message| report_error(message) }
+
+      if errors.empty? && failure_messages.empty?
         report_success
       else
         report_failure
-        report_info('pattern_search_hit', failure_messages.join("\n"))
       end
-      report_stderr(errors.join) unless errors.empty?
     end
 
     def should_run?
@@ -104,17 +107,6 @@ module Salus::Scanners
     end
 
     private
-
-    def record_pattern_search_hit(regex:, forbidden:, msg:, hit:, required:)
-      report_info(
-        'pattern_search_hit',
-        regex: regex,
-        forbidden: forbidden,
-        required: required,
-        msg: msg || "",
-        hit: hit
-      )
-    end
 
     def extension_flag(file_extensions)
       if file_extensions.nil?
