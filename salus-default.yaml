@@ -6,8 +6,6 @@
 
 config_version: 1
 
-project_name: Project
-
 # What scanners should run. "all" or "none" are acceptable as well
 active_scanners: all
 

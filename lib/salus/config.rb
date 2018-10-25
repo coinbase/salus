@@ -48,8 +48,8 @@ module Salus
       @active_scanners   = all_none_some(SCANNERS.keys, final_config['active_scanners'])
       @enforced_scanners = all_none_some(SCANNERS.keys, final_config['enforced_scanners'])
       @scanner_configs   = final_config['scanner_configs'] || {}
-      @project_name      = final_config['project_name'].to_s || ''
-      @custom_info       = final_config['custom_info'].to_s || ''
+      @project_name      = final_config['project_name']&.to_s
+      @custom_info       = final_config['custom_info']&.to_s
       @report_uris       = final_config['reports'] || []
     end
 
@@ -59,6 +59,17 @@ module Salus
 
     def scanner_enforced?(scanner_class)
       @enforced_scanners.include?(scanner_class.to_s)
+    end
+
+    def to_h
+      {
+        active_scanners: @active_scanners.to_a.sort,
+        enforced_scanners: @enforced_scanners.to_a.sort,
+        scanner_configs: @scanner_configs,
+        project_name: @project_name,
+        custom_info: @custom_info,
+        report_uris: @report_uris
+      }.compact
     end
 
     private
