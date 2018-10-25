@@ -26,8 +26,11 @@ module Salus::Scanners
 
     def record_dependencies_from_gemfile_lock
       lockfile = Bundler::LockfileParser.new(@repository.gemfile_lock)
-      record_ruby_version(lockfile.ruby_version, 'Gemfile')
-      record_bundler_version(lockfile.bundler_version, 'Gemfile')
+
+      # N.B. lockfile.bundler_version is a Gem::Version
+      report_info(:ruby_version, lockfile.ruby_version)
+      report_info(:bundler_version, lockfile.bundler_version.to_s)
+
       lockfile.specs.each do |gem|
         record_ruby_gem(
           name: gem.name,
@@ -43,7 +46,8 @@ module Salus::Scanners
 
       # Record ruby version if present in Gemfile.
       if ruby_project.ruby_version
-        record_ruby_version(ruby_project.ruby_version.versions.first, 'Gemfile')
+        ruby_version = ruby_project.ruby_version.versions.first
+        report_info(:ruby_version, ruby_version)
       end
 
       # Record ruby gems.
@@ -62,23 +66,13 @@ module Salus::Scanners
       end
     end
 
-    def record_ruby_version(version, dependency_file)
-      record_dependency_info({ type: 'ruby', version: version }, dependency_file)
-    end
-
-    def record_bundler_version(version, dependency_file)
-      record_dependency_info({ type: 'bundler', version: version }, dependency_file)
-    end
-
     def record_ruby_gem(name:, version:, source:, dependency_file:)
-      record_dependency_info(
-        {
-          type: 'gem',
-          name: name,
-          version: version,
-          source: source
-        },
-        dependency_file
+      report_dependency(
+        dependency_file,
+        type: 'gem',
+        name: name,
+        version: version,
+        source: source
       )
     end
   end
