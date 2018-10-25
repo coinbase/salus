@@ -22,18 +22,20 @@ module Salus::Scanners
         #   - vulns found    - exit 3 and log to STDOUT
         #   - exception      - exit 1 and log to STDERR
 
-        if shell_return.success?
-          report_success
-        elsif shell_return.status == 3
-          report_failure
-          brakeman_report = JSON.parse(shell_return.stdout)
+        return report_success if shell_return.success?
+
+        if shell_return.status == 3
           report_stdout(shell_return.stdout)
-          report_info('brakeman_report', brakeman_report)
+          report_info(:brakeman_report, JSON.parse(shell_return.stdout, symbolize_names: true))
         else
-          report_info('exit_code', shell_return.status)
-          report_error('message' => shell_return.stderr)
+          report_error(
+            "brakeman exited with an unexpected exit status",
+            status: shell_return.status
+          )
           report_stderr(shell_return.stderr)
         end
+
+        report_failure
       end
     end
 
