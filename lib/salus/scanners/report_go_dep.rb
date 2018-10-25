@@ -32,14 +32,12 @@ module Salus::Scanners
     private
 
     def record_dep_package(name:, reference:, version_tag:)
-      record_dependency_info(
-        {
-          type: 'go_dep_lock',
-          name: name,
-          reference: reference,
-          version_tag: version_tag
-        },
-        'Gopkg.lock'
+      report_dependency(
+        'Gopkg.lock',
+        type: 'go_dep_lock',
+        name: name,
+        reference: reference,
+        version_tag: version_tag
       )
     end
   end
