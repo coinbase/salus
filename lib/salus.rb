@@ -28,7 +28,13 @@ module Salus
   URI_DELIMITER = ' '.freeze # space
 
   class << self
-    def scan(config: nil, quiet: false, verbose: false, repo_path: DEFAULT_REPO_PATH)
+    def scan(
+      config: nil,
+      quiet: false,
+      verbose: false,
+      output_stream: STDOUT,
+      repo_path: DEFAULT_REPO_PATH
+    )
       ### Configuration ###
       # Config option would be: --config="<uri x> <uri y> etc"
       configuration_directives = (ENV['SALUS_CONFIGURATION'] || config || '').split(URI_DELIMITER)
@@ -39,8 +45,8 @@ module Salus
       processor.scan_project
 
       ### Reporting ###
-      # Print report to stdout.
-      puts processor.string_report(verbose: verbose) unless quiet
+      # Print report to the given stream (STDOUT by default)
+      output_stream.puts(processor.string_report(verbose: verbose)) unless quiet
 
       # Try to send Salus reports to remote server or local files.
       begin
@@ -51,7 +57,7 @@ module Salus
       end
 
       # System exit with success or failure - useful for CI builds.
-      system_exit(processor.scan_succeeded? ? EXIT_SUCCESS : EXIT_FAILURE)
+      system_exit(processor.passed? ? EXIT_SUCCESS : EXIT_FAILURE)
     end
 
     private
