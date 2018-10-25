@@ -11,38 +11,20 @@ module Salus::Scanners
     def run
       # Ensure the DB is up to date
       unless Bundler::Audit::Database.update!(quiet: true)
-        report_error('message' => "Error updating the bundler-audit DB!")
+        report_error("Error updating the bundler-audit DB!")
         return
       end
 
-      begin
-        # Create our scanner pointing to the repo directory
-        scanner = Bundler::Audit::Scanner.new(@repository.path_to_repo)
-      rescue Errno::ENOENT
-        report_error('message' => "Errno::ENOENT - Invalid directory (directory doesn't exist)")
-        return
-      end
-
-      # Report any ignored CVEs (called multiple times to flatten the results)
-      @config['ignore']&.each do |cve|
-        report_info('ignored_cves', cve)
-      end
+      ignore = @config.fetch('ignore', [])
+      scanner = Bundler::Audit::Scanner.new(@repository.path_to_repo)
 
       vulns = []
-      failed = false
+      scanner.scan(ignore: ignore) { |result| vulns.push(serialize_vuln(result)) }
 
-      # Scan that mamma jamma, ignoring specified directories
-      scanner.scan(ignore: @config['ignore']) do |result|
-        vulns.push(serialize_vuln(result))
-        failed = true
-      end
+      report_info(:ignored_cves, ignore)
+      report_info(:vulnerabilities, vulns)
 
-      if failed
-        report_stdout(JSON.pretty_generate(vulns))
-        report_failure
-      else
-        report_success
-      end
+      vulns.empty? ? report_success : report_failure
     end
 
     def should_run?
@@ -54,15 +36,13 @@ module Salus::Scanners
     def serialize_vuln(vuln)
       case vuln
       when Bundler::Audit::Scanner::InsecureSource
-        serialized_vuln = {
-          type: :InsecureSource,
+        {
+          type: 'InsecureSource',
           source: vuln.source
         }
-        report_info("insecure_storage", serialized_vuln)
-        serialized_vuln
       when Bundler::Audit::Scanner::UnpatchedGem
-        serialized_vuln = {
-          type: :UnpatchedGem,
+        {
+          type: 'UnpatchedGem',
           name: vuln.gem.name,
           version: vuln.gem.version.to_s,
           cve: vuln.advisory.id,
@@ -74,8 +54,6 @@ module Salus::Scanners
           patched_versions: vuln.advisory.patched_versions.map(&:to_s),
           unaffected_versions: vuln.advisory.unaffected_versions.map(&:to_s)
         }
-        report_info("unpatched_gem", serialized_vuln)
-        serialized_vuln
       else
         raise UnvalidGemVulnError, "BundleAudit Scanner received a #{result} from the " \
                                    "bundler/audit gem, which it doesn't know how to handle"
