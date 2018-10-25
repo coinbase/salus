@@ -1,17 +1,35 @@
 {
-  "project_name": "Project",
-  "scans": {
-  },
-  "info": {
-  },
-  "errors": {
-  },
   "version": "1.0.0",
-  "custom_info": "",
-  "configuration": {
-    "sources": [
-      "file:///salus.yaml"
-    ],
+  "passed": true,
+  "scans": {
+    "PatternSearch": {
+      "scanner_name": "PatternSearch",
+      "passed": true,
+      "running_time": 0.0,
+      "info": {
+        "hits": [
+
+        ]
+      },
+      "errors": [
+
+      ]
+    },
+    "RepoNotEmpty": {
+      "scanner_name": "RepoNotEmpty",
+      "passed": true,
+      "running_time": 0.0,
+      "info": {
+      },
+      "errors": [
+
+      ]
+    }
+  },
+  "errors": [
+
+  ],
+  "config": {
     "active_scanners": [
       "Brakeman",
       "BundleAudit",
@@ -24,19 +42,22 @@
       "ReportRubyGems"
     ],
     "enforced_scanners": [
-      "RepoNotEmpty",
       "Brakeman",
       "BundleAudit",
       "NPMAudit",
-      "PatternSearch"
+      "PatternSearch",
+      "RepoNotEmpty"
     ],
     "scanner_configs": {
     },
-    "reports": [
+    "report_uris": [
       {
         "uri": "file://spec/fixtures/processor/local_uri/salus_reports_folder/salus-report.json",
         "format": "json"
       }
+    ],
+    "sources": [
+      "file:///salus.yaml"
     ]
   }
 }

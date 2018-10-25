@@ -1,9 +1,13 @@
 {
-  "project_name": "Project",
+  "version": "1.0.0",
+  "passed": true,
   "scans": {
     "PatternSearch": {
+      "scanner_name": "PatternSearch",
+      "passed": true,
+      "running_time": 0.0,
       "info": {
-        "pattern_search_hit": [
+        "hits": [
           {
             "regex": "placeholder",
             "forbidden": false,
@@ -13,22 +17,15 @@
           }
         ]
       },
-      "passed": true
-    },
-    "overall": {
-      "passed": true
+      "errors": [
+
+      ]
     }
   },
-  "info": {
-  },
-  "errors": {
-  },
-  "version": "1.0.0",
-  "custom_info": "",
-  "configuration": {
-    "sources": [
-      "file:///salus.yaml"
-    ],
+  "errors": [
+
+  ],
+  "config": {
     "active_scanners": [
       "PatternSearch"
     ],
@@ -51,11 +48,14 @@
         ]
       }
     },
-    "reports": [
+    "report_uris": [
       {
         "uri": "file://./repo/reports/salus_report.json",
         "format": "json"
       }
+    ],
+    "sources": [
+      "file:///salus.yaml"
     ]
   }
 }
