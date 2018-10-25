@@ -1,4 +1,5 @@
 require 'open3'
+require 'salus/scan_report'
 require 'salus/shell_result'
 
 module Salus::Scanners
@@ -7,9 +8,11 @@ module Salus::Scanners
     class UnhandledExitStatusError < StandardError; end
     class InvalidScannerInvocationError < StandardError; end
 
-    def initialize(repository:, report:, config:)
+    attr_reader :report
+
+    def initialize(repository:, config:)
       @repository = repository
-      @report = report
+      @report = Salus::ScanReport.new(name)
       @config = config
     end
 
@@ -36,40 +39,39 @@ module Salus::Scanners
 
     # Add a log to the report that this scanner had no findings.
     def report_success
-      @report.scan_passed(name, true)
+      @report.pass
     end
 
     # Add a log to the report that this scanner had findings.
     def report_failure
-      @report.scan_passed(name, false)
+      @report.fail
     end
 
     # Report information about this scan.
     def report_info(type, message)
-      @report.scan_info(name, type, message)
+      @report.info(type, message)
     end
 
     # Report the STDOUT from the scanner.
     def report_stdout(stdout)
-      @report.scan_stdout(name, stdout)
+      @report.info(:stdout, stdout)
     end
 
     # Report the STDERR from the scanner.
     def report_stderr(stderr)
-      @report.scan_stderr(name, stderr)
+      @report.info(:stderr, stderr)
     end
 
     # Report an error in a scanner.
-    def report_error(error_data)
-      unless error_data.is_a?(Hash)
-        raise "`report_error` must take in a hash, not a #{error_data.class}"
-      end
-
-      @report.salus_error(name, error_data)
+    def report_error(message, hsh = {})
+      hsh[:message] = message
+      @report.error(hsh)
     end
 
-    def record_dependency_info(info, dependency_file)
-      report_info('dependency', { dependency_file: dependency_file }.merge(info))
+    # Report a dependency of the project
+    def report_dependency(file, hsh = {})
+      hsh = hsh.merge(dependency_file: file)
+      @report.dependency(hsh)
     end
   end
 end
