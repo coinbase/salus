@@ -17,7 +17,7 @@ require 'salus/config'
 require 'salus/processor'
 
 module Salus
-  VERSION = '1.0.0'.freeze
+  VERSION = '2.0.0'.freeze
   DEFAULT_REPO_PATH = './repo'.freeze # This is inside the docker container at /home/repo.
 
   SafeYAML::OPTIONS[:default_mode] = :safe
@@ -51,7 +51,7 @@ module Salus
       end
 
       # System exit with success or failure - useful for CI builds.
-      system_exit(processor.scan_succeeded? ? EXIT_SUCCESS : EXIT_FAILURE)
+      system_exit(processor.passed? ? EXIT_SUCCESS : EXIT_FAILURE)
     end
 
     private

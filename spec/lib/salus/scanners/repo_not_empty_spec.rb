@@ -1,20 +1,13 @@
 require_relative '../../../spec_helper.rb'
 
 describe Salus::Scanners::RepoNotEmpty do
-  let(:blank_config)  { {} }
-  let(:report)        { Salus::Report.new }
-  let(:scan_report)   { json_report['scans']['RepoNotEmpty'] }
-
   describe '#run' do
     context 'non blank directory' do
       it 'should be a simple pass' do
-        scanner = Salus::Scanners::RepoNotEmpty.new(
-          repository: Salus::Repo.new('spec/fixtures/repo_not_empty/non_blank'),
-          report: report,
-          config: blank_config
-        )
+        repo = Salus::Repo.new('spec/fixtures/repo_not_empty/non_blank')
+        scanner = Salus::Scanners::RepoNotEmpty.new(repository: repo, config: {})
         scanner.run
-        expect(scan_report['passed']).to eq(true)
+        expect(scanner.report.passed?).to eq(true)
       end
     end
 
@@ -25,15 +18,16 @@ describe Salus::Scanners::RepoNotEmpty do
         Dir.mktmpdir(blank_dir) do
           expect(Dir["#{blank_dir}/*"]).to be_empty
 
-          scanner = Salus::Scanners::RepoNotEmpty.new(
-            repository: Salus::Repo.new(blank_dir),
-            report: report,
-            config: blank_config
-          )
+          repo = Salus::Repo.new(blank_dir)
+          scanner = Salus::Scanners::RepoNotEmpty.new(repository: repo, config: {})
           scanner.run
 
-          expect(scan_report['passed']).to eq(false)
-          expect(scan_report['info']['problem']).to include(/may indicate misconfiguration/)
+          scan_report = scanner.report
+          errors = scan_report.to_h.fetch(:errors)
+
+          expect(scan_report.passed?).to eq(false)
+          expect(errors.length).to eq(1)
+          expect(errors[0][:message]).to include('may indicate misconfiguration')
         end
       end
     end

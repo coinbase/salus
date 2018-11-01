@@ -26,15 +26,9 @@ module Salus
       @report = Report.new(
         report_uris: report_uris,
         project_name: @config.project_name,
-        custom_info: @config.custom_info
+        custom_info: @config.custom_info,
+        config: @config.to_h.merge(sources: configuration_sources)
       )
-
-      # Add configurations + sources to report - this is very useful for debugging.
-      configuration_sources.each { |source| @report.configuration_source(source) }
-      @report.configuration_directive('active_scanners', @config.active_scanners.to_a)
-      @report.configuration_directive('enforced_scanners', @config.enforced_scanners.to_a)
-      @report.configuration_directive('scanner_configs', @config.scanner_configs)
-      @report.configuration_directive('reports', @config.report_uris)
     end
 
     def fetch_config_file(source_uri, repo_path)
@@ -52,30 +46,21 @@ module Salus
     end
 
     def scan_project
-      repository = Repo.new(@repo_path)
+      repo = Repo.new(@repo_path)
+
+      # If we're running tests, re-raise any exceptions raised by a scanner
+      # (vs. just catching them and recording them in a real run)
+      reraise_exceptions = ENV.key?('RUNNING_SALUS_TESTS')
 
       Config::SCANNERS.each do |scanner_name, scanner_class|
-        scanner = scanner_class.new(
-          repository: repository,
-          report: @report,
-          config: @config.scanner_configs[scanner_name] || {}
-        )
+        config = @config.scanner_configs.fetch(scanner_name, {})
 
-        begin
-          scanner.run if scanner.should_run? && @config.scanner_active?(scanner_name)
-        rescue StandardError => e
-          # We rescue any failure (and report them) to allow the other scanners to run.
-          raise e if ENV['RUNNING_SALUS_TESTS']
+        scanner = scanner_class.new(repository: repo, config: config)
+        next unless @config.scanner_active?(scanner_name) && scanner.should_run?
 
-          @report.salus_runtime_error(
-            type: e.class.name,
-            message: e.message,
-            location: e.backtrace.first
-          )
-        end
+        required = @config.enforced_scanners.include?(scanner_name)
+        scanner.run!(salus_report: @report, required: required, reraise: reraise_exceptions)
       end
-
-      report_overall_scan
     end
 
     # Returns an ASCII version of the report.
@@ -88,32 +73,12 @@ module Salus
       @report.export_report
     end
 
-    # Returns the hash version of the report.
-    def report_hash
-      @report.to_h
-    end
-
     # Returns true is the scan succeeded.
-    def scan_succeeded?
-      report_h = @report.to_h
-      report_h[:scans]['overall'] && report_h[:scans]['overall']['passed']
+    def passed?
+      @report.passed?
     end
 
     private
-
-    # Adds a true/false status for the success of the "overall" scan.
-    # We report true if all enforced scanners passed, else false.
-    def report_overall_scan
-      failed_scans = @report.to_h[:scans].map do |scan, info|
-        scan if info['passed'] == false
-      end.compact
-
-      if (failed_scans & @config.enforced_scanners.to_a).any?
-        @report.scan_passed('overall', false)
-      else
-        @report.scan_passed('overall', true)
-      end
-    end
 
     # If the URI is local, we will need to prepend the repo_path since
     # the report URI is relative to the root of the repo. This allows us

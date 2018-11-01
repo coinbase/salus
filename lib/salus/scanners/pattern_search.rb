@@ -18,10 +18,11 @@ module Salus::Scanners
       global_exclude_directory_flags = flag_list('--exclude-dirs', @config['exclude_directory'])
       global_exclude_extension_flags = extension_flag(@config['exclude_extension'])
 
-      # For each pattern, keep a running history of failures and errors.
+      # For each pattern, keep a running history of failures, errors, and hits
       # These will be reported on at the end.
       failure_messages = []
       errors = []
+      all_hits = []
 
       Dir.chdir(@repository.path_to_repo) do
         @config['matches']&.each do |match|
@@ -48,55 +49,57 @@ module Salus::Scanners
           match['required'] ||= false
           match['message'] ||= ''
 
-          if shell_return[:exit_status].success? # hit
+          if shell_return.success? # hit
             if match['forbidden']
               failure_messages << "Forbidden pattern \"#{match['regex']}\" was found " \
                 "- #{match['message']}"
             end
 
-            hits = shell_return[:stdout].encode(
+            hits = shell_return.stdout.encode(
               "utf-8",
               invalid: :replace,
               undef: :replace
             ).split("\n")
 
             hits.each do |hit|
-              record_pattern_search_hit(
+              all_hits << {
                 regex: match['regex'],
                 forbidden: match['forbidden'],
                 required: match['required'],
                 msg: match['message'],
                 hit: hit
-              )
+              }
             end
 
-          elsif [1, 2].include? shell_return[:exit_status].exitstatus
-            if shell_return[:stderr].empty?
+          elsif [1, 2].include?(shell_return.status)
+            if shell_return.stderr.empty?
               # If there were no hits, but the pattern was required add an error message.
               if match['required']
                 failure_messages << "Required pattern \"#{match['regex']}\" was not found " \
                   "- #{match['message']}"
               end
             else
-              errors << shell_return[:stderr]
+              errors << { status: shell_return.status, stderr: shell_return.stderr }
             end
           else
             raise UnhandledExitStatusError,
-                  "Unknown exit status #{shell_return[:exit_status].exitstatus} from sift "\
+                  "Unknown exit status #{shell_return.status} from sift "\
                     "(grep alternative).\n" \
-                    "STDOUT: #{shell_return[:stdout]}\n" \
-                    "STDERR: #{shell_return[:stderr]}"
+                    "STDOUT: #{shell_return.stdout}\n" \
+                    "STDERR: #{shell_return.stderr}"
           end
         end
       end
 
-      if failure_messages.empty?
+      report_info(:hits, all_hits)
+      errors.each { |error| report_error('Call to sift failed', error) }
+      report_info(:failure_messages, failure_messages)
+
+      if errors.empty? && failure_messages.empty?
         report_success
       else
         report_failure
-        report_info('pattern_search_hit', failure_messages.join("\n"))
       end
-      report_stderr(errors.join) unless errors.empty?
     end
 
     def should_run?
@@ -104,17 +107,6 @@ module Salus::Scanners
     end
 
     private
-
-    def record_pattern_search_hit(regex:, forbidden:, msg:, hit:, required:)
-      report_info(
-        'pattern_search_hit',
-        regex: regex,
-        forbidden: forbidden,
-        required: required,
-        msg: msg || "",
-        hit: hit
-      )
-    end
 
     def extension_flag(file_extensions)
       if file_extensions.nil?
