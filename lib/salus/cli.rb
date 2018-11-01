@@ -23,13 +23,19 @@ module Salus
                  desc: 'Path to a directory to scan.',
                  type: :string,
                  default: './repo'
+    class_option :no_colors,
+                 desc: 'Do not colorize output.',
+                 type: :boolean,
+                 default: false
+
     desc 'scan', 'Scan the source code of a repository.'
     def scan
       Salus.scan(
         config: options[:config],
         quiet: options[:quiet],
         verbose: options[:verbose],
-        repo_path: options[:repo_path]
+        repo_path: options[:repo_path],
+        use_colors: !options[:no_colors]
       )
     end
   end

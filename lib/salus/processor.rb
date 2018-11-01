@@ -64,8 +64,8 @@ module Salus
     end
 
     # Returns an ASCII version of the report.
-    def string_report(verbose: false)
-      @report.to_s(verbose: verbose)
+    def string_report(verbose: false, use_colors: false)
+      @report.to_s(verbose: verbose, use_colors: use_colors)
     end
 
     # Sends to the report to configured report URIs.

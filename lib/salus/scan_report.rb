@@ -66,8 +66,8 @@ module Salus
       }
     end
 
-    def to_s(verbose:, wrap:)
-      banner = render_banner
+    def to_s(verbose:, wrap:, use_colors:)
+      banner = render_banner(use_colors: use_colors)
 
       # If the scan succeeded and verbose is false, just output the banner
       # indicating pass/fail
@@ -94,9 +94,13 @@ module Salus
 
     private
 
-    def render_banner
-      banner = "==== #{@scanner_name}: #{@passed ? 'PASSED' : 'FAILED'}"
+    def render_banner(use_colors:)
+      status = passed? ? 'PASSED' : 'FAILED'
+      status = colorize(status, (passed? ? :green : :red)) if use_colors
+
+      banner = "==== #{@scanner_name}: #{status}"
       banner += " in #{@running_time}s" if @running_time
+
       banner
     end
 
