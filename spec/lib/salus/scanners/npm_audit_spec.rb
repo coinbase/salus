@@ -7,7 +7,7 @@ describe Salus::Scanners::NPMAudit do
 
   describe '#run' do
     context 'CVEs in package.json' do
-      it 'should record failure and stderr from npm audit' do
+      it 'should fail, recording advisory ids and npm output' do
         repo = Salus::Repo.new('spec/fixtures/npm_audit/failure')
         scanner = Salus::Scanners::NPMAudit.new(repository: repo, config: {})
         scanner.run
@@ -16,9 +16,17 @@ describe Salus::Scanners::NPMAudit do
 
         info = scanner.report.to_h.fetch(:info)
 
-        expect(info.keys).to include(:npm_audit_output)
-        expect(info[:npm_audit_output][:advisories].keys.map(&:to_s))
-          .to contain_exactly('39', '48')
+        expect(info.key?(:npm_audit_output)).to eq(true)
+
+        expect(info).to include(
+          prod_advisories: %w[39 48],
+          dev_advisories: [],
+          unexcepted_prod_advisories: %w[39 48],
+          exceptions: [],
+          prod_exceptions: [],
+          dev_exceptions: [],
+          useless_exceptions: []
+        )
       end
     end
 
@@ -27,11 +35,17 @@ describe Salus::Scanners::NPMAudit do
         repo = Salus::Repo.new('spec/fixtures/npm_audit/success')
         scanner = Salus::Scanners::NPMAudit.new(repository: repo, config: {})
         scanner.run
-
         expect(scanner.report.passed?).to eq(true)
 
         info = scanner.report.to_h.fetch(:info)
-        expect(info.keys).to contain_exactly(:package_lock_missing)
+
+        expect(info.key?(:npm_audit_output)).to eq(true)
+
+        expect(info).to include(
+          prod_advisories: [],
+          dev_advisories: [],
+          unexcepted_prod_advisories: []
+        )
       end
     end
 
@@ -47,10 +61,18 @@ describe Salus::Scanners::NPMAudit do
         expect(scanner.report.passed?).to eq(true)
 
         info = scanner.report.to_h.fetch(:info)
-        expect(info.keys).to include(:exceptions, :npm_audit_output)
 
-        exception_ids = info[:exceptions].map { |exception| exception['advisory_id'] }
-        expect(exception_ids).to contain_exactly('39', '48')
+        expect(info.key?(:npm_audit_output)).to eq(true)
+
+        expect(info).to include(
+          prod_advisories: %w[39 48],
+          dev_advisories: [],
+          unexcepted_prod_advisories: [],
+          exceptions: %w[39 48],
+          prod_exceptions: %w[39 48],
+          dev_exceptions: [],
+          useless_exceptions: []
+        )
       end
     end
   end

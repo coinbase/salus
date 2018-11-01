@@ -64,12 +64,18 @@ module Salus::Scanners
       Salus::ShellResult.new(*Open3.capture3(env, *command, stdin_data: stdin_data))
     end
 
-    # Add a log to the report that this scanner had no findings.
+    # Add a textual logline to the report. This is for humans
+    def log(string)
+      @report.log(string)
+    end
+
+    # Tag the report as having completed successfully
     def report_success
       @report.pass
     end
 
-    # Add a log to the report that this scanner had findings.
+    # Tag the report as having failed
+    # (ie. a vulnerability was found, the scanner errored out, etc)
     def report_failure
       @report.fail
     end
