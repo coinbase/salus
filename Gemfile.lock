@@ -103,7 +103,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  activesupport (~> 5.0, >= 5.0.0.1)
+  activesupport (~> 5.2, >= 5.2.1)
   brakeman (~> 4.0)
   bugsnag (~> 4.0)
   bundler (~> 1.15)
