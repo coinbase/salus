@@ -1,6 +1,7 @@
 {
   "version": "2.0.0",
   "passed": true,
+  "running_time": 0.0,
   "scans": {
     "PatternSearch": {
       "scanner_name": "PatternSearch",

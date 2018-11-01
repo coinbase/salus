@@ -31,7 +31,8 @@ describe 'docker' do
 
     # Running time is nondeterministic, so just zero it out
     result = JSON.parse(File.read(report_file_path))
-    result['scans']['PatternSearch']['running_time'] = 0.0
+    result['running_time'] = 0.0
+    result['scans'].map { |_name, scan| scan['running_time'] = 0.0 }
 
     expect(result).to eq(expectation)
 

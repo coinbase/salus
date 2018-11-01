@@ -26,6 +26,14 @@ module Salus
       @errors = []                   # errors from Salus execution
       @custom_info = custom_info     # some additional info to send
       @config = config               # the configuration for this run
+      @running_time = nil            # overall running time for the scan; see #record
+    end
+
+    def record
+      started_at = monotime
+      yield
+    ensure
+      @running_time = (monotime - started_at).round(2)
     end
 
     def passed?
@@ -47,6 +55,7 @@ module Salus
         version: VERSION,
         project_name: @project_name,
         passed: passed?,
+        running_time: @running_time,
         scans: scans,
         errors: @errors,
         custom_info: @custom_info,
@@ -161,7 +170,11 @@ module Salus
       status = passed? ? 'PASSED' : 'FAILED'
       status = colorize(status, (passed? ? :green : :red)) if use_colors
 
-      "Overall scan status: #{status}\n\n#{stringified_table}"
+      summary = "Overall scan status: #{status}"
+      summary += " in #{@running_time}s" unless @running_time.nil?
+      summary += "\n\n#{stringified_table}"
+
+      summary
     end
 
     def write_report_to_file(report_file_path, report_string)
@@ -182,6 +195,12 @@ module Salus
         raise ExportReportError,
               "POST of Salus report to #{remote_uri} had response status #{response.status}."
       end
+    end
+
+    def monotime
+      # Measure elapsed time with a monotonic clock in order to be resilient
+      # to changes in server time
+      Process.clock_gettime(Process::CLOCK_MONOTONIC)
     end
   end
 end
