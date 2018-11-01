@@ -11,6 +11,7 @@ module Salus
       @scanner_name = scanner_name
       @passed = nil
       @running_time = nil
+      @logs = nil
       @info = {}
       @errors = []
     end
@@ -43,6 +44,11 @@ module Salus
       @passed == false
     end
 
+    def log(string)
+      @logs ||= ''
+      @logs += "#{string}\n"
+    end
+
     def info(type, value)
       @info[type] = value
     end
@@ -61,9 +67,10 @@ module Salus
         scanner_name: scanner_name,
         passed: passed?,
         running_time: @running_time,
+        logs: @logs&.chomp,
         info: @info,
         errors: @errors
-      }
+      }.compact
     end
 
     def to_s(verbose:, wrap:, use_colors:)
@@ -78,6 +85,11 @@ module Salus
       indented_wrap = (wrap.nil? ? nil : wrap - INDENT_SIZE)
 
       output = banner
+
+      if !@logs.nil?
+        logs = indent(wrapify(@logs, indented_wrap))
+        output += "\n\n ~~ Scanner Logs:\n\n#{logs.chomp}"
+      end
 
       if !@info.empty? && verbose
         stringified_info = indent(wrapify(JSON.pretty_generate(@info), indented_wrap))

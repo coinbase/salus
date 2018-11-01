@@ -1,4 +1,6 @@
 require 'bugsnag'
+require 'active_support'
+require 'active_support/core_ext'
 
 if ENV['BUGSNAG_API_KEY']
   Bugsnag.configure do |config|
