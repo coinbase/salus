@@ -89,7 +89,7 @@ module Salus
         # config files are YAML. Also, stringify the keys before serializing,
         # because the YAML module is sensitive to symbols vs strings. It's
         # annoying
-        stringified_config = YAML.dump(deep_stringify_keys(@config), indentation: 2)
+        stringified_config = YAML.dump(@config.deep_stringify_keys, indentation: INDENT_SIZE)
         output += "\n\n==== Salus Configuration\n\n"
         output += indent(wrapify(stringified_config, indented_wrap))
       end
@@ -138,15 +138,6 @@ module Salus
     end
 
     private
-
-    def deep_stringify_keys(datum)
-      case datum
-      when Hash then datum.map { |key, value| [key.to_s, deep_stringify_keys(value)] }.to_h
-      when Array then datum.map { |value| deep_stringify_keys(value) }
-      when Symbol then datum.to_s
-      else datum
-      end
-    end
 
     def write_report_to_file(report_file_path, report_string)
       File.open(report_file_path, 'w') { |file| file.write(report_string) }
