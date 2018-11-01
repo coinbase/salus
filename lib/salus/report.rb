@@ -1,8 +1,11 @@
 require 'faraday'
 require 'json'
+require 'salus/formatting'
 
 module Salus
   class Report
+    include Formatting
+
     class ExportReportError < StandardError; end
 
     # FIXME(as3richa): make wrapping behaviour configurable
@@ -78,7 +81,7 @@ module Salus
       end
 
       # Adjust the wrap by 2 because we're wrapping indented paragraphs
-      wrap = (wrap.nil? ? nil : wrap - 2)
+      indented_wrap = (wrap.nil? ? nil : wrap - INDENT_SIZE)
 
       # Only add config if verbose mode is on.
       if verbose
@@ -88,13 +91,13 @@ module Salus
         # annoying
         stringified_config = YAML.dump(deep_stringify_keys(@config), indentation: 2)
         output += "\n\n==== Salus Configuration\n\n"
-        output += indent(wrapify(stringified_config, wrap))
+        output += indent(wrapify(stringified_config, indented_wrap))
       end
 
       if !@errors.empty?
         stringified_errors = JSON.pretty_generate(@errors)
         output += "\n\n==== Salus Errors\n\n"
-        output += indent(wrapify(stringified_errors, wrap))
+        output += indent(wrapify(stringified_errors, indented_wrap))
       end
 
       output
@@ -140,40 +143,9 @@ module Salus
       case datum
       when Hash then datum.map { |key, value| [key.to_s, deep_stringify_keys(value)] }.to_h
       when Array then datum.map { |value| deep_stringify_keys(value) }
+      when Symbol then datum.to_s
       else datum
       end
-    end
-
-    # FIXME(as3richa): factor this out along with the identical version
-    # in scan_report.rb. Maybe have a Formatting mixin module for wrapping,
-    # indentation, coloring, tabulation...
-    def wrapify(string, wrap)
-      return string if wrap.nil?
-
-      parts = []
-
-      string.each_line("\n").each do |line|
-        if line == "\n"
-          parts << "\n"
-          next
-        end
-
-        line = line.chomp
-        index = 0
-
-        while index < line.length
-          parts << line.slice(index, wrap) + "\n"
-          index += wrap
-        end
-      end
-
-      parts.join
-    end
-
-    def indent(text)
-      # each_line("\n") rather than split("\n") because the latter
-      # discards trailing empty lines. Also, don't indent empty lines
-      text.each_line("\n").map { |line| line == "\n" ? "\n" : ("  " + line) }.join
     end
 
     def write_report_to_file(report_file_path, report_string)

@@ -91,12 +91,15 @@ describe Salus::Processor do
 
       expect(report_hsh[:project_name]).to eq('EVA-01')
       expect(report_hsh[:custom_info]).to eq('Purple unit')
-      expect(report_hsh[:version]).to eq('1.0.0')
+      expect(report_hsh[:version]).to eq('2.0.0')
       expect(report_hsh[:passed]).to eq(false)
       expect(report_hsh[:errors]).to eq([])
 
       expect(report_hsh[:scans]['BundleAudit'][:passed]).to eq(false)
       expect(report_hsh[:scans]['BundleAudit'][:info][:vulnerabilities].length).to be_positive
+
+      cves = report_hsh[:scans]['BundleAudit'][:info][:vulnerabilities].map { |vuln| vuln[:cve] }
+      expect(cves).to include('CVE-2016-6316')
     end
   end
 

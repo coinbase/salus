@@ -20,29 +20,31 @@ describe Salus::Scanners::ReportGoDep do
 
       dependencies = scanner.report.to_h.fetch(:info).fetch(:dependencies)
 
-      expect(dependencies).to match_array([
-                                            {
-                                              dependency_file: 'Gopkg.lock',
-                                              type: 'go_dep_lock',
-                                              name: 'github.com/PagerDuty/go-pagerduty',
-                                              reference: 'fe74e407c23e030fa1523e7cbd972398fd85ec5d',
-                                              version_tag: nil
-                                            },
-                                            {
-                                              dependency_file: 'Gopkg.lock',
-                                              type: 'go_dep_lock',
-                                              name: 'github.com/Sirupsen/logrus',
-                                              reference: 'ba1b36c82c5e05c4f912a88eab0dcd91a171688f',
-                                              version_tag: 'v0.11.5'
-                                            },
-                                            {
-                                              dependency_file: 'Gopkg.lock',
-                                              type: 'go_dep_lock',
-                                              name: 'golang.org/x/sys',
-                                              reference: '9a7256cb28ed514b4e1e5f68959914c4c28a92e0',
-                                              version_tag: nil
-                                            }
-                                          ])
+      expect(dependencies).to match_array(
+        [
+          {
+            dependency_file: 'Gopkg.lock',
+            type: 'go_dep_lock',
+            name: 'github.com/PagerDuty/go-pagerduty',
+            reference: 'fe74e407c23e030fa1523e7cbd972398fd85ec5d',
+            version_tag: nil
+          },
+          {
+            dependency_file: 'Gopkg.lock',
+            type: 'go_dep_lock',
+            name: 'github.com/Sirupsen/logrus',
+            reference: 'ba1b36c82c5e05c4f912a88eab0dcd91a171688f',
+            version_tag: 'v0.11.5'
+          },
+          {
+            dependency_file: 'Gopkg.lock',
+            type: 'go_dep_lock',
+            name: 'golang.org/x/sys',
+            reference: '9a7256cb28ed514b4e1e5f68959914c4c28a92e0',
+            version_tag: nil
+          }
+        ]
+      )
     end
   end
 

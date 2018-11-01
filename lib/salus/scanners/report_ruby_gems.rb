@@ -27,7 +27,7 @@ module Salus::Scanners
     def record_dependencies_from_gemfile_lock
       lockfile = Bundler::LockfileParser.new(@repository.gemfile_lock)
 
-      # N.B. lockfile.bundler_version is a Gem::Version
+      # lockfile.bundler_version isn't a string, so stringify it first
       report_info(:ruby_version, lockfile.ruby_version)
       report_info(:bundler_version, lockfile.bundler_version.to_s)
 

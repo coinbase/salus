@@ -44,7 +44,7 @@ module Salus::Scanners
       rescue StandardError => exception
         error_data = {
           message: "Unhandled exception running #{name}: #{exception.class}: #{exception}",
-          klass: exception.class,
+          error_class: exception.class,
           backtrace: exception.backtrace.take(5)
         }
 

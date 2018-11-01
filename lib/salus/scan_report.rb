@@ -1,7 +1,10 @@
 require 'json'
+require 'salus/formatting'
 
 module Salus
   class ScanReport
+    include Formatting
+
     attr_reader :scanner_name, :running_time
 
     def initialize(scanner_name)
@@ -72,17 +75,17 @@ module Salus
 
       # Because we need to wrap indented paragraphs, correct the wrap
       # by the indentation level
-      wrap = (wrap.nil? ? nil : wrap - 2)
+      indented_wrap = (wrap.nil? ? nil : wrap - INDENT_SIZE)
 
       output = banner
 
       if !@info.empty? && verbose
-        stringified_info = indent(wrapify(JSON.pretty_generate(@info), wrap))
+        stringified_info = indent(wrapify(JSON.pretty_generate(@info), indented_wrap))
         output += "\n\n ~~ Metadata:\n\n#{stringified_info}".chomp
       end
 
       if !@errors.empty?
-        stringified_errors = indent(wrapify(JSON.pretty_generate(@errors), wrap))
+        stringified_errors = indent(wrapify(JSON.pretty_generate(@errors), indented_wrap))
         output += "\n\n ~~ Errors:\n\n#{stringified_errors}".chomp
       end
 
@@ -97,36 +100,9 @@ module Salus
       banner
     end
 
-    def wrapify(string, wrap)
-      return string if wrap.nil?
-
-      parts = []
-
-      string.each_line("\n").each do |line|
-        if line == "\n"
-          parts << "\n"
-          next
-        end
-
-        line = line.chomp
-        index = 0
-
-        while index < line.length
-          parts << line.slice(index, wrap) + "\n"
-          index += wrap
-        end
-      end
-
-      parts.join
-    end
-
-    def indent(text)
-      # each_line("\n") rather than split("\n") because the latter
-      # discards trailing empty lines. Also, don't indent empty lines
-      text.each_line("\n").map { |line| line == "\n" ? "\n" : ('  ' + line) }.join
-    end
-
     def monotime
+      # Measure elapsed time with a monotonic clock in order to be resilient
+      # to changes in server time
       Process.clock_gettime(Process::CLOCK_MONOTONIC)
     end
   end
