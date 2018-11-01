@@ -17,6 +17,8 @@ module Salus
       'txt'  => 'text/plain'
     }.freeze
 
+    SUMMARY_TABLE_HEADINGS = ['Scanner', 'Running Time', 'Required', 'Passed'].freeze
+
     def initialize(report_uris: [], project_name: nil, custom_info: nil, config: nil)
       @report_uris = report_uris     # where we will send this report
       @project_name = project_name   # the project_name we are scanning
@@ -24,6 +26,14 @@ module Salus
       @errors = []                   # errors from Salus execution
       @custom_info = custom_info     # some additional info to send
       @config = config               # the configuration for this run
+      @running_time = nil            # overall running time for the scan; see #record
+    end
+
+    def record
+      started_at = monotime
+      yield
+    ensure
+      @running_time = (monotime - started_at).round(2)
     end
 
     def passed?
@@ -45,6 +55,7 @@ module Salus
         version: VERSION,
         project_name: @project_name,
         passed: passed?,
+        running_time: @running_time,
         scans: scans,
         errors: @errors,
         custom_info: @custom_info,
@@ -53,7 +64,7 @@ module Salus
     end
 
     # Generates the text report.
-    def to_s(verbose: false, wrap: WRAP)
+    def to_s(verbose: false, wrap: WRAP, use_colors: false)
       output = "==== Salus Scan v#{VERSION}"
       output += " for #{@project_name}" unless @project_name.nil?
 
@@ -67,17 +78,10 @@ module Salus
         ]
       end
 
-      # Print a summary of the scan results
-      # FIXME(as3richa): this should be a pretty table :)
-      output += "\n\nRan #{scan_reports.length} scanner(s):"
-      scan_reports.each do |report, required|
-        output += "\n- #{report.scanner_name}: #{report.passed? ? 'PASSED' : 'FAILED'}"
-        output += " in #{report.running_time}s" unless report.running_time.nil?
-        output += required ? ' (required)' : ' (not required)'
-      end
+      output += "\n\n#{render_summary(scan_reports, use_colors: use_colors)}"
 
       scan_reports.each do |report, _required|
-        output += "\n\n#{report.to_s(verbose: verbose, wrap: wrap)}"
+        output += "\n\n#{report.to_s(verbose: verbose, wrap: wrap, use_colors: use_colors)}"
       end
 
       # Adjust the wrap by 2 because we're wrapping indented paragraphs
@@ -139,6 +143,40 @@ module Salus
 
     private
 
+    def render_summary(sorted_scan_reports, use_colors:)
+      table = sorted_scan_reports.map do |scan_report, required|
+        color =
+          if scan_report.passed?
+            :green
+          elsif !required
+            :yellow
+          else
+            :red
+          end
+
+        row = [
+          scan_report.scanner_name,
+          "#{scan_report.running_time}s",
+          required ? 'yes' : 'no',
+          scan_report.passed? ? 'yes' : 'no'
+        ]
+
+        row = row.map { |string| colorize(string, color) } if use_colors
+        row
+      end
+
+      stringified_table = tabulate(SUMMARY_TABLE_HEADINGS, table)
+
+      status = passed? ? 'PASSED' : 'FAILED'
+      status = colorize(status, (passed? ? :green : :red)) if use_colors
+
+      summary = "Overall scan status: #{status}"
+      summary += " in #{@running_time}s" unless @running_time.nil?
+      summary += "\n\n#{stringified_table}"
+
+      summary
+    end
+
     def write_report_to_file(report_file_path, report_string)
       File.open(report_file_path, 'w') { |file| file.write(report_string) }
     rescue SystemCallError => e
@@ -157,6 +195,12 @@ module Salus
         raise ExportReportError,
               "POST of Salus report to #{remote_uri} had response status #{response.status}."
       end
+    end
+
+    def monotime
+      # Measure elapsed time with a monotonic clock in order to be resilient
+      # to changes in server time
+      Process.clock_gettime(Process::CLOCK_MONOTONIC)
     end
   end
 end

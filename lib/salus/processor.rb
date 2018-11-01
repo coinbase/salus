@@ -48,24 +48,27 @@ module Salus
     def scan_project
       repo = Repo.new(@repo_path)
 
-      # If we're running tests, re-raise any exceptions raised by a scanner
-      # (vs. just catching them and recording them in a real run)
-      reraise_exceptions = ENV.key?('RUNNING_SALUS_TESTS')
+      # Record overall running time of the scan
+      @report.record do
+        # If we're running tests, re-raise any exceptions raised by a scanner
+        # (vs. just catching them and recording them in a real run)
+        reraise_exceptions = ENV.key?('RUNNING_SALUS_TESTS')
 
-      Config::SCANNERS.each do |scanner_name, scanner_class|
-        config = @config.scanner_configs.fetch(scanner_name, {})
+        Config::SCANNERS.each do |scanner_name, scanner_class|
+          config = @config.scanner_configs.fetch(scanner_name, {})
 
-        scanner = scanner_class.new(repository: repo, config: config)
-        next unless @config.scanner_active?(scanner_name) && scanner.should_run?
+          scanner = scanner_class.new(repository: repo, config: config)
+          next unless @config.scanner_active?(scanner_name) && scanner.should_run?
 
-        required = @config.enforced_scanners.include?(scanner_name)
-        scanner.run!(salus_report: @report, required: required, reraise: reraise_exceptions)
+          required = @config.enforced_scanners.include?(scanner_name)
+          scanner.run!(salus_report: @report, required: required, reraise: reraise_exceptions)
+        end
       end
     end
 
     # Returns an ASCII version of the report.
-    def string_report(verbose: false)
-      @report.to_s(verbose: verbose)
+    def string_report(verbose: false, use_colors: false)
+      @report.to_s(verbose: verbose, use_colors: use_colors)
     end
 
     # Sends to the report to configured report URIs.

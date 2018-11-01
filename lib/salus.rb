@@ -28,7 +28,13 @@ module Salus
   URI_DELIMITER = ' '.freeze # space
 
   class << self
-    def scan(config: nil, quiet: false, verbose: false, repo_path: DEFAULT_REPO_PATH)
+    def scan(
+      config: nil,
+      quiet: false,
+      verbose: false,
+      repo_path: DEFAULT_REPO_PATH,
+      use_colors: true
+    )
       ### Configuration ###
       # Config option would be: --config="<uri x> <uri y> etc"
       configuration_directives = (ENV['SALUS_CONFIGURATION'] || config || '').split(URI_DELIMITER)
@@ -40,7 +46,7 @@ module Salus
 
       ### Reporting ###
       # Print report to stdout.
-      puts processor.string_report(verbose: verbose) unless quiet
+      puts processor.string_report(verbose: verbose, use_colors: use_colors) unless quiet
 
       # Try to send Salus reports to remote server or local files.
       begin
