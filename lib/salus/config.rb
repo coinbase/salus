@@ -18,8 +18,9 @@ module Salus
                 :scanner_configs
 
     # Dynamically get all Scanner classes
+    ABSTRACT_SCANNERS = %i[Base NodeAudit].freeze
     SCANNERS = Salus::Scanners.constants
-      .reject { |klass| klass == :Base }
+      .reject { |klass| ABSTRACT_SCANNERS.include?(klass) }
       .map { |klass| [klass.to_s, Salus::Scanners.const_get(klass)] }
       .sort
       .to_h
@@ -51,6 +52,8 @@ module Salus
       @project_name      = final_config['project_name']&.to_s
       @custom_info       = final_config['custom_info']&.to_s
       @report_uris       = final_config['reports'] || []
+
+      apply_node_audit_patch!
     end
 
     def scanner_active?(scanner_class)
@@ -73,6 +76,16 @@ module Salus
     end
 
     private
+
+    def apply_node_audit_patch!
+      # To allow for backwards compatability and easy switching between node package managers,
+      # We will remap any NPMAudit and YarnAudit scanner connfigs to NodeAudit.
+      return if %w[NodeAudit NPMAudit YarnAudit].map { |k| @scanner_configs.key?(k) }.none?
+
+      @scanner_configs['NodeAudit'] ||= {}
+      @scanner_configs['NodeAudit'].deep_merge!(@scanner_configs['NPMAudit'] || {})
+      @scanner_configs['NodeAudit'].deep_merge!(@scanner_configs['YarnAudit'] || {})
+    end
 
     def fetch_envars(config_hash)
       return config_hash if ENV['RUNNING_SALUS_TESTS']

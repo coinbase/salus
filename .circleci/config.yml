@@ -13,6 +13,7 @@ jobs:
       - run: bundle-audit update
       # Node
       - run: npm install -g npm
+      - run: npm install -g yarn
       - run: npm install
       # Go
       - run: go get github.com/svent/sift

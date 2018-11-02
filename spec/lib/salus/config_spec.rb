@@ -75,6 +75,19 @@ describe Salus::Config do
         'failure_message' => 'Please upgrade the failing dependency.'
       )
     end
+
+    it 'should merge all NodeAudit related configuration' do
+      node_audit_config = File.read('spec/fixtures/config/node_audit_config.yaml')
+      npm_audit_config = File.read('spec/fixtures/config/npm_audit_config.yaml')
+      config = Salus::Config.new([node_audit_config, npm_audit_config])
+
+      expect(config.scanner_configs['NodeAudit']).to eq(
+        'foo' => 'bar',    # from NodeAudit config
+        'exceptions' => [  # from NPMAudit config
+          { 'advisory_id' => '12', 'changed_by' => 'appsec team', 'notes' => 'barfoo' }
+        ]
+      )
+    end
   end
 
   describe '#scanner_active?' do
