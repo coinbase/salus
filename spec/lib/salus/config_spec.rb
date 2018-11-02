@@ -67,6 +67,14 @@ describe Salus::Config do
         )
       end
     end
+
+    it 'should deep merge config files' do
+      config = Salus::Config.new([config_file_1, config_file_2])
+      expect(config.scanner_configs['BundleAudit']).to eq(
+        'ignore' => ['CVE-AAAA-BBBB', 'CVE-XXXX-YYYY'],
+        'failure_message' => 'Please upgrade the failing dependency.'
+      )
+    end
   end
 
   describe '#scanner_active?' do

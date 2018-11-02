@@ -39,7 +39,7 @@ module Salus
       # The later files in the array take superiority by overwriting configuration already
       # defined in the earlier files in the array (DEFAULT_CONFIG is the first such file/object).
       final_config = DEFAULT_CONFIG.dup
-      configuration_files.each { |file| final_config.merge!(YAML.safe_load(file)) }
+      configuration_files.each { |file| final_config.deep_merge!(YAML.safe_load(file)) }
 
       # Check if any of the values are actually pointing to envars.
       final_config = fetch_envars(final_config)

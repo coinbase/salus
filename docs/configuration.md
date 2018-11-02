@@ -22,7 +22,7 @@ A third method of providing configuration URIs is via the environment variable `
 
 ### Cascading Configurations
 
-When using a global configuration provided over HTTP, you might still want to modify Salus for special cases relevant only to the repository being scanned. To do this, you can append multiple configuration files by listing the configuration URIs in order of ascending precedence. Each top level directive will be overwritten by the directive present in later files. A space (`" "`) is used to delimit each URI.
+When using a global configuration provided over HTTP, you might still want to modify Salus for special cases relevant only to the repository being scanned. To do this, you can append multiple configuration files by listing the configuration URIs in order of ascending precedence. The hash represented by the YAML is deep merged with the next one. This means that keys are preserved but values are overwritten unless the value is also a Hash, in which case the algorithm recurses. A space (`" "`) is used to delimit each URI.
 
 ```sh
 docker run             \
