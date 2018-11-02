@@ -7,13 +7,14 @@ module Salus
 
     attr_reader :scanner_name, :running_time
 
-    def initialize(scanner_name)
+    def initialize(scanner_name, custom_failure_message: nil)
       @scanner_name = scanner_name
       @passed = nil
       @running_time = nil
       @logs = nil
       @info = {}
       @errors = []
+      @custom_failure_message = custom_failure_message
     end
 
     def record
@@ -99,6 +100,11 @@ module Salus
       if !@errors.empty?
         stringified_errors = indent(wrapify(JSON.pretty_generate(@errors), indented_wrap))
         output += "\n\n ~~ Errors:\n\n#{stringified_errors}".chomp
+      end
+
+      if !@custom_failure_message.blank? && !passed?
+        failure_message = indent(wrapify(@custom_failure_message, indented_wrap))
+        output += "\n\n#{failure_message}".chomp
       end
 
       output

@@ -87,7 +87,7 @@ scanner_configs:
       - CVE-XXXX-YYYY # irrelevant CVE which does not have a patch yet
 ```
 
-Special configuration that exist for particular scanners is defined in the [scanners directory](/scanners).
+Special configuration that exist for particular scanners is defined in the [scanners directory](/docs/scanners).
 
 ## Envar Interpolation
 

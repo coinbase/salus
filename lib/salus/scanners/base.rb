@@ -12,8 +12,11 @@ module Salus::Scanners
 
     def initialize(repository:, config:)
       @repository = repository
-      @report = Salus::ScanReport.new(name)
       @config = config
+      @report = Salus::ScanReport.new(
+        name,
+        custom_failure_message: @config['failure_message']
+      )
     end
 
     def name
