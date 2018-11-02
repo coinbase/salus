@@ -2,3 +2,7 @@
 enforced_scanners:
   - BundleAudit
   - ExtraScanner
+
+scanner_configs:
+  BundleAudit:
+    failure_message: 'Please upgrade the failing dependency.'
