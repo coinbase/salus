@@ -43,14 +43,16 @@
       "ReportGoDep",
       "ReportNodeModules",
       "ReportPythonModules",
-      "ReportRubyGems"
+      "ReportRubyGems",
+      "YarnAudit"
     ],
     "enforced_scanners": [
       "Brakeman",
       "BundleAudit",
       "NPMAudit",
       "PatternSearch",
-      "RepoNotEmpty"
+      "RepoNotEmpty",
+      "YarnAudit"
     ],
     "scanner_configs": {
     },

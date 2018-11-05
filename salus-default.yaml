@@ -24,4 +24,5 @@ enforced_scanners:
   - Brakeman
   - BundleAudit
   - NPMAudit
+  - YarnAudit
   - PatternSearch
