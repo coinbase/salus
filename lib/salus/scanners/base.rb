@@ -51,9 +51,22 @@ module Salus::Scanners
           backtrace: exception.backtrace.take(5)
         }
 
-        @report.error(error_data)
-        @report.fail
+        # There is a philosophical decision to be made here.
+        # When a scanner throws an exception, do we fail it or not?
+        # If a required scanner raised, the entire Salus run fail, and if that
+        # was in a CI pipeline, then the project tests/build would also fail.
+        #
+        # This should probably be a configurable setting but for now, we will default
+        # to passing the scanner so that we do not disrupt build pipelines when a scanner
+        # fails (which could be because of a scanner bug, a CVE registry going down etc).
+        #
+        # Instead, the consumer of the Salus report should be monitoring for errors and
+        # addressing them when they come up. If this was configurable it would allow the user
+        # of Salus to choose if a scanner which raised should be considered failed or not.
+        @report.pass
 
+        # Record the error so that the Salus report captures the issue.
+        @report.error(error_data)
         salus_report.error(error_data)
 
         raise if reraise
