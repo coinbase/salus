@@ -61,7 +61,13 @@ module Salus
           next unless @config.scanner_active?(scanner_name) && scanner.should_run?
 
           required = @config.enforced_scanners.include?(scanner_name)
-          scanner.run!(salus_report: @report, required: required, reraise: reraise_exceptions)
+
+          scanner.run!(
+            salus_report: @report,
+            required: required,
+            pass_on_raise: @config.scanner_configs[scanner_name]['pass_on_raise'],
+            reraise: reraise_exceptions
+          )
         end
       end
     end

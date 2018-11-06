@@ -55,6 +55,39 @@
       "YarnAudit"
     ],
     "scanner_configs": {
+      "Brakeman": {
+        "pass_on_raise": false
+      },
+      "BundleAudit": {
+        "pass_on_raise": false
+      },
+      "NPMAudit": {
+        "pass_on_raise": false
+      },
+      "PatternSearch": {
+        "pass_on_raise": false
+      },
+      "RepoNotEmpty": {
+        "pass_on_raise": false
+      },
+      "ReportGoDep": {
+        "pass_on_raise": false
+      },
+      "ReportNodeModules": {
+        "pass_on_raise": false
+      },
+      "ReportPythonModules": {
+        "pass_on_raise": false
+      },
+      "ReportRubyGems": {
+        "pass_on_raise": false
+      },
+      "YarnAudit": {
+        "pass_on_raise": false
+      },
+      "NodeAudit": {
+        "pass_on_raise": false
+      }
     },
     "report_uris": [
       {

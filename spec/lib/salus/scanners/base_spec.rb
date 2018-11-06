@@ -5,19 +5,21 @@ describe Salus::Scanners::Base do
   let(:scanner) { Salus::Scanners::Base.new(repository: repository, config: {}) }
 
   describe 'run!' do
-    it 'should catch exceptions from scanners and record the error' do
-      salus_report = Salus::Report.new
-      scanner = Salus::Scanners::BundleAudit.new(repository: repository, config: {})
+    let(:salus_report) { Salus::Report.new }
+    let(:scanner) { Salus::Scanners::BundleAudit.new(repository: repository, config: {}) }
+    before do
       allow(scanner).to receive(:run).and_raise(RuntimeError, 'bundle audit failed')
+    end
 
+    it 'should catch exceptions from scanners and record the error' do
       expect do
         scanner.run!(
           salus_report: salus_report,
           required: true,
+          pass_on_raise: false,
           reraise: false
         )
       end.not_to raise_error
-      expect(salus_report.passed?).to eq(true)
 
       salus_errors = salus_report.to_h[:errors]
       scanner_errors = salus_report.to_h[:scans]['BundleAudit'][:errors]
@@ -26,6 +28,32 @@ describe Salus::Scanners::Base do
         message: 'Unhandled exception running BundleAudit: RuntimeError: bundle audit failed',
         error_class: RuntimeError
       )
+    end
+
+    it 'should catch excepetions and fail the build if pass_on_raise false' do
+      expect do
+        scanner.run!(
+          salus_report: salus_report,
+          required: true,
+          pass_on_raise: false,
+          reraise: false
+        )
+      end.not_to raise_error
+
+      expect(salus_report.passed?).to eq(false)
+    end
+
+    it 'should catch excepetions and fail the build if pass_on_raise false' do
+      expect do
+        scanner.run!(
+          salus_report: salus_report,
+          required: true,
+          pass_on_raise: true,
+          reraise: false
+        )
+      end.not_to raise_error
+
+      expect(salus_report.passed?).to eq(true)
     end
   end
 

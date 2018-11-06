@@ -31,6 +31,10 @@ module Salus
       safe: true
     ).freeze
 
+    DEFAULT_SCANNER_CONFIG = {
+      'pass_on_raise' => false # strong default - if a scanner raises, it counts as failure.
+    }.freeze
+
     LOCAL_FILE_SCHEME_REGEX = /\Afile\z/ # like file://foobar
     REMOTE_URI_SCHEME_REGEX = /\Ahttps?\z/
     REPORT_FORMATS = %w[txt json yaml].freeze
@@ -53,6 +57,7 @@ module Salus
       @custom_info       = final_config['custom_info']&.to_s
       @report_uris       = final_config['reports'] || []
 
+      apply_default_scanner_config!
       apply_node_audit_patch!
     end
 
@@ -90,6 +95,16 @@ module Salus
       # Copy over the config to the relevant scanners to ensure they all inherit it.
       @scanner_configs['NPMAudit'] = @scanner_configs['NodeAudit']
       @scanner_configs['YarnAudit'] = @scanner_configs['NodeAudit']
+    end
+
+    # Applies default scanner config for anything not already defined.
+    def apply_default_scanner_config!
+      SCANNERS.keys.each do |scanner|
+        @scanner_configs[scanner] ||= {}
+        @scanner_configs[scanner] = DEFAULT_SCANNER_CONFIG
+          .dup
+          .deep_merge!(@scanner_configs[scanner])
+      end
     end
 
     def fetch_envars(config_hash)

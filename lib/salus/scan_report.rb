@@ -5,7 +5,7 @@ module Salus
   class ScanReport
     include Formatting
 
-    attr_reader :scanner_name, :running_time
+    attr_reader :scanner_name, :running_time, :errors
 
     def initialize(scanner_name, custom_failure_message: nil)
       @scanner_name = scanner_name

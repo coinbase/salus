@@ -1,0 +1,11 @@
+---
+enforced_scanners:
+  - BundleAudit
+  - Brakeman
+
+scanner_configs:
+  BundleAudit:
+    pass_on_raise: true
+    ignore:
+      - CVE-AAAA-BBBB
+      - CVE-XXXX-YYYY
