@@ -127,11 +127,7 @@ module Salus::Scanners
           )
         end
 
-        if unex_prod_advisories.empty?
-          report_success
-        else
-          report_failure
-        end
+        unex_prod_advisories.empty? ? report_success : report_failure
       end
     end
 

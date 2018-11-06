@@ -25,6 +25,7 @@ module Salus::Scanners
         return report_success if shell_return.success?
 
         if shell_return.status == 3
+          report_failure
           report_stdout(shell_return.stdout)
           report_info(:brakeman_report, JSON.parse(shell_return.stdout, symbolize_names: true))
         else
@@ -34,8 +35,6 @@ module Salus::Scanners
           )
           report_stderr(shell_return.stderr)
         end
-
-        report_failure
       end
     end
 

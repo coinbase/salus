@@ -27,7 +27,7 @@ describe Salus::Config do
         expect(config.custom_info).to be_nil
         expect(config.active_scanners).to eq(Set.new(Salus::Config::SCANNERS.keys))
         expect(config.enforced_scanners).not_to be_empty
-        expect(config.scanner_configs).to be_empty
+        expect(config.scanner_configs['BundleAudit']).to include('pass_on_raise' => false)
       end
     end
 
@@ -70,10 +70,18 @@ describe Salus::Config do
 
     it 'should deep merge config files' do
       config = Salus::Config.new([config_file_1, config_file_2])
-      expect(config.scanner_configs['BundleAudit']).to eq(
+      expect(config.scanner_configs['BundleAudit']).to include(
         'ignore' => ['CVE-AAAA-BBBB', 'CVE-XXXX-YYYY'],
         'failure_message' => 'Please upgrade the failing dependency.'
       )
+    end
+
+    it 'should apply default scanner config for each scanner' do
+      config = Salus::Config.new([config_file_1])
+      expect(config.scanner_configs.none? { |_, conf| conf['pass_on_raise'] }).to eq(true)
+
+      config = Salus::Config.new([File.read('spec/fixtures/config/salus_pass_on_raise.yaml')])
+      expect(config.scanner_configs['BundleAudit']['pass_on_raise']).to eq(true)
     end
 
     it 'should merge all NodeAudit related configuration' do
@@ -88,9 +96,9 @@ describe Salus::Config do
         ]
       }
 
-      expect(config.scanner_configs['NodeAudit']).to eq(expected_config)
-      expect(config.scanner_configs['NPMAudit']).to eq(expected_config)
-      expect(config.scanner_configs['YarnAudit']).to eq(expected_config)
+      expect(config.scanner_configs['NodeAudit']).to include(expected_config)
+      expect(config.scanner_configs['NPMAudit']).to include(expected_config)
+      expect(config.scanner_configs['YarnAudit']).to include(expected_config)
     end
   end
 

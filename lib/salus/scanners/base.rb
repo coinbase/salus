@@ -39,11 +39,15 @@ module Salus::Scanners
     #   and also to pass/fail the scan if #run failed to do so
     # - catches any exceptions, appending them to both the scan report's error
     #   collection and the global salus scan's error collection
-    def run!(salus_report:, required:, reraise:)
+    def run!(salus_report:, required:, pass_on_raise:, reraise:)
       salus_report.add_scan_report(@report, required: required)
 
       begin
         @report.record { run }
+
+        if @report.errors.any?
+          pass_on_raise ? @report.pass : @report.fail
+        end
       rescue StandardError => exception
         error_data = {
           message: "Unhandled exception running #{name}: #{exception.class}: #{exception}",
@@ -51,19 +55,7 @@ module Salus::Scanners
           backtrace: exception.backtrace.take(5)
         }
 
-        # There is a philosophical decision to be made here.
-        # When a scanner throws an exception, do we fail it or not?
-        # If a required scanner raised, the entire Salus run fail, and if that
-        # was in a CI pipeline, then the project tests/build would also fail.
-        #
-        # This should probably be a configurable setting but for now, we will default
-        # to passing the scanner so that we do not disrupt build pipelines when a scanner
-        # fails (which could be because of a scanner bug, a CVE registry going down etc).
-        #
-        # Instead, the consumer of the Salus report should be monitoring for errors and
-        # addressing them when they come up. If this was configurable it would allow the user
-        # of Salus to choose if a scanner which raised should be considered failed or not.
-        @report.pass
+        pass_on_raise ? @report.pass : @report.fail
 
         # Record the error so that the Salus report captures the issue.
         @report.error(error_data)

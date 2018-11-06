@@ -202,10 +202,7 @@ describe Salus::Scanners::PatternSearch do
         scanner = Salus::Scanners::PatternSearch.new(repository: repo, config: config)
         scanner.run
 
-        expect(scanner.report.passed?).to eq(false)
-
         errors = scanner.report.to_h.fetch(:errors)
-
         expect(errors).to include(
           status: 1,
           stderr:
