@@ -82,9 +82,14 @@ module Salus
       # We will remap any NPMAudit and YarnAudit scanner connfigs to NodeAudit.
       return if %w[NodeAudit NPMAudit YarnAudit].map { |k| @scanner_configs.key?(k) }.none?
 
+      # Make a fully merged config hash for NodeAudit.
       @scanner_configs['NodeAudit'] ||= {}
       @scanner_configs['NodeAudit'].deep_merge!(@scanner_configs['NPMAudit'] || {})
       @scanner_configs['NodeAudit'].deep_merge!(@scanner_configs['YarnAudit'] || {})
+
+      # Copy over the config to the relevant scanners to ensure they all inherit it.
+      @scanner_configs['NPMAudit'] = @scanner_configs['NodeAudit']
+      @scanner_configs['YarnAudit'] = @scanner_configs['NodeAudit']
     end
 
     def fetch_envars(config_hash)
