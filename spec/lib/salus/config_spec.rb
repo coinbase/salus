@@ -81,12 +81,16 @@ describe Salus::Config do
       npm_audit_config = File.read('spec/fixtures/config/npm_audit_config.yaml')
       config = Salus::Config.new([node_audit_config, npm_audit_config])
 
-      expect(config.scanner_configs['NodeAudit']).to eq(
+      expected_config = {
         'foo' => 'bar',    # from NodeAudit config
         'exceptions' => [  # from NPMAudit config
           { 'advisory_id' => '12', 'changed_by' => 'appsec team', 'notes' => 'barfoo' }
         ]
-      )
+      }
+
+      expect(config.scanner_configs['NodeAudit']).to eq(expected_config)
+      expect(config.scanner_configs['NPMAudit']).to eq(expected_config)
+      expect(config.scanner_configs['YarnAudit']).to eq(expected_config)
     end
   end
 
