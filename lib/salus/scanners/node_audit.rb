@@ -30,32 +30,43 @@ module Salus::Scanners
 
       Dir.chdir(@repository.path_to_repo) do
         raw_advisories = scan_for_cves
-        advisories = raw_advisories.map do |advisory|
-          # Each advisory corresponds to some vulnerable package, which
-          # may exist as multiple versions in multiple nodes of the dependency
-          # tree. advisory[:findings] is an array of objects looking roughly like
+
+        # We need to deduplicate advisories with identical ids -
+        # yarn audit for instance can yield many copies of the same advisory
+        # (for different versions of the same package) but we only care about
+        # the common information (module name, etc.)
+
+        raw_advisories_by_id = raw_advisories.group_by { |advisory| advisory.fetch(:id).to_s }
+
+        advisories = raw_advisories_by_id.map do |id, raw_advisories_for_id|
+          advisory = raw_advisories_for_id.first
+
+          module_name = advisory.fetch(:module_name)
+          title       = advisory.fetch(:title)
+          severity    = advisory.fetch(:severity)
+          url         = advisory.fetch(:url)
+          excepted    = exception_ids.include?(id)
+
+          # Each advisory corresponds to some instance of the vulnerable
+          # package, which may exist as in multiple nodes of the dependency
+          # tree. advisory[:findings] is an array of objects looking roughly
+          # like:
           # [
           #   { "version": "1.0.5", ..., "dev": false },
           #   { "version": "1.0.5", ..., "dev": true }
           # ]
           # where each element records an instance of the vulnerable package
-          # in the dependency tree. If, for some finding, dev is false,
-          # then there exists a vulnerable version of the module in the prod
-          # dependency tree
-          prod = advisory.fetch(:findings).any? { |finding| !finding.fetch(:dev) }
+          # in the dependency tree. If, for some advisory and for some finding
+          # on that advisory, dev is false, then there exists a vulnerable version
+          # of the module in the prod dependency tree
 
-          id = advisory.fetch(:id).to_s
-          excepted = exception_ids.include?(id)
+          # For all advisories,
+          prod = raw_advisories_for_id.any? do |raw_advisory|
+            # any there there any instances in the prod dependency tree?
+            raw_advisory.fetch(:findings).any? { |finding| !finding.fetch(:dev) }
+          end
 
-          Advisory.new(
-            id,
-            advisory.fetch(:module_name),
-            advisory.fetch(:title),
-            advisory.fetch(:severity),
-            advisory.fetch(:url),
-            prod,
-            excepted
-          )
+          Advisory.new(id, module_name, title, severity, url, prod, excepted)
         end
 
         # Sort advisories with un-excepted prod vulnerabilities first,
