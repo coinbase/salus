@@ -33,9 +33,9 @@ describe Salus::ScanReport do
         report.error(error_hash)
         expect(string_report).to include('FAILED')
         expect(string_report).to include(log_string)
-        expect(string_report).to include(info_value)
         expect(string_report).to include(error_hash['Error'])
         expect(string_report).to include(failure_message)
+        expect(string_report).not_to include(info_value)
       end
     end
 

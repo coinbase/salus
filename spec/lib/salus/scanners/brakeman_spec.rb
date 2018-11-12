@@ -28,10 +28,11 @@ describe Salus::Scanners::Brakeman do
         expect(scanner.report.passed?).to eq(false)
 
         info = scanner.report.to_h.fetch(:info)
+        logs = scanner.report.to_h.fetch(:logs)
 
-        expect(info[:stdout]).not_to eq(nil)
-        expect(info[:stdout]).not_to eq("")
-        expect(info[:brakeman_report][:warnings][0][:warning_type]).to eq('Dangerous Eval')
+        expect(info[:stdout]).not_to be_nil
+        expect(info[:stdout]).not_to be_empty
+        expect(logs).to include('Dangerous Eval')
       end
     end
   end

@@ -23,7 +23,7 @@ describe Salus::Scanners::NodeAudit do
 
           expect(scanner.report.passed?).to eq(false)
           info = scanner.report.to_h.fetch(:info)
-          expect(info.key?("#{klass_snake_str}_output".to_sym)).to eq(true)
+          expect(info.key?(:stdout)).to eq(true)
           expect(info).to include(
             prod_advisories: %w[39 48],
             dev_advisories: [],
@@ -44,7 +44,7 @@ describe Salus::Scanners::NodeAudit do
           expect(scanner.report.passed?).to eq(true)
 
           info = scanner.report.to_h.fetch(:info)
-          expect(info.key?("#{klass_snake_str}_output".to_sym)).to eq(true)
+          expect(info.key?(:stdout)).to eq(true)
           expect(info).to include(
             prod_advisories: [],
             dev_advisories: [],
@@ -66,7 +66,7 @@ describe Salus::Scanners::NodeAudit do
 
           expect(scanner.report.passed?).to eq(true)
           info = scanner.report.to_h.fetch(:info)
-          expect(info.key?("#{klass_snake_str}_output".to_sym)).to eq(true)
+          expect(info.key?(:stdout)).to eq(true)
           expect(info).to include(
             prod_advisories: %w[39 48],
             dev_advisories: [],

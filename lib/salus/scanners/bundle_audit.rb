@@ -19,7 +19,14 @@ module Salus::Scanners
       scanner = Bundler::Audit::Scanner.new(@repository.path_to_repo)
 
       vulns = []
-      scanner.scan(ignore: ignore) { |result| vulns.push(serialize_vuln(result)) }
+      scanner.scan(ignore: ignore) do |result|
+        hash = serialize_vuln(result)
+        vulns.push(hash)
+
+        # TODO: we should tabulate these vulnerabilities in the same way
+        # that we tabulate CVEs for Node packages - see NodeAudit scanner.
+        log(JSON.pretty_generate(hash))
+      end
 
       report_info(:ignored_cves, ignore)
       report_info(:vulnerabilities, vulns)

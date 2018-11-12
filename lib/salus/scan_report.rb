@@ -92,7 +92,7 @@ module Salus
         output += "\n\n ~~ Scanner Logs:\n\n#{logs.chomp}"
       end
 
-      if !@info.empty? && (verbose || !passed?)
+      if !@info.empty? && verbose
         stringified_info = indent(wrapify(JSON.pretty_generate(@info), indented_wrap))
         output += "\n\n ~~ Metadata:\n\n#{stringified_info}".chomp
       end

@@ -21,6 +21,6 @@ scanner_configs:
         message: All repos must contain a documented threat model.
         required: true
         exclude_extension:
-          - .rb
-          - .js
+          - rb
+          - js
 ```
