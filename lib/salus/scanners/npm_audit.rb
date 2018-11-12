@@ -30,7 +30,7 @@ module Salus::Scanners
         raise message
       end
 
-      report_info(:npm_audit_output, json)
+      report_stdout(json)
 
       json.fetch(:advisories).values
     end

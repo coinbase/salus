@@ -93,9 +93,13 @@ module Salus::Scanners
 
       report_info(:hits, all_hits)
       errors.each { |error| report_error('Call to sift failed', error) }
-      report_info(:failure_messages, failure_messages)
 
-      failure_messages.empty? ? report_success : report_failure
+      if failure_messages.empty?
+        report_success
+      else
+        report_failure
+        failure_messages.each { |message| log(message) }
+      end
     end
 
     def should_run?

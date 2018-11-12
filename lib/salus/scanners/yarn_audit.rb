@@ -31,7 +31,7 @@ module Salus::Scanners
         raise error_lines.join("\n")
       end
 
-      report_info(:yarn_audit_output, command_output.stdout)
+      report_stdout(command_output.stdout)
 
       command_output.stdout.split("\n")[0..-2].map do |raw_advisory|
         advisory_hash = JSON.parse(raw_advisory, symbolize_names: true)

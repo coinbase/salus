@@ -27,7 +27,7 @@ module Salus::Scanners
         if shell_return.status == 3
           report_failure
           report_stdout(shell_return.stdout)
-          report_info(:brakeman_report, JSON.parse(shell_return.stdout, symbolize_names: true))
+          log(shell_return.stdout)
         else
           report_error(
             "brakeman exited with an unexpected exit status",

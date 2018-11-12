@@ -134,8 +134,7 @@ describe Salus::Scanners::PatternSearch do
 
         expect(scanner.report.passed?).to eq(false)
 
-        failure_messages = scanner.report.to_h.fetch(:info).fetch(:failure_messages)
-
+        failure_messages = scanner.report.to_h.fetch(:logs)
         expect(failure_messages)
           .to include('Required pattern "Tokyo3" was not found - current location')
       end

@@ -13,7 +13,8 @@ __Available Methods:__
 - `#run_shell(command, env: {}, stdin_data: '')` - used to run shell commands in the container, useful for executing a scanner.
 - `#report_success` - adds to the report the fact that this scan was successful (found no vulnerabilities).
 - `#report_failure` - adds to the report the fact that this scan was unsuccessful (found a vulnerability).
-- `#report_info(type, message)` - adds data to the report that is useful to track.
+- `#log`- adds data to the report and is shown in normal (not verbose) mode. This method should be used to show the developer information that they can act on to fix any security issues found from the scan.
+- `#report_info(type, message)` - adds data to the report and is only shown to the developer in verbose mode. This method is primarily used for information that will be parsed by a Salus report consumer.
 - `#report_stdout(stdout)` - adds the STDOUT of the scanner to the report.
 - `#report_stderr(stderr)` - adds the STDERR of the scanner to the report.
 - `#report_error(error_data)` - adds an error encountered while scanning to the report.
