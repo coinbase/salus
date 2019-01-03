@@ -1,4 +1,4 @@
-FROM ruby:2.4.4@sha256:99d10d192ac1df0873480b1e0262ff0295a15f1d97e5b7bd111a7bf61a808acc
+FROM ruby:2.4.5@sha256:dd40c9f70dd028d0df8c7f7fa636daf2fc7ac1f4919562b68c60691b99714e05
 MAINTAINER security@coinbase.com
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -65,6 +65,7 @@ WORKDIR /home
 
 # ruby gems
 COPY Gemfile Gemfile.lock /home/
+RUN gem update --system
 RUN bundle install --deployment --without development:test
 
 # node modules
