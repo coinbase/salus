@@ -7,7 +7,8 @@ jobs:
       - checkout
       # Ruby
       - run: rvm uninstall 2.3.1 # we will point to this version unless we uninstall it
-      - run: rvm use 2.4.4
+      - run: rvm use 2.4.5
+      - run: gem update --system
       - run: gem install bundler
       - run: bundle install
       - run: bundle-audit update
@@ -26,7 +27,7 @@ jobs:
       - run: docker run -t -v $(pwd):/home/repo coinbase/salus
   rubocop:
     docker:
-      - image: ruby:2.4.4@sha256:99d10d192ac1df0873480b1e0262ff0295a15f1d97e5b7bd111a7bf61a808acc
+      - image: ruby:2.4.5@sha256:dd40c9f70dd028d0df8c7f7fa636daf2fc7ac1f4919562b68c60691b99714e05
     steps:
       - run: apt-get update
       - run: apt-get install -y cmake

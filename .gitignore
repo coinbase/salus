@@ -14,5 +14,6 @@ coverage/
 # Salus output
 salus_report.json
 
-# node modules
+# node
 node_modules
+yarn-error.log
