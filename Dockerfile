@@ -29,7 +29,7 @@ ENV LC_ALL C.UTF-8
 # Using node version 8.12.0 since it's the latest LTS.
 ENV NODE_VERSION 8.12.0
 ENV NPM_VERSION 6.4.1
-ENV YARN_VERSION 1.12.1
+ENV YARN_VERSION 1.12.3
 ENV NPM_CONFIG_LOGLEVEL info
 
 # Downloaded from https://nodejs.org/en/download/
