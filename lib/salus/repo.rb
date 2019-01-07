@@ -13,6 +13,8 @@ module Salus
       { handle: :npmrc, filename: '.npmrc' },
       # Go
       { handle: :dep_lock, filename: 'Gopkg.lock' },
+      { handle: :go_mod, filename: 'go.mod' },
+      { handle: :go_sum, filename: 'go.sum' },
       # Python
       { handle: :requirements_txt, filename: 'requirements.txt' }
     ].freeze

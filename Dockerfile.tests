@@ -9,6 +9,9 @@ FROM salus-local
 
 COPY spec /home/spec
 
+# Symlink for gosec testing
+RUN ln -s /home/spec $GOPATH/src/repo/spec
+
 RUN bundle install --with test
 
 ENTRYPOINT ["bundle", "exec", "rspec", "--format", "documentation", "spec/"]
