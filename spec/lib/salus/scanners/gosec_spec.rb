@@ -43,7 +43,7 @@ describe Salus::Scanners::Gosec do
     context 'go project with no known vulnerabilities' do
       let(:repo) { Salus::Repo.new('spec/fixtures/gosec/safe_goapp') }
 
-      it 'should record failure and record the STDOUT from gosec' do
+      it 'should report a passing scan' do
         expect(scanner.report.passed?).to eq(true)
       end
     end
