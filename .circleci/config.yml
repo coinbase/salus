@@ -2,24 +2,11 @@ version: 2
 jobs:
   tests:
     machine: true
-    shell: /bin/bash --login -eo pipefail # needed to use rvm
     steps:
       - checkout
-      # Ruby
-      - run: rvm uninstall 2.3.1 # we will point to this version unless we uninstall it
-      - run: rvm use 2.4.5
-      - run: gem update --system
-      - run: gem install bundler
-      - run: bundle install
-      - run: bundle-audit update
-      # Node
-      - run: npm install -g npm
-      - run: npm install -g yarn
-      - run: npm install
-      # Go
-      - run: go get github.com/svent/sift
-      # install & tests
-      - run: bundle exec rspec --format documentation
+      - run: docker build -t salus-local .
+      - run: docker build -f Dockerfile.tests -t salus-integration-tests .
+      - run: docker run salus-integration-tests
   salus:
     machine: true
     steps:
