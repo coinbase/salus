@@ -1,13 +1,15 @@
 version: 2
 jobs:
   tests:
-    machine: true
+    docker:
+      - image: circleci/ruby:2.4.5
     steps:
       - checkout
+      - setup_remote_docker
       - run: docker build -t salus-local .
       - run: docker build -f Dockerfile.tests -t salus-tests .
       - run: docker run salus-tests
-      - run: bundle install
+      - run: sudo apt-get update && sudo apt-get install cmake && bundle install
       - run: bundle exec bin/integration_test
   salus:
     machine: true
@@ -16,13 +18,10 @@ jobs:
       - run: docker run -t -v $(pwd):/home/repo coinbase/salus
   rubocop:
     docker:
-      - image: ruby:2.4.5@sha256:dd40c9f70dd028d0df8c7f7fa636daf2fc7ac1f4919562b68c60691b99714e05
+      - image: circleci/ruby:2.4.5
     steps:
-      - run: apt-get update
-      - run: apt-get install -y cmake
       - checkout
-      - run: gem install bundler
-      - run: bundle install
+      - run: sudo apt-get update && sudo apt-get install cmake && bundle install
       - run: bundle exec rubocop
 
 workflows:
