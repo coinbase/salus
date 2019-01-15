@@ -1,16 +1,13 @@
 version: 2
 jobs:
   tests:
-    docker:
-      - image: circleci/ruby:2.4.5
+    machine: true
     steps:
       - checkout
-      - setup_remote_docker
       - run: docker build -t salus-local .
       - run: docker build -f Dockerfile.tests -t salus-tests .
       - run: docker run salus-tests
-      - run: sudo apt-get update && sudo apt-get install cmake && bundle install
-      - run: bundle exec bin/integration_test
+      - run: bin/integration_test
   salus:
     machine: true
     steps:
