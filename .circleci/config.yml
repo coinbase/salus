@@ -5,8 +5,10 @@ jobs:
     steps:
       - checkout
       - run: docker build -t salus-local .
-      - run: docker build -f Dockerfile.tests -t salus-integration-tests .
-      - run: docker run salus-integration-tests
+      - run: docker build -f Dockerfile.tests -t salus-tests .
+      - run: docker run salus-tests
+      - run: bundle install
+      - run: bundle exec bin/integration_test
   salus:
     machine: true
     steps:
