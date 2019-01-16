@@ -15,7 +15,7 @@ jobs:
       - run: docker run -t -v $(pwd):/home/repo coinbase/salus
   rubocop:
     docker:
-      - image: circleci/ruby:2.4.5
+      - image: circleci/ruby@sha256:1ccae24ed82562a9a9fb03dcab424250dd1bc58d45c205a621d1546ef2553ca8
     steps:
       - checkout
       - run: sudo apt-get update && sudo apt-get install cmake && bundle install
