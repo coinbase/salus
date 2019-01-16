@@ -4,7 +4,7 @@ require 'open3'
 require 'json'
 
 # The incantation with which you would run salus in production
-SALUS_COMMAND = 'docker run -et --rm -v $(pwd):/home/repo salus-local'.freeze
+SALUS_COMMAND = 'docker run -t --rm -v $(pwd):/home/repo salus-local'.freeze
 
 FIXTURE_DIR = 'spec/fixtures/integration'.freeze
 
