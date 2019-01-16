@@ -1,0 +1,56 @@
+#!/usr/bin/env ruby
+
+require 'open3'
+require 'json'
+
+# The incantation with which you would run salus in production
+SALUS_COMMAND = 'docker run -t --rm -v $(pwd):/home/repo salus-local'.freeze
+
+FIXTURE_DIR = 'spec/fixtures/integration'.freeze
+
+stdout, stderr, status = Dir.chdir(FIXTURE_DIR) { Open3.capture3(SALUS_COMMAND) }
+
+if !status.success?
+  puts("`#{SALUS_COMMAND}` failed (status #{status.exitstatus})")
+  puts("==== STDOUT ====\n#{stdout}")
+  puts("==== STDERR ====\n#{stderr}")
+  exit(1)
+end
+
+puts("`#{SALUS_COMMAND}` ran cleanly")
+
+report_path = "#{FIXTURE_DIR}/reports/salus_report.json"
+expected_report_path = "#{FIXTURE_DIR}/expected_report.json"
+
+begin
+  report = JSON.parse(File.read(report_path))
+rescue StandardError
+  puts("Missing or malformed #{report_path} (should have been populated by Salus run)")
+  exit(1)
+end
+
+begin
+  expected_report = JSON.parse(File.read(expected_report_path))
+rescue StandardError
+  puts("Missing or malformed #{expected_report_path}")
+  exit(1)
+end
+
+# Running time is nondeterministic, so just zero it out
+report['running_time'] = 0.0
+report['scans'].map { |_, scan| scan['running_time'] = 0.0 }
+
+if report != expected_report
+  puts("Report doesn't match expectation")
+  puts("Expected:\n#{JSON.pretty_generate(expected_report)}")
+  puts("Found:\n#{JSON.pretty_generate(report)}")
+  exit(1)
+end
+
+begin
+  File.delete(report_path)
+rescue StandardError
+  nil
+end
+
+puts("OK")

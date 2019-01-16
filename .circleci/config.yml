@@ -2,24 +2,12 @@ version: 2
 jobs:
   tests:
     machine: true
-    shell: /bin/bash --login -eo pipefail # needed to use rvm
     steps:
       - checkout
-      # Ruby
-      - run: rvm uninstall 2.3.1 # we will point to this version unless we uninstall it
-      - run: rvm use 2.4.5
-      - run: gem update --system
-      - run: gem install bundler
-      - run: bundle install
-      - run: bundle-audit update
-      # Node
-      - run: npm install -g npm
-      - run: npm install -g yarn
-      - run: npm install
-      # Go
-      - run: go get github.com/svent/sift
-      # install & tests
-      - run: bundle exec rspec --format documentation
+      - run: docker build -t salus-local .
+      - run: docker build -f Dockerfile.tests -t salus-tests .
+      - run: docker run salus-tests
+      - run: bin/integration_test
   salus:
     machine: true
     steps:
@@ -27,13 +15,10 @@ jobs:
       - run: docker run -t -v $(pwd):/home/repo coinbase/salus
   rubocop:
     docker:
-      - image: ruby:2.4.5@sha256:dd40c9f70dd028d0df8c7f7fa636daf2fc7ac1f4919562b68c60691b99714e05
+      - image: circleci/ruby@sha256:1ccae24ed82562a9a9fb03dcab424250dd1bc58d45c205a621d1546ef2553ca8
     steps:
-      - run: apt-get update
-      - run: apt-get install -y cmake
       - checkout
-      - run: gem install bundler
-      - run: bundle install
+      - run: sudo apt-get update && sudo apt-get install cmake && bundle install
       - run: bundle exec rubocop
 
 workflows:
