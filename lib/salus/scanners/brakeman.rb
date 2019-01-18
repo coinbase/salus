@@ -19,12 +19,12 @@ module Salus::Scanners
         #
         # Brakeman has the following behavior that we will track:
         #   - no vulns found - exit 0 and log to STDOUT
-        #   - vulns found    - exit 3 and log to STDOUT
+        #   - vulns found    - exit 3 (warning) or 7 (error) and log to STDOUT
         #   - exception      - exit 1 and log to STDERR
 
         return report_success if shell_return.success?
 
-        if shell_return.status == 3
+        if shell_return.status == 3 || shell_return.status == 7
           report_failure
           report_stdout(shell_return.stdout)
           log(shell_return.stdout)

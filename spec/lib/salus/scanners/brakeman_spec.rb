@@ -18,8 +18,8 @@ describe Salus::Scanners::Brakeman do
       end
     end
 
-    context 'rails project with vulnerabilities' do
-      it 'should record failure and record the STDOUT from brakeman' do
+    context 'brakeman warnings or errors' do
+      it 'should fail if a potential vulnerability is detected in the repo' do
         repo = Salus::Repo.new('spec/fixtures/brakeman/vulnerable_rails_app')
 
         scanner = Salus::Scanners::Brakeman.new(repository: repo, config: {})
@@ -33,6 +33,22 @@ describe Salus::Scanners::Brakeman do
         expect(info[:stdout]).not_to be_nil
         expect(info[:stdout]).not_to be_empty
         expect(logs).to include('Dangerous Eval')
+      end
+
+      it 'should fail if brakeman encounters a parse error' do
+        repo = Salus::Repo.new('spec/fixtures/brakeman/rails_app_with_syntax_error')
+
+        scanner = Salus::Scanners::Brakeman.new(repository: repo, config: {})
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+        logs = scanner.report.to_h.fetch(:logs)
+
+        expect(info[:stdout]).not_to be_nil
+        expect(info[:stdout]).not_to be_empty
+        expect(logs).to include('parse error')
       end
     end
   end

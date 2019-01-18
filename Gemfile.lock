@@ -10,7 +10,7 @@ GEM
       public_suffix (~> 2.0, >= 2.0.2)
     ast (2.4.0)
     blankslate (2.1.2.4)
-    brakeman (4.0.1)
+    brakeman (4.4.0)
     bugsnag (4.2.1)
     bundler-audit (0.6.0)
       bundler (~> 1.2)
@@ -104,7 +104,7 @@ PLATFORMS
 
 DEPENDENCIES
   activesupport (~> 5.2, >= 5.2.1)
-  brakeman (~> 4.0)
+  brakeman (~> 4.4)
   bugsnag (~> 4.0)
   bundler (~> 1.15)
   bundler-audit (~> 0.6)
