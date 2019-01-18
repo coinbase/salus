@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 ruby '2.4.5'
 
 gem 'activesupport', '~> 5.2', '>= 5.2.1'
-gem 'brakeman', '~> 4.0'
+gem 'brakeman', '~> 4.4'
 gem 'bugsnag', '~> 4.0'
 gem 'bundler', '~> 1.15'
 gem 'bundler-audit', '~> 0.6'
