@@ -1,7 +1,7 @@
 FROM ruby:2.4.5@sha256:dd40c9f70dd028d0df8c7f7fa636daf2fc7ac1f4919562b68c60691b99714e05
 MAINTAINER security@coinbase.com
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get install -y --no-install-recommends \
     g++ \
     gcc \
     libc6-dev \
