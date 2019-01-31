@@ -10,12 +10,12 @@ module Salus::Scanners
       #   - gosec only successfully scans repos within $GOPATH, we
       #     recurssively copy project into a gopath
       run_shell("cp -R /home/repo /go/src")
-      if ENV['RUNNING_SALUS_TESTS'] == "true"
-        # specify path as there are many go projects inside of /repo
-        shell_return = run_shell("gosec -fmt=json /go/src/repo/#{@repository.path_to_repo}")
-      else
-        shell_return = run_shell("gosec -fmt=json /go/src/repo/...")
-      end
+      shell_return = if ENV['RUNNING_SALUS_TESTS'] == "true"
+                       # specify path as there are many go projects inside of /repo
+                       run_shell("gosec -fmt=json /go/src/repo/#{@repository.path_to_repo}")
+                     else
+                       run_shell("gosec -fmt=json /go/src/repo/...")
+                     end
 
       # Gosec's Logging Behavior:
       #   - no vulns found - status 0, logs to STDERR and STDOUT
@@ -23,12 +23,11 @@ module Salus::Scanners
       #   - build error    - status 1, logs to STDERR only
       return report_success if shell_return.success?
 
+      report_failure
       if shell_return.status == 1 && !shell_return.stdout.blank? && shell_return.stderr
-        report_failure
         report_stdout(shell_return.stdout)
         log(shell_return.stdout)
       else
-        report_failure
         report_error(
           "gosec exited with build error: #{shell_return.stderr}",
           status: shell_return.status
@@ -46,7 +45,7 @@ module Salus::Scanners
     end
 
     def go_file?
-      !(Dir.glob("#{@repository.path_to_repo}/*.go").first.nil?)
+      !Dir.glob("#{@repository.path_to_repo}/*.go").first.nil?
     end
   end
 end
