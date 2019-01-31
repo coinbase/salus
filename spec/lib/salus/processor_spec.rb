@@ -27,6 +27,7 @@ describe Salus::Processor do
           expect(reported_config[:active_scanners]).to include(
             'BundleAudit',
             'Brakeman',
+            'Gosec',
             'PatternSearch',
             'ReportGoDep',
             'ReportNodeModules',

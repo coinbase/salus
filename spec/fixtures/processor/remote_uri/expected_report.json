@@ -34,6 +34,7 @@
     "active_scanners": [
       "Brakeman",
       "BundleAudit",
+      "Gosec",
       "NPMAudit",
       "PatternSearch",
       "RepoNotEmpty",
@@ -46,6 +47,7 @@
     "enforced_scanners": [
       "Brakeman",
       "BundleAudit",
+      "Gosec",
       "NPMAudit",
       "PatternSearch",
       "RepoNotEmpty",
@@ -56,6 +58,9 @@
         "pass_on_raise": false
       },
       "BundleAudit": {
+        "pass_on_raise": false
+      },
+      "Gosec": {
         "pass_on_raise": false
       },
       "NPMAudit": {

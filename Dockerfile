@@ -76,8 +76,14 @@ RUN yarn
 RUN bundle exec bundle-audit update
 
 # More powerful grep alternative - https://sift-tool.org/
-# Used in PaternSearch scanner.
+# Used in PatternSearch scanner.
 RUN go get github.com/svent/sift
+
+# Install gosec, static code vulnerability checker
+RUN go get github.com/securego/gosec/cmd/gosec/...
+
+# Make repo directory to copy go project into when running gosec
+RUN mkdir -p $GOPATH/src/repo
 
 # copy salus code
 COPY bin /home/bin
