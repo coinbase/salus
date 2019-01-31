@@ -82,8 +82,8 @@ RUN go get github.com/svent/sift
 # Install gosec, static code vulnerability checker
 RUN go get github.com/securego/gosec/cmd/gosec/...
 
-# Symlink since gosec only runs projects within $GOPATH
-RUN ln -s /home/repo $GOPATH/src/repo
+# Make repo directory to copy go project into when running gosec
+RUN mkdir -p $GOPATH/src/repo
 
 # copy salus code
 COPY bin /home/bin

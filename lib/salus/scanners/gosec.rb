@@ -7,12 +7,14 @@ module Salus::Scanners
     def run
       # Shell Instructions:
       #   - -fmt=json for JSON output
-      #   - gosec only successfully scans repos within $GOPATH, we force the
-      #     go path reference via symlink within Dockerfile & Dockerfile.tests
+      #   - gosec only successfully scans repos within $GOPATH, we
+      #     recurssively copy project into a gopath
+      run_shell("cp -R /home/repo /go/src")
       if ENV['RUNNING_SALUS_TESTS'] == "true"
+        # specify path as there are many go projects inside of /repo
         shell_return = run_shell("gosec -fmt=json /go/src/repo/#{@repository.path_to_repo}")
       else
-        shell_return = run_shell("gosec -fmt=json /go/src/repo")
+        shell_return = run_shell("gosec -fmt=json /go/src/repo/...")
       end
 
       # Gosec's Logging Behavior:
