@@ -55,6 +55,9 @@
       "BundleAudit": {
         "pass_on_raise": false
       },
+      "Gosec": {
+        "pass_on_raise": false
+      },
       "NPMAudit": {
         "pass_on_raise": false
       },
