@@ -85,5 +85,16 @@ describe Salus::Scanners::Brakeman do
         expect(scanner.should_run?).to eq(true)
       end
     end
+
+    context 'Gemfile present with rails gem but no rails app' do
+      it 'should return false' do
+        repo = Salus::Repo.new('spec/fixtures/brakeman/ruby_app_with_rails_gem')
+        expect(repo.gemfile_present?).to eq(true)
+        expect(repo.gemfile).to match(/('|")rails('|")/)
+
+        scanner = Salus::Scanners::Brakeman.new(repository: repo, config: {})
+        expect(scanner.should_run?).to eq(false)
+      end
+    end
   end
 end
