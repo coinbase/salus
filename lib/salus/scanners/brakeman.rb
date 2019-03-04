@@ -39,7 +39,7 @@ module Salus::Scanners
     end
 
     def should_run?
-      @repository.gemfile_present? && has_rails_gem?
+      @repository.gemfile_present? && has_rails_gem? && has_app_dir?
     end
 
     private
@@ -50,6 +50,10 @@ module Salus::Scanners
       Bundler::Definition.build(gemfile_path, gemfile_lock_path, nil)
         .dependencies.map(&:name)
         .include?('rails')
+    end
+
+    def has_app_dir?
+      Dir.exist?(File.join(@repository.path_to_repo, 'app'))
     end
   end
 end
