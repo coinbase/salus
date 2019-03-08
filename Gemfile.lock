@@ -108,7 +108,7 @@ DEPENDENCIES
   activesupport (~> 5.2, >= 5.2.1)
   brakeman (~> 4.4)
   bugsnag (~> 4.0)
-  bundler (~> 2.0)
+  bundler (~> 1.15)
   bundler-audit (~> 0.6)
   faraday (~> 0.9)
   github-linguist (~> 6.0.1)
@@ -127,4 +127,4 @@ RUBY VERSION
    ruby 2.4.5p335
 
 BUNDLED WITH
-   2.0.1
+   1.17.3
