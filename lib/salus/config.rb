@@ -35,8 +35,8 @@ module Salus
       'pass_on_raise' => false # strong default - if a scanner raises, it counts as failure.
     }.freeze
 
-    LOCAL_FILE_SCHEME_REGEX = /\Afile\z/ # like file://foobar
-    REMOTE_URI_SCHEME_REGEX = /\Ahttps?\z/
+    LOCAL_FILE_SCHEME_REGEX = /\Afile\z/.freeze # like file://foobar
+    REMOTE_URI_SCHEME_REGEX = /\Ahttps?\z/.freeze
     REPORT_FORMATS = %w[txt json yaml].freeze
 
     def initialize(configuration_files = [])

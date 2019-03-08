@@ -4,22 +4,22 @@ module Salus
     INDENT_STRING = (' ' * INDENT_SIZE).freeze
 
     TABLE_BORDER_CHARS = {
-      top_mid:      '┬',
-      top_left:     '┌',
-      top_right:    '┐',
-      bottom_mid:   '┴',
-      bottom_left:  '└',
+      top_mid: '┬',
+      top_left: '┌',
+      top_right: '┐',
+      bottom_mid: '┴',
+      bottom_left: '└',
       bottom_right: '┘',
-      left_mid:     '├',
-      right_mid:    '┤',
-      horizontal:   '─',
-      vertical:     '│',
-      cross:        '┼'
+      left_mid: '├',
+      right_mid: '┤',
+      horizontal: '─',
+      vertical: '│',
+      cross: '┼'
     }.freeze
 
     COLOR_CODES = {
-      red:    31,
-      green:  32,
+      red: 31,
+      green: 32,
       yellow: 33
     }.freeze
 
@@ -69,6 +69,7 @@ module Salus
       max_lengths = (0...n_columns).map do |index|
         lengths = table.map do |row|
           next -1 if index >= row.length
+
           uncolorize(row[index]).length
         end
 
@@ -126,6 +127,7 @@ module Salus
 
     def colorize(string, color)
       return string if color.nil?
+
       "\e[#{COLOR_CODES.fetch(color)}m#{string}\e[0m"
     end
 

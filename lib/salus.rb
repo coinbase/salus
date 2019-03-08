@@ -55,6 +55,7 @@ module Salus
         processor.export_report
       rescue StandardError => e
         raise e if ENV['RUNNING_SALUS_TESTS']
+
         puts "Could not send Salus report: (#{e.class}: #{e.message})"
       end
 
