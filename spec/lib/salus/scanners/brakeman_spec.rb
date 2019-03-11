@@ -51,6 +51,13 @@ describe Salus::Scanners::Brakeman do
         expect(logs).to include('parse error')
       end
     end
+
+    it 'runs cleanly against a project bundled with Bundler 2' do
+      repo = Salus::Repo.new('spec/fixtures/brakeman/bundler_2')
+      scanner = Salus::Scanners::Brakeman.new(repository: repo, config: {})
+      scanner.run
+      expect(scanner.report.passed?).to eq(true)
+    end
   end
 
   describe '#should_run?' do
