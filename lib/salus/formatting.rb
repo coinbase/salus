@@ -3,19 +3,21 @@ module Salus
     INDENT_SIZE = 2
     INDENT_STRING = (' ' * INDENT_SIZE).freeze
 
+    # rubocop:disable Layout/AlignHash
     TABLE_BORDER_CHARS = {
-      top_mid: '┬',
-      top_left: '┌',
-      top_right: '┐',
-      bottom_mid: '┴',
-      bottom_left: '└',
+      top_mid:      '┬',
+      top_left:     '┌',
+      top_right:    '┐',
+      bottom_mid:   '┴',
+      bottom_left:  '└',
       bottom_right: '┘',
-      left_mid: '├',
-      right_mid: '┤',
-      horizontal: '─',
-      vertical: '│',
-      cross: '┼'
+      left_mid:     '├',
+      right_mid:    '┤',
+      horizontal:   '─',
+      vertical:     '│',
+      cross:        '┼'
     }.freeze
+    # rubocop:enable Layout/AlignHash
 
     COLOR_CODES = {
       red: 31,
