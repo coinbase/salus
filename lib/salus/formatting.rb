@@ -69,6 +69,7 @@ module Salus
       max_lengths = (0...n_columns).map do |index|
         lengths = table.map do |row|
           next -1 if index >= row.length
+
           uncolorize(row[index]).length
         end
 
@@ -126,6 +127,7 @@ module Salus
 
     def colorize(string, color)
       return string if color.nil?
+
       "\e[#{COLOR_CODES.fetch(color)}m#{string}\e[0m"
     end
 

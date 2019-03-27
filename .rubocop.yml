@@ -72,3 +72,9 @@ Style/Next:
 
 Style/ClassVars:
   Enabled: false
+
+Layout/AlignHash:
+  Enabled: false
+
+Lint/ToJSON:
+  Enabled: false
