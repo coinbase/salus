@@ -12,8 +12,8 @@ GEM
     blankslate (2.1.2.4)
     brakeman (4.4.0)
     bugsnag (4.2.1)
-    bundler-audit (0.6.0)
-      bundler (~> 1.2)
+    bundler-audit (0.6.1)
+      bundler (>= 1.2.0, < 3)
       thor (~> 0.18)
     byebug (9.0.6)
     charlock_holmes (0.7.6)
@@ -106,8 +106,8 @@ DEPENDENCIES
   activesupport (~> 5.2, >= 5.2.1)
   brakeman (~> 4.4)
   bugsnag (~> 4.0)
-  bundler (~> 1.15)
-  bundler-audit (~> 0.6)
+  bundler (~> 2)
+  bundler-audit (~> 0.6.1)
   faraday (~> 0.9)
   github-linguist (~> 6.0.1)
   pry (~> 0.10)
@@ -125,4 +125,4 @@ RUBY VERSION
    ruby 2.4.5p335
 
 BUNDLED WITH
-   1.17.3
+   2.0.1

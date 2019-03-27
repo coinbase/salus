@@ -1,4 +1,4 @@
-FROM ruby:2.4.5@sha256:dd40c9f70dd028d0df8c7f7fa636daf2fc7ac1f4919562b68c60691b99714e05
+FROM ruby:2.4.5@sha256:a7a0a7c4dc2ea0ec483b52e9c30d360460c18cce04cebdaaba2aa0b94f9b0755
 MAINTAINER security@coinbase.com
 
 RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get install -y --no-install-recommends \
@@ -62,6 +62,9 @@ RUN mkdir -p "$GOPATH/src" "$GOPATH/bin"
 # make the folder for the repo (volumed in)
 RUN mkdir -p /home/repo
 WORKDIR /home
+
+# make sure we're on latest bundler
+RUN gem install bundler
 
 # ruby gems
 COPY Gemfile Gemfile.lock /home/

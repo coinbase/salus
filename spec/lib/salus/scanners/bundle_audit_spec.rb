@@ -15,6 +15,13 @@ describe Salus::Scanners::BundleAudit do
       scanner.run
     end
 
+    it 'runs cleanly against a project bundled with Bundler 2' do
+      repo = Salus::Repo.new('spec/fixtures/bundle_audit/bundler_2')
+      scanner = Salus::Scanners::BundleAudit.new(repository: repo, config: {})
+      scanner.run
+      expect(scanner.report.passed?).to eq(true)
+    end
+
     context 'CVEs in Gemfile.lock' do
       it 'should record failure and record the STDOUT from bundle-audit' do
         # TODO: create fake placeholder gems but such that you can actually bundle install them.
