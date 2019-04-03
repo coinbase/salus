@@ -37,7 +37,7 @@ describe Salus::Scanners::BundleAudit do
 
         expect(vuln[:name]).to eq('actionview')
         expect(vuln[:version]).to eq('4.1.15')
-        expect(vuln[:cve]).to eq('CVE-2016-6316')
+        expect(vuln[:cve]).to include('CVE-')
         expect(vuln[:cvss]).to eq(nil)
       end
     end
