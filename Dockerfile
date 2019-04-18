@@ -83,6 +83,9 @@ RUN bundle exec bundle-audit update
 RUN go get github.com/svent/sift
 
 # Install gosec, static code vulnerability checker
+RUN go get -d github.com/securego/gosec/cmd/gosec/...
+# The commit hashes to gosec tag 1.2.0
+RUN cd $GOPATH/src/github.com/securego/gosec/ && git checkout 2695567487c0f23a8f152b9740571d9a0f08f243 && cd /home
 RUN go get github.com/securego/gosec/cmd/gosec/...
 
 # Make repo directory to copy go project into when running gosec
