@@ -22,7 +22,8 @@ module Salus
       { handle: :go_mod, filename: 'go.mod' },
       { handle: :go_sum, filename: 'go.sum' },
       # Python
-      { handle: :requirements_txt, filename: 'requirements.txt' }
+      { handle: :requirements_txt, filename: 'requirements.txt' },
+      { handle: :setup_cfg, filename: 'setup.cfg' }
     ].freeze
 
     # Define file checkers.

@@ -88,6 +88,9 @@ RUN go get -d github.com/securego/gosec/cmd/gosec/...
 RUN cd $GOPATH/src/github.com/securego/gosec/ && git checkout 2695567487c0f23a8f152b9740571d9a0f08f243 && cd /home
 RUN go get github.com/securego/gosec/cmd/gosec/...
 
+# Install bandit, python static code scanner
+RUN pip install bandit==1.5.1
+
 # Make repo directory to copy go project into when running gosec
 RUN mkdir -p $GOPATH/src/repo
 
