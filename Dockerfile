@@ -42,20 +42,27 @@ RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-
   && npm install -g npm@$NPM_VERSION                                                        \
   && npm install -g yarn@$YARN_VERSION
 
-### GO - required for sift
-ENV GOLANG_VERSION 1.8.3
+### GO - required for sift and gosec
+ENV GO111MODULE on
+ENV GOLANG_VERSION 1.12.4
 ENV GOLANG_DOWNLOAD_URL https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz
-ENV GOLANG_DOWNLOAD_SHA256 1862f4c3d3907e59b04a757cfda0ea7aa9ef39274af99a784f5be843c80c6772
+ENV GOLANG_DOWNLOAD_SHA256 d7d1f1f88ddfe55840712dc1747f37a790cbcaa448f6c9cf51bbe10aa65442f5
+ENV SIFT_VERSION v0.9.0
+ENV GOSEC_VERSION 1.2.0
 
 RUN curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz \
   && echo "$GOLANG_DOWNLOAD_SHA256  golang.tar.gz" | sha256sum -c - \
   && tar -C /usr/local -xzf golang.tar.gz \
   && rm golang.tar.gz
 
-ENV GOPATH /go
-ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
+RUN ./usr/local/go/bin/go get github.com/svent/sift@$SIFT_VERSION \
+  && mv /root/go/bin/sift /usr/bin/
 
-RUN mkdir -p "$GOPATH/src" "$GOPATH/bin"
+RUN ./usr/local/go/bin/go get github.com/securego/gosec/cmd/gosec@$GOSEC_VERSION \
+  && mv /root/go/bin/gosec /usr/bin/
+
+RUN rm -rf /usr/local/go \
+  && rm -rf /root/go
 
 ### Salus
 
@@ -77,19 +84,6 @@ RUN yarn
 
 # prime the bundler-audit CVE DB
 RUN bundle exec bundle-audit update
-
-# More powerful grep alternative - https://sift-tool.org/
-# Used in PatternSearch scanner.
-RUN go get github.com/svent/sift
-
-# Install gosec, static code vulnerability checker
-RUN go get -d github.com/securego/gosec/cmd/gosec/...
-# The commit hashes to gosec tag 1.2.0
-RUN cd $GOPATH/src/github.com/securego/gosec/ && git checkout 2695567487c0f23a8f152b9740571d9a0f08f243 && cd /home
-RUN go get github.com/securego/gosec/cmd/gosec/...
-
-# Make repo directory to copy go project into when running gosec
-RUN mkdir -p $GOPATH/src/repo
 
 # copy salus code
 COPY bin /home/bin

@@ -9,13 +9,7 @@ module Salus::Scanners
       #   - -fmt=json for JSON output
       #   - gosec only successfully scans repos within $GOPATH, we
       #     recurssively copy project into a gopath
-      run_shell("cp -R /home/repo /go/src")
-      shell_return = if ENV['RUNNING_SALUS_TESTS'] == "true"
-                       # specify path as there are many go projects inside of /repo
-                       run_shell("gosec -fmt=json /go/src/repo/#{@repository.path_to_repo}")
-                     else
-                       run_shell("gosec -fmt=json /go/src/repo/...")
-                     end
+      shell_return = run_shell("gosec -fmt=json /home/repo/...")
 
       # Gosec's Logging Behavior:
       #   - no vulns found - status 0, logs to STDERR and STDOUT
