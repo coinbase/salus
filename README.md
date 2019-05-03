@@ -26,6 +26,16 @@ Salus is particularly useful for CI/CD pipelines because it becomes a centralize
 
 Salus supports powerful configuration that allows for global defaults and local tweaks. Finally, Salus can report metrics on each repository, such as what packages are included or what concerns exist. These reports can be centrally evaluated in your infrastructure to allow for scalable security tracking.
 
+## Using Salus in your Repo
+
+For your given CI, update the config file to run salus. In circle, it will look like this: 
+
+```sh
+docker run --rm -t -v $(pwd):/home/repo coinbase/salus
+```
+
+coinbase/salus pulls the docker image
+
 ## Supported Scanners
 
 - [BundleAudit](docs/scanners/bundle_audit.md) - Execution of [bundle-audit](https://github.com/rubysec/bundler-audit), looks for CVEs in ruby gem dependencies.
