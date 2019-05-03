@@ -15,10 +15,10 @@
 Salus, named after the [Roman goddess of protection](https://en.wikipedia.org/wiki/Salus), is a tool for coordinating the execution of security scanners. You can run Salus on a repository via the Docker daemon and it will determine which scanners are relevant, run them and provide the output. Most scanners are other mature open source projects which we include directly in the container.
 
 ```sh
-# Always run Salus from the root of your repository.
+# Navigate to the root directory of the project you want to run Salus on
 cd /path/to/repo
 
-# One line command to run Salus locally with default configuration.
+# Run the following line while in the root directory (No edits necessary)
 docker run --rm -t -v $(pwd):/home/repo coinbase/salus
 ```
 
