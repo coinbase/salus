@@ -1,4 +1,4 @@
-FROM ruby:2.4.5@sha256:a7a0a7c4dc2ea0ec483b52e9c30d360460c18cce04cebdaaba2aa0b94f9b0755
+FROM ruby:2.4.6@sha256:3a31984805c5ad3b54baeb93d2c01c46845f681b712394b02d2e860cb5d5946b
 MAINTAINER security@coinbase.com
 
 RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get install -y --no-install-recommends \
