@@ -15,8 +15,11 @@ scanner_configs:
         forbidden: true
         exclude_directory:
           - node_modules
-        exclude_extension:
-          - md
+        include_extension:
+          - js
+          - erb
+          - html
+          - htm
       - regex: "# Threat Model"
         message: All repos must contain a documented threat model.
         required: true
