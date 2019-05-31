@@ -194,6 +194,116 @@ describe Salus::Scanners::PatternSearch do
       end
     end
 
+    context 'global inclusions are given' do
+      it 'should search only through included material' do
+        repo = Salus::Repo.new('spec/fixtures/pattern_search')
+
+        config = {
+          'matches' => [
+            { regex: 'UN' },
+            { 'regex' => 'lance', 'forbidden' => true },
+            { regex: 'fancy'}
+          ],
+          'include_extension' => ['md']
+        }
+
+        scanner = Salus::Scanners::PatternSearch.new(repository: repo, config: config)
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(true)
+      end
+    end
+
+    context 'local inclusions are given' do
+      it 'should only search through included material' do
+        repo = Salus::Repo.new('spec/fixtures/pattern_search')
+
+        config = {
+          'matches' => [
+            { 'regex' => 'lance', 'forbidden' => true, 'include_extension' => ['md'] }
+          ]
+        }
+
+        scanner = Salus::Scanners::PatternSearch.new(repository: repo, config: config)
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(true)
+      end
+
+      it 'should not search through extensions not explicitly included' do
+        repo = Salus::Repo.new('spec/fixtures/pattern_search')
+
+        config = {
+          'matches' => [
+            { 'regex' => 'UN', 'include_extension' => ['md'] },
+            { 'regex' => 'fancy', 'include_extension' => ['md']  }
+          ]
+        }
+
+        scanner = Salus::Scanners::PatternSearch.new(repository: repo, config: config)
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(true)
+
+        info = scanner.report.to_h.fetch(:info)
+        expect(info[:hits].map { |hit| hit[:regex] }).to_not include('UN')
+        expect(info[:hits].map { |hit| hit[:regex] }).to include('fancy')
+      end
+
+      it 'should coexist with exclusions' do
+        repo = Salus::Repo.new('spec/fixtures/pattern_search')
+        config = {
+          'matches' => [
+            { 'regex' => 'fancy', 'include_extension' => ['md']  },
+            { 'regex' => 'lance', 'forbidden' => true, 'exclude_extension' => ['txt'], 'include_extension' => ['md'] }
+          ]
+        }
+
+        scanner = Salus::Scanners::PatternSearch.new(repository: repo, config: config)
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(true)
+
+        info = scanner.report.to_h.fetch(:info)
+        expect(info[:hits].map { |hit| hit[:regex] }).to include('fancy')
+      end
+
+      it 'should handle conflicting local exclusions' do
+        repo = Salus::Repo.new('spec/fixtures/pattern_search')
+        config = {
+          'matches' => [
+            { 'regex' => 'fancy', 'include_extension' => ['md'], 'exclude_extension' => ['md']  },
+            { 'regex' => 'lance', 'forbidden' => true, 'exclude_extension' => ['txt'], 'include_extension' => ['md'] }
+          ]
+        }
+
+        scanner = Salus::Scanners::PatternSearch.new(repository: repo, config: config)
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(true)
+        info = scanner.report.to_h.fetch(:info)
+        expect(info[:hits].map { |hit| hit[:regex] }).to_not include('fancy')
+      end
+
+      it 'should handle conflicting global exclusions' do
+        repo = Salus::Repo.new('spec/fixtures/pattern_search')
+        config = {
+          'matches' => [
+            { 'regex' => 'fancy', 'include_extension' => ['md']  },
+            { 'regex' => 'lance', 'forbidden' => true, 'include_extension' => ['md'] }
+          ],
+          'exclude_extension' => %w[txt md]
+        }
+
+        scanner = Salus::Scanners::PatternSearch.new(repository: repo, config: config)
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(true)
+        info = scanner.report.to_h.fetch(:info)
+        expect(info[:hits].map { |hit| hit[:regex] }).to_not include('fancy')
+      end
+    end
+
     context 'invalid regex or settings which causes error' do
       it 'should record the STDERR of bundle-audit' do
         repo = Salus::Repo.new('spec/fixtures/pattern_search')
