@@ -5,7 +5,9 @@ require 'salus/scanners/base'
 # Config file can provide:
 #   - exclude_directories: Array of directories (GLOB) in the repo to exclude from the search.
 #   - exclude_extensions: Array of file extensions to exclude from the search.
-#   The above can also be provided per-match, and will override the global values.
+#   - include_extensions: Array of file extensions to scan exclusively.
+#   The above can also be provided per-match, and will override the global values. Exclusions
+#   take precedence over inclusions if they conflict.
 #   - matches: Array[Hash]
 #       regex:       <regex>   (required)      regex to match against.
 #       forbidden:   <boolean> (default false) if true, a hit on this regex will fail the test.
