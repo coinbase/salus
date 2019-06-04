@@ -53,16 +53,14 @@ ENV GOSEC_VERSION 2.0.0
 RUN curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz \
   && echo "$GOLANG_DOWNLOAD_SHA256  golang.tar.gz" | sha256sum -c - \
   && tar -C /usr/local -xzf golang.tar.gz \
-  && rm golang.tar.gz
+  && rm golang.tar.gz \
+  && mv /usr/local/go/bin/go /usr/bin/
 
-RUN ./usr/local/go/bin/go get github.com/svent/sift@$SIFT_VERSION \
+RUN go get github.com/svent/sift@$SIFT_VERSION \
   && mv /root/go/bin/sift /usr/bin/
 
-RUN ./usr/local/go/bin/go get github.com/securego/gosec/cmd/gosec@$GOSEC_VERSION \
+RUN go get github.com/securego/gosec/cmd/gosec@$GOSEC_VERSION \
   && mv /root/go/bin/gosec /usr/bin/
-
-RUN rm -rf /usr/local/go \
-  && rm -rf /root/go
 
 ### Salus
 
