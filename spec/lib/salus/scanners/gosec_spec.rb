@@ -18,7 +18,7 @@ describe Salus::Scanners::Gosec do
         expect(
           info[:stderr]
         ).to include(
-          'blank_repository'  # debug information
+          'blank_repository' # debug information
         )
         expect(
           errors[:message]
