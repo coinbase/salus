@@ -15,10 +15,12 @@ jobs:
       - run: docker run -t -v $(pwd):/home/repo coinbase/salus
   rubocop:
     docker:
-      - image: circleci/ruby@sha256:1ccae24ed82562a9a9fb03dcab424250dd1bc58d45c205a621d1546ef2553ca8
+      - image: ruby:2.4.6@sha256:3a31984805c5ad3b54baeb93d2c01c46845f681b712394b02d2e860cb5d5946b
     steps:
       - checkout
-      - run: sudo apt-get update && sudo apt-get install cmake && bundle install
+      - run: apt-get update && apt-get install cmake -y
+      - run: gem install bundler
+      - run: bundle install
       - run: bundle exec rubocop
 
 workflows:

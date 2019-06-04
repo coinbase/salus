@@ -1,4 +1,4 @@
-FROM ruby:2.4.5@sha256:dd40c9f70dd028d0df8c7f7fa636daf2fc7ac1f4919562b68c60691b99714e05
+FROM ruby:2.4.6@sha256:3a31984805c5ad3b54baeb93d2c01c46845f681b712394b02d2e860cb5d5946b
 MAINTAINER security@coinbase.com
 
 RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get install -y --no-install-recommends \
@@ -63,6 +63,9 @@ RUN mkdir -p "$GOPATH/src" "$GOPATH/bin"
 RUN mkdir -p /home/repo
 WORKDIR /home
 
+# make sure we're on latest bundler
+RUN gem install bundler
+
 # ruby gems
 COPY Gemfile Gemfile.lock /home/
 RUN gem update --system
@@ -80,6 +83,9 @@ RUN bundle exec bundle-audit update
 RUN go get github.com/svent/sift
 
 # Install gosec, static code vulnerability checker
+RUN go get -d github.com/securego/gosec/cmd/gosec/...
+# The commit hashes to gosec tag 1.2.0
+RUN cd $GOPATH/src/github.com/securego/gosec/ && git checkout 2695567487c0f23a8f152b9740571d9a0f08f243 && cd /home
 RUN go get github.com/securego/gosec/cmd/gosec/...
 
 # Make repo directory to copy go project into when running gosec

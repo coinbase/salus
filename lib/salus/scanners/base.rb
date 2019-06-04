@@ -48,11 +48,11 @@ module Salus::Scanners
         if @report.errors.any?
           pass_on_raise ? @report.pass : @report.fail
         end
-      rescue StandardError => exception
+      rescue StandardError => e
         error_data = {
-          message: "Unhandled exception running #{name}: #{exception.class}: #{exception}",
-          error_class: exception.class,
-          backtrace: exception.backtrace.take(5)
+          message: "Unhandled exception running #{name}: #{e.class}: #{e}",
+          error_class: e.class,
+          backtrace: e.backtrace.take(5)
         }
 
         pass_on_raise ? @report.pass : @report.fail
