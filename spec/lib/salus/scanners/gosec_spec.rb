@@ -18,11 +18,11 @@ describe Salus::Scanners::Gosec do
         expect(
           info[:stderr]
         ).to include(
-          'no buildable Go source files in /go/src/repo/spec/fixtures/blank_repository'
+          'blank_repository'  # debug information
         )
         expect(
           errors[:message]
-        ).to include('gosec exited with build error')
+        ).to include('0 lines of code were scanned')
       end
     end
 
@@ -45,6 +45,20 @@ describe Salus::Scanners::Gosec do
 
       it 'should report a passing scan' do
         expect(scanner.report.passed?).to eq(true)
+      end
+    end
+
+    context 'go project with malformed go' do
+      let(:repo) { Salus::Repo.new('spec/fixtures/gosec/malformed_goapp') }
+
+      it 'should report a failing scan' do
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+        logs = scanner.report.to_h.fetch(:logs)
+
+        expect(info[:stdout]).to include('Golang errors', 'Pintl not declared by package fmt')
+        expect(logs).to include('Golang errors', 'Pintl not declared by package fmt')
       end
     end
   end
