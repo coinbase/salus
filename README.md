@@ -54,6 +54,25 @@ Sometimes it's necessary to whitelist certain CVEs that Salus detects. The [docs
 
 If you would like to build customer scanners or support more languages that are not currenclty supported, you can use [this method of building custom Salus images](docs/custom_salus.md).
 
+
+## CircleCI Integration
+
+Salus can be integrated with CircleCI by using a public orb. All Salus configuration options are supported, and defaults are the same as for Salus itself. 
+
+Example CircleCI `config.yml`:
+
+```
+version: 2.1
+
+orbs:
+  salus: federacy/salus@2.4.2
+
+workflows:
+  main:
+    jobs:
+      - salus/scan
+```
+
 ## Using Salus in your Repo
 
 For your given CI, update the config file to run salus. In circle, it will look like this: 
@@ -63,6 +82,7 @@ docker run --rm -t -v $(pwd):/home/repo coinbase/salus
 ```
 
 coinbase/salus pulls the docker image
+
 
 ## [Detailed Documentation](docs)
 
