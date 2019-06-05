@@ -54,6 +54,16 @@ Sometimes it's necessary to whitelist certain CVEs that Salus detects. The [docs
 
 If you would like to build customer scanners or support more languages that are not currenclty supported, you can use [this method of building custom Salus images](docs/custom_salus.md).
 
+## Using Salus in your Repo
+
+For your given CI, update the config file to run salus. In circle, it will look like this: 
+
+```sh
+docker run --rm -t -v $(pwd):/home/repo coinbase/salus
+```
+
+coinbase/salus pulls the docker image
+
 ## [Detailed Documentation](docs)
 
 ## 👷‍♂️ Development

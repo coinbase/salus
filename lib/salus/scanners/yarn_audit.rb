@@ -21,16 +21,6 @@ module Salus::Scanners
       # We must also pluck out only the standard advisory hashes.
       command_output = run_shell(AUDIT_COMMAND)
 
-      if command_output.status == 1
-        error_lines = []
-        error_lines << "#{AUDIT_COMMAND} failed."
-        error_lines << "Exit status: #{command_output.status}"
-        error_lines << "STDOUT: #{command_output.stdout}"
-        error_lines << "STDERR: #{command_output.stderr}"
-
-        raise error_lines.join("\n")
-      end
-
       report_stdout(command_output.stdout)
 
       command_output.stdout.split("\n")[0..-2].map do |raw_advisory|
