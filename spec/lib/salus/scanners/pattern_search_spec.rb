@@ -202,7 +202,7 @@ describe Salus::Scanners::PatternSearch do
           'matches' => [
             { regex: 'UN' },
             { 'regex' => 'lance', 'forbidden' => true },
-            { regex: 'fancy'}
+            { regex: 'fancy' }
           ],
           'include_extension' => ['md']
         }
@@ -255,7 +255,8 @@ describe Salus::Scanners::PatternSearch do
         config = {
           'matches' => [
             { 'regex' => 'fancy', 'include_extension' => ['md']  },
-            { 'regex' => 'lance', 'forbidden' => true, 'exclude_extension' => ['txt'], 'include_extension' => ['md'] }
+            { 'regex' => 'lance', 'forbidden' => true, 'exclude_extension' => ['txt'], \
+              'include_extension' => ['md'] }
           ]
         }
 
@@ -272,8 +273,9 @@ describe Salus::Scanners::PatternSearch do
         repo = Salus::Repo.new('spec/fixtures/pattern_search')
         config = {
           'matches' => [
-            { 'regex' => 'fancy', 'include_extension' => ['md'], 'exclude_extension' => ['md']  },
-            { 'regex' => 'lance', 'forbidden' => true, 'exclude_extension' => ['txt'], 'include_extension' => ['md'] }
+            { 'regex' => 'fancy', 'include_extension' => ['md'], 'exclude_extension' => ['md'] },
+            { 'regex' => 'lance', 'forbidden' => true, 'exclude_extension' => ['txt'], \
+              'include_extension' => ['md'] }
           ]
         }
 
@@ -289,7 +291,7 @@ describe Salus::Scanners::PatternSearch do
         repo = Salus::Repo.new('spec/fixtures/pattern_search')
         config = {
           'matches' => [
-            { 'regex' => 'fancy', 'include_extension' => ['md']  },
+            { 'regex' => 'fancy', 'include_extension' => ['md'] },
             { 'regex' => 'lance', 'forbidden' => true, 'include_extension' => ['md'] }
           ],
           'exclude_extension' => %w[txt md]

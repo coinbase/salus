@@ -38,7 +38,8 @@ module Salus::Scanners
           match_exclude_directory_flags = flag_list(
             '--exclude-dirs', match['exclude_directory']
           )
-          match_exclude_extension_flags = extension_flag('--exclude-ext', match['exclude_extension'])
+          match_exclude_extension_flags = extension_flag('--exclude-ext', \
+                                                         match['exclude_extension'])
           match_include_extension_flags = extension_flag('--ext', match['include_extension'])
 
           command_string = [
@@ -114,9 +115,9 @@ module Salus::Scanners
     private
 
     def extension_flag(flag, file_extensions)
-      if file_extensions.nil? or flag.nil?
+      if file_extensions.nil? || flag.nil?
         nil
-      elsif file_extensions.empty? or flag.empty?
+      elsif file_extensions.empty? || flag.empty?
         ""
       else
         flag << '='
