@@ -40,6 +40,20 @@ describe Salus::Scanners::Gosec do
       end
     end
 
+    context 'go project with vulnerabilities in a nested folder' do
+      let(:repo) { Salus::Repo.new('spec/fixtures/gosec/recursive_vulnerable_goapp') }
+
+      it 'should record failure and record the STDOUT from gosec' do
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+        logs = scanner.report.to_h.fetch(:logs)
+        expect(info[:stdout]).not_to be_nil
+        expect(info[:stdout]).not_to be_empty
+        expect(logs).to include('Potential hardcoded credentials')
+      end
+    end
+
     context 'go project with no known vulnerabilities' do
       let(:repo) { Salus::Repo.new('spec/fixtures/gosec/safe_goapp') }
 
