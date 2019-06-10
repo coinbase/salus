@@ -9,7 +9,7 @@ module Salus::Scanners
       # Shell Instructions:
       #   - -fmt=json for JSON output
       #   - gosec can scan go modules as of 2.0.0.
-      shell_return = run_shell("gosec -fmt=json #{@repository.path_to_repo}/...")
+      shell_return = Dir.chdir(@repository.path_to_repo) {  run_shell("gosec -fmt=json ./...") }
 
       shell_return_json = JSON.parse(shell_return.stdout)
       lines_scanned = shell_return_json['Stats']['lines']  # number of lines scanned
