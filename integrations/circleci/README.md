@@ -4,7 +4,7 @@
 
 | attribute | description | default | options |
 | --------- | ----------- | ------- | ------- |
-| salus_executor | CircleCI executor to use that specifies Salus environment | `coinbase/salus:2.5.1` | See [executor reference](https://circleci.com/docs/2.0/configuration-reference/#executors-requires-version-21)|
+| salus_executor | CircleCI executor to use that specifies Salus environment | `coinbase/salus:latest` | See [executor reference](https://circleci.com/docs/2.0/configuration-reference/#executors-requires-version-21)|
 | active_scanners | Scanners to run | all | Brakeman, PatternSearch, BundleAudit, NPMAudit |
 | enforced_scanners | Scanners that block builds | all | Brakeman, PatternSearch, BundleAudit, NPMAudit |
 | report_uri | Where to send Salus reports | file://../salus-report.json | Any URI |
@@ -70,13 +70,13 @@ version: 2.1
 orbs:
   salus: federacy/salus@2.5.1
 executors:
-  salus_latest:
+  salus_2_4_2:
     docker:
-      - image: coinbase/salus:latest
+      - image: coinbase/salus:2.4.2
 workflows:
   salus_scan:
     jobs: 
       - salus/scan:
           salus_executor:
-            name: salus_latest
+            name: salus_2_4_2
 ```
