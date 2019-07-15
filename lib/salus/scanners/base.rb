@@ -72,6 +72,33 @@ module Salus::Scanners
       Salus::ShellResult.new(*Open3.capture3(env, *command, stdin_data: stdin_data))
     end
 
+    # Runs a command on the terminal whose stdout and stderr is streamed.
+    # Source modified from https://nickcharlton.net/posts/ruby-subprocesses-with-stdout-stderr-streams.html
+    def run_streaming_shell(command, env: {}, stdin_data: '', &block)
+      # If we're passed a string, convert it to an array before passing to capture3
+      command = command.split unless command.is_a?(Array)
+      Open3.popen3(env, *command, stdin_data: stdin_data) do |stdin, stdout, stderr, cmd_thread|
+        stdin.close
+        # read each stream from a new thread
+        { :out => stdout, :err => stderr }.each do |key, stream|
+          Thread.new do
+            until (line = stream.gets).nil? do
+              # yield the block depending on the stream
+              if key == :out
+                yield line, nil, cmd_thread if block_given?
+              else
+                yield nil, line, cmd_thread if block_given?
+              end
+            end
+          end
+        end
+
+        cmd_thread.join # don't exit until the external process is done
+      end
+
+    Salus:ShellResult.new(stdin, stderr) # to fix
+    end
+
     # Add a textual logline to the report. This is for humans
     def log(string)
       @report.log(string)

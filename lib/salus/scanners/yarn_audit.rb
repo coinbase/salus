@@ -25,6 +25,7 @@ module Salus::Scanners
 
       command_output.stdout.split("\n")[0..-2].map do |raw_advisory|
         advisory_hash = JSON.parse(raw_advisory, symbolize_names: true)
+        log(advisory_hash[:data][:advisory][:findings][0].except!(:paths))
         advisory_hash[:data][:advisory]
       end
     end
