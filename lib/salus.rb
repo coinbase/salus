@@ -19,7 +19,7 @@ require 'salus/config'
 require 'salus/processor'
 
 module Salus
-  VERSION = '2.5.1'.freeze
+  VERSION = '2.6.0'.freeze
   DEFAULT_REPO_PATH = './repo'.freeze # This is inside the docker container at /home/repo.
 
   SafeYAML::OPTIONS[:default_mode] = :safe
@@ -35,8 +35,15 @@ module Salus
       quiet: false,
       verbose: false,
       repo_path: DEFAULT_REPO_PATH,
-      use_colors: true
+      use_colors: true,
+      heartbeat: true
     )
+
+      ### Heartbeat ###
+      if !quiet && heartbeat
+        heartbeat_thr = heartbeat(60) # Print a heartbeat every 60s. [0s, 60s, 120s, ...]
+      end
+
       ### Configuration ###
       # Config option would be: --config="<uri x> <uri y> etc"
       configuration_directives = (ENV['SALUS_CONFIGURATION'] || config || '').split(URI_DELIMITER)
@@ -59,6 +66,8 @@ module Salus
         puts "Could not send Salus report: (#{e.class}: #{e.message})"
       end
 
+      heartbeat_thr&.kill
+
       # System exit with success or failure - useful for CI builds.
       system_exit(processor.passed? ? EXIT_SUCCESS : EXIT_FAILURE)
     end
@@ -70,6 +79,16 @@ module Salus
     # just exit early.
     def system_exit(status)
       exit(status)
+    end
+
+    # This method spawns a thread in order to print a heartbeat
+    def heartbeat(time)
+      Thread.new do
+        loop do
+          puts "[INFORMATIONAL: #{Time.now}]: Salus is running."
+          sleep time
+        end
+      end
     end
   end
 end

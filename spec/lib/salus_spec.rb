@@ -45,5 +45,34 @@ describe Salus::CLI do
         end
       end
     end
+
+    context 'With heartbeat set' do
+      it 'outputs a heartbeat' do
+        Dir.chdir('spec/fixtures/salus/success') do
+          expect { Salus.scan }.to output(/Salus is running\.$/).to_stdout
+        end
+      end
+    end
+
+    context 'With no heartbeat set' do
+      it 'does not produce a heartbeat when quiet is enabled' do
+        Dir.chdir('spec/fixtures/salus/success') do
+          expect { Salus.scan(quiet: true) }.to_not output(/Salus is running\.$/).to_stdout
+        end
+      end
+
+      it 'does not produce a heartbeat when heartbeat is disabled' do
+        Dir.chdir('spec/fixtures/salus/success') do
+          expect { Salus.scan(heartbeat: false) }.to_not output(/Salus is running\.$/).to_stdout
+        end
+      end
+
+      it 'does not produce a heartbeat when quiet is enabled and heartbeat is disabled' do
+        Dir.chdir('spec/fixtures/salus/success') do
+          expect { Salus.scan(quiet: true, heartbeat: false) }
+            .to_not output(/Salus is running\.$/).to_stdout
+        end
+      end
+    end
   end
 end
