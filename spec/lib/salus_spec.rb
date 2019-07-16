@@ -69,7 +69,8 @@ describe Salus::CLI do
 
       it 'does not produce a heartbeat when quiet is enabled and heartbeat is disabled' do
         Dir.chdir('spec/fixtures/salus/success') do
-          expect { Salus.scan(quiet: true, heartbeat: false) }.to_not output(/Salus is running\.$/).to_stdout
+          expect { Salus.scan(quiet: true, heartbeat: false) }
+            .to_not output(/Salus is running\.$/).to_stdout
         end
       end
     end
