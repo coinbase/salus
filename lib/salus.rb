@@ -41,12 +41,7 @@ module Salus
 
       ### Heartbeat ###
       if !quiet && heartbeat
-        heartbeat_thr = Thread.new do
-          loop do
-            puts "[INFORMATIONAL: #{Time.now}]: Salus is running."
-            sleep 60
-          end
-        end
+        heartbeat_thr = heartbeat(60) # Print a heartbeat every 60s. [0s, 60s, 120s, ...]
       end
 
       ### Configuration ###
@@ -84,6 +79,16 @@ module Salus
     # just exit early.
     def system_exit(status)
       exit(status)
+    end
+
+    # This method spawns a thread in order to print a heartbeat
+    def heartbeat(time)
+      Thread.new do
+        loop do
+          puts "[INFORMATIONAL: #{Time.now}]: Salus is running."
+          sleep time
+        end
+      end
     end
   end
 end
