@@ -77,7 +77,12 @@ module Salus::Scanners
     def run_streaming_shell(command, env: {}, stdin_data: '', &block)
       # If we're passed a string, convert it to an array before passing to capture3
       command = command.split unless command.is_a?(Array)
-      Open3.popen3(env, *command, stdin_data: stdin_data) do |stdin, stdout, stderr, cmd_thread|
+
+      shell_out = []
+      shell_err = []
+      ret_val = 999
+
+      Open3.popen3(env, *command) do |stdin, stdout, stderr, cmd_thread|
         stdin.close
         # read each stream from a new thread
         { :out => stdout, :err => stderr }.each do |key, stream|
@@ -85,18 +90,19 @@ module Salus::Scanners
             until (line = stream.gets).nil? do
               # yield the block depending on the stream
               if key == :out
-                yield line, nil, cmd_thread if block_given?
+                shell_out << yield(line, nil, cmd_thread) if block_given?
               else
-                yield nil, line, cmd_thread if block_given?
+                shell_err << yield(nil, line, cmd_thread) if block_given?
               end
             end
           end
         end
 
         cmd_thread.join # don't exit until the external process is done
+        ret_val = cmd_thread.value
       end
 
-    Salus:ShellResult.new(stdin, stderr) # to fix
+    Salus::ShellResult.new(shell_out, shell_err, ret_val)
     end
 
     # Add a textual logline to the report. This is for humans

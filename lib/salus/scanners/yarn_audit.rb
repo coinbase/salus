@@ -19,15 +19,23 @@ module Salus::Scanners
       # Yarn gives us a new-line separated list of JSON blobs.
       # But the last JSON blob is a summary that we can discard.
       # We must also pluck out only the standard advisory hashes.
-      command_output = run_shell(AUDIT_COMMAND)
-
-      report_stdout(command_output.stdout)
-
-      command_output.stdout.split("\n")[0..-2].map do |raw_advisory|
-        advisory_hash = JSON.parse(raw_advisory, symbolize_names: true)
-        log(advisory_hash[:data][:advisory][:findings][0].except!(:paths))
-        advisory_hash[:data][:advisory]
+      command_output = run_streaming_shell(AUDIT_COMMAND) do |stdout_line, stderr_line, thread|
+        if !stdout_line.empty?
+          advisory_hash = JSON.parse(stdout_line, symbolize_names: true)
+          if advisory_hash[:type] == 'auditAdvisory'
+            advisory_hash[:data][:advisory][:findings][0][:paths] = nil
+            stdout_line = advisory_hash[:data][:advisory]
+          else
+            advisory_hash
+          end
+        else
+          stderr_line
+        end
       end
+
+      report_stdout(command_output.stdout.map(&:to_s).join("\n"))
+
+      command_output.stdout[0..-2]
     end
   end
 end
