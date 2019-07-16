@@ -42,7 +42,7 @@ module Salus
       ### Heartbeat ###
       if !quiet && heartbeat
         heartbeat_thr = Thread.new do
-          while true do
+          loop do
             puts "[INFORMATIONAL: #{Time.now}]: Salus is running."
             sleep 60
           end
@@ -71,7 +71,7 @@ module Salus
         puts "Could not send Salus report: (#{e.class}: #{e.message})"
       end
 
-      heartbeat_thr.kill unless heartbeat_thr.nil?
+      heartbeat_thr&.kill
 
       # System exit with success or failure - useful for CI builds.
       system_exit(processor.passed? ? EXIT_SUCCESS : EXIT_FAILURE)
