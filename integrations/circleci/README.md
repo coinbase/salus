@@ -24,7 +24,7 @@ Note: active_scanners and enforced_scanners must be yaml formatted for Salus con
 version: 2.1
 
 orbs:
-  salus: federacy/salus@2.5.1
+  salus: federacy/salus@2.6.1
 
 workflows:
   main:
@@ -38,7 +38,7 @@ workflows:
 version: 2.1
 
 orbs:
-  salus: federacy/salus@2.5.1
+  salus: federacy/salus@2.6.1
 
 workflows:
   main:
@@ -53,7 +53,7 @@ workflows:
 version: 2.1
 
 orbs:
-  salus: federacy/salus@2.5.1
+  salus: federacy/salus@2.6.1
 
 workflows:
   main:
@@ -68,7 +68,7 @@ workflows:
 ```
 version: 2.1
 orbs:
-  salus: federacy/salus@2.5.1
+  salus: federacy/salus@2.6.1
 executors:
   salus_2_4_2:
     docker:
