@@ -34,6 +34,25 @@ describe Salus::Scanners::NodeAudit do
             useless_exceptions: []
           )
         end
+
+        it 'should fail, recording advisory ids and npm output' do
+          repo = Salus::Repo.new("spec/fixtures/#{klass_snake_str}/failure-2")
+          scanner = klass_obj.new(repository: repo, config: {})
+          scanner.run
+
+          expect(scanner.report.passed?).to eq(false)
+          info = scanner.report.to_h.fetch(:info)
+          expect(info.key?(:stdout)).to eq(true)
+          expect(info).to include(
+            prod_advisories: %w[39 48 722],
+            dev_advisories: [],
+            unexcepted_prod_advisories: %w[39 48 722],
+            exceptions: [],
+            prod_exceptions: [],
+            dev_exceptions: [],
+            useless_exceptions: []
+          )
+        end
       end
 
       context 'no CVEs in package.json' do
