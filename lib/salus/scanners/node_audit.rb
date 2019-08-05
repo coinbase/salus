@@ -63,7 +63,7 @@ module Salus::Scanners
           # For all advisories,
           prod = raw_advisories_for_id.any? do |raw_advisory|
             # any there there any instances in the prod dependency tree?
-            raw_advisory.fetch(:findings).any? { |finding| !finding.fetch(:dev) }
+            raw_advisory.fetch(:findings).any? { |finding| !finding.fetch(:dev, false) }
           end
 
           Advisory.new(id, module_name, title, severity, url, prod, excepted)
