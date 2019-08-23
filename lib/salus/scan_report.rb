@@ -83,7 +83,7 @@ module Salus
     def to_s(verbose:, wrap:, use_colors:)
       banner = render_banner(use_colors: use_colors)
 
-      # If the scan succeeded and verbose is false, just output the banner
+      # If the scan succeeded, verbose is false, and there are no warnings, just output the banner
       # indicating pass/fail
       return banner if @passed && !verbose && @warn.empty?
 
@@ -98,7 +98,10 @@ module Salus
         output += "\n\n ~~ Scanner Warnings:\n\n#{stringified_warnings}".chomp
       end
 
-      if !@logs.nil? && verbose
+      # If the scan succeeded, verbose is false, just output the pass/fail banner and warnings
+      return output if @passed && !verbose
+
+      if !@logs.nil?
         logs = indent(wrapify(@logs, indented_wrap))
         output += "\n\n ~~ Scanner Logs:\n\n#{logs.chomp}"
       end
