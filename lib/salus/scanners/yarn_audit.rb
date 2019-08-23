@@ -30,8 +30,6 @@ module Salus::Scanners
       command << 'dependencies ' unless dep_types.include?('dependencies')
       command << 'devDependencies ' unless dep_types.include?('devDependencies')
       command << 'optionalDependencies ' unless dep_types.include?('optionalDependencies')
-
-      return command
     end
 
     def scan_for_cves
