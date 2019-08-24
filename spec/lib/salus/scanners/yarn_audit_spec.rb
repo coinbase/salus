@@ -18,4 +18,37 @@ describe Salus::Scanners::YarnAudit do
       expect(scanner.should_run?).to eq(true)
     end
   end
+
+  describe '#run' do
+    it 'should exclude dependencies when given a group' do
+    end
+
+    it 'should warn if only optionalDependencies are scanned' do
+      repo = Salus::Repo.new('spec/fixtures/yarn_audit/success')
+
+      scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: {
+                                                 "exclude_groups" =>
+                                                 %w[devDependencies dependencies]
+                                               })
+
+      scanner.run
+      expect(scanner.report.to_h.fetch(:warn)).to include(
+        scanner_misconfiguration: "Scanning only optionalDependencies!"
+      )
+    end
+
+    it 'should error if all 3 groups are excluded' do
+      repo = Salus::Repo.new('spec/fixtures/yarn_audit/success')
+
+      scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: {
+                                                 "exclude_groups" => %w[devDependencies
+                                                                        dependencies
+                                                                        optionalDependencies]
+                                               })
+      scanner.run
+      expect(scanner.report.to_h.fetch(:errors)).to include(
+        message: "No dependencies were scanned!"
+      )
+    end
+  end
 end
