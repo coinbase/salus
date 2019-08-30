@@ -60,7 +60,7 @@ module Salus::Scanners
     end
 
     def go_file?
-      !Dir.glob("#{@repository.path_to_repo}/*.go").first.nil?
+      !Dir.glob("#{@repository.path_to_repo}/**/*.go").first.nil?
     end
   end
 end
