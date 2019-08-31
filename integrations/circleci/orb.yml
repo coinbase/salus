@@ -82,7 +82,7 @@ examples:
     usage:
       version: 2.1
       orbs:
-        salus: federacy/salus@2.6.1
+        salus: federacy/salus@2.6.2
       workflows:
         salus_scan:
           jobs: 
@@ -92,7 +92,7 @@ examples:
     usage:
       version: 2.1
       orbs:
-        salus: federacy/salus@2.6.1
+        salus: federacy/salus@2.6.2
       workflows:
         salus_scan:
           jobs: 
@@ -103,7 +103,7 @@ examples:
     usage:
       version: 2.1
       orbs:
-        salus: federacy/salus@2.6.1
+        salus: federacy/salus@2.6.2
       workflows:
         salus_scan:
           jobs: 
@@ -114,7 +114,7 @@ examples:
     usage:
       version: 2.1
       orbs:
-        salus: federacy/salus@2.6.1
+        salus: federacy/salus@2.6.2
       executors:
         salus_2_4_2:
           docker:
