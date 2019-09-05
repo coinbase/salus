@@ -4,6 +4,8 @@ describe Salus::Config do
   let(:config_file_1)            { File.read('spec/fixtures/config/salus.yaml') }
   let(:config_file_2)            { File.read('spec/fixtures/config/salus_extra.yaml') }
   let(:envar_config_file)        { File.read('spec/fixtures/config/envar_config.yaml') }
+  let(:custom_info_hash_config_file) { File.read('spec/fixtures/config/custom_info_h.yaml') }
+  let(:custom_info_string_config_file) { File.read('spec/fixtures/config/custom_info_s.yaml') }
   let(:expected_report_uris) do
     [
       {
@@ -66,6 +68,18 @@ describe Salus::Config do
           ]
         )
       end
+    end
+
+    it 'should accept custom_info hashes' do
+      config = Salus::Config.new([custom_info_hash_config_file])
+      expect(config.custom_info).to be_a(Hash)
+      expect(config.custom_info).to include("branch")
+    end
+
+    it 'should accept custom_info strings' do
+      config = Salus::Config.new([custom_info_string_config_file])
+      expect(config.custom_info).to be_a(String)
+      expect(config.custom_info).to eq('master')
     end
 
     it 'should deep merge config files' do
