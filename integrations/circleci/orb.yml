@@ -51,10 +51,27 @@ jobs:
 
               enforced_scanners: << parameters.enforced_scanners >>
 
+              custom_info:
+                sha1: $CIRCLE_SHA1
+                ci_project_username: $CIRCLE_PROJECT_USERNAME
+                reponame: $CIRCLE_PROJECT_REPONAME
+                branch: $CIRCLE_BRANCH
+                tag: $CIRCLE_TAG
+                repository_url: $CIRCLE_REPOSITORY_URL
+                compare_url: $CIRCLE_COMPARE_URL
+                build_url: $CIRCLE_BUILD_URL
+                external_build_id: $CIRCLE_BUILD_NUM
+                pull_requests: $CIRCLE_PULL_REQUESTS
+                ci_username: $CIRCLE_USERNAME
+                pr_username: $CIRCLE_PR_USERNAME
+                pr_reponame: $CIRCLE_PR_REPONAME
+                pr_number: $CIRCLE_PR_NUMBER
+
               reports:
                 - uri: << parameters.report_uri >> 
                   format: << parameters.report_format >>
                   verbose: << parameters.report_verbosity >>" | tee salus-configuration.yaml 
+
           working_directory: /home
       - run: 
           name: Run scan
@@ -82,7 +99,7 @@ examples:
     usage:
       version: 2.1
       orbs:
-        salus: federacy/salus@2.6.2
+        salus: federacy/salus@3.0.0
       workflows:
         salus_scan:
           jobs: 
@@ -92,7 +109,7 @@ examples:
     usage:
       version: 2.1
       orbs:
-        salus: federacy/salus@2.6.2
+        salus: federacy/salus@3.0.0
       workflows:
         salus_scan:
           jobs: 
@@ -103,7 +120,7 @@ examples:
     usage:
       version: 2.1
       orbs:
-        salus: federacy/salus@2.6.2
+        salus: federacy/salus@3.0.0
       workflows:
         salus_scan:
           jobs: 
@@ -114,7 +131,7 @@ examples:
     usage:
       version: 2.1
       orbs:
-        salus: federacy/salus@2.6.2
+        salus: federacy/salus@3.0.0
       executors:
         salus_2_4_2:
           docker:
