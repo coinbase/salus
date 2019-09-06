@@ -14,6 +14,29 @@
 
 Note: active_scanners and enforced_scanners must be yaml formatted for Salus configuration file.
 
+## CircleCI Environment Variables
+
+Stored in custom_info of a Salus scan.
+
+| Key | CircleCI Variable | Description |
+| --- | ----------------- | ----------- |
+| sha1    | CIRCLE_SHA1 | Hash of last commit in build |
+| ci_project_username | CIRCLE_PROJECT_USERNAME | SCM username of project |
+| reponame | CIRCLE_PROJECT_REPONAME | Name of repository |
+| branch | CIRCLE_BRANCH | Name of git branch being built |
+| tag | CIRCLE_TAG | Name of tag |
+| repository_url | CIRCLE_REPOSITORY_URL | URL of the Github or Bitbucket repository |
+| compare_url | CIRCLE_COMPARE_URL | URL to compare commits in build |
+| build_url | CIRCLE_BUILD_URL | URL for the build |
+| external_build_id | CIRCLE_BUILD_NUM | CircleCI or other build identifier |
+| pull_requests | CIRCLE_PULL_REQUESTS | Comma-separated list of pull requests |
+| ci_username | CIRCLE_USERNAME | SCM username of user who triggered build |
+| pr_username | CIRCLE_PR_USERNAME | SCM username of user who created pull/merge request |
+| pr_reponame | CIRCLE_PR_REPONAME | Name of repository where pull/merge request was created |
+| pr_number | CIRCLE_PR_NUMBER | Number of the pull/merge request |
+
+CircleCI variables not used: CI, CI_PULL_REQUEST, CI_PULL_REQUESTS, CIRCLE_INTERNAL_TASK_DATA, CIRCLE_JOB, CIRCLE_NODE_INDEX, CIRCLE_NODE_TOTAL, CIRCLE_PREVIOUS_BUILD_NUM, CIRCLE_PULL_REQUEST, CIRCLE_WORKFLOW_ID, CIRCLE_WORKING_DIRECTORY, CIRCLECI, HOME
+
 ## Examples
 
 .circleci/config.yml
@@ -24,7 +47,7 @@ Note: active_scanners and enforced_scanners must be yaml formatted for Salus con
 version: 2.1
 
 orbs:
-  salus: federacy/salus@2.6.2
+  salus: federacy/salus@3.0.0
 
 workflows:
   main:
@@ -38,7 +61,7 @@ workflows:
 version: 2.1
 
 orbs:
-  salus: federacy/salus@2.6.2
+  salus: federacy/salus@3.0.0
 
 workflows:
   main:
@@ -53,7 +76,7 @@ workflows:
 version: 2.1
 
 orbs:
-  salus: federacy/salus@2.6.2
+  salus: federacy/salus@3.0.0
 
 workflows:
   main:
@@ -68,7 +91,7 @@ workflows:
 ```
 version: 2.1
 orbs:
-  salus: federacy/salus@2.6.2
+  salus: federacy/salus@3.0.0
 executors:
   salus_2_4_2:
     docker:
