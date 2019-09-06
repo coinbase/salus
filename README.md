@@ -65,7 +65,7 @@ Example CircleCI `config.yml`:
 version: 2.1
 
 orbs:
-  salus: federacy/salus@2.6.2
+  salus: federacy/salus@3.0.0
 
 workflows:
   main:
