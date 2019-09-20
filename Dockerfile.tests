@@ -7,8 +7,8 @@
 
 FROM salus-local
 
-COPY spec /home/spec
-
 RUN bundle install --with test
+
+COPY spec /home/spec
 
 ENTRYPOINT ["bundle", "exec", "rspec", "--format", "documentation", "spec/"]

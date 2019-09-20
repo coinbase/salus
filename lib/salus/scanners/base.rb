@@ -93,6 +93,11 @@ module Salus::Scanners
       @report.info(type, message)
     end
 
+    # Report a scanner warning such as a possible misconfiguration
+    def report_warn(type, message)
+      @report.warn(type, message)
+    end
+
     # Report the STDOUT from the scanner.
     def report_stdout(stdout)
       @report.info(:stdout, stdout)
