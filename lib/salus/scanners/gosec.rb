@@ -1,5 +1,7 @@
 require 'salus/scanners/base'
 require 'json'
+require 'shellwords'
+
 # Gosec scanner check Go for insecure coding patters.
 # https://github.com/securego/gosec
 
@@ -9,7 +11,9 @@ module Salus::Scanners
       # Shell Instructions:
       #   - -fmt=json for JSON output
       #   - gosec can scan go modules as of 2.0.0.
-      shell_return = Dir.chdir(@repository.path_to_repo) { run_shell("gosec -fmt=json ./...") }
+      shell_return = Dir.chdir(@repository.path_to_repo) do
+        run_shell("gosec #{config_options} -fmt=json ./...")
+      end
 
       # This produces no JSON output so must be checked before parsing stdout
       if shell_return.stdout.blank? && shell_return.stderr.include?('No packages found')
@@ -51,6 +55,49 @@ module Salus::Scanners
       end
     end
 
+    # flag options taken from https://github.com/securego/gosec/blob/2.0.0/cmd/gosec/main.go
+    def config_options
+      options = ''
+      # Ignores #nosec comments when set
+      options.concat(create_bool_option('nosec'))
+
+      # Set an alternative string for #nosec
+      options.concat(create_list_option('nosec-tag', /\A\S*\z/))
+
+      # Path to optional config file
+      options.concat(create_file_option('conf'))
+
+      # Comma separated list of rules IDs to include
+      options.concat(create_list_option('include', /\AG\d{3}\z/i))
+
+      # Comma separated list of rules IDs to exclude
+      options.concat(create_list_option('exclude', /\AG\d{3}\z/i))
+
+      # Sort issues by severity
+      options.concat(create_bool_option('sort'))
+
+      # Comma separated list of build tags
+      options.concat(create_list_option('tags', /\A\S*\z/))
+
+      # Filter out the issues with a lower severity than the given value.
+      # Valid options are: low, medium, high
+      options.concat(create_list_option('severity', /\Alow|medium|high\z/i))
+
+      # Filter out the issues with a lower confidence than the given value.
+      # Valid options are: low, medium, high
+      options.concat(create_list_option('confidence', /\Alow|medium|high\z/i))
+
+      # Do not fail the scanning, even if issues were found
+      options.concat(create_bool_option('no-fail'))
+
+      # Scan tests files
+      options.concat(create_bool_option('tests'))
+
+      # exlude the folders from scan
+      # can be files or directories
+      options.concat(create_file_list_option('exclude-dir'))
+    end
+
     def should_run?
       # Check go filetypes that tend to be present at top level directory.
       @repository.dep_lock_present? ||
@@ -61,6 +108,33 @@ module Salus::Scanners
 
     def go_file?
       !Dir.glob("#{@repository.path_to_repo}/**/*.go").first.nil?
+    end
+
+    private
+
+    def create_bool_option(keyword)
+      return '' unless validate_bool_option(keyword)
+
+      "-#{keyword}=#{Shellwords.escape(@config.fetch(keyword))} "
+    end
+
+    def create_file_option(keyword)
+      return '' unless validate_file_option(keyword)
+
+      "-#{keyword}=#{Shellwords.escape(config_file)} "
+    end
+
+    def create_list_option(keyword, regex)
+      return '' unless validate_list_option(keyword, regex)
+
+      "-#{keyword}=#{Shellwords.escape(@config.fetch(keyword).join(','))} "
+    end
+
+    def create_list_file_option(keyword)
+      options = ''
+      @config.fetch(keyword).each do |file|
+        options.concat(create_file_option(file))
+      end
     end
   end
 end
