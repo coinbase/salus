@@ -1,0 +1,10 @@
+{
+  "name": "success_with_exclusions",
+  "version": "1.0.0",
+  "description": "salus test",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "status-board": "1.1.80"
+  }
+}
