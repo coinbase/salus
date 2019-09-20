@@ -20,7 +20,33 @@ describe Salus::Scanners::YarnAudit do
   end
 
   describe '#run' do
-    it 'should exclude dependencies when given a group' do
+    it 'should fail when there are CVEs' do
+      repo = Salus::Repo.new('spec/fixtures/yarn_audit/failure')
+      scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
+      scanner.run
+
+      expect(scanner.report.to_h.fetch(:passed)).to eq(false)
+
+      repo = Salus::Repo.new('spec/fixtures/yarn_audit/failure-2')
+      scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
+      scanner.run
+
+      expect(scanner.report.to_h.fetch(:passed)).to eq(false)
+    end
+
+    it 'should pass if vulnerable devDependencies are excluded' do
+      repo = Salus::Repo.new('spec/fixtures/yarn_audit/success_with_exclusions')
+      scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
+      scanner.run
+
+      expect(scanner.report.to_h.fetch(:passed)).to eq(false)
+
+      scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: {
+                                                 "exclude_groups" =>
+                                                 %w[devDependencies]
+                                               })
+      scanner.run
+      expect(scanner.report.to_h.fetch(:passed)).to eq(true)
     end
 
     it 'should warn if only optionalDependencies are scanned' do
