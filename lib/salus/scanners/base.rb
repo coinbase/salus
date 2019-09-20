@@ -120,4 +120,48 @@ module Salus::Scanners
       @report.dependency(hsh)
     end
   end
+
+  protected
+
+  def validate_bool_option(keyword)
+    return true if %w[true false].include?(@config.fetch(keyword, '').downcase)
+
+    report_warn(:scanner_misconfiguration, "Expecting #{keyword} to be a Boolean (true/false) \
+                                            value but got \
+                                            #{"'#{@config.fetch(keyword)}'" || 'empty string'} \
+                                            instead.")
+    false
+  end
+
+  def validate_list_option(keyword, regex)
+    if @config.fetch(keyword).nil?
+      report_warn(:scanner_misconfiguration, "Expecting non-empty values in #{keyword}")
+      return false
+    end
+
+    return true if @config.fetch(keyword)&.all? { |option| option.match?(regex) }
+
+    offending_values = @config.fetch(keyword)&.reject { |option| option.match?(regex) }
+    report_warn(:scanner_misconfiguration, "Expecting values in #{keyword} to match regex \
+                                            '#{regex}' value but the offending values are \
+                                            '#{offending_values.join(', ')}'.")
+    false
+  end
+
+  def validate_file_option(keyword)
+    if @config.fetch(keyword).nil?
+      report_warn(:scanner_misconfiguration, "Expecting file/dir defined by #{keyword} to be \
+                                              a located in the project repo but got empty string \
+                                              instead.")
+      return false
+    end
+
+    config_file = File.realpath(@config.fetch(keyword))
+    return true if config_file.include?(@repository.path_to_repo)
+
+    report_warn(:scanner_misconfiguration, "Expecting #{config_file} defined by #{keyword} to be a \
+                                            file/dir in the project repo but was located at \
+                                            '#{config_file}' instead.")
+    false
+  end
 end
