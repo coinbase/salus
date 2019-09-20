@@ -59,7 +59,8 @@ RUN curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz \
 RUN go get github.com/svent/sift@$SIFT_VERSION \
   && mv /root/go/bin/sift /usr/bin/
 
-RUN go get github.com/securego/gosec/cmd/gosec@$GOSEC_VERSION \
+# GOSEC SHA Commit 915e9ee (915e9eeba8982f1e8ec82186900dff2d729e6dd4)
+RUN go get github.com/securego/gosec/cmd/gosec@915e9ee \
   && mv /root/go/bin/gosec /usr/bin/
 
 ### Salus
