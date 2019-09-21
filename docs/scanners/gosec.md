@@ -5,8 +5,8 @@ The [Gosec Scanner](https://github.com/securego/gosec) is a static analysis tool
 
 ## Configuration
 ```yaml
-scanner_configs:
   Gosec:
+    scanner_configs:
     - nosec: false                        # default -  Ignores #nosec comments when set
       nosec-tag: falsepositive            # Set an alternative string for #nosec (default)
       conf: conf.json                     # Path to optional config file
