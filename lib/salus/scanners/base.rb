@@ -132,6 +132,16 @@ module Salus::Scanners
       false
     end
 
+    def validate_string_option(keyword, regex)
+      return true if @config.fetch(keyword, '')&.match?(regex)
+
+      report_warn(:scanner_misconfiguration, "Expecting #{keyword} to match the regex #{regex} \
+                                              but got \
+                                              #{"'#{@config.fetch(keyword)}'" || 'empty string'} \
+                                              instead.")
+      false
+    end
+
     def validate_list_option(keyword, regex)
       if @config.fetch(keyword).nil?
         report_warn(:scanner_misconfiguration, "Expecting non-empty values in #{keyword}")
