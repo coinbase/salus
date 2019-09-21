@@ -59,43 +59,43 @@ module Salus::Scanners
     def config_options
       options = ''
       # Ignores #nosec comments when set
-      options.concat(create_bool_option('nosec'))
+      options.concat(create_bool_option('nosec')) if @config.key?('nosec')
 
       # Set an alternative string for #nosec
-      options.concat(create_list_option('nosec-tag', /\A\S*\z/))
+      options.concat(create_list_option('nosec-tag', /\A\S*\z/)) if @config.key?('nosec-tag')
 
       # Path to optional config file
-      options.concat(create_file_option('conf'))
+      options.concat(create_file_option('conf')) if @config.key?('conf')
 
       # Comma separated list of rules IDs to include
-      options.concat(create_list_option('include', /\AG\d{3}\z/i))
+      options.concat(create_list_option('include', /\AG\d{3}\z/i)) if @config.key?('include')
 
       # Comma separated list of rules IDs to exclude
-      options.concat(create_list_option('exclude', /\AG\d{3}\z/i))
+      options.concat(create_list_option('exclude', /\AG\d{3}\z/i)) if @config.key?('exclude')
 
       # Sort issues by severity
-      options.concat(create_bool_option('sort'))
+      options.concat(create_bool_option('sort')) if @config.key?('sort')
 
       # Comma separated list of build tags
-      options.concat(create_list_option('tags', /\A\S*\z/))
+      options.concat(create_list_option('tags', /\A\S*\z/)) if @config.key?('tags')
 
       # Filter out the issues with a lower severity than the given value.
       # Valid options are: low, medium, high
-      options.concat(create_list_option('severity', /\Alow|medium|high\z/i))
+      options.concat(create_list_option('severity', /\Alow|medium|high\z/i)) if @config.key?('severity')
 
       # Filter out the issues with a lower confidence than the given value.
       # Valid options are: low, medium, high
-      options.concat(create_list_option('confidence', /\Alow|medium|high\z/i))
+      options.concat(create_list_option('confidence', /\Alow|medium|high\z/i)) if @config.key?('confidence')
 
       # Do not fail the scanning, even if issues were found
-      options.concat(create_bool_option('no-fail'))
+      options.concat(create_bool_option('no-fail')) if @config.key?('no-fail')
 
       # Scan tests files
-      options.concat(create_bool_option('tests'))
+      options.concat(create_bool_option('tests')) if @config.key?('tests')
 
       # exlude the folders from scan
       # can be files or directories
-      options.concat(create_file_list_option('exclude-dir'))
+      options.concat(create_file_list_option('exclude-dir')) if @config.key?('exclude-dir')
     end
 
     def should_run?
