@@ -12,7 +12,9 @@ module Salus::Scanners
       #   - -fmt=json for JSON output
       #   - gosec can scan go modules as of 2.0.0.
       shell_return = Dir.chdir(@repository.path_to_repo) do
-        run_shell("gosec #{config_options} -fmt=json ./...")
+        cmd = "gosec #{config_options}-fmt=json ./..."
+        puts cmd
+        run_shell(cmd)
       end
 
       # This produces no JSON output so must be checked before parsing stdout
@@ -62,7 +64,7 @@ module Salus::Scanners
       options.concat(create_bool_option('nosec')) if @config.key?('nosec')
 
       # Set an alternative string for #nosec
-      options.concat(create_list_option('nosec-tag', /\A\S*\z/)) if @config.key?('nosec-tag')
+      options.concat(create_string_option('nosec-tag', /\A\S*\z/)) if @config.key?('nosec-tag')
 
       # Path to optional config file
       options.concat(create_file_option('conf')) if @config.key?('conf')
@@ -81,11 +83,11 @@ module Salus::Scanners
 
       # Filter out the issues with a lower severity than the given value.
       # Valid options are: low, medium, high
-      options.concat(create_list_option('severity', /\Alow|medium|high\z/i)) if @config.key?('severity')
+      options.concat(create_string_option('severity', /\Alow|medium|high\z/i)) if @config.key?('severity')
 
       # Filter out the issues with a lower confidence than the given value.
       # Valid options are: low, medium, high
-      options.concat(create_list_option('confidence', /\Alow|medium|high\z/i)) if @config.key?('confidence')
+      options.concat(create_string_option('confidence', /\Alow|medium|high\z/i)) if @config.key?('confidence')
 
       # Do not fail the scanning, even if issues were found
       options.concat(create_bool_option('no-fail')) if @config.key?('no-fail')
@@ -96,6 +98,8 @@ module Salus::Scanners
       # exlude the folders from scan
       # can be files or directories
       options.concat(create_file_list_option('exclude-dir')) if @config.key?('exclude-dir')
+
+      options
     end
 
     def should_run?
@@ -122,6 +126,12 @@ module Salus::Scanners
       return '' unless validate_file_option(keyword)
 
       "-#{keyword}=#{Shellwords.escape(config_file)} "
+    end
+
+    def create_string_option(keyword, regex)
+      return '' unless validate_string_option(keyword, regex)
+
+      "-#{keyword}=#{Shellwords.escape(@config.fetch(keyword))} "
     end
 
     def create_list_option(keyword, regex)
