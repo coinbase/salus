@@ -165,12 +165,19 @@ module Salus::Scanners
         return false
       end
 
-      config_file = File.realpath(@config.fetch(keyword))
-      return true if config_file.include?(@repository.path_to_repo)
+      begin
+        config_dir = File.realpath(@config.fetch(keyword))
+      rescue StandardError
+        report_warn(:scanner_misconfiguration, "Could not find #{config_dir} defined by \
+                                                #{keyword} when expanded into a fully qualified \
+                                                path")
+        return false
+      end
+      return true if config_dir.include?(@repository.path_to_repo)
 
-      report_warn(:scanner_misconfiguration, "Expecting #{config_file} defined by #{keyword} to be a \
-                                              file/dir in the project repo but was located at \
-                                              '#{config_file}' instead.")
+      report_warn(:scanner_misconfiguration, "Expecting #{config_dir} defined by #{keyword} to be \
+                                              a dir in the project repo but was located at \
+                                              '#{config_dir}' instead.")
       false
     end
   end
