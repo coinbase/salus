@@ -12,9 +12,7 @@ module Salus::Scanners
       #   - -fmt=json for JSON output
       #   - gosec can scan go modules as of 2.0.0.
       shell_return = Dir.chdir(@repository.path_to_repo) do
-        cmd = "gosec #{config_options}-fmt=json ./..."
-        puts cmd
-        run_shell(cmd)
+        run_shell("gosec #{config_options}-fmt=json ./...")
       end
 
       # This produces no JSON output so must be checked before parsing stdout
@@ -64,10 +62,10 @@ module Salus::Scanners
       options.concat(create_bool_option('nosec')) if @config.key?('nosec')
 
       # Set an alternative string for #nosec
-      options.concat(create_string_option('nosec-tag', /\A\S*\z/)) if @config.key?('nosec-tag')
+      options.concat(create_string_option('nosec-tag', /\A\S+\z/)) if @config.key?('nosec-tag')
 
       # Path to optional config file
-      options.concat(create_file_option('conf')) if @config.key?('conf')
+      # options.concat(create_file_option('conf')) if @config.key?('conf')
 
       # Comma separated list of rules IDs to include
       options.concat(create_list_option('include', /\AG\d{3}\z/i)) if @config.key?('include')
@@ -79,15 +77,16 @@ module Salus::Scanners
       options.concat(create_bool_option('sort')) if @config.key?('sort')
 
       # Comma separated list of build tags
-      options.concat(create_list_option('tags', /\A\S*\z/)) if @config.key?('tags')
+      # options.concat(create_list_option('tags', /\A\S*\z/)) if @config.key?('tags')
 
       # Filter out the issues with a lower severity than the given value.
       # Valid options are: low, medium, high
-      options.concat(create_string_option('severity', /\Alow|medium|high\z/i)) if @config.key?('severity')
+      lmh_regex = /\Alow|medium|high\z/i
+      options.concat(create_string_option('severity', lmh_regex)) if @config.key?('severity')
 
       # Filter out the issues with a lower confidence than the given value.
       # Valid options are: low, medium, high
-      options.concat(create_string_option('confidence', /\Alow|medium|high\z/i)) if @config.key?('confidence')
+      options.concat(create_string_option('confidence', lmh_regex)) if @config.key?('confidence')
 
       # Do not fail the scanning, even if issues were found
       options.concat(create_bool_option('no-fail')) if @config.key?('no-fail')
@@ -97,7 +96,7 @@ module Salus::Scanners
 
       # exlude the folders from scan
       # can be files or directories
-      options.concat(create_file_list_option('exclude-dir')) if @config.key?('exclude-dir')
+      options.concat(create_list_file_option('exclude-dir')) if @config.key?('exclude-dir')
 
       options
     end
@@ -125,7 +124,7 @@ module Salus::Scanners
     def create_file_option(keyword)
       return '' unless validate_file_option(keyword)
 
-      "-#{keyword}=#{Shellwords.escape(config_file)} "
+      "-#{keyword}=#{Shellwords.escape(@config.fetch(keyword))} "
     end
 
     def create_string_option(keyword, regex)
@@ -141,10 +140,15 @@ module Salus::Scanners
     end
 
     def create_list_file_option(keyword)
+      file_array = @config.fetch(keyword)
+      @config[keyword] = nil
+
       options = ''
-      @config.fetch(keyword).each do |file|
-        options.concat(create_file_option(file))
+      file_array.each do |file|
+        @config[keyword] = file
+        options.concat(create_file_option(keyword))
       end
+      options
     end
   end
 end
