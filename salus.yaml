@@ -1,0 +1,4 @@
+Gosec:
+  scanner_configs:
+  - exclude-dir:
+    - spec
