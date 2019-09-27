@@ -1,0 +1,11 @@
+scanner_configs:
+  Gosec:
+    exclude-dir:
+      - spec/fixtures/gosec/buildtags_goapp # cannot be correctly built by gosec at this time
+      - spec/fixtures/gosec/malformed_goapp # knowingly malformed anc can't be built
+      - spec/fixtures/gosec/nosec-tag
+      - spec/fixtures/gosec/multiple_vulns
+      - spec/fixtures/gosec/buildtags_goapp
+      - spec/fixtures/gosec/vulnerable_goapp
+      - spec/fixtures/gosec/multifolder_goapp
+      - spec/fixtures/gosec/recursive_vulnerable_goapp
