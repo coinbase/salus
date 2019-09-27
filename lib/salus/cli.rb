@@ -5,7 +5,7 @@ module Salus
     class_option :config,
                  aliases: ['-c'],
                  desc: 'Point to local or remote configuration files. '\
-                       'e.g. --config="file path/to/salus.yaml"',
+                       'e.g. --config="file://path/to/salus.yaml"',
                  type: :string,
                  default: ''
     class_option :quiet,
