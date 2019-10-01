@@ -66,6 +66,7 @@ module Salus::Scanners
       options.concat(create_string_option('nosec-tag', /\A\S+\z/)) if @config.key?('nosec-tag')
 
       # Path to optional config file
+      # Issue filed at https://github.com/securego/gosec/issues/393
       # options.concat(create_file_option('conf')) if @config.key?('conf')
 
       # Comma separated list of rules IDs to include
@@ -78,6 +79,7 @@ module Salus::Scanners
       options.concat(create_bool_option('sort')) if @config.key?('sort')
 
       # Comma separated list of build tags
+      # Issue filed at https://github.com/securego/gosec/issues/394
       # options.concat(create_list_option('tags', /\A\S*\z/)) if @config.key?('tags')
 
       # Filter out the issues with a lower severity than the given value.
