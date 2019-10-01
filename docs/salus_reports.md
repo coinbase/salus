@@ -20,7 +20,7 @@ The report, structurally, is a Hash of the following form:
 {
   "version": <String, semantic version of this report format>,
   "project_name": <String, comes from Salus configuration, typically used for identifying the codebase for this report>,
-  "custom_info": <String, comes from Salus configuration, used to pipe additional data from Salus runner to report consumer>,
+  "custom_info": <String or hash, comes from Salus configuration, used to pipe additional data from Salus runner to report consumer>,
   "configuration": <Hash, exact configuration used while Salus executed>,
   "scans": {
     <String, scanner name>: <Boolean, true for pass, false for fail>

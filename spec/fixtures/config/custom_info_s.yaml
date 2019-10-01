@@ -1,0 +1,12 @@
+---
+enforced_scanners:
+  - BundleAudit
+  - Brakeman
+
+scanner_configs:
+  BundleAudit:
+    ignore:
+      - CVE-AAAA-BBBB
+      - CVE-XXXX-YYYY
+
+custom_info: "master"

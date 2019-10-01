@@ -54,7 +54,7 @@ module Salus
       @enforced_scanners = all_none_some(SCANNERS.keys, final_config['enforced_scanners'])
       @scanner_configs   = final_config['scanner_configs'] || {}
       @project_name      = final_config['project_name']&.to_s
-      @custom_info       = final_config['custom_info']&.to_s
+      @custom_info       = final_config['custom_info']
       @report_uris       = final_config['reports'] || []
 
       apply_default_scanner_config!
