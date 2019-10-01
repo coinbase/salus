@@ -39,7 +39,7 @@ module Salus::Scanners
       # Yarn gives us a new-line separated list of JSON blobs.
       # But the last JSON blob is a summary that we can discard.
       # We must also pluck out only the standard advisory hashes.
-      command = AUDIT_COMMAND + scan_deps
+      command = "#{AUDIT_COMMAND} #{scan_deps}"
       command_output = run_shell(command)
 
       report_stdout(command_output.stdout)
