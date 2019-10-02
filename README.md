@@ -52,7 +52,7 @@ Salus also parses dependency files and reports on what libraries and version are
 
 Sometimes it's necessary to whitelist certain CVEs that Salus detects. The [docs/scanners directory](docs/scanners) explains how to do so for each scanner that Salus supports.
 
-If you would like to build customer scanners or support more languages that are not currenclty supported, you can use [this method of building custom Salus images](docs/custom_salus.md).
+If you would like to build custom scanners or support more languages that are not currently supported, you can use [this method of building custom Salus images](docs/custom_salus.md).
 
 
 ## CircleCI Integration
