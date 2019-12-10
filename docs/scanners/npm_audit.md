@@ -2,4 +2,4 @@
 
 Finds CVEs in Node modules included as dependencies in a project that is packaged by NPM.
 
-See the [NodeAudit](/docs/node_audit.md) doc for configuration options.
+See the [NodeAudit](node_audit.md) doc for configuration options.
