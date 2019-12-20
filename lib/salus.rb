@@ -64,6 +64,7 @@ module Salus
         raise e if ENV['RUNNING_SALUS_TESTS']
 
         puts "Could not send Salus report: (#{e.class}: #{e.message})"
+        Bugsnag.notify(e)
       end
 
       heartbeat_thr&.kill
