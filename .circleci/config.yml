@@ -19,7 +19,7 @@ jobs:
     steps:
       - checkout
       - run: apt-get update && apt-get install cmake -y
-      - run: gem install bundler
+      - run: gem install bundler -v'2.0.2'
       - run: bundle install
       - run: bundle exec rubocop
 
