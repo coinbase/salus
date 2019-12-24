@@ -8,7 +8,7 @@ To develop Salus, you will need to install Ruby and the relevant dependencies. B
 ### install Ruby per https://www.ruby-lang.org/en/documentation/installation/
 
 ### Install gems
-gem install bundler
+gem install bundler -v'2.0.2'
 bundle install
 
 ### Install other system dependencies
