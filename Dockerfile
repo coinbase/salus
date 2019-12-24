@@ -70,7 +70,7 @@ RUN mkdir -p /home/repo
 WORKDIR /home
 
 # make sure we're on latest bundler
-RUN gem install bundler
+RUN gem install bundler -v'2.0.2'
 
 # ruby gems
 COPY Gemfile Gemfile.lock /home/
