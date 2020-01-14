@@ -5,3 +5,10 @@ The [Brakeman Scanner](http://brakemanscanner.org/) is a static analysis tool th
 ## Configuration
 
 Brakeman's configuration is complex and it parses its own `brakeman.ignore` file. Salus will let Brakeman reuse this file if it's present. To create one, you can use `brakeman -I` which lets you run an interactive scan.
+
+## Configuration
+```yaml
+  scanner_configs:
+    Brakeman:
+    - path: path/to/rails/app             # default -  looks for project_root/app
+```
