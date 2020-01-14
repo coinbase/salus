@@ -53,7 +53,8 @@ module Salus::Scanners
     end
 
     def has_app_dir?
-      Dir.exist?(File.join(@repository.path_to_repo, 'app'))
+      Dir.exist?(File.join(@repository.path_to_repo, 'app')) ||
+        (validate_file_option('path') && @config.fetch('path').split('/')[-1].contains('app'))
     end
 
     # flag options taken from https://brakemanscanner.org/docs/options/
