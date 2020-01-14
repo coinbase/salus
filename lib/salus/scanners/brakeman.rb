@@ -11,7 +11,7 @@ module Salus::Scanners
         # Use JSON output since that will be the best for an API to receive and parse.
         # We need CI=true envar to ensure brakeman doesn't use an interactive display
         # for the report that it outputs.
-        shell_return = run_shell('brakeman -f json', env: { "CI" => "true" })
+        shell_return = run_shell("brakeman -f json #{config_options}", env: { "CI" => "true" })
 
         # From the Brakeman website:
         #   Note all Brakeman output except reports are sent to stderr,
@@ -54,6 +54,23 @@ module Salus::Scanners
 
     def has_app_dir?
       Dir.exist?(File.join(@repository.path_to_repo, 'app'))
+    end
+
+    # flag options taken from https://brakemanscanner.org/docs/options/
+    def config_options
+      options = ''
+
+      # path/to/rails/app
+      # must be an app dir
+      options.concat(create_list_file_option('path')) if @config.key?('path')
+
+      options
+    end
+
+    def create_file_option(keyword)
+      return '' unless validate_file_option(keyword)
+
+      "--#{keyword} #{Shellwords.escape(@config.fetch(keyword))} "
     end
   end
 end
