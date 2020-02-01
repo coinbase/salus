@@ -14,7 +14,7 @@ module Salus::Scanners
 
     def initialize(repository:, config:)
       @repository = repository
-      @config = config.with_indifferent_access # So we can access with symbol or string
+      @config = config
       @report = Salus::ScanReport.new(
         name,
         custom_failure_message: @config['failure_message']
@@ -241,8 +241,6 @@ module Salus::Scanners
         when :bool, :boolean
           create_bool_option(keyword_string, prefix, between, suffix)
         when :file
-          puts keyword_string
-          puts prefix
           create_file_option(keyword_string, prefix, between, suffix)
         when :list
           create_list_option(keyword_string, regex, prefix, between, joinBy, suffix)
@@ -261,32 +259,33 @@ module Salus::Scanners
     def build_options(prefix:, suffix:, between:, args:, joinBy: ',')
       default_regex = /.*/
       args.reduce('') do |options, (keyword, val)| 
-        option = case val
-        when Symbol, String
-          build_option(prefix: prefix, suffix: suffix, between: between, type: val, keyword: keyword, joinBy: joinBy, regex: default_regex)
-        when Hash #If you are doing something complicated
-          if val[:type].nil? 
-            report_warn(:scanner_misconfiguration, "Could not interpolate config for #{keyword} defined by \
-            since there was no type defined in the hash ")
-            '' #Return an empty string and warn
-          else 
-            build_option(
-              prefix: val[:prefix] || prefix,
-              suffix: val[:suffix] || suffix,
-              between: val[:between] || between,
-              keyword: keyword,
-              type: val[:type],
-              regex: val[:regex] || default_regex,
-              joinBy: val[:joinBy] || joinBy
-            )
+        option =
+          case val
+          when Symbol, String
+            build_option(prefix: prefix, suffix: suffix, between: between, type: val, keyword: keyword, joinBy: joinBy, regex: default_regex)
+          when Hash # If you are doing something complicated
+            if val[:type].nil? 
+              report_warn(:scanner_misconfiguration, "Could not interpolate config for #{keyword} \
+              defined by since there was no type defined in the hash ")
+              '' # Return an empty string and warn
+            else
+              build_option(
+                prefix: val[:prefix] || prefix,
+                suffix: val[:suffix] || suffix,
+                between: val[:between] || between,
+                keyword: keyword,
+                type: val[:type],
+                regex: val[:regex] || default_regex,
+                joinBy: val[:joinBy] || joinBy
+              )
+            end
+          when Regexp # Assume it is a string type if just regex is supplied 
+            build_option(prefix: prefix, suffix: suffix, between: between, type: :string, keyword: keyword, joinBy: joinBy, regex: val)
+          else
+            report_warn(:scanner_misconfiguration, "Could not interpolate config for #{keyword}  \
+            defined by since the value provided was not a String, Symbol, Regexp or Hash")
+            '' # Return an empty string and warn
           end
-        when Regexp #Assume it is a string type if just regex is supplied 
-          build_option(prefix: prefix, suffix: suffix, between: between, type: :string, keyword: keyword, joinBy: joinBy, regex: val)
-        else 
-          report_warn(:scanner_misconfiguration, "Could not interpolate config for #{keyword} defined by \
-          since the value provided was not a String, Symbol, Regexp or Hash")
-          '' #Return an empty string and warn
-        end
         options + option
       end
     end
