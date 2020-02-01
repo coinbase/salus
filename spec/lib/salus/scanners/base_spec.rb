@@ -131,7 +131,7 @@ describe Salus::Scanners::Base do
   describe '#build_options' do 
     let(:scanner) { Salus::Scanners::Base.new(repository: repository, config: {
         'flag': 'true',
-        'onlyLow': 'low',
+        'onlyLow' => 'low',
         'bool' => 'true',
         'file': './bla.js',
         'list' => ['foo','bar','1','2'],
