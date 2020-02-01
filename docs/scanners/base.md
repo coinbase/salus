@@ -34,3 +34,63 @@ scanner_configs:
       If this does not resolve the error, seek advice from the security team.
       Slack channel: #security
 ```
+
+## Reading/setting up custom configs for your scanner
+
+For setting up custom configurations for your scanner, you can optionally use the helper method ```build_options```.
+You do not have to use this method if it doesn't help you use your scanner. 
+
+For example, let's pretend you intend to send in the configurations in the following format:
+
+```-flag -string=foo --list=foo,bar,baz -bool=true -file=./foobar.js -file_list=foo.js,bar.js```
+
+Note each type for the arguments, the supported types are:
+```ruby
+  :flag
+  :string 
+  :list # For a list of strings
+  :bool
+  :file 
+  :file_list # For a list of files
+```
+
+You would call build options like so:
+
+```ruby 
+build_options(
+  prefix: '-', # The default item meaning a new argument
+  suffix: ' ', # The way arguments are separated
+  between: '=', # The item between the argument's name and value
+  # joinBy: ',', # Optional argument to denote items in a list, is set to ',' by default
+  args: { # The actual list of arguments
+    flag: :flag, # Set the type for flags as ':flag'
+    string: :string, 
+    # string: /^foo$/, # Optionally, you can set a regex to the value, and then it will automatically know it is a string
+    list: { # For cases where it doesn't use the defaults, you can set an argument with a hash like:
+      type: :list, # Always set a type
+      prefix: '--', # Override the default prefix
+      # regex: /\Afoo|bar|baz\z/i, # Optionally you can use a regex to only allow certain matches
+    },
+    file: :file,
+    file_list: :file_list
+  }
+)
+```
+
+This will automatically format and read the yaml config file for the scanner configs:
+
+```yaml
+scanner_configs:
+  MyScanner:
+    flag: true # Flags are set as true/false if they exist, similar to booleans
+    string: 'foo'
+    list: 
+      - 'foo'
+      - 'bar'
+      - 'baz'
+    bool: true
+    file: './foobar.js'
+    file_list:
+      - 'foo.js'
+      - 'bar.js'
+```
