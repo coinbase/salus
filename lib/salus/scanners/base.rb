@@ -1,6 +1,8 @@
 require 'open3'
 require 'salus/scan_report'
 require 'salus/shell_result'
+require 'shellwords'
+
 
 module Salus::Scanners
   # Super class for all scanner objects.
@@ -12,7 +14,7 @@ module Salus::Scanners
 
     def initialize(repository:, config:)
       @repository = repository
-      @config = config
+      @config = config.with_indifferent_access # So we can access with symbol or string
       @report = Salus::ScanReport.new(
         name,
         custom_failure_message: @config['failure_message']
@@ -180,6 +182,113 @@ module Salus::Scanners
                                               #{keyword} to be a dir in the project repo but was \
                                                located at '#{config_dir}' instead.")
       false
+    end
+
+    def create_flag_option(keyword, prefix = '-', suffix = ' ')
+      return '' unless validate_bool_option(keyword)
+
+      if @config.fetch(keyword).downcase == "true"
+        "#{prefix}#{keyword}#{suffix}"
+      else 
+        ''
+      end
+    end 
+    def create_bool_option(keyword, prefix = '-', between = '=', suffix = ' ')
+      return '' unless validate_bool_option(keyword)
+
+      "#{prefix}#{keyword}#{between}#{Shellwords.escape(@config.fetch(keyword))}#{suffix}"
+    end
+
+    def create_file_option(keyword, prefix = '-', between = '=', suffix = ' ')
+      return '' unless validate_file_option(keyword)
+      "#{prefix}#{keyword}#{between}#{Shellwords.escape(@config.fetch(keyword))}#{suffix}"
+    end
+
+    def create_string_option(keyword, regex, prefix = '-', between = '=', suffix = ' ')
+      return '' unless validate_string_option(keyword, regex)
+
+      "#{prefix}#{keyword}#{between}#{Shellwords.escape(@config.fetch(keyword))}#{suffix}"
+    end
+
+    def create_list_option(keyword, regex, prefix = '-', between = '=', joinBy = ',', suffix = ' ')
+      return '' unless validate_list_option(keyword, regex)
+
+      "#{prefix}#{keyword}#{between}#{Shellwords.escape(@config.fetch(keyword).join(joinBy))}#{suffix}"
+    end
+
+    def create_list_file_option(keyword, prefix = '-', between = '=', suffix = ' ')
+      file_array = @config.fetch(keyword)
+      @config[keyword] = nil
+
+      options = ''
+      file_array.each do |file|
+        @config[keyword] = file
+        options.concat(create_file_option(keyword, prefix, between, suffix))
+      end
+      options
+    end
+    
+    public 
+
+    def build_option(prefix:, suffix:, between:, keyword:, type:, regex: /.*/, joinBy: ',')
+      keyword_string = keyword.to_s
+      if @config.key?(keyword_string)
+        case type.to_sym.downcase
+        when :flag
+          create_flag_option(keyword_string, prefix, suffix)
+        when :string 
+          create_string_option(keyword_string, regex, prefix, between, suffix)
+        when :bool, :boolean
+          create_bool_option(keyword_string, prefix, between, suffix)
+        when :file
+          puts keyword_string
+          puts prefix
+          create_file_option(keyword_string, prefix, between, suffix)
+        when :list
+          create_list_option(keyword_string, regex, prefix, between, joinBy, suffix)
+        when :list_file, :file_list
+          create_list_file_option(keyword_string, prefix, between, suffix)
+        else 
+          report_warn(:scanner_misconfiguration, "Could not interpolate config for #{keyword_string} defined by \
+          the type of #{type}. ")
+          '' # Return an empty string and warn
+        end
+      else
+        '' # Config doesn't have the key in it, so return an empty string
+      end
+    end
+
+    def build_options(prefix:, suffix:, between:, args:, joinBy: ',')
+      default_regex = /.*/
+      args.reduce('') do |options, (keyword, val)| 
+        option = case val
+        when Symbol, String
+          build_option(prefix: prefix, suffix: suffix, between: between, type: val, keyword: keyword, joinBy: joinBy, regex: default_regex)
+        when Hash #If you are doing something complicated
+          if val[:type].nil? 
+            report_warn(:scanner_misconfiguration, "Could not interpolate config for #{keyword} defined by \
+            since there was no type defined in the hash ")
+            '' #Return an empty string and warn
+          else 
+            build_option(
+              prefix: val[:prefix] || prefix,
+              suffix: val[:suffix] || suffix,
+              between: val[:between] || between,
+              keyword: keyword,
+              type: val[:type],
+              regex: val[:regex] || default_regex,
+              joinBy: val[:joinBy] || joinBy
+            )
+          end
+        when Regexp #Assume it is a string type if just regex is supplied 
+          build_option(prefix: prefix, suffix: suffix, between: between, type: :string, keyword: keyword, joinBy: joinBy, regex: val)
+        else 
+          report_warn(:scanner_misconfiguration, "Could not interpolate config for #{keyword} defined by \
+          since the value provided was not a String, Symbol, Regexp or Hash")
+          '' #Return an empty string and warn
+        end
+        options + option
+      end
     end
   end
 end
