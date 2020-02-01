@@ -11,7 +11,7 @@ module Salus::Scanners
         # Use JSON output since that will be the best for an API to receive and parse.
         # We need CI=true envar to ensure brakeman doesn't use an interactive display
         # for the report that it outputs.
-        shell_return = run_shell("brakeman -f json #{config_options}", env: { "CI" => "true" })
+        shell_return = run_shell('brakeman #{config_options}-f json', env: { "CI" => "true" })
 
         # From the Brakeman website:
         #   Note all Brakeman output except reports are sent to stderr,
@@ -43,6 +43,47 @@ module Salus::Scanners
     end
 
     private
+    # Taken from https://brakemanscanner.org/docs/options/ 
+    def config_options
+      build_options(
+        prefix: '-',
+        suffix: ' ',
+        between: ' ',
+        args: {
+          c: :file, 
+          A: :flag, 
+          n: :flag, 
+          p: :file, 
+          q: :flag, 
+          '3': :flag, 
+          '4': :flag, 
+          no-assume-routes: {type: :flag, prefix: '--'},
+          escape-html: {type: :flag, prefix: '--'},
+          faster: {type: :flag, prefix: '--'},
+          no-branching: {type: :flag, prefix: '--'},
+          branch-limit: /^\d+$/,
+          skip-files: :list_file,
+          only-files: :list_file,
+          skip-libs: {type: :flag, prefix: '--'},
+          test: :list,
+          except: :list,
+          i: :file,
+          ignore-model-output: {type: :flag, prefix: '--'},
+          ignore-protected: {type: :flag, prefix: '--'},
+          report-direct: {type: :flag, prefix: '--'},
+          safe-methods: :list, 
+          url-safe-methods: :list,
+          w: {
+            prefix: '-',
+            between: '', #essentially can only be -w1, -w2, -w3
+            type: :string,
+            regex: /\A1|2|3\z/i,
+          },
+        }
+      )
+
+      options
+    end
 
     def has_rails_gem?
       gemfile_path = "#{@repository.path_to_repo}/Gemfile"
