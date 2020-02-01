@@ -79,7 +79,7 @@ module Salus::Scanners
           sort: :bool, # Sort issues by severity
           # Filter out the issues with a lower severity than the given value.
           # Valid options are: low, medium, high
-          serverity: lmh_regex,
+          severity: lmh_regex,
           # Filter out the issues with a lower confidence than the given value.
           # Valid options are: low, medium, high
           confidence: lmh_regex,
