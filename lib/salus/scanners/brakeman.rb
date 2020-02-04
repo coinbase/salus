@@ -55,7 +55,8 @@ module Salus::Scanners
           c: :file,
           A: :flag,
           n: :flag,
-          p: :file,
+          p: :file_list,
+          path: file_list_with_two_dashes,
           q: :flag,
           routes: :flag,
           '3': :flag,
@@ -97,7 +98,15 @@ module Salus::Scanners
     end
 
     def has_app_dir?
-      Dir.exist?(File.join(@repository.path_to_repo, 'app'))
+      Dir.exist?(File.join(@repository.path_to_repo, 'app')) ||
+        (@config.key?('path') && validate_file_option('path') &&
+          @config.fetch('path').split('/')[-1].contains('app'))
+    end
+
+    def create_file_option(keyword)
+      return '' unless validate_file_option(keyword)
+
+      "--#{keyword} #{Shellwords.escape(@config.fetch(keyword))} "
     end
   end
 end

@@ -5,7 +5,10 @@ ruby '2.4.6'
 gem 'activesupport', '~> 5.2', '>= 5.2.1'
 gem 'brakeman', '~> 4.7'
 gem 'bugsnag', '~> 4.0'
-gem 'bundler', '~> 2'
+# TODO: Lock `bundler` until:
+#  https://github.com/rubysec/bundler-audit/issues/235 and
+#  https://github.com/bundler/bundler/issues/7511 are resolved.
+gem 'bundler', '= 2.0.2'
 gem 'bundler-audit', '~> 0.6.1'
 gem 'faraday', '~> 0.9'
 gem 'github-linguist', '~> 6.0.1'
