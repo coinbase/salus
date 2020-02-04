@@ -11,7 +11,7 @@ module Salus::Scanners
         # Use JSON output since that will be the best for an API to receive and parse.
         # We need CI=true envar to ensure brakeman doesn't use an interactive display
         # for the report that it outputs.
-        shell_return = run_shell('brakeman #{config_options}-f json', env: { "CI" => "true" })
+        shell_return = run_shell("brakeman #{config_options} -f json", env: { "CI" => "true" })
 
         # From the Brakeman website:
         #   Note all Brakeman output except reports are sent to stderr,
@@ -42,9 +42,11 @@ module Salus::Scanners
       @repository.gemfile_present? && has_rails_gem? && has_app_dir?
     end
 
-    private
     # Taken from https://brakemanscanner.org/docs/options/ 
     def config_options
+      flag_with_two_dashes = {type: :flag, prefix: '--'}
+      list_with_two_dashes = {type: :list, prefix: '--'}
+      file_list_with_two_dashes = {type: :list_file, prefix: '--'}
       build_options(
         prefix: '-',
         suffix: ' ',
@@ -54,25 +56,26 @@ module Salus::Scanners
           A: :flag, 
           n: :flag, 
           p: :file, 
-          q: :flag, 
+          q: :flag,
+          routes: :flag,  
           '3': :flag, 
           '4': :flag, 
-          'no-assume-routes': {type: :flag, prefix: '--'},
-          'escape-html': {type: :flag, prefix: '--'},
-          faster: {type: :flag, prefix: '--'},
-          'no-branching': {type: :flag, prefix: '--'},
+          'no-assume-routes': flag_with_two_dashes,
+          'escape-html': flag_with_two_dashes,
+          faster: flag_with_two_dashes,
+          'no-branching': flag_with_two_dashes,
           'branch-limit': /^\d+$/,
-          'skip-files': :list_file,
-          'only-files': :list_file,
-          'skip-libs': {type: :flag, prefix: '--'},
-          test: :list,
-          except: :list,
+          'skip-files': file_list_with_two_dashes,
+          'only-files': file_list_with_two_dashes,
+          'skip-libs': flag_with_two_dashes,
+          test: list_with_two_dashes,
+          except: list_with_two_dashes,
           i: :file,
-          'ignore-model-output': {type: :flag, prefix: '--'},
-          'ignore-protected': {type: :flag, prefix: '--'},
-          'report-direct': {type: :flag, prefix: '--'},
-          'safe-methods': :list, 
-          'url-safe-methods': :list,
+          'ignore-model-output': flag_with_two_dashes,
+          'ignore-protected': flag_with_two_dashes,
+          'report-direct': flag_with_two_dashes,
+          'safe-methods': list_with_two_dashes, 
+          'url-safe-methods': list_with_two_dashes,
           w: {
             prefix: '-',
             between: '', #essentially can only be -w1, -w2, -w3
@@ -81,10 +84,9 @@ module Salus::Scanners
           },
         }
       )
-
-      options
     end
 
+    private
     def has_rails_gem?
       gemfile_path = "#{@repository.path_to_repo}/Gemfile"
       gemfile_lock_path = "#{@repository.path_to_repo}/Gemfile.lock"

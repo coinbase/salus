@@ -87,7 +87,7 @@ module Salus::Scanners
           tests: :bool, # Scan tests files
           # exlude the folders from scan
           # can be files or directories
-          'exclude-dir': :list_file
+          'exclude-dir': :file
         }
       )
     end
