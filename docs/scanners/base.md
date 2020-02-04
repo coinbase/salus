@@ -42,7 +42,7 @@ You do not have to use this method if it doesn't help you use your scanner.
 
 For example, let's pretend you intend to send in the configurations in the following format:
 
-```-flag -string=foo --list=foo,bar,baz -bool=true -file=./foobar.js -file_list=foo.js,bar.js -multiple first -multiple second```
+```-flag -string=foo --list=foo,bar,baz -bool=true -file=./foobar.js -file_list=foo.js,bar.js -multiple first -multiple second -d```
 
 Note each type for the arguments, the supported types are:
 ```ruby
@@ -75,6 +75,10 @@ build_options(
     file_list: :file_list
   },
   multiple: :string,
+  descriptive: { # Use a more descriptive name
+    type: :flag,
+    keyword: 'd' # Use the original non-descriptive name here
+  }
 )
 ```
 
@@ -97,4 +101,5 @@ scanner_configs:
     multiple: # For a parameter that appears multiple times, just make it a list. Lists of lists are not supported
       - 'first'
       - 'second'
+    descriptive: true # Use your descriptive name in the yaml config
 ```
