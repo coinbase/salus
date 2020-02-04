@@ -67,14 +67,14 @@ module Salus::Scanners
         between: '=',
         args: {
           nosec: :bool, # Ignores #nosec comments when set
-          'nosec-tag':  /\A\S+\z/, # Set an alternative string for #nosec
+          'nosec-tag': /\A\S+\z/, # Set an alternative string for #nosec
           include: { # Comma separated list of rules IDs to include
             type: :list,
-            regex: /\AG\d{3}\z/i,
+            regex: /\AG\d{3}\z/i
           },
           exclude: { # Comma separated list of rules IDs to exclude
             type: :list,
-            regex: /\AG\d{3}\z/i,
+            regex: /\AG\d{3}\z/i
           },
           sort: :bool, # Sort issues by severity
           # Filter out the issues with a lower severity than the given value.
