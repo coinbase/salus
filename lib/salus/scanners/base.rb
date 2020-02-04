@@ -329,7 +329,7 @@ module Salus::Scanners
                        suffix: suffix,
                        between: between,
                        type: type_value,
-                       keyword: keyword,
+                       keyword: keyword_string,
                        value: config_value,
                        join_by: join_by,
                        regex: default_regex
@@ -345,7 +345,7 @@ module Salus::Scanners
                          prefix: type_value[:prefix] || prefix,
                          suffix: type_value[:suffix] || suffix,
                          between: type_value[:between] || between,
-                         keyword: keyword_string,
+                         keyword: type_value[:keyword] || keyword_string,
                          value: config_value,
                          type: type_value[:type],
                          regex: type_value[:regex] || default_regex,
