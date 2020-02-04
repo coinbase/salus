@@ -183,7 +183,7 @@ module Salus::Scanners
       false
     end
 
-    def create_flag_option(keyword:, value:, prefix:, between:, suffix:, regex: /.*/, join_by: ',')
+    def create_flag_option(keyword:, value:, prefix:, suffix:)
       return '' unless validate_bool_option(keyword, value)
 
       if value.to_s.downcase == "true"
@@ -193,19 +193,19 @@ module Salus::Scanners
       end
     end
 
-    def create_bool_option(keyword:, value:, prefix:, between:, suffix:, regex: /.*/, join_by: ',')
+    def create_bool_option(keyword:, value:, prefix:, between:, suffix:)
       return '' unless validate_bool_option(keyword, value)
 
       "#{prefix}#{keyword}#{between}#{Shellwords.escape(value)}#{suffix}"
     end
 
-    def create_file_option(keyword:, value:, prefix:, between:, suffix:, regex: /.*/, join_by: ',')
+    def create_file_option(keyword:, value:, prefix:, between:, suffix:)
       return '' unless validate_file_option(keyword, value)
 
       "#{prefix}#{keyword}#{between}#{Shellwords.escape(value)}#{suffix}"
     end
 
-    def create_string_option(keyword:, value:, prefix:, between:, suffix:, regex: /.*/, join_by: ',')
+    def create_string_option(keyword:, value:, prefix:, between:, suffix:, regex: /.*/)
       return '' unless validate_string_option(keyword, value, regex)
 
       "#{prefix}#{keyword}#{between}#{Shellwords.escape(value)}#{suffix}"
@@ -217,30 +217,76 @@ module Salus::Scanners
       "#{prefix}#{keyword}#{between}#{Shellwords.escape(value.join(join_by))}#{suffix}"
     end
 
-    def create_list_file_option(keyword:, value:, prefix:, between:, suffix:, regex: /.*/, join_by: ',')
+    def create_list_file_option(keyword:, value:, prefix:, between:, suffix:, join_by: ',')
       validated_files = value.select do |file|
         validate_file_option(keyword, file)
       end
       "#{prefix}#{keyword}#{between}#{Shellwords.escape(validated_files.join(join_by))}#{suffix}"
     end
 
-    def multiple_options_if_array(method_name:, keyword:, value:, prefix:, between:, suffix:, max_depth: 1, regex: /.*/, join_by: ',')
-      if max_depth > 0 && value.is_a?(Array) # If the maximum recursion depth is reached, just pass the array to the method
-        value.reduce('') do |options, item|
-          options + multiple_options_if_array(
-            method_name: method_name,
-            keyword: keyword,
-            value: item, # Use each item in the array as the value
-            prefix: prefix,
-            between: between,
-            suffix: suffix,
-            max_depth: max_depth - 1,
-            regex: regex,
-            join_by: join_by
-          )
+    public
+
+    def build_option(
+      prefix:,
+      suffix:,
+      between:,
+      keyword:,
+      value:,
+      type:,
+      regex: /.*/,
+      join_by: ',',
+      max_depth: 1
+    )
+      clean_type = type.to_sym.downcase
+      case clean_type
+      when :flag, :string, :bool, :booleans, :file # Allow repeat values
+        if max_depth.positive? && value.is_a?(Array)
+          value.reduce('') do |options, item|
+            options + build_option(
+              type: clean_type,
+              keyword: keyword,
+              value: item, # Use each item in the array as the value
+              prefix: prefix,
+              between: between,
+              suffix: suffix,
+              max_depth: max_depth - 1,
+              regex: regex,
+              join_by: join_by
+            )
+          end
+        else
+          case clean_type
+          when :string
+            create_string_option(
+              keyword: keyword,
+              value: value,
+              prefix: prefix,
+              suffix: suffix,
+              between: between,
+              regex: regex
+            )
+          when :bool, :booleans
+            create_bool_option(
+              keyword: keyword,
+              value: value,
+              prefix: prefix,
+              suffix: suffix,
+              between: between
+            )
+          when :flag
+            create_flag_option(keyword: keyword, value: value, prefix: prefix, suffix: suffix)
+          when :file
+            create_file_option(
+              keyword: keyword,
+              value: value,
+              prefix: prefix,
+              suffix: suffix,
+              between: between
+            )
+          end
         end
-      else
-        method(method_name).call(
+      when :list
+        create_list_option(
           keyword: keyword,
           value: value,
           prefix: prefix,
@@ -249,122 +295,81 @@ module Salus::Scanners
           regex: regex,
           join_by: join_by
         )
-      end
-    end
-
-    public
-
-    def build_option(prefix:, suffix:, between:, keyword:, type:, regex: /.*/, join_by: ',')
-      keyword_string = keyword.to_s
-      if @config.key?(keyword_string)
-
-        value = @config.fetch(keyword_string)
-
-        case type.to_sym.downcase
-        when :flag
-          multiple_options_if_array(
-            method_name: :create_flag_option,
-            keyword: keyword,
-            value: value,
-            prefix: prefix,
-            between: between,
-            suffix: suffix,
-            regex: regex,
-            join_by: join_by
-          )
-        when :string
-          multiple_options_if_array(
-            method_name: :create_string_option,
-            keyword: keyword,
-            value: value,
-            prefix: prefix,
-            between: between,
-            suffix: suffix,
-            regex: regex,
-            join_by: join_by
-          )
-        when :bool, :booleans
-          multiple_options_if_array(
-            method_name: :create_bool_option,
-            keyword: keyword,
-            value: value,
-            prefix: prefix,
-            between: between,
-            suffix: suffix,
-            regex: regex,
-            join_by: join_by
-          )
-        when :file
-          multiple_options_if_array(
-            method_name: :create_file_option,
-            keyword: keyword,
-            value: value,
-            prefix: prefix,
-            between: between,
-            suffix: suffix,
-            regex: regex,
-            join_by: join_by
-          )
-        when :list
-          create_list_option(
-            keyword: keyword,
-            value: value,
-            prefix: prefix,
-            between: between,
-            suffix: suffix,
-            regex: regex,
-            join_by: join_by
-          )
-        when :list_file, :file_list
-          create_list_file_option(
-            keyword: keyword,
-            value: value,
-            prefix: prefix,
-            between: between,
-            suffix: suffix,
-            regex: regex,
-            join_by: join_by
-          )
-        else
-          report_warn(:scanner_misconfiguration, "Could not interpolate config for #{keyword_string} defined by \
-          the type of #{type}. ")
-          '' # Return an empty string and warn
-        end
+      when :list_file, :file_list
+        create_list_file_option(
+          keyword: keyword,
+          value: value,
+          prefix: prefix,
+          between: between,
+          suffix: suffix,
+          join_by: join_by
+        )
       else
-        '' # Config doesn't have the key in it, so return an empty string
+        report_warn(
+          :scanner_misconfiguration,
+          "Could not interpolate config #{keyword_string} \
+          the type of #{type}. "
+        )
+        '' # Return an empty string and warn
       end
     end
 
     def build_options(prefix:, suffix:, between:, args:, join_by: ',')
       default_regex = /.*/
-      args.reduce('') do |options, (keyword, val)|
-        option =
-          case val
-          when Symbol, String
-            build_option(prefix: prefix, suffix: suffix, between: between, type: val, keyword: keyword, join_by: join_by, regex: default_regex)
-          when Hash # If you are doing something complicated
-            if val[:type].nil?
-              report_warn(:scanner_misconfiguration, "Could not interpolate config for #{keyword} \
-              defined by since there was no type defined in the hash ")
-              '' # Return an empty string and warn
-            else
-              build_option(
-                prefix: val[:prefix] || prefix,
-                suffix: val[:suffix] || suffix,
-                between: val[:between] || between,
-                keyword: keyword,
-                type: val[:type],
-                regex: val[:regex] || default_regex,
-                join_by: val[:join_by] || join_by
-              )
-            end
-          when Regexp # Assume it is a string type if just regex is supplied
-            build_option(prefix: prefix, suffix: suffix, between: between, type: :string, keyword: keyword, join_by: join_by, regex: val)
-          else
-            report_warn(:scanner_misconfiguration, "Could not interpolate config for #{keyword}  \
-            defined by since the value provided was not a String, Symbol, Regexp or Hash")
-            '' # Return an empty string and warn
-          end
+      args.reduce('') do |options, (keyword, type_value)|
+        keyword_string = keyword.to_s
+        option = if @config.key?(keyword_string)
+                   config_value = @config.fetch(keyword_string)
+                   case type_value
+                   when Symbol, String
+                     build_option(
+                       prefix: prefix,
+                       suffix: suffix,
+                       between: between,
+                       type: type_value,
+                       keyword: keyword,
+                       value: config_value,
+                       join_by: join_by,
+                       regex: default_regex
+                     )
+                   when Hash # If you are doing something complicated
+                     if type_value[:type].nil?
+                       warning = "Could not interpolate config \
+                       defined by since there was no type defined in the hash "
+                       report_warn(:scanner_misconfiguration, warning)
+                       '' # Return an empty string and warn
+                     else
+                       build_option(
+                         prefix: type_value[:prefix] || prefix,
+                         suffix: type_value[:suffix] || suffix,
+                         between: type_value[:between] || between,
+                         keyword: keyword_string,
+                         value: config_value,
+                         type: type_value[:type],
+                         regex: type_value[:regex] || default_regex,
+                         join_by: type_value[:join_by] || join_by
+                       )
+                     end
+                   when Regexp # Assume it is a string type if just regex is supplied
+                     build_option(
+                       prefix: prefix,
+                       suffix: suffix,
+                       between: between,
+                       type: :string,
+                       keyword: keyword_string,
+                       value: config_value,
+                       join_by: join_by,
+                       regex: type_value
+                     )
+                   else
+                     warning = "Could not interpolate config for #{keyword}  \
+                     defined by since the value provided was not a String, Symbol, Regexp or Hash"
+                     report_warn(:scanner_misconfiguration, warning)
+                     '' # Return an empty string and warn
+                   end
+                 else
+                   '' # Not in the config, just return an empty string
+                 end
         options + option
       end
     end
