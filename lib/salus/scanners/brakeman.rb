@@ -65,12 +65,18 @@ module Salus::Scanners
             keyword: 'n'
           },
           path: file_list_with_two_dashes,
-          q: {
+          'no-informational': {
             type: :flag,
             keyword: 'q'
           },
-          '3': :flag,
-          '4': :flag,
+          'rails3': {
+            type: :flag,
+            keyword: '3'
+          },
+          'rails4': {
+            type: :flag,
+            keyword: '4'
+          },
           'no-assume-routes': flag_with_two_dashes,
           'escape-html': flag_with_two_dashes,
           faster: flag_with_two_dashes,

@@ -15,9 +15,9 @@ For more information on Brakeman configs, see [Brakeman Options](https://brakema
         all: true # When true, Brakeman runs all checks, off by default. 'All' is the 'A' brakeman config option.
         no-threads: true # By default Brakeman runs each check in a separate thread. When true, disables this behavior. 'No-threads' is the 'n' brakeman config option.
         path: path/to/rails/app # By default, Salus will scan the top level directory, set this if you wish to override this behavior
-        q: true # When true, this supppresses informational warnings
-        3: true # When true, this forces brakeman into rails 3 mode. This should not be necessary if you have a Gemfile.lock file.
-        4: true # When true, this forces brakeman into rails 4 mode. This should not be necessary if you have a Gemfile.lock file.
+        no-informational: true # When true, this supppresses informational warnings. 'No-informational' is the 'q' brakeman config option.
+        rails3: true # When true, this forces brakeman into rails 3 mode. This should not be necessary if you have a Gemfile.lock file. 'Rails3' is the '3' brakeman config option.
+        rails4: true # When true, this forces brakeman into rails 4 mode. This should not be necessary if you have a Gemfile.lock file. 'Rails4' is the '4' brakeman config option.
         no-assume-routes: true # Brakeman used to parse routes.rb and attempt to infer which controller methods are used as actions. However, this is not perfect (especially for Rails 3/4), so now it assumes all controller methods are actions. To disable this behavior set this to true. 
         escape-html: true # This forces Brakeman to assume output is escaped by default. This should not be necessary. 
         faster: true # This will disable some features, but will probably be much faster (currently it is the same as --skip-libs --no-branching). WARNING: This may cause Brakeman to miss some vulnerabilities.
