@@ -11,11 +11,10 @@ For more information on Brakeman configs, see [Brakeman Options](https://brakema
 ```yaml
   scanner_configs:
     Brakeman:
-        c: "path/to/config" # Config file for brakeman path, anything in the command line config here will override the brakeman config file. By default it will look for a config in: ./config/brakeman.yml, ~/.brakeman/config.yml, and /etc/brakeman/config.yml
-        A: true # When true, Brakeman runs all checks, off by default
-        n: true # By default Brakeman runs each check in a separate thread. When true, disables this behavior. 
-        p: "path/to/repo" # By default, Salus will scan the top level directory, set this if you wish to override this behavior
-        path: path/to/rails/app # same as above 
+        config: "path/to/config" # Config file for brakeman path, anything in the command line config here will override the brakeman config file. By default it will look for a config in: ./config/brakeman.yml, ~/.brakeman/config.yml, and /etc/brakeman/config.yml. 'Config' is the 'c' brakeman config option.
+        all: true # When true, Brakeman runs all checks, off by default. 'All' is the 'A' brakeman config option.
+        no-threads: true # By default Brakeman runs each check in a separate thread. When true, disables this behavior. 'No-threads' is the 'n' brakeman config option.
+        path: path/to/rails/app # By default, Salus will scan the top level directory, set this if you wish to override this behavior
         q: true # When true, this supppresses informational warnings
         3: true # When true, this forces brakeman into rails 3 mode. This should not be necessary if you have a Gemfile.lock file.
         4: true # When true, this forces brakeman into rails 4 mode. This should not be necessary if you have a Gemfile.lock file.
@@ -37,7 +36,7 @@ For more information on Brakeman configs, see [Brakeman Options](https://brakema
         except: # To exclude checks
             - check1 
             - check2
-        i: path/to/config.ignore # Brakeman will ignore warnings if configured to do so. By default, it looks for a configuration file in config/brakeman.ignore. To specify a file to use this argument. 
+        ignore: path/to/config.ignore # Brakeman will ignore warnings if configured to do so. By default, it looks for a configuration file in config/brakeman.ignore. To specify a file to use this argument. 'Ignore' is the 'i' brakeman config option.
         ignore-model-output: true # To ignore possible XSS from model attributes
         ignore-protected: true # Brakeman will raise warnings on models that use attr_protected. To suppress these warnings, set this to true. 
         report-direct: true # To only raise warnings only when untrusted data is being directly used
@@ -46,5 +45,5 @@ For more information on Brakeman configs, see [Brakeman Options](https://brakema
             - totally_safe_from_xss
         url-safe-methods:  # Brakeman warns about use of user input in URLs generated with link_to. Since Rails does not provide anyway of making these URLs really safe (e.g. limiting protocols to HTTP(S)), safe methods can be ignored with
             - ensure_safe_protocol_or_something
-        w: # To only get warnings above a given confidence level. The -w switch takes a number from 1 to 3, with 1 being low (all warnings) and 3 being high (only highest confidence warnings). 
+        warning: # To only get warnings above a given confidence level. The -w switch takes a number from 1 to 3, with 1 being low (all warnings) and 3 being high (only highest confidence warnings). 'Warning' is the 'w' brakeman config option.
 ```

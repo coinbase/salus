@@ -52,12 +52,23 @@ module Salus::Scanners
         suffix: ' ',
         between: ' ',
         args: {
-          c: :file,
-          A: :flag,
-          n: :flag,
-          p: :file,
-          q: :flag,
-          routes: :flag,
+          config: {
+            type: :file,
+            keyword: 'c'
+          },
+          all: {
+            type: :flag,
+            keyword: 'A'
+          },
+          'no-threads': {
+            type: :flag,
+            keyword: 'n'
+          },
+          path: file_list_with_two_dashes,
+          q: {
+            type: :flag,
+            keyword: 'q'
+          },
           '3': :flag,
           '4': :flag,
           'no-assume-routes': flag_with_two_dashes,
@@ -70,17 +81,21 @@ module Salus::Scanners
           'skip-libs': flag_with_two_dashes,
           test: list_with_two_dashes,
           except: list_with_two_dashes,
-          i: :file,
+          ignore: {
+            type: :file,
+            keyword: 'i'
+          },
           'ignore-model-output': flag_with_two_dashes,
           'ignore-protected': flag_with_two_dashes,
           'report-direct': flag_with_two_dashes,
           'safe-methods': list_with_two_dashes,
           'url-safe-methods': list_with_two_dashes,
-          w: {
+          warning: {
             prefix: '-',
             between: '', # essentially can only be -w1, -w2, -w3
             type: :string,
-            regex: /\A1|2|3\z/i
+            regex: /\A1|2|3\z/i,
+            keyword: 'w'
           }
         }
       )
