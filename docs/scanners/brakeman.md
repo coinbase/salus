@@ -15,6 +15,7 @@ For more information on Brakeman configs, see [Brakeman Options](https://brakema
         A: true # When true, Brakeman runs all checks, off by default
         n: true # By default Brakeman runs each check in a separate thread. When true, disables this behavior. 
         p: "path/to/repo" # By default, Salus will scan the top level directory, set this if you wish to override this behavior
+        path: path/to/rails/app # same as above 
         q: true # When true, this supppresses informational warnings
         3: true # When true, this forces brakeman into rails 3 mode. This should not be necessary if you have a Gemfile.lock file.
         4: true # When true, this forces brakeman into rails 4 mode. This should not be necessary if you have a Gemfile.lock file.
