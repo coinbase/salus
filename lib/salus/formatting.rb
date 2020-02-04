@@ -4,22 +4,22 @@ module Salus
     INDENT_STRING = (' ' * INDENT_SIZE).freeze
 
     TABLE_BORDER_CHARS = {
-      top_mid:      '┬',
-      top_left:     '┌',
-      top_right:    '┐',
-      bottom_mid:   '┴',
-      bottom_left:  '└',
+      top_mid: '┬',
+      top_left: '┌',
+      top_right: '┐',
+      bottom_mid: '┴',
+      bottom_left: '└',
       bottom_right: '┘',
-      left_mid:     '├',
-      right_mid:    '┤',
-      horizontal:   '─',
-      vertical:     '│',
-      cross:        '┼'
+      left_mid: '├',
+      right_mid: '┤',
+      horizontal: '─',
+      vertical: '│',
+      cross: '┼'
     }.freeze
 
     COLOR_CODES = {
-      red:    31,
-      green:  32,
+      red: 31,
+      green: 32,
       yellow: 33
     }.freeze
 
