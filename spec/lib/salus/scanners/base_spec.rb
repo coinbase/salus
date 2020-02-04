@@ -182,7 +182,7 @@ describe Salus::Scanners::Base do
       expect(options).not_to include('high') # No 'high' anywhere in options
       expect(options).not_to include('neverShouldBeThere') # No 'high' anywhere in options
       expect(options).not_to include('foobarbaz') # No 'foobarbaz' anywhere in options
-      expect(options).not_to include('longName') # No 'foobarbaz' anywhere in options
+      expect(options).not_to include('longName') # No 'longName' anywhere in options
     end
   end
 end
