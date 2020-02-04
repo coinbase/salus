@@ -12,10 +12,10 @@ module Salus::Scanners
 
     # Some common, easily-abbreviated terms to shorten advisory titles
     TITLE_SUBSTITUTIONS = {
-      'Regular Expression' => 'Regex',
-      'Denial of Service' => 'DoS',
+      'Regular Expression'    => 'Regex',
+      'Denial of Service'     => 'DoS',
       'Remote Code Execution' => 'RCE',
-      'Cross-Site Scripting' => 'XSS'
+      'Cross-Site Scripting'  => 'XSS'
     }.freeze
 
     # Cap title and module name length to avoid the table getting too wide

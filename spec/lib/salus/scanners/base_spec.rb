@@ -138,7 +138,8 @@ describe Salus::Scanners::Base do
                                   'list' => %w[foo bar 1 2],
                                   'multiple' => %w[first second third],
                                   'onlyHigh' => 'foobarbaz', # Invalid
-                                  'notUsed' => 'neverShouldBeThere'
+                                  'notUsed' => 'neverShouldBeThere',
+                                  'longName' => 'true' # should rename to shortname
                                 })
     end
 
@@ -161,7 +162,11 @@ describe Salus::Scanners::Base do
           list: :list, # use defaults
           notThere: :string, # Not in the config
           onlyHigh: /^high$/i, # not allowed, return empty string
-          multiple: :string
+          multiple: :string,
+          longName: {
+            keyword: 'shortName',
+            type: :flag
+          }
         }
       )
       expect(options).to start_with('-flag ') # Respects order
@@ -172,10 +177,12 @@ describe Salus::Scanners::Base do
       expect(options).to include(' -multiple=first ')
       expect(options).to include(' -multiple=second ')
       expect(options).to include(' -multiple=third ')
+      expect(options).to include(' -shortName ')
       expect(options).not_to include('notThere')
       expect(options).not_to include('high') # No 'high' anywhere in options
       expect(options).not_to include('neverShouldBeThere') # No 'high' anywhere in options
       expect(options).not_to include('foobarbaz') # No 'foobarbaz' anywhere in options
+      expect(options).not_to include('longName') # No 'foobarbaz' anywhere in options
     end
   end
 end
