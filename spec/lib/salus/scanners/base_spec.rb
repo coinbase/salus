@@ -135,7 +135,9 @@ describe Salus::Scanners::Base do
         'bool' => 'true',
         'file' => './bla.js',
         'list' => ['foo','bar','1','2'],
-        'onlyHigh' => 'foobarbaz' # Invalid
+        'multiple' => ['first', 'second','third'],
+        'onlyHigh' => 'foobarbaz', # Invalid
+        'notUsed' => 'neverShouldBeThere'
       }) 
     }
 
@@ -158,6 +160,7 @@ describe Salus::Scanners::Base do
           list: :list, #use defaults
           notThere: :string, # Not in the config
           onlyHigh: /^high$/i, # not allowed, return empty string
+          multiple: :string
         }
       )
       expect(options).to start_with('-flag ') # Respects order
@@ -165,8 +168,12 @@ describe Salus::Scanners::Base do
       expect(options).to include(' -onlyLow=low')
       expect(options).to include(' --file&./bla.js%%% ')
       expect(options).to include(' -list=foo,bar,1,2 ')
+      expect(options).to include(' -multiple=first ')
+      expect(options).to include(' -multiple=second ')
+      expect(options).to include(' -multiple=third ')
       expect(options).not_to include('notThere')
       expect(options).not_to include('high') #No 'high' anywhere in options
+      expect(options).not_to include('neverShouldBeThere') #No 'high' anywhere in options
       expect(options).not_to include('foobarbaz') #No 'foobarbaz' anywhere in options
 
     end

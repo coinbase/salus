@@ -42,12 +42,12 @@ You do not have to use this method if it doesn't help you use your scanner.
 
 For example, let's pretend you intend to send in the configurations in the following format:
 
-```-flag -string=foo --list=foo,bar,baz -bool=true -file=./foobar.js -file_list=foo.js,bar.js```
+```-flag -string=foo --list=foo,bar,baz -bool=true -file=./foobar.js -file_list=foo.js,bar.js -multiple first -multiple second```
 
 Note each type for the arguments, the supported types are:
 ```ruby
   :flag
-  :string 
+  :string # Numbers qualify as strings
   :list # For a list of strings
   :bool
   :file 
@@ -61,7 +61,7 @@ build_options(
   prefix: '-', # The default item meaning a new argument
   suffix: ' ', # The way arguments are separated
   between: '=', # The item between the argument's name and value
-  # joinBy: ',', # Optional argument to denote items in a list, is set to ',' by default
+  # join_by: ',', # Optional argument to denote items in a list, is set to ',' by default
   args: { # The actual list of arguments
     flag: :flag, # Set the type for flags as ':flag'
     string: :string, 
@@ -73,7 +73,8 @@ build_options(
     },
     file: :file,
     file_list: :file_list
-  }
+  },
+  multiple: :string,
 )
 ```
 
@@ -90,7 +91,10 @@ scanner_configs:
       - 'baz'
     bool: true
     file: './foobar.js'
-    file_list:
+    file_list: # file and file list will validate if the file exists before continuing
       - 'foo.js'
       - 'bar.js'
+    multiple: # For a parameter that appears multiple times, just make it a list. Lists of lists are not supported
+      - 'first'
+      - 'second'
 ```
