@@ -128,36 +128,37 @@ describe Salus::Scanners::Base do
     end
   end
 
-  describe '#build_options' do 
-    let(:scanner) { Salus::Scanners::Base.new(repository: repository, config: {
-        'flag' => 'true',
+  describe '#build_options' do
+    let(:scanner) do
+      Salus::Scanners::Base.new(repository: repository, config: {
+                                  'flag' => 'true',
         'onlyLow' => 'low',
         'bool' => 'true',
         'file' => './bla.js',
-        'list' => ['foo','bar','1','2'],
-        'multiple' => ['first', 'second','third'],
+        'list' => %w[foo bar 1 2],
+        'multiple' => %w[first second third],
         'onlyHigh' => 'foobarbaz', # Invalid
         'notUsed' => 'neverShouldBeThere'
-      }) 
-    }
+                                })
+    end
 
-    it 'should build the options correctly based on a hash' do 
+    it 'should build the options correctly based on a hash' do
       # Note, this doesn't test that it checks for files properly since when running rspec, we would need the files in the file system
       options = scanner.build_options(
-        prefix: '-', 
-        suffix: ' ', 
-        between: '=', 
+        prefix: '-',
+        suffix: ' ',
+        between: '=',
         args: {
           flag: :flag,
           onlyLow: /^low$/i, # Automatically knows it is a string
-          bool: 'bool', #Test if you use a string for the type
+          bool: 'bool', # Test if you use a string for the type
           file: {
             type: :string,
-            prefix: '--', #test for custom prefix
-            between: '&', #Test for custom between
-            suffix: '%%% ', #Test for custom end
+            prefix: '--', # test for custom prefix
+            between: '&', # Test for custom between
+            suffix: '%%% ' # Test for custom end
           },
-          list: :list, #use defaults
+          list: :list, # use defaults
           notThere: :string, # Not in the config
           onlyHigh: /^high$/i, # not allowed, return empty string
           multiple: :string
@@ -172,10 +173,9 @@ describe Salus::Scanners::Base do
       expect(options).to include(' -multiple=second ')
       expect(options).to include(' -multiple=third ')
       expect(options).not_to include('notThere')
-      expect(options).not_to include('high') #No 'high' anywhere in options
-      expect(options).not_to include('neverShouldBeThere') #No 'high' anywhere in options
-      expect(options).not_to include('foobarbaz') #No 'foobarbaz' anywhere in options
-
+      expect(options).not_to include('high') # No 'high' anywhere in options
+      expect(options).not_to include('neverShouldBeThere') # No 'high' anywhere in options
+      expect(options).not_to include('foobarbaz') # No 'foobarbaz' anywhere in options
     end
-  end 
+  end
 end

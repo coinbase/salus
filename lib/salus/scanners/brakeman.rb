@@ -42,24 +42,24 @@ module Salus::Scanners
       @repository.gemfile_present? && has_rails_gem? && has_app_dir?
     end
 
-    # Taken from https://brakemanscanner.org/docs/options/ 
+    # Taken from https://brakemanscanner.org/docs/options/
     def config_options
-      flag_with_two_dashes = {type: :flag, prefix: '--'}
-      list_with_two_dashes = {type: :list, prefix: '--'}
-      file_list_with_two_dashes = {type: :list_file, prefix: '--'}
+      flag_with_two_dashes = { type: :flag, prefix: '--' }
+      list_with_two_dashes = { type: :list, prefix: '--' }
+      file_list_with_two_dashes = { type: :list_file, prefix: '--' }
       build_options(
         prefix: '-',
         suffix: ' ',
         between: ' ',
         args: {
-          c: :file, 
-          A: :flag, 
-          n: :flag, 
-          p: :file, 
+          c: :file,
+          A: :flag,
+          n: :flag,
+          p: :file,
           q: :flag,
-          routes: :flag,  
-          '3': :flag, 
-          '4': :flag, 
+          routes: :flag,
+          '3': :flag,
+          '4': :flag,
           'no-assume-routes': flag_with_two_dashes,
           'escape-html': flag_with_two_dashes,
           faster: flag_with_two_dashes,
@@ -74,19 +74,20 @@ module Salus::Scanners
           'ignore-model-output': flag_with_two_dashes,
           'ignore-protected': flag_with_two_dashes,
           'report-direct': flag_with_two_dashes,
-          'safe-methods': list_with_two_dashes, 
+          'safe-methods': list_with_two_dashes,
           'url-safe-methods': list_with_two_dashes,
           w: {
             prefix: '-',
-            between: '', #essentially can only be -w1, -w2, -w3
+            between: '', # essentially can only be -w1, -w2, -w3
             type: :string,
-            regex: /\A1|2|3\z/i,
-          },
+            regex: /\A1|2|3\z/i
+          }
         }
       )
     end
 
     private
+
     def has_rails_gem?
       gemfile_path = "#{@repository.path_to_repo}/Gemfile"
       gemfile_lock_path = "#{@repository.path_to_repo}/Gemfile.lock"
