@@ -35,6 +35,21 @@ describe Salus::Scanners::Brakeman do
         expect(logs).to include('Dangerous Eval')
       end
 
+      it 'should respect the config for ignoring files' do
+        repo = Salus::Repo.new('spec/fixtures/brakeman/vulnerable_rails_app')
+
+        scanner = Salus::Scanners::Brakeman.new(repository: repo, config: {'skip-files' => ['app/controllers/static_controller_controller.rb']})
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+        logs = scanner.report.to_h.fetch(:logs)
+        expect(info[:stdout]).not_to be_nil
+        expect(info[:stdout]).not_to be_empty
+        expect(logs).not_to include('Dangerous Eval')
+      end
+
       it 'should fail if brakeman encounters a parse error' do
         repo = Salus::Repo.new('spec/fixtures/brakeman/rails_app_with_syntax_error')
 
