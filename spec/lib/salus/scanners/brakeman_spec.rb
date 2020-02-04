@@ -38,7 +38,7 @@ describe Salus::Scanners::Brakeman do
       it 'should respect the config for ignoring files' do
         repo = Salus::Repo.new('spec/fixtures/brakeman/vulnerable_rails_app')
 
-        scanner = Salus::Scanners::Brakeman.new(repository: repo, config: {'skip-files' => ['app/controllers/static_controller_controller.rb']})
+        scanner = Salus::Scanners::Brakeman.new(repository: repo, config: { 'skip-files' => ['app/controllers/static_controller_controller.rb'] })
         scanner.run
 
         expect(scanner.report.passed?).to eq(false)
