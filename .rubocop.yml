@@ -73,7 +73,7 @@ Style/Next:
 Style/ClassVars:
   Enabled: false
 
-Layout/HashAlignment:
+Layout/AlignHash:
   Enabled: false
 
 Lint/ToJSON:
