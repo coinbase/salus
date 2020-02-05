@@ -64,7 +64,7 @@ module Salus::Scanners
       build_options(
         prefix: '-',
         suffix: ' ',
-        between: '=',
+        separator: '=',
         args: {
           nosec: :bool, # Ignores #nosec comments when set
           'nosec-tag': /\A\S+\z/, # Set an alternative string for #nosec

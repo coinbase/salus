@@ -173,7 +173,7 @@ module Salus::Scanners
       rescue Errno::ENOENT
         report_warn(:scanner_misconfiguration, "Could not find #{config_dir} defined by \
                                                 #{keyword} when expanded into a fully qualified \
-                                                path")
+                                                path. Value was #{value}")
         return false
       end
 
@@ -195,35 +195,35 @@ module Salus::Scanners
       end
     end
 
-    def create_bool_option(keyword:, value:, prefix:, between:, suffix:)
+    def create_bool_option(keyword:, value:, prefix:, separator:, suffix:)
       return '' unless validate_bool_option(keyword, value)
 
-      "#{prefix}#{keyword}#{between}#{Shellwords.escape(value)}#{suffix}"
+      "#{prefix}#{keyword}#{separator}#{Shellwords.escape(value)}#{suffix}"
     end
 
-    def create_file_option(keyword:, value:, prefix:, between:, suffix:)
+    def create_file_option(keyword:, value:, prefix:, separator:, suffix:)
       return '' unless validate_file_option(keyword, value)
 
-      "#{prefix}#{keyword}#{between}#{Shellwords.escape(value)}#{suffix}"
+      "#{prefix}#{keyword}#{separator}#{Shellwords.escape(value)}#{suffix}"
     end
 
-    def create_string_option(keyword:, value:, prefix:, between:, suffix:, regex: /.*/)
+    def create_string_option(keyword:, value:, prefix:, separator:, suffix:, regex: /.*/)
       return '' unless validate_string_option(keyword, value, regex)
 
-      "#{prefix}#{keyword}#{between}#{Shellwords.escape(value)}#{suffix}"
+      "#{prefix}#{keyword}#{separator}#{Shellwords.escape(value)}#{suffix}"
     end
 
-    def create_list_option(keyword:, value:, prefix:, between:, suffix:, regex: /.*/, join_by: ',')
+    def create_list_option(keyword:, value:, prefix:, separator:, suffix:, regex: /.*/, join_by: ',')
       return '' unless validate_list_option(keyword, value, regex)
 
-      "#{prefix}#{keyword}#{between}#{Shellwords.escape(value.join(join_by))}#{suffix}"
+      "#{prefix}#{keyword}#{separator}#{Shellwords.escape(value.join(join_by))}#{suffix}"
     end
 
-    def create_list_file_option(keyword:, value:, prefix:, between:, suffix:, join_by: ',')
+    def create_list_file_option(keyword:, value:, prefix:, separator:, suffix:, join_by: ',')
       validated_files = value.select do |file|
         validate_file_option(keyword, file)
       end
-      "#{prefix}#{keyword}#{between}#{Shellwords.escape(validated_files.join(join_by))}#{suffix}"
+      "#{prefix}#{keyword}#{separator}#{Shellwords.escape(validated_files.join(join_by))}#{suffix}"
     end
 
     public
@@ -231,7 +231,7 @@ module Salus::Scanners
     def build_option(
       prefix:,
       suffix:,
-      between:,
+      separator:,
       keyword:,
       value:,
       type:,
@@ -249,7 +249,7 @@ module Salus::Scanners
               keyword: keyword,
               value: item, # Use each item in the array as the value
               prefix: prefix,
-              between: between,
+              separator: separator,
               suffix: suffix,
               max_depth: max_depth - 1,
               regex: regex,
@@ -264,7 +264,7 @@ module Salus::Scanners
               value: value,
               prefix: prefix,
               suffix: suffix,
-              between: between,
+              separator: separator,
               regex: regex
             )
           when :bool, :booleans
@@ -273,7 +273,7 @@ module Salus::Scanners
               value: value,
               prefix: prefix,
               suffix: suffix,
-              between: between
+              separator: separator
             )
           when :flag
             create_flag_option(keyword: keyword, value: value, prefix: prefix, suffix: suffix)
@@ -283,7 +283,7 @@ module Salus::Scanners
               value: value,
               prefix: prefix,
               suffix: suffix,
-              between: between
+              separator: separator
             )
           end
         end
@@ -292,7 +292,7 @@ module Salus::Scanners
           keyword: keyword,
           value: value,
           prefix: prefix,
-          between: between,
+          separator: separator,
           suffix: suffix,
           regex: regex,
           join_by: join_by
@@ -302,7 +302,7 @@ module Salus::Scanners
           keyword: keyword,
           value: value,
           prefix: prefix,
-          between: between,
+          separator: separator,
           suffix: suffix,
           join_by: join_by
         )
@@ -316,7 +316,7 @@ module Salus::Scanners
       end
     end
 
-    def build_options(prefix:, suffix:, between:, args:, join_by: ',')
+    def build_options(prefix:, suffix:, separator:, args:, join_by: ',')
       default_regex = /.*/
       args.reduce('') do |options, (keyword, type_value)|
         keyword_string = keyword.to_s
@@ -327,7 +327,7 @@ module Salus::Scanners
                      build_option(
                        prefix: prefix,
                        suffix: suffix,
-                       between: between,
+                       separator: separator,
                        type: type_value,
                        keyword: keyword_string,
                        value: config_value,
@@ -344,7 +344,7 @@ module Salus::Scanners
                        build_option(
                          prefix: type_value[:prefix] || prefix,
                          suffix: type_value[:suffix] || suffix,
-                         between: type_value[:between] || between,
+                         separator: type_value[:separator] || separator,
                          keyword: type_value[:keyword] || keyword_string,
                          value: config_value,
                          type: type_value[:type],
@@ -356,7 +356,7 @@ module Salus::Scanners
                      build_option(
                        prefix: prefix,
                        suffix: suffix,
-                       between: between,
+                       separator: separator,
                        type: :string,
                        keyword: keyword_string,
                        value: config_value,

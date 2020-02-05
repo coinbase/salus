@@ -148,7 +148,7 @@ describe Salus::Scanners::Base do
       options = scanner.build_options(
         prefix: '-',
         suffix: ' ',
-        between: '=',
+        separator: '=',
         args: {
           flag: :flag,
           onlyLow: /^low$/i, # Automatically knows it is a string
@@ -156,7 +156,7 @@ describe Salus::Scanners::Base do
           file: {
             type: :string,
             prefix: '--', # test for custom prefix
-            between: '&', # Test for custom between
+            separator: '&', # Test for custom separator
             suffix: '%%% ' # Test for custom end
           },
           list: :list, # use defaults
