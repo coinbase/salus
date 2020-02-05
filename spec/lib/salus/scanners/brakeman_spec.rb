@@ -19,8 +19,7 @@ describe Salus::Scanners::Brakeman do
       end
     end
 
-    context 'brakeman configs' do 
-
+    context 'brakeman configs' do
       it 'should respect the config for user defined app path' do
         repo = Salus::Repo.new('spec/fixtures/')
         path = '/home/spec/fixtures/brakeman/vulnerable_rails_app'
@@ -40,7 +39,7 @@ describe Salus::Scanners::Brakeman do
         expect(info[:stdout]).not_to be_empty
         expect(logs).to include('Dangerous Eval')
         parsed_logs = JSON.parse(logs)
-        expect(parsed_logs["scan_info"]["app_path"]).to eq(path) 
+        expect(parsed_logs["scan_info"]["app_path"]).to eq(path)
       end
 
       it 'should respect the config for all checks' do
@@ -61,9 +60,8 @@ describe Salus::Scanners::Brakeman do
         expect(info[:stdout]).not_to be_empty
         expect(logs).to include('Dangerous Eval')
         parsed_logs = JSON.parse(logs)
-        expect(parsed_logs["scan_info"]["checks_performed"]).to include("ReverseTabnabbing") 
+        expect(parsed_logs["scan_info"]["checks_performed"]).to include("ReverseTabnabbing")
       end
-
 
       it 'should respect the config for running only a subset of checks' do
         repo = Salus::Repo.new('spec/fixtures/brakeman/vulnerable_rails_app')
@@ -85,8 +83,8 @@ describe Salus::Scanners::Brakeman do
         expect(info[:stdout]).not_to be_empty
         expect(logs).to include('Dangerous Eval')
         parsed_logs = JSON.parse(logs)
-        expect(parsed_logs["scan_info"]["checks_performed"]).not_to include("SanitizeMethods") 
-        expect(parsed_logs["scan_info"]["checks_performed"]).to include("Evaluation") 
+        expect(parsed_logs["scan_info"]["checks_performed"]).not_to include("SanitizeMethods")
+        expect(parsed_logs["scan_info"]["checks_performed"]).to include("Evaluation")
       end
 
       it 'should respect the config excluding some checks' do
@@ -109,8 +107,8 @@ describe Salus::Scanners::Brakeman do
         expect(info[:stdout]).not_to be_empty
         expect(logs).not_to include('Dangerous Eval')
         parsed_logs = JSON.parse(logs)
-        expect(parsed_logs["scan_info"]["checks_performed"]).to include("SanitizeMethods") 
-        expect(parsed_logs["scan_info"]["checks_performed"]).not_to include("Evaluation") 
+        expect(parsed_logs["scan_info"]["checks_performed"]).to include("SanitizeMethods")
+        expect(parsed_logs["scan_info"]["checks_performed"]).not_to include("Evaluation")
       end
 
       it 'should respect the config supressing warning levels' do
@@ -172,7 +170,6 @@ describe Salus::Scanners::Brakeman do
         expect(info[:stdout]).not_to be_empty
         expect(logs).not_to include('Dangerous Eval')
       end
-
     end
 
     context 'brakeman warnings or errors' do
