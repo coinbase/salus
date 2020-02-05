@@ -50,7 +50,7 @@ module Salus::Scanners
       build_options(
         prefix: '-',
         suffix: ' ',
-        between: ' ',
+        separator: ' ',
         args: {
           config: {
             type: :file,
@@ -64,7 +64,7 @@ module Salus::Scanners
             type: :flag,
             keyword: 'n'
           },
-          path: file_list_with_two_dashes,
+          path: { type: :file, prefix: '--' },
           'no-informational': {
             type: :flag,
             keyword: 'q'
@@ -98,7 +98,7 @@ module Salus::Scanners
           'url-safe-methods': list_with_two_dashes,
           warning: {
             prefix: '-',
-            between: '', # essentially can only be -w1, -w2, -w3
+            separator: '', # essentially can only be -w1, -w2, -w3
             type: :string,
             regex: /\A1|2|3\z/i,
             keyword: 'w'
@@ -121,23 +121,6 @@ module Salus::Scanners
       Dir.exist?(File.join(@repository.path_to_repo, 'app')) ||
         (@config.key?('path') && validate_file_option('path') &&
           @config.fetch('path').split('/')[-1].contains('app'))
-    end
-
-    # flag options taken from https://brakemanscanner.org/docs/options/
-    def config_options
-      options = ''
-
-      # path/to/rails/app
-      # must be an app dir
-      options.concat(create_list_file_option('path')) if @config.key?('path')
-
-      options
-    end
-
-    def create_file_option(keyword)
-      return '' unless validate_file_option(keyword)
-
-      "--#{keyword} #{Shellwords.escape(@config.fetch(keyword))} "
     end
   end
 end
