@@ -1,4 +1,5 @@
 require_relative '../../../spec_helper.rb'
+require 'json'
 
 describe Salus::Scanners::Brakeman do
   describe '#run' do
@@ -18,21 +19,118 @@ describe Salus::Scanners::Brakeman do
       end
     end
 
-    context 'brakeman warnings or errors' do
-      it 'should fail if a potential vulnerability is detected in the repo' do
-        repo = Salus::Repo.new('spec/fixtures/brakeman/vulnerable_rails_app')
+    context 'brakeman configs' do 
 
-        scanner = Salus::Scanners::Brakeman.new(repository: repo, config: {})
+      it 'should respect the config for user defined app path' do
+        repo = Salus::Repo.new('spec/fixtures/')
+        path = '/home/spec/fixtures/brakeman/vulnerable_rails_app'
+        scanner = Salus::Scanners::Brakeman.new(
+          repository: repo,
+          config: {
+            'path' => path
+          }
+        )
         scanner.run
 
         expect(scanner.report.passed?).to eq(false)
 
         info = scanner.report.to_h.fetch(:info)
         logs = scanner.report.to_h.fetch(:logs)
-
         expect(info[:stdout]).not_to be_nil
         expect(info[:stdout]).not_to be_empty
         expect(logs).to include('Dangerous Eval')
+        parsed_logs = JSON.parse(logs)
+        expect(parsed_logs["scan_info"]["app_path"]).to eq(path) 
+      end
+
+      it 'should respect the config for all checks' do
+        repo = Salus::Repo.new('spec/fixtures/brakeman/vulnerable_rails_app')
+        scanner = Salus::Scanners::Brakeman.new(
+          repository: repo,
+          config: {
+            'all' => true
+          }
+        )
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+        logs = scanner.report.to_h.fetch(:logs)
+        expect(info[:stdout]).not_to be_nil
+        expect(info[:stdout]).not_to be_empty
+        expect(logs).to include('Dangerous Eval')
+        parsed_logs = JSON.parse(logs)
+        expect(parsed_logs["scan_info"]["checks_performed"]).to include("ReverseTabnabbing") 
+      end
+
+
+      it 'should respect the config for running only a subset of checks' do
+        repo = Salus::Repo.new('spec/fixtures/brakeman/vulnerable_rails_app')
+        scanner = Salus::Scanners::Brakeman.new(
+          repository: repo,
+          config: {
+            'test' => [
+              "Evaluation"
+            ]
+          }
+        )
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+        logs = scanner.report.to_h.fetch(:logs)
+        expect(info[:stdout]).not_to be_nil
+        expect(info[:stdout]).not_to be_empty
+        expect(logs).to include('Dangerous Eval')
+        parsed_logs = JSON.parse(logs)
+        expect(parsed_logs["scan_info"]["checks_performed"]).not_to include("SanitizeMethods") 
+        expect(parsed_logs["scan_info"]["checks_performed"]).to include("Evaluation") 
+      end
+
+      it 'should respect the config excluding some checks' do
+        repo = Salus::Repo.new('spec/fixtures/brakeman/vulnerable_rails_app')
+        scanner = Salus::Scanners::Brakeman.new(
+          repository: repo,
+          config: {
+            'except' => [
+              "Evaluation"
+            ]
+          }
+        )
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+        logs = scanner.report.to_h.fetch(:logs)
+        expect(info[:stdout]).not_to be_nil
+        expect(info[:stdout]).not_to be_empty
+        expect(logs).not_to include('Dangerous Eval')
+        parsed_logs = JSON.parse(logs)
+        expect(parsed_logs["scan_info"]["checks_performed"]).to include("SanitizeMethods") 
+        expect(parsed_logs["scan_info"]["checks_performed"]).not_to include("Evaluation") 
+      end
+
+      it 'should respect the config supressing warning levels' do
+        repo = Salus::Repo.new('spec/fixtures/brakeman/vulnerable_rails_app')
+        scanner = Salus::Scanners::Brakeman.new(
+          repository: repo,
+          config: {
+            'warning' => '3'
+          }
+        )
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+        logs = scanner.report.to_h.fetch(:logs)
+        expect(info[:stdout]).not_to be_nil
+        expect(info[:stdout]).not_to be_empty
+        expect(logs).to include('Dangerous Eval')
+        expect(logs).not_to include('loofah gem 2.0.3 is vulnerable')
       end
 
       it 'should respect the config for ignoring files' do
@@ -53,6 +151,45 @@ describe Salus::Scanners::Brakeman do
         expect(info[:stdout]).not_to be_nil
         expect(info[:stdout]).not_to be_empty
         expect(logs).not_to include('Dangerous Eval')
+      end
+
+      it 'should respect the config for only scanning certain files' do
+        repo = Salus::Repo.new('spec/fixtures/brakeman/vulnerable_rails_app')
+
+        scanner = Salus::Scanners::Brakeman.new(
+          repository: repo,
+          config: {
+            'only-files' => ['app/controllers/application_controller.rb']
+          }
+        )
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+        logs = scanner.report.to_h.fetch(:logs)
+        expect(info[:stdout]).not_to be_nil
+        expect(info[:stdout]).not_to be_empty
+        expect(logs).not_to include('Dangerous Eval')
+      end
+
+    end
+
+    context 'brakeman warnings or errors' do
+      it 'should fail if a potential vulnerability is detected in the repo' do
+        repo = Salus::Repo.new('spec/fixtures/brakeman/vulnerable_rails_app')
+
+        scanner = Salus::Scanners::Brakeman.new(repository: repo, config: {})
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+        logs = scanner.report.to_h.fetch(:logs)
+
+        expect(info[:stdout]).not_to be_nil
+        expect(info[:stdout]).not_to be_empty
+        expect(logs).to include('Dangerous Eval')
       end
 
       it 'should fail if brakeman encounters a parse error' do

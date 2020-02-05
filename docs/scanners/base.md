@@ -60,7 +60,7 @@ You would call build options like so:
 build_options(
   prefix: '-', # The default item meaning a new argument
   suffix: ' ', # The way arguments are separated
-  between: '=', # The item between the argument's name and value
+  separator: '=', # The item that separates the argument's name and value
   # join_by: ',', # Optional argument to denote items in a list, is set to ',' by default
   args: { # The actual list of arguments
     flag: :flag, # Set the type for flags as ':flag'
