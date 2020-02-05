@@ -211,7 +211,15 @@ module Salus::Scanners
       "#{prefix}#{keyword}#{separator}#{Shellwords.escape(value)}#{suffix}"
     end
 
-    def create_list_option(keyword:, value:, prefix:, separator:, suffix:, regex: /.*/, join_by: ',')
+    def create_list_option(
+      keyword:,
+      value:,
+      prefix:,
+      separator:,
+      suffix:,
+      regex: /.*/,
+      join_by: ','
+    )
       return '' unless validate_list_option(keyword, value, regex)
 
       "#{prefix}#{keyword}#{separator}#{Shellwords.escape(value.join(join_by))}#{suffix}"
