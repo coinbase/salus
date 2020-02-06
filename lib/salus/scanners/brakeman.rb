@@ -11,7 +11,7 @@ module Salus::Scanners
         # Use JSON output since that will be the best for an API to receive and parse.
         # We need CI=true envar to ensure brakeman doesn't use an interactive display
         # for the report that it outputs.
-        shell_return = run_shell("brakeman -f json #{config_options}", env: { "CI" => "true" })
+        shell_return = run_shell("brakeman #{config_options} -f json", env: { "CI" => "true" })
 
         # From the Brakeman website:
         #   Note all Brakeman output except reports are sent to stderr,
@@ -42,6 +42,71 @@ module Salus::Scanners
       @repository.gemfile_present? && has_rails_gem? && has_app_dir?
     end
 
+    # Taken from https://brakemanscanner.org/docs/options/
+    def config_options
+      flag_with_two_dashes = { type: :flag, prefix: '--' }
+      list_with_two_dashes = { type: :list, prefix: '--' }
+      file_list_with_two_dashes = { type: :list_file, prefix: '--' }
+      build_options(
+        prefix: '-',
+        suffix: ' ',
+        separator: ' ',
+        args: {
+          config: {
+            type: :file,
+            keyword: 'c'
+          },
+          all: {
+            type: :flag,
+            keyword: 'A'
+          },
+          'no-threads': {
+            type: :flag,
+            keyword: 'n'
+          },
+          path: { type: :file, prefix: '--' },
+          'no-informational': {
+            type: :flag,
+            keyword: 'q'
+          },
+          'rails3': {
+            type: :flag,
+            keyword: '3'
+          },
+          'rails4': {
+            type: :flag,
+            keyword: '4'
+          },
+          'no-assume-routes': flag_with_two_dashes,
+          'escape-html': flag_with_two_dashes,
+          faster: flag_with_two_dashes,
+          'no-branching': flag_with_two_dashes,
+          'branch-limit': /^\d+$/,
+          'skip-files': file_list_with_two_dashes,
+          'only-files': file_list_with_two_dashes,
+          'skip-libs': flag_with_two_dashes,
+          test: list_with_two_dashes,
+          except: list_with_two_dashes,
+          ignore: {
+            type: :file,
+            keyword: 'i'
+          },
+          'ignore-model-output': flag_with_two_dashes,
+          'ignore-protected': flag_with_two_dashes,
+          'report-direct': flag_with_two_dashes,
+          'safe-methods': list_with_two_dashes,
+          'url-safe-methods': list_with_two_dashes,
+          warning: {
+            prefix: '-',
+            separator: '', # essentially can only be -w1, -w2, -w3
+            type: :string,
+            regex: /\A1|2|3\z/i,
+            keyword: 'w'
+          }
+        }
+      )
+    end
+
     private
 
     def has_rails_gem?
@@ -56,23 +121,6 @@ module Salus::Scanners
       Dir.exist?(File.join(@repository.path_to_repo, 'app')) ||
         (@config.key?('path') && validate_file_option('path') &&
           @config.fetch('path').split('/')[-1].contains('app'))
-    end
-
-    # flag options taken from https://brakemanscanner.org/docs/options/
-    def config_options
-      options = ''
-
-      # path/to/rails/app
-      # must be an app dir
-      options.concat(create_list_file_option('path')) if @config.key?('path')
-
-      options
-    end
-
-    def create_file_option(keyword)
-      return '' unless validate_file_option(keyword)
-
-      "--#{keyword} #{Shellwords.escape(@config.fetch(keyword))} "
     end
   end
 end
