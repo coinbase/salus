@@ -72,12 +72,12 @@ build_options(
       # regex: /\Afoo|bar|baz\z/i, # Optionally you can use a regex to only allow certain matches
     },
     file: :file,
-    file_list: :file_list
-  },
-  multiple: :string,
-  descriptive: { # Use a more descriptive name
-    type: :flag,
-    keyword: 'd' # Use the original non-descriptive name here
+    file_list: :file_list,
+    multiple: :string,
+    descriptive: { # Use a more descriptive name
+      type: :flag,
+      keyword: 'd' # Use the original non-descriptive name here
+    }
   }
 )
 ```
