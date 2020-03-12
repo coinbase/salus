@@ -2,8 +2,6 @@ FROM ruby:2.4.6@sha256:3a31984805c5ad3b54baeb93d2c01c46845f681b712394b02d2e860cb
 
 MAINTAINER security@coinbase.com
 
-# add GOPROXY here
-
 RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get install -y --no-install-recommends \
     g++ \
     gcc \
