@@ -85,7 +85,7 @@ describe Salus::Config do
     it 'should deep merge config files' do
       config = Salus::Config.new([config_file_1, config_file_2])
       expect(config.scanner_configs['BundleAudit']).to include(
-        'ignore' => ['CVE-AAAA-BBBB', 'CVE-XXXX-YYYY'],
+        'ignore' => %w[CVE-AAAA-BBBB CVE-XXXX-YYYY],
         'failure_message' => 'Please upgrade the failing dependency.'
       )
     end
