@@ -30,8 +30,8 @@
 
       ]
     },
-    "Sgrep": {
-      "scanner_name": "Sgrep",
+    "Semgrep": {
+      "scanner_name": "Semgrep",
       "passed": true,
       "running_time": 0.0,
       "warn": {
@@ -61,7 +61,7 @@
       "ReportNodeModules",
       "ReportPythonModules",
       "ReportRubyGems",
-      "Sgrep",
+      "Semgrep",
       "YarnAudit"
     ],
     "enforced_scanners": [
@@ -104,7 +104,7 @@
       "ReportRubyGems": {
         "pass_on_raise": false
       },
-      "Sgrep": {
+      "Semgrep": {
         "pass_on_raise": false
       },
       "YarnAudit": {

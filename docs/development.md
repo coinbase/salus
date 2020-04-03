@@ -15,7 +15,7 @@ bundle install
 # for NPM, install per https://www.npmjs.com/get-npm
 # for Go reporting, install Go per https://golang.org/doc/install#install
 # for PatternSearch, install sift per https://sift-tool.org/download
-# for Sgrep, install sgrep per https://github.com/returntocorp/sgrep#installation
+# for Semgrep, install semgrep per https://github.com/returntocorp/semgrep#installation
 # for end-to-end tests and running Salus, install Docker per https://docs.docker.com/install
 ```
 

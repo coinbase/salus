@@ -63,17 +63,17 @@ RUN go get github.com/svent/sift@$SIFT_VERSION \
 RUN go get github.com/securego/gosec/cmd/gosec@915e9ee \
   && mv /root/go/bin/gosec /usr/bin/
 
-### sgrep tool install https://sgrep.dev
-ENV SGREP_VERSION 0.4.9b5
-ENV SGREP_TARBALL_FILE sgrep-$SGREP_VERSION-ubuntu-16.04.tgz
-ENV SGREP_DOWNLOAD_URL https://github.com/returntocorp/sgrep/releases/download/v$SGREP_VERSION/$SGREP_TARBALL_FILE
-ENV SGREP_DOWNLOAD_SHA256 9e57323fd0eb9133b7ff301a6be8361c073c3bfe6e6959ca1b622e5abc176e03
+### semgrep tool install https://semgrep.dev
+ENV SEMGREP_VERSION 0.4.11b7
+ENV SEMGREP_TARBALL_FILE semgrep-v$SEMGREP_VERSION-ubuntu-16.04.tgz
+ENV SEMGREP_DOWNLOAD_URL https://github.com/returntocorp/semgrep/releases/download/v$SEMGREP_VERSION/$SEMGREP_TARBALL_FILE
+ENV SEMGREP_DOWNLOAD_SHA256 4012952cd32bf4318386cfc8a4c7bc6011fe376d8a47e1e6c3497365f6a9dc67
 
-RUN curl -fsSL "$SGREP_DOWNLOAD_URL" -o sgrep.tar.gz \
-  && echo "$SGREP_DOWNLOAD_SHA256 sgrep.tar.gz" | sha256sum -c - \
-  && tar -C /usr/local/lib -xzf sgrep.tar.gz \
-  && rm sgrep.tar.gz \
-  && ln -sf /usr/local/lib/sgrep-lint-files/sgrep-lint /usr/local/bin/sgrep-lint \
+RUN curl -fsSL "$SEMGREP_DOWNLOAD_URL" -o semgrep.tar.gz \
+  && echo "$SEMGREP_DOWNLOAD_SHA256 semgrep.tar.gz" | sha256sum -c - \
+  && tar -C /usr/local/lib -xzf semgrep.tar.gz \
+  && rm semgrep.tar.gz \
+  && ln -sf /usr/local/lib/sgrep-lint-files/sgrep-lint /usr/local/bin/semgrep \
   && ln -sf /usr/local/lib/sgrep-lint-files/sgrep /usr/local/bin/sgrep
 
 ### Salus
