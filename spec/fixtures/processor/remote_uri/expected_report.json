@@ -29,6 +29,21 @@
       "errors": [
 
       ]
+    },
+    "Sgrep": {
+      "scanner_name": "Sgrep",
+      "passed": true,
+      "running_time": 0.0,
+      "warn": {
+      },
+      "info": {
+        "hits": [
+
+        ]
+      },
+      "errors": [
+
+      ]
     }
   },
   "errors": [
@@ -46,6 +61,7 @@
       "ReportNodeModules",
       "ReportPythonModules",
       "ReportRubyGems",
+      "Sgrep",
       "YarnAudit"
     ],
     "enforced_scanners": [
@@ -86,6 +102,9 @@
         "pass_on_raise": false
       },
       "ReportRubyGems": {
+        "pass_on_raise": false
+      },
+      "Sgrep": {
         "pass_on_raise": false
       },
       "YarnAudit": {

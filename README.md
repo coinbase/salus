@@ -43,6 +43,7 @@ coinbase/salus pulls the docker image
 - [npm audit](docs/scanners/npm_audit.md) - Execution of [`npm audit`](https://docs.npmjs.com/getting-started/running-a-security-audit) which looks for CVEs in node module dependencies.
 - [yarn audit](docs/scanners/yarn_audit.md) - Execution of [`yarn audit`](https://yarnpkg.com/lang/en/docs/cli/audit/) which looks for CVEs in node module dependencies.
 - [PatternSearch](docs/scanners/pattern_search.md) - Looks for certain strings in a project that might be dangerous or could require that certain strings be present.
+- [sgrep](docs/scanners/sgrep.md) - Execution of [`sgrep`](https://sgrep.dev) which looks for semantic and syntactical patterns in code at the AST level.
 
 Salus also parses dependency files and reports on what libraries and version are being used in any given project. This can be useful for tracking dependencies across your fleet.The currently supported languages are:
 - Ruby

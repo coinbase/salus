@@ -13,6 +13,7 @@ coverage/
 
 # Salus output
 salus_report.json
+salus-report.json
 
 # node
 node_modules
