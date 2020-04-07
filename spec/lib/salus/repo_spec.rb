@@ -9,5 +9,11 @@ describe Salus::Repo do
       expect(repository.gemfile_lock_present?).to eq(false)
       expect(repository.gemfile_lock).to be_nil
     end
+
+    it 'should create a getter and search for files marked with wildcard' do
+      repository = Salus::Repo.new('spec/fixtures/repo')
+      expect(repository.android_app_present?).to be_truthy
+      expect(repository.android_app_present?).to match_array[""]
+    end
   end
 end
