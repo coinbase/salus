@@ -11,9 +11,13 @@ describe Salus::Repo do
     end
 
     it 'should create a getter and search for files marked with wildcard' do
-      repository = Salus::Repo.new('spec/fixtures/repo')
+      repo_path = 'spec/fixtures/wildcard_repo'
+      repository = Salus::Repo.new(repo_path)
       expect(repository.android_app_present?).to be_truthy
-      expect(repository.android_app_present?).to match_array[""]
+      expect(repository.android_app_present?).to match_array(
+        ["#{repo_path}/android.apk", "#{repo_path}/folder/android.apk",
+         "#{repo_path}/folder/subfolder/android.apk"]
+      )
     end
   end
 end
