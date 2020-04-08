@@ -32,7 +32,12 @@ module Salus
     # Define file checkers.
     IMPORTANT_FILES.each do |file|
       define_method :"#{file[:handle]}_present?" do
-        return Dir["#{@path_to_repo}/**/*#{file[:filename]}"] if file[:wildcard]
+        if file[:wildcard]
+          files = Dir["#{@path_to_repo}/**/*#{file[:filename]}"]
+          return false unless files.any?
+
+          return files
+        end
 
         File.exist?("#{@path_to_repo}/#{file[:filename]}")
       end
