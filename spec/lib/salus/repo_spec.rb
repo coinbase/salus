@@ -18,6 +18,7 @@ describe Salus::Repo do
         ["#{repo_path}/android.apk", "#{repo_path}/folder/android.apk",
          "#{repo_path}/folder/subfolder/android.apk"]
       )
+      expect(repository.ios_app_present?).to be_falsey
     end
   end
 end
