@@ -14,7 +14,7 @@ module Salus
     CONTENT_TYPE_FOR_FORMAT = {
       'json' => 'application/json',
       'yaml' => 'text/x-yaml',
-      'txt'  => 'text/plain'
+      'txt' => 'text/plain'
     }.freeze
 
     SUMMARY_TABLE_HEADINGS = ['Scanner', 'Running Time', 'Required', 'Passed'].freeze

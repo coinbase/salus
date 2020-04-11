@@ -132,18 +132,18 @@ describe Salus::Scanners::Base do
     let(:scanner) do
       Salus::Scanners::Base.new(repository: repository, config: {
                                   'flag' => 'true',
-        'onlyLow' => 'low',
-        'bool' => 'true',
-        'file' => './bla.js',
-        'list' => %w[foo bar 1 2],
-        'multiple' => %w[first second third],
-        'onlyHigh' => 'foobarbaz', # Invalid
-        'notUsed' => 'neverShouldBeThere'
+                                  'onlyLow' => 'low',
+                                  'bool' => 'true',
+                                  'file' => './bla.js',
+                                  'list' => %w[foo bar 1 2],
+                                  'multiple' => %w[first second third],
+                                  'onlyHigh' => 'foobarbaz', # Invalid
+                                  'notUsed' => 'neverShouldBeThere'
                                 })
     end
 
     it 'should build the options correctly based on a hash' do
-      # Note, this doesn't test that it checks for files properly since when running rspec, we would need the files in the file system
+      # Note, this doesn't test that it checks for files properly since when running rspec
       options = scanner.build_options(
         prefix: '-',
         suffix: ' ',
