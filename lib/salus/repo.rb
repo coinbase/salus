@@ -22,12 +22,23 @@ module Salus
       { handle: :go_mod, filename: 'go.mod' },
       { handle: :go_sum, filename: 'go.sum' },
       # Python
-      { handle: :requirements_txt, filename: 'requirements.txt' }
+      { handle: :requirements_txt, filename: 'requirements.txt' },
+
+      # Mobile Scanners
+      { handle: :android_app, filename: '.apk', wildcard: true },
+      { handle: :ios_app, filename: '.ipa', wildcard: true }
     ].freeze
 
     # Define file checkers.
     IMPORTANT_FILES.each do |file|
       define_method :"#{file[:handle]}_present?" do
+        if file[:wildcard]
+          files = Dir["#{@path_to_repo}/**/*#{file[:filename]}"]
+          return false unless files.any?
+
+          return files
+        end
+
         File.exist?("#{@path_to_repo}/#{file[:filename]}")
       end
     end

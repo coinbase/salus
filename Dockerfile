@@ -1,4 +1,4 @@
-FROM ruby:2.4.6@sha256:3a31984805c5ad3b54baeb93d2c01c46845f681b712394b02d2e860cb5d5946b
+FROM ruby:2.7.0@sha256:10f418593f7a95a50bdb880fdf94182c9c577b0b48159860dfb6854bebe0a41e
 MAINTAINER security@coinbase.com
 
 RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get install -y --no-install-recommends \
@@ -26,13 +26,13 @@ ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
 
 ### JS + NODE
-# Using node version 8.12.0 since it's the latest LTS.
-ENV NODE_VERSION 8.12.0
-ENV NPM_VERSION 6.4.1
-ENV YARN_VERSION 1.17.3
+ENV NODE_VERSION 13.8.0
+ENV NPM_VERSION 6.13.7
+ENV YARN_VERSION 1.22.0
 ENV NPM_CONFIG_LOGLEVEL info
 
 # Downloaded from https://nodejs.org/en/download/
+# Replace file if node js upgrade
 COPY node_SHASUMS256.txt SHASUMS256.txt
 
 RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz" \
@@ -44,11 +44,11 @@ RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-
 
 ### GO - required for sift and gosec
 ENV GO111MODULE on
-ENV GOLANG_VERSION 1.12.10
+ENV GOLANG_VERSION 1.13.7
 ENV GOLANG_DOWNLOAD_URL https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz
-ENV GOLANG_DOWNLOAD_SHA256 aaa84147433aed24e70b31da369bb6ca2859464a45de47c2a5023d8573412f6b
+ENV GOLANG_DOWNLOAD_SHA256 b3dd4bd781a0271b33168e627f7f43886b4c5d1c794a4015abf34e99c6526ca3
 ENV SIFT_VERSION v0.9.0
-ENV GOSEC_VERSION 2.0.0
+ENV GOSEC_VERSION 2.2.0
 
 RUN curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz \
   && echo "$GOLANG_DOWNLOAD_SHA256  golang.tar.gz" | sha256sum -c - \
@@ -70,7 +70,7 @@ RUN mkdir -p /home/repo
 WORKDIR /home
 
 # make sure we're on latest bundler
-RUN gem install bundler
+RUN gem install bundler -v'2.0.2'
 
 # ruby gems
 COPY Gemfile Gemfile.lock /home/

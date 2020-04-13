@@ -2,6 +2,8 @@ require 'simplecov'
 require 'pry'
 require 'webmock/rspec'
 
+WebMock.disable_net_connect!
+
 SimpleCov.start do
   add_filter "/spec/" # Ignore tests as part of the coverage report
 end

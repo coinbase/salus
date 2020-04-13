@@ -1,5 +1,5 @@
 AllCops:
-  TargetRubyVersion: 2.4
+  TargetRubyVersion: 2.7.0
   Exclude:
     - 'spec/fixtures/**/*'
     - 'vendor/**/*'
@@ -73,8 +73,11 @@ Style/Next:
 Style/ClassVars:
   Enabled: false
 
-Layout/AlignHash:
+Layout/HashAlignment:
   Enabled: false
 
 Lint/ToJSON:
+  Enabled: false
+
+LiteralInInterpolation:
   Enabled: false
