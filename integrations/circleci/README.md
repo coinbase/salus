@@ -16,7 +16,7 @@ Note: active_scanners and enforced_scanners must be yaml formatted for Salus con
 
 ## CircleCI Environment Variables
 
-Stored in custom_info of a Salus scan.
+Stored in `custom_info` of a Salus scan.
 
 | Key | CircleCI Variable | Description |
 | --- | ----------------- | ----------- |
@@ -35,11 +35,9 @@ Stored in custom_info of a Salus scan.
 | pr_reponame | CIRCLE_PR_REPONAME | Name of repository where pull/merge request was created |
 | pr_number | CIRCLE_PR_NUMBER | Number of the pull/merge request |
 
-CircleCI variables not used: CI, CI_PULL_REQUEST, CI_PULL_REQUESTS, CIRCLE_INTERNAL_TASK_DATA, CIRCLE_JOB, CIRCLE_NODE_INDEX, CIRCLE_NODE_TOTAL, CIRCLE_PREVIOUS_BUILD_NUM, CIRCLE_PULL_REQUEST, CIRCLE_WORKFLOW_ID, CIRCLE_WORKING_DIRECTORY, CIRCLECI, HOME
-
 ## Examples
 
-.circleci/config.yml
+`.circleci/config.yml`
 
 ### blocking scan with all scanners
 
@@ -103,3 +101,8 @@ workflows:
           salus_executor:
             name: salus_2_4_2
 ```
+
+## Unused CircleCI Environment Variables
+
+CI, CI_PULL_REQUEST, CI_PULL_REQUESTS, CIRCLE_INTERNAL_TASK_DATA, CIRCLE_JOB, CIRCLE_NODE_INDEX, CIRCLE_NODE_TOTAL, CIRCLE_PREVIOUS_BUILD_NUM, CIRCLE_PULL_REQUEST, CIRCLE_WORKFLOW_ID, CIRCLE_WORKING_DIRECTORY, CIRCLECI, HOME
+
