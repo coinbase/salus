@@ -57,7 +57,7 @@ If you would like to build custom scanners or support more languages that are no
 
 ## CircleCI Integration
 
-Salus can be integrated with CircleCI by using a public orb. All Salus configuration options are supported, and defaults are the same as for Salus itself. 
+Salus can be integrated with CircleCI by using a public Orb. All Salus configuration options are supported, and defaults are the same as for Salus itself. 
 
 Example CircleCI `config.yml`:
 
@@ -72,6 +72,30 @@ workflows:
     jobs:
       - salus/scan
 ```
+
+[Orb documentation](integrations/circleci/README.md)
+
+## Github Actions Integration
+
+Salus can also be used with Github Actions. 
+
+Example `.github/workflows/main.yml`:
+
+```
+on: [push]
+
+jobs:
+  salus_scan_job:
+    runs-on: ubuntu-latest
+    name: Salus Security Scan Example
+    steps:
+    - uses: actions/checkout@v1
+    - name: Salus Scan
+      id: salus_scan
+      uses: federacy/scan-action@0.1.1
+```
+
+[Github Action documentation](https://github.com/federacy/scan-action)
 
 ## Using Salus in your Repo
 
