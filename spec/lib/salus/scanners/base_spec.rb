@@ -127,4 +127,62 @@ describe Salus::Scanners::Base do
         .from(nil).to('SCANNER FAILED')
     end
   end
+
+  describe '#build_options' do
+    let(:scanner) do
+      Salus::Scanners::Base.new(repository: repository, config: {
+                                  'flag' => 'true',
+                                  'onlyLow' => 'low',
+                                  'bool' => 'true',
+                                  'file' => './bla.js',
+                                  'list' => %w[foo bar 1 2],
+                                  'multiple' => %w[first second third],
+                                  'onlyHigh' => 'foobarbaz', # Invalid
+                                  'notUsed' => 'neverShouldBeThere',
+                                  'longName' => 'true' # should rename to shortname
+                                })
+    end
+
+    it 'should build the options correctly based on a hash' do
+      # Note, this doesn't test that it checks for files properly since when running rspec
+      options = scanner.build_options(
+        prefix: '-',
+        suffix: ' ',
+        separator: '=',
+        args: {
+          flag: :flag,
+          onlyLow: /^low$/i, # Automatically knows it is a string
+          bool: 'bool', # Test if you use a string for the type
+          file: {
+            type: :string,
+            prefix: '--', # test for custom prefix
+            separator: '&', # Test for custom separator
+            suffix: '%%% ' # Test for custom end
+          },
+          list: :list, # use defaults
+          notThere: :string, # Not in the config
+          onlyHigh: /^high$/i, # not allowed, return empty string
+          multiple: :string,
+          longName: {
+            keyword: 'shortName',
+            type: :flag
+          }
+        }
+      )
+      expect(options).to start_with('-flag ') # Respects order
+      expect(options).to include(' -bool=true')
+      expect(options).to include(' -onlyLow=low')
+      expect(options).to include(' --file&./bla.js%%% ')
+      expect(options).to include(' -list=foo,bar,1,2 ')
+      expect(options).to include(' -multiple=first ')
+      expect(options).to include(' -multiple=second ')
+      expect(options).to include(' -multiple=third ')
+      expect(options).to include(' -shortName ')
+      expect(options).not_to include('notThere')
+      expect(options).not_to include('high') # No 'high' anywhere in options
+      expect(options).not_to include('neverShouldBeThere') # No 'high' anywhere in options
+      expect(options).not_to include('foobarbaz') # No 'foobarbaz' anywhere in options
+      expect(options).not_to include('longName') # No 'longName' anywhere in options
+    end
+  end
 end
