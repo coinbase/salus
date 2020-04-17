@@ -23,7 +23,7 @@ module Salus
       { handle: :go_sum, filename: 'go.sum' },
       # Python
       { handle: :requirements_txt, filename: 'requirements.txt' },
-      { handle: :setup_cfg, filename: 'setup.cfg' }
+      { handle: :setup_cfg, filename: 'setup.cfg' },
       # Mobile Scanners
       { handle: :android_app, filename: '.apk', wildcard: true },
       { handle: :ios_app, filename: '.ipa', wildcard: true }
