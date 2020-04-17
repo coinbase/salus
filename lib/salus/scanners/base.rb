@@ -97,6 +97,7 @@ module Salus::Scanners
     # Report a scanner warning such as a possible misconfiguration
     def report_warn(type, message)
       @report.warn(type, message)
+      Bugsnag.notify(message)
     end
 
     # Report the STDOUT from the scanner.
@@ -113,6 +114,7 @@ module Salus::Scanners
     def report_error(message, hsh = {})
       hsh[:message] = message
       @report.error(hsh)
+      Bugsnag.notify(message)
     end
 
     # Report a dependency of the project
