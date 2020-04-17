@@ -15,11 +15,11 @@ jobs:
       - run: docker run -t -v $(pwd):/home/repo coinbase/salus
   rubocop:
     docker:
-      - image: ruby:2.4.5@sha256:a7a0a7c4dc2ea0ec483b52e9c30d360460c18cce04cebdaaba2aa0b94f9b0755
+      - image: ruby:2.7.0@sha256:10f418593f7a95a50bdb880fdf94182c9c577b0b48159860dfb6854bebe0a41e
     steps:
       - checkout
       - run: apt-get update && apt-get install cmake -y
-      - run: gem install bundler
+      - run: gem install bundler -v'2.0.2'
       - run: bundle install
       - run: bundle exec rubocop
 

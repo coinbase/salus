@@ -5,7 +5,9 @@ require 'salus/scanners/base'
 # Config file can provide:
 #   - exclude_directories: Array of directories (GLOB) in the repo to exclude from the search.
 #   - exclude_extensions: Array of file extensions to exclude from the search.
-#   The above can also be provided per-match, and will override the global values.
+#   - include_extensions: Array of file extensions to scan exclusively.
+#   The above can also be provided per-match, and will override the global values. Exclusions
+#   take precedence over inclusions if they conflict.
 #   - matches: Array[Hash]
 #       regex:       <regex>   (required)      regex to match against.
 #       forbidden:   <boolean> (default false) if true, a hit on this regex will fail the test.
@@ -16,7 +18,8 @@ module Salus::Scanners
   class PatternSearch < Base
     def run
       global_exclude_directory_flags = flag_list('--exclude-dirs', @config['exclude_directory'])
-      global_exclude_extension_flags = extension_flag(@config['exclude_extension'])
+      global_exclude_extension_flags = extension_flag('--exclude-ext', @config['exclude_extension'])
+      global_include_extension_flags = extension_flag('--ext', @config['include_extension'])
 
       # For each pattern, keep a running history of failures, errors, and hits
       # These will be reported on at the end.
@@ -35,12 +38,15 @@ module Salus::Scanners
           match_exclude_directory_flags = flag_list(
             '--exclude-dirs', match['exclude_directory']
           )
-          match_exclude_extension_flags = extension_flag(match['exclude_extension'])
+          match_exclude_extension_flags = extension_flag('--exclude-ext', \
+                                                         match['exclude_extension'])
+          match_include_extension_flags = extension_flag('--ext', match['include_extension'])
 
           command_string = [
             "sift -n -e \"#{match['regex']}\" .",
             match_exclude_directory_flags || global_exclude_directory_flags,
-            match_exclude_extension_flags || global_exclude_extension_flags
+            match_exclude_extension_flags || global_exclude_extension_flags,
+            match_include_extension_flags || global_include_extension_flags
           ].compact.join(' ')
           shell_return = run_shell(command_string)
 
@@ -108,13 +114,13 @@ module Salus::Scanners
 
     private
 
-    def extension_flag(file_extensions)
-      if file_extensions.nil?
+    def extension_flag(flag, file_extensions)
+      if file_extensions.nil? || flag.nil?
         nil
-      elsif file_extensions.empty?
+      elsif file_extensions.empty? || flag.empty?
         ""
       else
-        flag = '--exclude-ext='
+        flag << '='
         flag << file_extensions.join(',')
       end
     end

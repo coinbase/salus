@@ -18,11 +18,11 @@ describe Salus::Scanners::Gosec do
         expect(
           info[:stderr]
         ).to include(
-          'no buildable Go source files in /go/src/repo/spec/fixtures/blank_repository'
+          'No packages found' # debug information
         )
         expect(
           errors[:message]
-        ).to include('gosec exited with build error')
+        ).to include('0 lines of code were scanned')
       end
     end
 
@@ -40,11 +40,39 @@ describe Salus::Scanners::Gosec do
       end
     end
 
+    context 'go project with vulnerabilities in a nested folder' do
+      let(:repo) { Salus::Repo.new('spec/fixtures/gosec/recursive_vulnerable_goapp') }
+
+      it 'should record failure and record the STDOUT from gosec' do
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+        logs = scanner.report.to_h.fetch(:logs)
+        expect(info[:stdout]).not_to be_nil
+        expect(info[:stdout]).not_to be_empty
+        expect(logs).to include('Potential hardcoded credentials')
+      end
+    end
+
     context 'go project with no known vulnerabilities' do
       let(:repo) { Salus::Repo.new('spec/fixtures/gosec/safe_goapp') }
 
       it 'should report a passing scan' do
         expect(scanner.report.passed?).to eq(true)
+      end
+    end
+
+    context 'go project with malformed go' do
+      let(:repo) { Salus::Repo.new('spec/fixtures/gosec/malformed_goapp') }
+
+      it 'should report a failing scan' do
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+        logs = scanner.report.to_h.fetch(:logs)
+
+        expect(info[:stdout]).to include('Golang errors', 'Pintl not declared by package fmt')
+        expect(logs).to include('Golang errors', 'Pintl not declared by package fmt')
       end
     end
   end
@@ -79,6 +107,214 @@ describe Salus::Scanners::Gosec do
 
       it 'returns false' do
         expect(scanner.should_run?).to eq(false)
+      end
+    end
+  end
+
+  describe '#config_options' do
+    let(:scanner) { Salus::Scanners::Gosec.new(repository: repo, config: {}) }
+    let(:config_scanner) { Salus::Scanners::Gosec.new(repository: repo, config: config) }
+
+    before(:example) do
+      scanner.run
+      config_scanner.run
+    end
+
+    context 'when using nosec' do
+      let(:repo) { Salus::Repo.new('spec/fixtures/gosec/nosec') }
+
+      context 'and nosec is set to true' do
+        let(:config) { { "nosec" => "true" } }
+
+        it 'disables nosec comments' do
+          expect(scanner.report.passed?).to eq(true)
+          expect(config_scanner.report.passed?).to eq(false)
+        end
+      end
+
+      context 'and nosec is set to false' do
+        let(:config) { { "nosec" => "false" } }
+
+        it 'enables nosec comments' do
+          expect(scanner.report.passed?).to eq(true)
+          expect(config_scanner.report.passed?).to eq(true)
+        end
+      end
+
+      context 'and nosec is not set to a boolean' do
+        let(:config) { { "nosec" => "blah" } }
+
+        it 'warns when not provided a valid options' do
+          expect(config_scanner.report.to_h.fetch(:warn)).to include(:scanner_misconfiguration)
+        end
+      end
+    end
+
+    context 'when using nosec-tag' do
+      let(:repo) { Salus::Repo.new('spec/fixtures/gosec/nosec-tag') }
+
+      context 'and a valid tag' do
+        let(:config) { { "nosec-tag" => "falsepositive" } }
+
+        it 'respects nosec-tag over nosec' do
+          expect(scanner.report.passed?).to eq(false)
+          expect(config_scanner.report.passed?).to eq(true)
+        end
+
+        context 'and disabling nosec' do
+          let(:config) { { "nosec-tag" => "falsepositive", "nosec" => "true" } }
+
+          it 'respects nosec settings also' do
+            expect(scanner.report.passed?).to eq(false)
+            expect(config_scanner.report.passed?).to eq(false)
+          end
+        end
+      end
+
+      context 'and an invalid tag' do
+        let(:config) { { "nosec-tag" => "" } }
+        it 'warns when not provided a valid option' do
+          expect(config_scanner.report.to_h.fetch(:warn)).to include(:scanner_misconfiguration)
+        end
+      end
+    end
+
+    context 'when using a conf file' do
+      let(:repo) { Salus::Repo.new('spec/fixtures/gosec/gosecconfig_goapp') }
+      let(:config) { { "conf" => "config.json" } }
+
+      #      it 'disables nosec comments' do
+      #        expect(scanner.report.passed?).to eq(true)
+      #        expect(config_scanner.report.passed?).to eq(false)
+      #      end
+    end
+
+    context 'when including rules' do
+      let(:repo) { Salus::Repo.new('spec/fixtures/gosec/vulnerable_goapp') }
+      let(:config) { { "include" => ["G101"] } }
+
+      it 'actually includes only the given rules' do
+        expect(config_scanner.report.passed?).to eq(false)
+      end
+
+      context 'and when using nosec flag' do
+        let(:repo) { Salus::Repo.new('spec/fixtures/gosec/gosec_rules') }
+        let(:config) { { "include" => ["G101"], "nosec" => "true" } }
+
+        it 'only scans for included rules even if issue is whitelisted' do
+          expect(config_scanner.report.passed?).to eq(false)
+        end
+      end
+    end
+
+    context 'when excluding rules' do
+      let(:repo) { Salus::Repo.new('spec/fixtures/gosec/gosec_rules') }
+      let(:config) { { "exclude" => ["G101"] } }
+
+      it 'actually excludes only the given rules' do
+        expect(config_scanner.report.passed?).to eq(true)
+      end
+
+      context 'and when using nosec flag' do
+        let(:repo) { Salus::Repo.new('spec/fixtures/gosec/gosec_rules') }
+        let(:config) { { "exclude" => ["G101"], "nosec" => "true" } }
+
+        it 'only scans for included rules even if issue is whitelisted' do
+          expect(config_scanner.report.passed?).to eq(true)
+        end
+      end
+    end
+
+    context 'when sorting by severity' do
+      require 'json'
+      let(:repo) { Salus::Repo.new('spec/fixtures/gosec/multiple_vulns') }
+      let(:config) { { "sort" => "true" } }
+
+      it 'is sorted in the report' do
+        gosec_report = JSON.parse(config_scanner.report.to_h[:logs])
+        issues_arr = gosec_report["Issues"]
+
+        map = { "HIGH" => 1, "MEDIUM" => 2, "LOW" => 3 }
+
+        issues_arr.each_cons(2) do |first, second|
+          expect(map[first["severity"]]).to be <= map[second["severity"]]
+        end
+      end
+    end
+
+    # context 'when using build tags' do
+    #  let(:repo) { Salus::Repo.new('spec/fixtures/gosec/vulnerable_goapp') }
+    #  let(:config) { { "tags" => "prod" } }
+
+    # TODO
+    # end
+
+    context 'when filtering by severity' do
+      let(:repo) { Salus::Repo.new('spec/fixtures/gosec/multiple_vulns') }
+      let(:config) { { "severity" => "high" } }
+
+      it 'is filtered by severity' do
+        gosec_report = JSON.parse(config_scanner.report.to_h[:logs])
+        issues_arr = gosec_report["Issues"]
+
+        issues_arr.each do |issue|
+          expect(issue["severity"]).to eq("HIGH")
+        end
+      end
+    end
+
+    context 'when filtering by confidence' do
+      let(:repo) { Salus::Repo.new('spec/fixtures/gosec/multiple_vulns') }
+      let(:config) { { "confidence" => "high" } }
+
+      it 'filtered by confidence' do
+        gosec_report = JSON.parse(config_scanner.report.to_h[:logs])
+        issues_arr = gosec_report["Issues"]
+
+        issues_arr.each do |issue|
+          expect(issue["confidence"]).to eq("HIGH")
+        end
+      end
+    end
+
+    context 'when the scan should be forced to pass' do
+      let(:repo) { Salus::Repo.new('spec/fixtures/gosec/multiple_vulns') }
+      let(:config) { { "no-fail" => "true" } }
+
+      it 'always passes' do
+        expect(scanner.report.passed?).to eq(false)
+        expect(config_scanner.report.passed?).to eq(true)
+      end
+    end
+
+    context 'when scanning tests' do
+      let(:repo) { Salus::Repo.new('spec/fixtures/gosec/tests_goapp') }
+      let(:config) { { "tests" => "true" } }
+
+      it 'scans for issues in test files' do
+        expect(scanner.report.passed?).to eq(true)
+        expect(config_scanner.report.passed?).to eq(false)
+      end
+    end
+
+    context 'when excluding directories' do
+      let(:repo) { Salus::Repo.new('spec/fixtures/gosec/multifolder_goapp') }
+
+      context 'and is a real directory' do
+        let(:config) { { "exclude-dir" => ["src/more_src"] } }
+
+        it 'ignores directories' do
+          expect(scanner.report.passed?).to eq(false)
+          expect(config_scanner.report.passed?).to eq(true)
+        end
+      end
+
+      context 'and is not a real directory' do
+        let(:config) { { "exclude-dir" => ["src2"] } }
+
+        it 'issues a warning' do
+          expect(config_scanner.report.to_h.fetch(:warn)).to include(:scanner_misconfiguration)
+        end
       end
     end
   end

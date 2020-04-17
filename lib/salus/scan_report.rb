@@ -13,6 +13,7 @@ module Salus
       @running_time = nil
       @logs = nil
       @info = {}
+      @warn = {}
       @errors = []
       @custom_failure_message = custom_failure_message
     end
@@ -54,6 +55,10 @@ module Salus
       @info[type] = value
     end
 
+    def warn(type, value)
+      @warn[type] = value
+    end
+
     def error(hsh)
       @errors << hsh
     end
@@ -69,6 +74,7 @@ module Salus
         passed: passed?,
         running_time: @running_time,
         logs: @logs&.chomp,
+        warn: @warn,
         info: @info,
         errors: @errors
       }.compact
@@ -77,15 +83,23 @@ module Salus
     def to_s(verbose:, wrap:, use_colors:)
       banner = render_banner(use_colors: use_colors)
 
-      # If the scan succeeded and verbose is false, just output the banner
+      # If the scan succeeded, verbose is false, and there are no warnings, just output the banner
       # indicating pass/fail
-      return banner if @passed && !verbose
+      return banner if @passed && !verbose && @warn.empty?
 
       # Because we need to wrap indented paragraphs, correct the wrap
       # by the indentation level
       indented_wrap = (wrap.nil? ? nil : wrap - INDENT_SIZE)
 
       output = banner
+
+      if !@warn.empty?
+        stringified_warnings = indent(wrapify(JSON.pretty_generate(@warn), indented_wrap))
+        output += "\n\n ~~ Scanner Warnings:\n\n#{stringified_warnings}".chomp
+      end
+
+      # If the scan succeeded, verbose is false, just output the pass/fail banner and warnings
+      return output if @passed && !verbose
 
       if !@logs.nil?
         logs = indent(wrapify(@logs, indented_wrap))

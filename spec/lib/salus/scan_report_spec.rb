@@ -19,7 +19,7 @@ describe Salus::ScanReport do
     end
 
     context 'not verbose and passed' do
-      it 'includes all relevant improtant in string form' do
+      it 'includes all relevant important in string form' do
         expect(string_report).to include('PASSED')
         expect(string_report).not_to include(log_string)
         expect(string_report).not_to include(failure_message)
@@ -28,7 +28,7 @@ describe Salus::ScanReport do
     end
 
     context 'not verbose and failed' do
-      it 'includes all relevant improtant in string form' do
+      it 'includes all relevant important in string form' do
         report.fail
         report.error(error_hash)
         expect(string_report).to include('FAILED')
@@ -40,7 +40,7 @@ describe Salus::ScanReport do
     end
 
     context 'verbose and passed' do
-      it 'includes all relevant improtant in string form' do
+      it 'includes all relevant important in string form' do
         expect(verbose_string_report).to include('PASSED')
         expect(verbose_string_report).to include(log_string)
         expect(verbose_string_report).to include(info_value)
@@ -51,7 +51,7 @@ describe Salus::ScanReport do
     context 'not verbose' do
       let(:string_report) { report.to_s(verbose: true, wrap: 100, use_colors: false) }
 
-      it 'includes all relevant improtant in string form' do
+      it 'includes all relevant important in string form' do
         expect(string_report).to include(info_value)
       end
     end

@@ -1,0 +1,144 @@
+# Use the latest 2.1 version of CircleCI pipeline processing engine, see https://circleci.com/docs/2.0/configuration-reference/
+version: 2.1
+description: "Salus security scanner coordinator (SAST)"
+
+executors:
+  salus:
+    docker:
+      - image: coinbase/salus:latest
+jobs:
+  scan:
+    executor: << parameters.salus_executor >>
+    working_directory: /home/repo
+    parameters:
+      salus_executor:
+        description: Executor for Salus
+        type: executor
+        default: salus
+      active_scanners:
+        description: Scanners to run
+        type: string
+        default: "all"
+      enforced_scanners:
+        description: lists all scanners that should cause Salus to exit with a non-zero status if they find a security vulnerability.
+        type: string
+        default: "all"
+      report_uri:
+        description: Defines where to send Salus reports
+        type: string
+        default: "file://../salus-report.json"
+      report_format:
+        description: Defines the format of the report (json, yaml, txt)
+        type: string
+        default: "json"
+      report_verbosity:
+        description: Defines whether the report should be verbose
+        type: boolean
+        default: true
+      configuration_file:
+        description: Location of the Salus configuration file
+        type: string
+        default: ""
+    steps:
+      - checkout
+      - run:
+          name: Create configuration
+          command: |
+            echo " 
+              config_version: 1
+
+              active_scanners: << parameters.active_scanners >>
+
+              enforced_scanners: << parameters.enforced_scanners >>
+
+              custom_info:
+                sha1: $CIRCLE_SHA1
+                ci_project_username: $CIRCLE_PROJECT_USERNAME
+                reponame: $CIRCLE_PROJECT_REPONAME
+                branch: $CIRCLE_BRANCH
+                tag: $CIRCLE_TAG
+                repository_url: $CIRCLE_REPOSITORY_URL
+                compare_url: $CIRCLE_COMPARE_URL
+                build_url: $CIRCLE_BUILD_URL
+                external_build_id: $CIRCLE_BUILD_NUM
+                pull_requests: $CIRCLE_PULL_REQUESTS
+                ci_username: $CIRCLE_USERNAME
+                pr_username: $CIRCLE_PR_USERNAME
+                pr_reponame: $CIRCLE_PR_REPONAME
+                pr_number: $CIRCLE_PR_NUMBER
+
+              reports:
+                - uri: << parameters.report_uri >> 
+                  format: << parameters.report_format >>
+                  verbose: << parameters.report_verbosity >>" | tee salus-configuration.yaml 
+
+          working_directory: /home
+      - run: 
+          name: Run scan
+          command: |
+            configuration_file="<<parameters.configuration_file>>"
+            if [[ -n "${configuration_file}" ]]; then
+              if [[ ! -f "repo/${configuration_file}" ]]; then
+                echo "repo/${configuration_file} does not exist, aborting."
+                exit 1
+              else
+                bundle exec /home/bin/salus scan --repo_path $CIRCLE_WORKING_DIRECTORY --config "file://${configuration_file}"
+              fi
+            else
+              bundle exec /home/bin/salus scan --repo_path $CIRCLE_WORKING_DIRECTORY --config "file://../salus-configuration.yaml"
+            fi
+          environment:
+            BUNDLE_GEMFILE: /home/Gemfile
+          working_directory: /home
+      - store_artifacts:
+          path: /home/salus-report.json
+
+examples:
+  blocking_scan:
+    description: A Salus scan that blocks on any potential vulnerabilities
+    usage:
+      version: 2.1
+      orbs:
+        salus: federacy/salus@3.0.0
+      workflows:
+        salus_scan:
+          jobs: 
+            - salus/scan
+  non_blocking_scan:
+    description: A Salus scan that does not block on potential vulnerabilities
+    usage:
+      version: 2.1
+      orbs:
+        salus: federacy/salus@3.0.0
+      workflows:
+        salus_scan:
+          jobs: 
+            - salus/scan:
+                enforced_scanners: "none"
+  specify_scanners:
+    description: A Salus scan using specific scanners
+    usage:
+      version: 2.1
+      orbs:
+        salus: federacy/salus@3.0.0
+      workflows:
+        salus_scan:
+          jobs: 
+            - salus/scan:
+                active_scanners: "\n    - Brakeman"
+  specify_executor_scan:
+    description: A Salus scan that blocks on any potential vulnerabilities
+    usage:
+      version: 2.1
+      orbs:
+        salus: federacy/salus@3.0.0
+      executors:
+        salus_2_4_2:
+          docker:
+            - image: coinbase/salus:2.4.2
+      workflows:
+        salus_scan:
+          jobs: 
+            - salus/scan:
+                salus_executor:
+                  name: salus_2_4_2

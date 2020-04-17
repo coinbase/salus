@@ -15,21 +15,32 @@ module Salus::Scanners
 
     private
 
+    def scan_deps
+      dep_types = @config.fetch('exclude_groups', [])
+
+      return '' if dep_types.empty?
+
+      if dep_types.include?('devDependencies') &&
+          dep_types.include?('dependencies') &&
+          dep_types.include?('optionalDependencies')
+        report_error("No dependencies were scanned!")
+        return ''
+      elsif dep_types.include?('devDependencies') && dep_types.include?('dependencies')
+        report_warn(:scanner_misconfiguration, "Scanning only optionalDependencies!")
+      end
+
+      command = ' --groups '
+      command << 'dependencies ' unless dep_types.include?('dependencies')
+      command << 'devDependencies ' unless dep_types.include?('devDependencies')
+      command << 'optionalDependencies ' unless dep_types.include?('optionalDependencies')
+    end
+
     def scan_for_cves
       # Yarn gives us a new-line separated list of JSON blobs.
       # But the last JSON blob is a summary that we can discard.
       # We must also pluck out only the standard advisory hashes.
-      command_output = run_shell(AUDIT_COMMAND)
-
-      if command_output.status == 1
-        error_lines = []
-        error_lines << "#{AUDIT_COMMAND} failed."
-        error_lines << "Exit status: #{command_output.status}"
-        error_lines << "STDOUT: #{command_output.stdout}"
-        error_lines << "STDERR: #{command_output.stderr}"
-
-        raise error_lines.join("\n")
-      end
+      command = "#{AUDIT_COMMAND} #{scan_deps}"
+      command_output = run_shell(command)
 
       report_stdout(command_output.stdout)
 

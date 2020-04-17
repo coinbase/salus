@@ -7,12 +7,8 @@
 
 FROM salus-local
 
-COPY spec /home/spec
-
-# Make $GOPATH directories and copy specs into it to run gosec against spec repos
-RUN mkdir -p $GOPATH/src/repo/spec
-COPY spec $GOPATH/src/repo/spec
-
 RUN bundle install --with test
+
+COPY spec /home/spec
 
 ENTRYPOINT ["bundle", "exec", "rspec", "--format", "documentation", "spec/"]
