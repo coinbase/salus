@@ -36,6 +36,7 @@
   ],
   "config": {
     "active_scanners": [
+      "Bandit",
       "Brakeman",
       "BundleAudit",
       "Gosec",
@@ -58,6 +59,9 @@
       "YarnAudit"
     ],
     "scanner_configs": {
+      "Bandit": {
+        "pass_on_raise": false
+      },
       "Brakeman": {
         "pass_on_raise": false
       },
