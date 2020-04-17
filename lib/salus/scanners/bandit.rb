@@ -8,7 +8,6 @@ module Salus::Scanners
   class Bandit < Base
     def run
       Dir.chdir(@repository.path_to_repo) do
-
         shell_return = run_shell('bandit -r -ii -f json -a file -x tests .')
 
         # From the Bandit docs:
@@ -37,6 +36,5 @@ module Salus::Scanners
     def should_run?
       @repository.requirements_txt_present? || @repository.setup_cfg_present?
     end
-
   end
 end
