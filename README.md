@@ -12,7 +12,7 @@
 
 ## 🔍 Overview
 
-Salus, named after the [Roman goddess of protection](https://en.wikipedia.org/wiki/Salus), is a tool for coordinating the execution of security scanners. You can run Salus on a repository via the Docker daemon and it will determine which scanners are relevant, run them and provide the output. Most scanners are other mature open source projects which we include directly in the container.
+Salus (Security Automation as a Lightweight Universal Scanner), named after the [Roman goddess of protection](https://en.wikipedia.org/wiki/Salus), is a tool for coordinating the execution of security scanners. You can run Salus on a repository via the Docker daemon and it will determine which scanners are relevant, run them and provide the output. Most scanners are other mature open source projects which we include directly in the container.
 
 ```sh
 # Navigate to the root directory of the project you want to run Salus on
@@ -58,7 +58,7 @@ If you would like to build custom scanners or support more languages that are no
 
 ## CircleCI Integration
 
-Salus can be integrated with CircleCI by using a public orb. All Salus configuration options are supported, and defaults are the same as for Salus itself. 
+Salus can be integrated with CircleCI by using a public Orb. All Salus configuration options are supported, and defaults are the same as for Salus itself. 
 
 Example CircleCI `config.yml`:
 
@@ -73,6 +73,30 @@ workflows:
     jobs:
       - salus/scan
 ```
+
+[Orb documentation](integrations/circleci/README.md)
+
+## Github Actions Integration
+
+Salus can also be used with Github Actions. 
+
+Example `.github/workflows/main.yml`:
+
+```
+on: [push]
+
+jobs:
+  salus_scan_job:
+    runs-on: ubuntu-latest
+    name: Salus Security Scan Example
+    steps:
+    - uses: actions/checkout@v1
+    - name: Salus Scan
+      id: salus_scan
+      uses: federacy/scan-action@0.1.1
+```
+
+[Github Action documentation](https://github.com/federacy/scan-action)
 
 ## Using Salus in your Repo
 

@@ -19,7 +19,7 @@ require 'salus/config'
 require 'salus/processor'
 
 module Salus
-  VERSION = '2.7.3'.freeze
+  VERSION = '2.8.2'.freeze
   DEFAULT_REPO_PATH = './repo'.freeze # This is inside the docker container at /home/repo.
 
   SafeYAML::OPTIONS[:default_mode] = :safe
@@ -64,6 +64,7 @@ module Salus
         raise e if ENV['RUNNING_SALUS_TESTS']
 
         puts "Could not send Salus report: (#{e.class}: #{e.message})"
+        Bugsnag.notify(e)
       end
 
       heartbeat_thr&.kill
