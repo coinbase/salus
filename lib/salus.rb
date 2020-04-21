@@ -7,10 +7,10 @@ if ENV['BUGSNAG_API_KEY']
     config.endpoint = ENV.fetch('BUGSNAG_ENDPOINT', 'notify.bugsnag.com')
     config.api_key = ENV['BUGSNAG_API_KEY']
   end
-end
 
-# Hook at_exit to send off the fatal exception if it occurred
-at_exit { Bugsnag.notify($ERROR_INFO) if $ERROR_INFO }
+  # Hook at_exit to send off the fatal exception if it occurred
+  at_exit { Bugsnag.notify($ERROR_INFO) if $ERROR_INFO }
+end
 
 require 'salus/cli'
 require 'salus/repo'
@@ -64,7 +64,7 @@ module Salus
         raise e if ENV['RUNNING_SALUS_TESTS']
 
         puts "Could not send Salus report: (#{e.class}: #{e.message})"
-        Bugsnag.notify(e)
+        Bugsnag.notify(e) if ENV['BUGSNAG_API_KEY']
       end
 
       heartbeat_thr&.kill
