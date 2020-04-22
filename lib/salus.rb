@@ -73,8 +73,8 @@ module Salus
       system_exit(processor.passed? ? EXIT_SUCCESS : EXIT_FAILURE)
     end
 
-    def bugsnag_notify(e)
-      Bugsnag.notify(e) if ENV['BUGSNAG_API_KEY']
+    def bugsnag_notify(msg)
+      Bugsnag.notify(msg) if ENV['BUGSNAG_API_KEY']
     end
 
     private
