@@ -9,7 +9,7 @@ if ENV['BUGSNAG_API_KEY']
   end
 
   # Hook at_exit to send off the fatal exception if it occurred
-  at_exit { Bugsnag.notify($ERROR_INFO) if $ERROR_INFO }
+  at_exit { Salus.bugsnag_notify($ERROR_INFO) if $ERROR_INFO }
 end
 
 require 'salus/cli'
@@ -64,13 +64,17 @@ module Salus
         raise e if ENV['RUNNING_SALUS_TESTS']
 
         puts "Could not send Salus report: (#{e.class}: #{e.message})"
-        Bugsnag.notify(e) if ENV['BUGSNAG_API_KEY']
+        bugsnag_notify(e)
       end
 
       heartbeat_thr&.kill
 
       # System exit with success or failure - useful for CI builds.
       system_exit(processor.passed? ? EXIT_SUCCESS : EXIT_FAILURE)
+    end
+
+    def bugsnag_notify(e)
+      Bugsnag.notify(e) if ENV['BUGSNAG_API_KEY']
     end
 
     private
