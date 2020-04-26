@@ -160,12 +160,12 @@ module Salus::Scanners
       false
     end
 
-  def validate_file_option(keyword, value=-1)
+    def validate_file_option(keyword, value=-1)
       if value == -1
         value = @config[keyword]
         valid_types = [String, File, Dir]
 
-        if value.is_a?(Array) and value.size == 1 and valid_types.include?(val[0].class)
+        if value.is_a?(Array) and value.size == 1 && valid_types.include?(val[0].class)
           value = value[0]
         elsif not valid_types.include?(value.class)
           report_error("Expecting two arguments passed to validate_file_option, or #{keyword} \
