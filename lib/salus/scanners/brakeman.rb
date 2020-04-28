@@ -119,7 +119,7 @@ module Salus::Scanners
 
     def has_app_dir?
       Dir.exist?(File.join(@repository.path_to_repo, 'app')) ||
-        (@config.key?('path') && validate_file_option('path') &&
+        (@config.key?('path') && validate_file_option('path', @config['path']) &&
           @config.fetch('path').split('/')[-1].contains('app'))
     end
   end
