@@ -1,17 +1,7 @@
 require 'bugsnag'
 require 'active_support'
 require 'active_support/core_ext'
-
-if ENV['BUGSNAG_API_KEY']
-  Bugsnag.configure do |config|
-    config.endpoint = ENV.fetch('BUGSNAG_ENDPOINT', 'notify.bugsnag.com')
-    config.api_key = ENV['BUGSNAG_API_KEY']
-  end
-end
-
-# Hook at_exit to send off the fatal exception if it occurred
-at_exit { Bugsnag.notify($ERROR_INFO) if $ERROR_INFO }
-
+require 'salus/bugsnag'
 require 'salus/cli'
 require 'salus/repo'
 require 'salus/scanners'
@@ -19,6 +9,8 @@ require 'salus/config'
 require 'salus/processor'
 
 module Salus
+  include Salus::Bugsnag
+
   VERSION = '2.8.2'.freeze
   DEFAULT_REPO_PATH = './repo'.freeze # This is inside the docker container at /home/repo.
 
@@ -29,7 +21,19 @@ module Salus
 
   URI_DELIMITER = ' '.freeze # space
 
+  if ENV['BUGSNAG_API_KEY']
+    Bugsnag.configure do |config|
+      config.endpoint = ENV.fetch('BUGSNAG_ENDPOINT', 'notify.bugsnag.com')
+      config.api_key = ENV['BUGSNAG_API_KEY']
+    end
+
+    # Hook at_exit to send off the fatal exception if it occurred
+    at_exit { bugsnag_notify($ERROR_INFO) if $ERROR_INFO }
+  end
+
   class << self
+    include Salus::Bugsnag
+
     def scan(
       config: nil,
       quiet: false,
@@ -64,7 +68,7 @@ module Salus
         raise e if ENV['RUNNING_SALUS_TESTS']
 
         puts "Could not send Salus report: (#{e.class}: #{e.message})"
-        Bugsnag.notify(e)
+        bugsnag_notify(e)
       end
 
       heartbeat_thr&.kill
