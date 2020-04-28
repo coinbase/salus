@@ -20,6 +20,34 @@ describe Salus::Scanners::Brakeman do
     end
 
     context 'brakeman configs' do
+      it 'should error if no top-level app dir and no user defined app path' do
+        repo = Salus::Repo.new('spec/fixtures/')
+        scanner = Salus::Scanners::Brakeman.new(repository: repo, config: {})
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+        expect(info[:stderr]).to include('Please supply the path to a Rails application')
+      end
+
+      it 'should respect the config for user defined app path if no top-level app dir' do
+        repo = Salus::Repo.new('spec/fixtures/')
+        path = '/home/spec/fixtures/brakeman/vulnerable_rails_app'
+        scanner = Salus::Scanners::Brakeman.new(repository: repo, config: { 'path' => path })
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+        logs = scanner.report.to_h.fetch(:logs)
+        expect(info[:stdout]).not_to be_nil
+        expect(info[:stdout]).not_to be_empty
+        expect(logs).to include('Dangerous Eval')
+        parsed_logs = JSON.parse(logs)
+        expect(parsed_logs["scan_info"]["app_path"]).to eq(path)
+      end
+
       it 'should respect the config for user defined app path' do
         repo = Salus::Repo.new('spec/fixtures/')
         path = '/home/spec/fixtures/brakeman/vulnerable_rails_app'

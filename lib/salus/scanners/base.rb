@@ -160,19 +160,7 @@ module Salus::Scanners
       false
     end
 
-    def validate_file_option(keyword, value = -1)
-      if value == -1
-        value = @config[keyword]
-        valid_types = [String, File, Dir]
-
-        if value.is_a?(Array) && value.size == 1 && valid_types.include?(val[0].class)
-          value = value[0]
-        elsif !valid_types.include?(value.class)
-          report_error("Expecting two arguments passed to validate_file_option, or #{keyword} \
-                        to define a single file/dir, but got #{value.inspect}.")
-        end
-      end
-
+    def validate_file_option(keyword, value)
       if value.nil?
         report_warn(:scanner_misconfiguration, "Expecting file/dir defined by #{keyword} to be \
                                                 a located in the project repo but got empty string \
