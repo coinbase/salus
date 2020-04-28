@@ -1,17 +1,7 @@
 require 'bugsnag'
 require 'active_support'
 require 'active_support/core_ext'
-
-if ENV['BUGSNAG_API_KEY']
-  Bugsnag.configure do |config|
-    config.endpoint = ENV.fetch('BUGSNAG_ENDPOINT', 'notify.bugsnag.com')
-    config.api_key = ENV['BUGSNAG_API_KEY']
-  end
-
-  # Hook at_exit to send off the fatal exception if it occurred
-  at_exit { Salus.bugsnag_notify($ERROR_INFO) if $ERROR_INFO }
-end
-
+require 'salus/bugsnag'
 require 'salus/cli'
 require 'salus/repo'
 require 'salus/scanners'
@@ -30,6 +20,8 @@ module Salus
   URI_DELIMITER = ' '.freeze # space
 
   class << self
+    include Salus::Bugsnag
+
     def scan(
       config: nil,
       quiet: false,
@@ -71,10 +63,6 @@ module Salus
 
       # System exit with success or failure - useful for CI builds.
       system_exit(processor.passed? ? EXIT_SUCCESS : EXIT_FAILURE)
-    end
-
-    def bugsnag_notify(msg)
-      Bugsnag.notify(msg) if ENV['BUGSNAG_API_KEY']
     end
 
     private
