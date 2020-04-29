@@ -9,7 +9,7 @@ module Salus::Scanners
     class UnhandledExitStatusError < StandardError; end
     class InvalidScannerInvocationError < StandardError; end
 
-    include Salus::Bugsnag
+    include Salus::SalusBugsnag
 
     attr_reader :report
 
