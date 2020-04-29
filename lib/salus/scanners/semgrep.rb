@@ -6,8 +6,8 @@ require "json"
 # See https://semgrep.dev for more info and documentation.
 # Config file can provide:
 #   - exclude_directories: Array of directories in the repo to exclude from the search.
-#   - exclude_extensions: Array of file extensions to exclude from the search. e.g. *.js, *.{go, js}
-#   - include_extensions: Array of file extensions to scan exclusively. e.g. *.js, *.{go, js}
+#   - exclude_extensions: Array of file extensions to exclude from the search. e.g. js, go
+#   - include_extensions: Array of file extensions to scan exclusively. e.g.js, py
 #   - language: A global language flag if you don't want to set it per pattern.
 #   The above can also be provided per-pattern, and will override the global values.
 #   - matches: Array[Hash]
@@ -21,8 +21,8 @@ module Salus::Scanners
   class Semgrep < Base
     def run
       global_exclude_directory_flags = flag_list('--exclude-dir', @config['exclude_directory'])
-      global_exclude_extension_flags = flag_list('--exclude', @config['exclude_extension'])
-      global_include_extension_flags = flag_list('--include', @config['include_extension'])
+      global_exclude_extension_flags = extension_flag('--exclude', @config['exclude_extension'])
+      global_include_extension_flags = extension_flag('--include', @config['include_extension'])
 
       # For each pattern, keep a running history of failures, errors, and hits
       # These will be reported on at the end.
@@ -40,8 +40,8 @@ module Salus::Scanners
           pattern_exclude_directory_flags = flag_list(
             '--exclude-dir', match['exclude_directory']
           )
-          pattern_exclude_extension_flags = flag_list('--exclude', match['exclude_extension'])
-          pattern_include_extension_flags = flag_list('--include', match['include_extension'])
+          pattern_exclude_extension_flags = extension_flag('--exclude', match['exclude_extension'])
+          pattern_include_extension_flags = extension_flag('--include', match['include_extension'])
 
           # Set defaults.
           match["forbidden"] ||= false
@@ -79,7 +79,9 @@ module Salus::Scanners
               hits.each do |hit|
                 if match["forbidden"]
                   failure_messages << "Forbidden pattern \"#{match['pattern']}\" was found " \
-                  "- #{match['message']}"
+                  "- #{match['message']}\n" \
+                  "\t#{hit['path'].sub(base_path + '/', '')}:#{hit['start']['line']}:" \
+                  "#{hit['extra']['file_lines'].join("\n")}"
                 end
                 all_hits << {
                   pattern: match["pattern"],
@@ -92,7 +94,7 @@ module Salus::Scanners
               end
             end
 
-          # possible exit codes from https://github.com/returntocorp/semgrep/blob/c2c06be/sgrep_lint/semgrep/util.py#L12-L19
+          # possible exit codes from https://github.com/returntocorp/semgrep/blob/9ac58092cb8ac02bb1f41f59808d4f03a5b8206e/semgrep/semgrep/util.py#L11-L18
           elsif [1, 2, 3, 4, 5, 6, 7].include?(shell_return.status)
             if match['required']
               failure_messages << "Required pattern \"#{match['pattern']}\" was not found " \
@@ -127,6 +129,18 @@ module Salus::Scanners
 
     def should_run?
       true # we will always run this on the provided folder
+    end
+
+    def extension_flag(flag, file_extensions)
+      if file_extensions.nil? || flag.nil?
+        nil
+      elsif file_extensions.empty? || flag.empty?
+        ""
+      else
+        flag << '=*.{'
+        flag << file_extensions.join(',')
+        flag << '}'
+      end
     end
 
     # returns nil if list is nil

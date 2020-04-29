@@ -34,7 +34,7 @@ describe Salus::Scanners::Semgrep do
           forbidden: false,
           required: false,
           msg: "",
-          hit: "trivial2.py:10:    if user.id == user.id:"
+          hit: "examples/trivial2.py:10:    if user.id == user.id:"
         )
       end
 
@@ -71,7 +71,7 @@ describe Salus::Scanners::Semgrep do
           forbidden: false,
           required: false,
           msg: "Useless equality test.",
-          hit: "trivial2.py:10:    if user.id == user.id:"
+          hit: "examples/trivial2.py:10:    if user.id == user.id:"
         )
       end
     end
@@ -108,7 +108,7 @@ describe Salus::Scanners::Semgrep do
           forbidden: true,
           required: false,
           msg: "",
-          hit: "trivial2.py:10:    if user.id == user.id:"
+          hit: "examples/trivial2.py:10:    if user.id == user.id:"
         )
       end
     end
@@ -140,6 +140,14 @@ describe Salus::Scanners::Semgrep do
           required: true,
           msg: "Useless equality test.",
           hit: "trivial.py:3:if 3 == 3:"
+        )
+
+        expect(info[:hits]).to include(
+          pattern: "$X == $X",
+          forbidden: false,
+          required: true,
+          msg: "Useless equality test.",
+          hit: "examples/trivial2.py:10:    if user.id == user.id:"
         )
       end
 
@@ -180,7 +188,7 @@ describe Salus::Scanners::Semgrep do
               "forbidden" => true
             }
           ],
-          'exclude_extension' => ['*2.py']
+          'exclude_directory' => ['examples']
         }
 
         scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
@@ -203,7 +211,7 @@ describe Salus::Scanners::Semgrep do
           forbidden: true,
           required: false,
           msg: "Useless equality test.",
-          hit: "trivial2.py:10:    if user.id == user.id:"
+          hit: "examples/trivial2.py:10:    if user.id == user.id:"
         )
       end
     end
@@ -218,7 +226,7 @@ describe Salus::Scanners::Semgrep do
               "language" => "python",
               "message" => "Useless equality test.",
               "forbidden" => true,
-              'exclude_extension' => ['*2.py']
+              'exclude_directory' => ['examples']
             }
           ]
         }
@@ -243,7 +251,7 @@ describe Salus::Scanners::Semgrep do
           forbidden: true,
           required: false,
           msg: "Useless equality test.",
-          hit: "trivial2.py:10:    if user.id == user.id:"
+          hit: "examples/trivial2.py:10:    if user.id == user.id:"
         )
       end
     end
@@ -261,7 +269,8 @@ describe Salus::Scanners::Semgrep do
               "forbidden" => true
             }
           ],
-          'include_extension' => ['*2.py']
+          'include_extension' => ['py'],
+          'exclude_directory' => ['examples']
         }
 
         scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
@@ -271,7 +280,7 @@ describe Salus::Scanners::Semgrep do
 
         info = scanner.report.to_h.fetch(:info)
 
-        expect(info[:hits]).not_to include(
+        expect(info[:hits]).to include(
           pattern: "$X == $X",
           forbidden: true,
           required: false,
@@ -279,12 +288,12 @@ describe Salus::Scanners::Semgrep do
           hit: "trivial.py:3:if 3 == 3:"
         )
 
-        expect(info[:hits]).to include(
+        expect(info[:hits]).not_to include(
           pattern: "$X == $X",
           forbidden: true,
           required: false,
           msg: "Useless equality test.",
-          hit: "trivial2.py:10:    if user.id == user.id:"
+          hit: "examples/trivial2.py:10:    if user.id == user.id:"
         )
       end
     end
@@ -300,7 +309,8 @@ describe Salus::Scanners::Semgrep do
               "language" => "python",
               "message" => "Useless equality test.",
               "forbidden" => true,
-              'include_extension' => ['*2.py']
+              'include_extension' => ['py'],
+              'exclude_directory' => ['examples']
             }
           ]
         }
@@ -312,7 +322,7 @@ describe Salus::Scanners::Semgrep do
 
         info = scanner.report.to_h.fetch(:info)
 
-        expect(info[:hits]).not_to include(
+        expect(info[:hits]).to include(
           pattern: "$X == $X",
           forbidden: true,
           required: false,
@@ -320,12 +330,12 @@ describe Salus::Scanners::Semgrep do
           hit: "trivial.py:3:if 3 == 3:"
         )
 
-        expect(info[:hits]).to include(
+        expect(info[:hits]).not_to include(
           pattern: "$X == $X",
           forbidden: true,
           required: false,
           msg: "Useless equality test.",
-          hit: "trivial2.py:10:    if user.id == user.id:"
+          hit: "examples/trivial2.py:10:    if user.id == user.id:"
         )
       end
 
@@ -338,20 +348,21 @@ describe Salus::Scanners::Semgrep do
               "language" => "python",
               "message" => "Useless equality test.",
               "forbidden" => true,
-              'include_extension' => ['*2.py']
+              'include_extension' => ['py'],
+              'exclude_directory' => ['examples']
             }
           ],
-          'exclude_extension' => ['*2.py']
+          'include_extension' => ['js']
         }
 
         scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
         scanner.run
 
-        expect(scanner.report.passed?).to eq(true)
+        expect(scanner.report.passed?).to eq(false)
 
         info = scanner.report.to_h.fetch(:info)
 
-        expect(info[:hits]).not_to include(
+        expect(info[:hits]).to include(
           pattern: "$X == $X",
           forbidden: true,
           required: false,
@@ -364,7 +375,7 @@ describe Salus::Scanners::Semgrep do
           forbidden: true,
           required: false,
           msg: "Useless equality test.",
-          hit: "trivial2.py:10:    if user.id == user.id:"
+          hit: "examples/trivial2.py:10:    if user.id == user.id:"
         )
       end
     end

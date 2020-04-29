@@ -1,4 +1,4 @@
-# https://sgrep.live/WRE
+# https://semgrep.live/WRE
 
 class User:
     def __init__(self, id):
