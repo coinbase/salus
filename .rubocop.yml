@@ -25,7 +25,7 @@ Style/StringLiterals:
 Metrics/BlockLength:
   Enabled: false
 
-Metrics/LineLength:
+Layout/LineLength:
   Max: 100
 
 Metrics/MethodLength:
@@ -79,5 +79,5 @@ Layout/HashAlignment:
 Lint/ToJSON:
   Enabled: false
 
-LiteralInInterpolation:
+Lint/LiteralInInterpolation:
   Enabled: false
