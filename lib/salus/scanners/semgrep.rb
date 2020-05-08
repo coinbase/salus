@@ -6,8 +6,6 @@ require "json"
 # See https://semgrep.dev for more info and documentation.
 # Config file can provide:
 #   - exclude_directories: Array of directories in the repo to exclude from the search.
-#   - exclude_extensions: Array of file extensions to exclude from the search. e.g. js, go
-#   - include_extensions: Array of file extensions to scan exclusively. e.g.js, py
 #   - language: A global language flag if you don't want to set it per pattern.
 #   The above can also be provided per-pattern, and will override the global values.
 #   - matches: Array[Hash]
@@ -21,8 +19,6 @@ module Salus::Scanners
   class Semgrep < Base
     def run
       global_exclude_directory_flags = flag_list('--exclude-dir', @config['exclude_directory'])
-      global_exclude_extension_flags = extension_flag('--exclude', @config['exclude_extension'])
-      global_include_extension_flags = extension_flag('--include', @config['include_extension'])
 
       # For each pattern, keep a running history of failures, errors, and hits
       # These will be reported on at the end.
@@ -40,8 +36,6 @@ module Salus::Scanners
           pattern_exclude_directory_flags = flag_list(
             '--exclude-dir', match['exclude_directory']
           )
-          pattern_exclude_extension_flags = extension_flag('--exclude', match['exclude_extension'])
-          pattern_include_extension_flags = extension_flag('--include', match['include_extension'])
 
           # Set defaults.
           match["forbidden"] ||= false
@@ -56,8 +50,6 @@ module Salus::Scanners
             "--lang",
             match['language'],
             pattern_exclude_directory_flags || global_exclude_directory_flags,
-            pattern_exclude_extension_flags || global_exclude_extension_flags,
-            pattern_include_extension_flags || global_include_extension_flags,
             base_path
           ].compact
 
@@ -129,18 +121,6 @@ module Salus::Scanners
 
     def should_run?
       true # we will always run this on the provided folder
-    end
-
-    def extension_flag(flag, file_extensions)
-      if file_extensions.nil? || flag.nil?
-        nil
-      elsif file_extensions.empty? || flag.empty?
-        ""
-      else
-        flag << '=*.{'
-        flag << file_extensions.join(',')
-        flag << '}'
-      end
     end
 
     # returns nil if list is nil

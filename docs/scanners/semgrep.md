@@ -6,7 +6,7 @@ semgrep is fast and powerful; it's grep-esque patterns are lifted into AST match
 
 If a found pattern is forbidden this scanner will fail and the `message` will be show to the developer in the report. A `required` pattern must be found in order for the scan to pass.
 
-The scanner also allows options `exclude_extension` and `include_extension` for excluding and including file extensions, respectively. These options can be set globally and per-match. While these options can be combined they are AND'ed together by the filtering engine. There is also a `exclude_directory` option for excluding directories -- the glob pattern will match anywhere in the directory so for example `exclude_drectory: [node_modules]` will ignore both `./node_modules`, `lib/node_modules`, and `demo/demo2/node_modules`.
+There is also a `exclude_directory` option for excluding directories -- the glob pattern will match anywhere in the directory so for example `exclude_drectory: [node_modules]` will ignore both `./node_modules`, `lib/node_modules`, and `demo/demo2/node_modules`.
 
 ## Configuration
 
@@ -18,15 +18,9 @@ scanner_configs:
         message: Useless equlity check
         language: python
         exclude_directory:
-          - node_modules
-        include_extension:
-          - js
-          - py
+          - tests
       - pattern: $X.unsanitize(...)
         message: Don't call `unsanitize()` methods without careful review
         language: js
         forbidden: true
-        exclude_extension:
-          - rb
-          - py
 ```
