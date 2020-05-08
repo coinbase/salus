@@ -9,9 +9,9 @@ require 'salus/config'
 require 'salus/processor'
 
 module Salus
-  include Salus::Bugsnag
+  include Salus::SalusBugsnag
 
-  VERSION = '2.8.2'.freeze
+  VERSION = '2.8.4'.freeze
   DEFAULT_REPO_PATH = './repo'.freeze # This is inside the docker container at /home/repo.
 
   SafeYAML::OPTIONS[:default_mode] = :safe
@@ -32,7 +32,7 @@ module Salus
   end
 
   class << self
-    include Salus::Bugsnag
+    include Salus::SalusBugsnag
 
     def scan(
       config: nil,
