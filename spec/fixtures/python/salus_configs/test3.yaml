@@ -1,0 +1,6 @@
+scanner_configs:
+  Bandit:
+    tests:
+      - B105      
+      - B301
+      - B403

@@ -1,0 +1,6 @@
+scanner_configs:
+  Bandit:
+    skip:
+      - B301
+      - B301      
+
