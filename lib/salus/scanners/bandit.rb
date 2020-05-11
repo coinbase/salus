@@ -18,7 +18,12 @@ module Salus::Scanners
         #   - bandit internal error    - exit 2 and log to STDERR
 
         if shell_return.success?
-          if JSON.parse(shell_return.stdout)['metrics']['_totals']['loc'].zero?
+          errs = JSON.parse(shell_return.stdout)['errors']
+          if !errs.empty?
+            report_error(errs, status: shell_return.status)
+            report_stderr(errs)
+            return report_failure
+          elsif JSON.parse(shell_return.stdout)['metrics']['_totals']['loc'].zero?
             report_error(
               '0 lines of code were scanned',
               status: shell_return.status
