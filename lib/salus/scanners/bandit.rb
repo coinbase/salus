@@ -59,12 +59,12 @@ module Salus::Scanners
       }
       args = build_flag_args_from_string(string_to_flag_map)
       args.merge!(aggregate: { type: :string, keyword: 'a' },
-                  configfile: { type: :string, keyword: 'c' },
+                  configfile: { type: :file, keyword: 'c' },
                   profile: { type: :string, keyword: 'p' },
                   tests: { type: :list, keyword: 't' },
                   skip: { type: :list, keyword: 's' },
-                  baseline: { type: :string, keyword: 'b' },
-                  ini: { type: :string, prefix: '--' },
+                  baseline: { type: :file, keyword: 'b' },
+                  ini: { type: :file, prefix: '--' },
                   'ignore-nosec': { type: :flag, prefix: '--' },
                   exclude: { type: :list_file, keyword: 'x' })
       build_options(
