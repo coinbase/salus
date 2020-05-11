@@ -8,7 +8,7 @@ module Salus::Scanners
   class Bandit < Base
     def run
       Dir.chdir(@repository.path_to_repo) do
-        shell_return = run_shell('bandit -r -ii -f json -a file -x tests .')
+        shell_return = run_shell("bandit #{config_options} -r -f json .")
 
         # From the Bandit docs:
         #
@@ -17,7 +17,18 @@ module Salus::Scanners
         #   - vuln found               - exit 1 and log to STDOUT
         #   - bandit internal error    - exit 2 and log to STDERR
 
-        return report_success if shell_return.success?
+        if shell_return.success?
+          if JSON.parse(shell_return.stdout)['metrics']['_totals']['loc'].zero?
+            report_error(
+              '0 lines of code were scanned',
+              status: shell_return.status
+            )
+            report_stderr(shell_return.stderr)
+            return report_failure
+          else
+            return report_success
+          end
+        end
 
         if shell_return.status == 1
           report_failure
@@ -25,7 +36,7 @@ module Salus::Scanners
           log(shell_return.stdout)
         else
           report_error(
-            "bandit exited with an unexpected exit status",
+            "bandit exited with an unexpected exit status, #{shell_return.stderr}",
             status: shell_return.status
           )
           report_stderr(shell_return.stderr)
@@ -35,6 +46,33 @@ module Salus::Scanners
 
     def should_run?
       @repository.requirements_txt_present? || @repository.setup_cfg_present?
+    end
+
+    def config_options
+      # config options taken from https://pypi.org/project/bandit/
+
+      string_to_flag_map = {
+        'level' => { 'LOW' => 'l', 'MEDIUM' => 'll', 'HIGH' => 'lll',
+                     'low' => 'l', 'medium' => 'll', 'high' => 'lll' },
+        'confidence' => { 'LOW' => 'i', 'MEDIUM' => 'ii', 'HIGH' => 'iii',
+                          'low' => 'i', 'medium' => 'ii', 'high' => 'iii' }
+      }
+      args = build_flag_args_from_string(string_to_flag_map)
+      args.merge!(aggregate: { type: :string, keyword: 'a' },
+                  configfile: { type: :string, keyword: 'c' },
+                  profile: { type: :string, keyword: 'p' },
+                  tests: { type: :list, keyword: 't' },
+                  skip: { type: :list, keyword: 's' },
+                  baseline: { type: :string, keyword: 'b' },
+                  ini: { type: :string, prefix: '--' },
+                  'ignore-nosec': { type: :flag, prefix: '--' },
+                  exclude: { type: :list_file, keyword: 'x' })
+      build_options(
+        prefix: '-',
+        suffix: ' ',
+        separator: ' ',
+        args: args
+      )
     end
   end
 end
