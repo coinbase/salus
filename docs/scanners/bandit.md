@@ -25,7 +25,7 @@ For more information on Bandit configs, see [Bandit Usage](https://pypi.org/proj
       confidence: LOW or MEDIUM or HIGH  # report only issues of given confidence level or higher, default is LOW
       baseline: baseline_report_filename  # path of a baseline report to compare against
       init: path_to_.bandit_file  # file supplies command line args
-      ignore-nosec: "true or false"  # do not skip lines with # nosec comments
+      ignore-nosec: true or false  # do not skip lines with # nosec comments
       exclude: # paths to exclude from scan
         - file1
         - file2
