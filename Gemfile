@@ -4,7 +4,7 @@ ruby '2.7.0'
 
 gem 'activesupport', '~> 5.2', '>= 5.2.1'
 gem 'brakeman', '~> 4.7'
-gem 'bugsnag', '~> 4.0'
+gem 'bugsnag', '~> 6.13.1'
 # TODO: Lock `bundler` until:
 #  https://github.com/rubysec/bundler-audit/issues/235 and
 #  https://github.com/bundler/bundler/issues/7511 are resolved.

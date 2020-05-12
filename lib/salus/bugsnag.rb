@@ -5,9 +5,13 @@ require 'English'
 # including both handled and unhandled execptions
 if ENV['BUGSNAG_API_KEY']
   Bugsnag.configure do |config|
-    config.endpoint = ENV.fetch('BUGSNAG_ENDPOINT', 'notify.bugsnag.com')
+    notify_endpoint = ENV.fetch('BUGSNAG_ENDPOINT', 'https://notify.bugsnag.com')
+    session_endpoint = nil # there are no sessions to track here
+
+    config.set_endpoints(notify_endpoint, session_endpoint)
     config.api_key = ENV['BUGSNAG_API_KEY']
     config.release_stage = 'production'
+    config.auto_capture_sessions = false
   end
 
   # Hook at_exit to send off the fatal exception if it occurred
