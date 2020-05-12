@@ -9,6 +9,8 @@ module Salus::Scanners
     class UnhandledExitStatusError < StandardError; end
     class InvalidScannerInvocationError < StandardError; end
 
+    include Salus::SalusBugsnag
+
     attr_reader :report
 
     def initialize(repository:, config:)
@@ -97,6 +99,7 @@ module Salus::Scanners
     # Report a scanner warning such as a possible misconfiguration
     def report_warn(type, message)
       @report.warn(type, message)
+      bugsnag_notify(message)
     end
 
     # Report the STDOUT from the scanner.
@@ -113,6 +116,7 @@ module Salus::Scanners
     def report_error(message, hsh = {})
       hsh[:message] = message
       @report.error(hsh)
+      bugsnag_notify(message)
     end
 
     # Report a dependency of the project

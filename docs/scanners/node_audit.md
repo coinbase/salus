@@ -14,7 +14,7 @@ This might not be possible if there is no patched version available yet or if th
 scanner_configs:
   NodeAudit:
     exceptions:
-      - advisor_id: 39
+      - advisory_id: 39
         changed_by: security-team
         notes: Currently no patch exists and determined that this vulnerability is not exploitable.
 ```
