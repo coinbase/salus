@@ -8,6 +8,11 @@ if ENV['BUGSNAG_API_KEY']
     notify_endpoint = ENV.fetch('BUGSNAG_ENDPOINT', 'https://notify.bugsnag.com')
     session_endpoint = nil # there are no sessions to track here
 
+    # Bugsnag requires a valid scheme, so add one if it's missing
+    if !notify_endpoint.start_with?('http://', 'https://')
+      notify_endpoint = 'https://' + notify_endpoint
+    end
+
     config.set_endpoints(notify_endpoint, session_endpoint)
     config.api_key = ENV['BUGSNAG_API_KEY']
     config.release_stage = 'production'
