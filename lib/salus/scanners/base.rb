@@ -1,6 +1,7 @@
 require 'open3'
 require 'salus/scan_report'
 require 'salus/shell_result'
+require 'salus/bugsnag'
 require 'shellwords'
 
 module Salus::Scanners
