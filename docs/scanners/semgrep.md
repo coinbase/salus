@@ -6,7 +6,7 @@ semgrep is fast and powerful; it's grep-esque patterns are lifted into AST match
 
 If a found pattern is forbidden this scanner will fail and the `message` will be show to the developer in the report. A `required` pattern must be found in order for the scan to pass.
 
-There is also a `exclude_directory` option for excluding directories -- the glob pattern will match anywhere in the directory so for example `exclude_drectory: [node_modules]` will ignore both `./node_modules`, `lib/node_modules`, and `demo/demo2/node_modules`.
+There is also a `exclude_directory` option for excluding directories -- the glob pattern will match anywhere in the file path parts so for example `exclude_drectory: [node_modules]` will ignore both `./node_modules`, `lib/node_modules`, and `demo/demo2/node_modules`. Passing in full paths such as `exclude_drectory: [lib/node_modules]` is not supported.
 
 ## Configuration
 
@@ -17,10 +17,17 @@ scanner_configs:
       - pattern: $X == $X
         message: Useless equlity check
         language: python
+        forbidden: true
         exclude_directory:
           - tests
       - pattern: $X.unsanitize(...)
         message: Don't call `unsanitize()` methods without careful review
         language: js
         forbidden: true
+        exclude_directory:
+          - node_modules
+      - pattern: $LOG_ENDPOINT = os.getenv("LOGGER_ENDPOINT", ...)
+        message: All files need to get the dynamic logger. Please don't hardcode this.
+        language: python
+        required: true
 ```

@@ -73,7 +73,7 @@ module Salus::Scanners
                   failure_messages << "Forbidden pattern \"#{match['pattern']}\" was found " \
                   "- #{match['message']}\n" \
                   "\t#{hit['path'].sub(base_path + '/', '')}:#{hit['start']['line']}:" \
-                  "#{hit['extra']['file_lines'].join("\n")}"
+                  "#{hit['extra']['lines']}"
                 end
                 all_hits << {
                   pattern: match["pattern"],
@@ -81,7 +81,7 @@ module Salus::Scanners
                   required: match["required"],
                   msg: match["message"],
                   hit: "#{hit['path'].sub(base_path + '/', '')}:#{hit['start']['line']}:" \
-                  "#{hit['extra']['file_lines'].join("\n")}".rstrip
+                  "#{hit['extra']['lines']}".rstrip
                 }
               end
             end

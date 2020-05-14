@@ -64,17 +64,17 @@ RUN go get github.com/securego/gosec/cmd/gosec@915e9ee \
   && mv /root/go/bin/gosec /usr/bin/
 
 ### semgrep tool install https://semgrep.dev
-ENV SEMGREP_VERSION 0.4.11b7
+ENV SEMGREP_VERSION 0.7.0
 ENV SEMGREP_TARBALL_FILE semgrep-v$SEMGREP_VERSION-ubuntu-16.04.tgz
 ENV SEMGREP_DOWNLOAD_URL https://github.com/returntocorp/semgrep/releases/download/v$SEMGREP_VERSION/$SEMGREP_TARBALL_FILE
-ENV SEMGREP_DOWNLOAD_SHA256 4012952cd32bf4318386cfc8a4c7bc6011fe376d8a47e1e6c3497365f6a9dc67
+ENV SEMGREP_DOWNLOAD_SHA256 8e47d0d9ef6a7ee324723018b7ef374a026b7a4f385d0060d5e04424ad130027
 
 RUN curl -fsSL "$SEMGREP_DOWNLOAD_URL" -o semgrep.tar.gz \
   && echo "$SEMGREP_DOWNLOAD_SHA256 semgrep.tar.gz" | sha256sum -c - \
   && tar -C /usr/local/lib -xzf semgrep.tar.gz \
   && rm semgrep.tar.gz \
-  && ln -sf /usr/local/lib/sgrep-lint-files/sgrep-lint /usr/local/bin/semgrep \
-  && ln -sf /usr/local/lib/sgrep-lint-files/sgrep /usr/local/bin/sgrep
+  && ln -sf /usr/local/lib/semgrep-files/semgrep /usr/local/bin/semgrep \
+  && ln -sf /usr/local/lib/semgrep-files/semgrep-core /usr/local/bin/semgrep-core
 
 ### Salus
 

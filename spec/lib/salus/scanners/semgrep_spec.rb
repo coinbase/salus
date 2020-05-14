@@ -273,8 +273,8 @@ describe Salus::Scanners::Semgrep do
 
         errors = scanner.report.to_h.fetch(:errors)
         expect(errors).to include(
-          status: 2,
-          stderr: "in rule - for language Python invalid pattern \"$\": "\
+          status: 4, # semgrep exit code documentation
+          stderr: "invalid pattern \"$\": "\
                   "Parse_info.Lexical_error(\"unrecognized symbol: $\", _)",
           message: "Call to semgrep failed"
         )
