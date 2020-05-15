@@ -85,7 +85,7 @@ RUN yarn
 RUN bundle exec bundle-audit update
 
 # Install bandit, python static code scanner
-RUN pip install bandit==1.5.1
+RUN pip install bandit==1.6.2
 
 # copy salus code
 COPY bin /home/bin
