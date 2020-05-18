@@ -1,4 +1,3 @@
-require 'bugsnag'
 require 'active_support'
 require 'active_support/core_ext'
 require 'salus/bugsnag'
@@ -9,9 +8,7 @@ require 'salus/config'
 require 'salus/processor'
 
 module Salus
-  include Salus::SalusBugsnag
-
-  VERSION = '2.8.4'.freeze
+  VERSION = '2.8.5'.freeze
   DEFAULT_REPO_PATH = './repo'.freeze # This is inside the docker container at /home/repo.
 
   SafeYAML::OPTIONS[:default_mode] = :safe
@@ -21,18 +18,8 @@ module Salus
 
   URI_DELIMITER = ' '.freeze # space
 
-  if ENV['BUGSNAG_API_KEY']
-    Bugsnag.configure do |config|
-      config.endpoint = ENV.fetch('BUGSNAG_ENDPOINT', 'notify.bugsnag.com')
-      config.api_key = ENV['BUGSNAG_API_KEY']
-    end
-
-    # Hook at_exit to send off the fatal exception if it occurred
-    at_exit { bugsnag_notify($ERROR_INFO) if $ERROR_INFO }
-  end
-
   class << self
-    include Salus::SalusBugsnag
+    include SalusBugsnag
 
     def scan(
       config: nil,
