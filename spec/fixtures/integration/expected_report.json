@@ -78,6 +78,9 @@
       "ReportRubyGems": {
         "pass_on_raise": false
       },
+      "Semgrep": {
+        "pass_on_raise": false
+      },
       "YarnAudit": {
         "pass_on_raise": false
       },

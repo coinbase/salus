@@ -29,6 +29,21 @@
       "errors": [
 
       ]
+    },
+    "Semgrep": {
+      "scanner_name": "Semgrep",
+      "passed": true,
+      "running_time": 0.0,
+      "warn": {
+      },
+      "info": {
+        "hits": [
+
+        ]
+      },
+      "errors": [
+
+      ]
     }
   },
   "errors": [
@@ -46,6 +61,7 @@
       "ReportNodeModules",
       "ReportPythonModules",
       "ReportRubyGems",
+      "Semgrep",
       "YarnAudit"
     ],
     "enforced_scanners": [
@@ -86,6 +102,9 @@
         "pass_on_raise": false
       },
       "ReportRubyGems": {
+        "pass_on_raise": false
+      },
+      "Semgrep": {
         "pass_on_raise": false
       },
       "YarnAudit": {
