@@ -49,7 +49,7 @@ module Salus::Scanners
             match['pattern'],
             "--lang",
             match['language'],
-            pattern_exclude_directory_flags || global_exclude_directory_flags,
+            *(pattern_exclude_directory_flags || global_exclude_directory_flags),
             base_path
           ].compact
 
@@ -127,7 +127,7 @@ module Salus::Scanners
     def flag_list(flag, list)
       list&.map do |value|
         "#{flag}=#{value}"
-      end&.join(' ')
+      end
     end
   end
 end

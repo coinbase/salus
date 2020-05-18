@@ -36,6 +36,14 @@ describe Salus::Scanners::Semgrep do
           msg: "",
           hit: "examples/trivial2.py:10:    if user.id == user.id:"
         )
+
+        expect(info[:hits]).to include(
+          pattern: "$X == $X",
+          forbidden: false,
+          required: false,
+          msg: "",
+          hit: "vendor/trivial2.py:10:    if user.id == user.id:"
+        )
       end
 
       it "should report matches with a message" do
@@ -73,6 +81,14 @@ describe Salus::Scanners::Semgrep do
           msg: "Useless equality test.",
           hit: "examples/trivial2.py:10:    if user.id == user.id:"
         )
+
+        expect(info[:hits]).to include(
+          pattern: "$X == $X",
+          forbidden: false,
+          required: false,
+          msg: "Useless equality test.",
+          hit: "vendor/trivial2.py:10:    if user.id == user.id:"
+        )
       end
     end
 
@@ -109,6 +125,14 @@ describe Salus::Scanners::Semgrep do
           required: false,
           msg: "",
           hit: "examples/trivial2.py:10:    if user.id == user.id:"
+        )
+
+        expect(info[:hits]).to include(
+          pattern: "$X == $X",
+          forbidden: true,
+          required: false,
+          msg: "",
+          hit: "vendor/trivial2.py:10:    if user.id == user.id:"
         )
       end
     end
@@ -148,6 +172,14 @@ describe Salus::Scanners::Semgrep do
           required: true,
           msg: "Useless equality test.",
           hit: "examples/trivial2.py:10:    if user.id == user.id:"
+        )
+
+        expect(info[:hits]).to include(
+          pattern: "$X == $X",
+          forbidden: false,
+          required: true,
+          msg: "Useless equality test.",
+          hit: "vendor/trivial2.py:10:    if user.id == user.id:"
         )
       end
 
@@ -206,6 +238,62 @@ describe Salus::Scanners::Semgrep do
           hit: "trivial.py:3:if 3 == 3:"
         )
 
+        expect(info[:hits]).to include(
+          pattern: "$X == $X",
+          forbidden: true,
+          required: false,
+          msg: "Useless equality test.",
+          hit: "vendor/trivial2.py:10:    if user.id == user.id:"
+        )
+
+        expect(info[:hits]).not_to include(
+          pattern: "$X == $X",
+          forbidden: true,
+          required: false,
+          msg: "Useless equality test.",
+          hit: "examples/trivial2.py:10:    if user.id == user.id:"
+        )
+      end
+    end
+
+    context 'global exclusions are given' do
+      it 'should not search through excluded material' do
+        repo = Salus::Repo.new('spec/fixtures/semgrep')
+        config = {
+          "matches" => [
+            {
+              "pattern" => "$X == $X",
+              "language" => "python",
+              "message" => "Useless equality test.",
+              "forbidden" => true
+            }
+          ],
+          'exclude_directory' => %w[examples vendor]
+        }
+
+        scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+
+        expect(info[:hits]).to include(
+          pattern: "$X == $X",
+          forbidden: true,
+          required: false,
+          msg: "Useless equality test.",
+          hit: "trivial.py:3:if 3 == 3:"
+        )
+
+        expect(info[:hits]).not_to include(
+          pattern: "$X == $X",
+          forbidden: true,
+          required: false,
+          msg: "Useless equality test.",
+          hit: "vendor/trivial2.py:10:    if user.id == user.id:"
+        )
+
         expect(info[:hits]).not_to include(
           pattern: "$X == $X",
           forbidden: true,
@@ -244,6 +332,62 @@ describe Salus::Scanners::Semgrep do
           required: false,
           msg: "Useless equality test.",
           hit: "trivial.py:3:if 3 == 3:"
+        )
+
+        expect(info[:hits]).to include(
+          pattern: "$X == $X",
+          forbidden: true,
+          required: false,
+          msg: "Useless equality test.",
+          hit: "vendor/trivial2.py:10:    if user.id == user.id:"
+        )
+
+        expect(info[:hits]).not_to include(
+          pattern: "$X == $X",
+          forbidden: true,
+          required: false,
+          msg: "Useless equality test.",
+          hit: "examples/trivial2.py:10:    if user.id == user.id:"
+        )
+      end
+    end
+
+    context 'local exclusions are given' do
+      it 'should not search through excluded material' do
+        repo = Salus::Repo.new('spec/fixtures/semgrep')
+        config = {
+          "matches" => [
+            {
+              "pattern" => "$X == $X",
+              "language" => "python",
+              "message" => "Useless equality test.",
+              "forbidden" => true,
+              'exclude_directory' => %w[examples vendor]
+            }
+          ]
+        }
+
+        scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+
+        expect(info[:hits]).to include(
+          pattern: "$X == $X",
+          forbidden: true,
+          required: false,
+          msg: "Useless equality test.",
+          hit: "trivial.py:3:if 3 == 3:"
+        )
+
+        expect(info[:hits]).not_to include(
+          pattern: "$X == $X",
+          forbidden: true,
+          required: false,
+          msg: "Useless equality test.",
+          hit: "vendor/trivial2.py:10:    if user.id == user.id:"
         )
 
         expect(info[:hits]).not_to include(
