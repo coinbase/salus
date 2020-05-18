@@ -1,5 +1,5 @@
 {
-  "version": "2.8.4",
+  "version": "2.8.5",
   "passed": true,
   "running_time": 0.0,
   "scans": {
@@ -79,6 +79,9 @@
         "pass_on_raise": false
       },
       "ReportRubyGems": {
+        "pass_on_raise": false
+      },
+      "Semgrep": {
         "pass_on_raise": false
       },
       "YarnAudit": {
