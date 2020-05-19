@@ -27,3 +27,4 @@ enforced_scanners:
   - NPMAudit
   - YarnAudit
   - PatternSearch
+  - Semgrep
