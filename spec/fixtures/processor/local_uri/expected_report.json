@@ -71,6 +71,7 @@
       "NPMAudit",
       "PatternSearch",
       "RepoNotEmpty",
+      "Semgrep",
       "YarnAudit"
     ],
     "scanner_configs": {
