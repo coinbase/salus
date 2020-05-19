@@ -35,7 +35,7 @@ describe Salus::Scanners::BundleAudit do
         info = scanner.report.to_h.fetch(:info)
         vuln = info[:vulnerabilities][0]
 
-        expect(vuln[:name]).to eq('actionview')
+        expect(vuln[:name]).to eq('actionpack')
         expect(vuln[:version]).to eq('4.1.15')
         expect(vuln[:cve]).to include('CVE-')
         expect(vuln[:cvss]).to eq(nil)
@@ -75,7 +75,7 @@ describe Salus::Scanners::BundleAudit do
         repo = Salus::Repo.new('spec/fixtures/bundle_audit/passes_with_ignores')
         scanner = Salus::Scanners::BundleAudit.new(
           repository: repo,
-          config: { 'ignore' => %w[CVE-2012-3464 CVE-2015-3227] }
+          config: { 'ignore' => %w[CVE-2012-3464 CVE-2015-3227 CVE-2020-8165] }
         )
 
         scanner.run
@@ -83,7 +83,7 @@ describe Salus::Scanners::BundleAudit do
         expect(scanner.report.passed?).to eq(true)
 
         info = scanner.report.to_h.fetch(:info)
-        expect(info[:ignored_cves]).to eq(%w[CVE-2012-3464 CVE-2015-3227])
+        expect(info[:ignored_cves]).to eq(%w[CVE-2012-3464 CVE-2015-3227 CVE-2020-8165])
       end
     end
   end
