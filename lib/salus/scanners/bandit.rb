@@ -1,4 +1,3 @@
-require 'bundler'
 require 'salus/scanners/base'
 
 # Bandit scanner to check for Python vulns.
