@@ -1,7 +1,7 @@
 require 'salus/scanners/base'
 
 # Bandit scanner to check for Python vulns.
-# https://github.com/presidentbeef/brakeman
+# https://pypi.org/project/bandit/
 
 module Salus::Scanners
   class Bandit < Base
