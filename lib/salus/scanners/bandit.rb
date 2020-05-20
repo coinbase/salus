@@ -66,10 +66,8 @@ module Salus::Scanners
       # config options taken from https://pypi.org/project/bandit/
 
       string_to_flag_map = {
-        'level' => { 'LOW' => 'l', 'MEDIUM' => 'll', 'HIGH' => 'lll',
-                     'low' => 'l', 'medium' => 'll', 'high' => 'lll' },
-        'confidence' => { 'LOW' => 'i', 'MEDIUM' => 'ii', 'HIGH' => 'iii',
-                          'low' => 'i', 'medium' => 'ii', 'high' => 'iii' }
+        'level' => { 'LOW' => 'l', 'MEDIUM' => 'll', 'HIGH' => 'lll' },
+        'confidence' => { 'LOW' => 'i', 'MEDIUM' => 'ii', 'HIGH' => 'iii' }
       }
       args = build_flag_args_from_string(string_to_flag_map)
       args.merge!(aggregate: { type: :string, keyword: 'a', regex: /\Afile|vuln\z/i },

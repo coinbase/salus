@@ -209,6 +209,7 @@ module Salus::Scanners
       arg_map = {}
       val = @config[key]
       if val
+        val.upcase!
         flag = flag_map[val]
         if flag
           @config[flag] = true
