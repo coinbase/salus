@@ -16,7 +16,7 @@ describe Salus::Scanners::Bandit do
     end
 
     context 'requirements.txt present but no setup.cfg' do
-      it 'should return false' do
+      it 'should return true' do
         repo = Salus::Repo.new("#{py_dir}/python_project_no_setup_cfg")
         scanner = Salus::Scanners::Bandit.new(repository: repo, config: {})
 
@@ -27,7 +27,7 @@ describe Salus::Scanners::Bandit do
     end
 
     context 'setup.cfg present but no requirements.txt' do
-      it 'should return false' do
+      it 'should return true' do
         repo = Salus::Repo.new("#{py_dir}/python_project_no_req_txt")
         scanner = Salus::Scanners::Bandit.new(repository: repo, config: {})
 
@@ -72,7 +72,7 @@ describe Salus::Scanners::Bandit do
     context 'python project with insecure code in a nested folder' do
       let(:repo) { Salus::Repo.new("#{py_dir}/python_project_with_insecure_code_practices_r") }
 
-      it 'should record failure and record the STDOUT from gosec' do
+      it 'should record failure and record the STDOUT from bandit' do
         expect(scanner.report.passed?).to eq(false)
 
         info = scanner.report.to_h.fetch(:info)
