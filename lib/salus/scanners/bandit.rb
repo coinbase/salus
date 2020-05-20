@@ -72,11 +72,11 @@ module Salus::Scanners
                           'low' => 'i', 'medium' => 'ii', 'high' => 'iii' }
       }
       args = build_flag_args_from_string(string_to_flag_map)
-      args.merge!(aggregate: { type: :string, keyword: 'a' },
+      args.merge!(aggregate: { type: :string, keyword: 'a', regex: /\Afile|vuln\z/i },
                   configfile: { type: :file, keyword: 'c' },
                   profile: { type: :string, keyword: 'p' },
-                  tests: { type: :list, keyword: 't' },
-                  skip: { type: :list, keyword: 's' },
+                  tests: { type: :list, keyword: 't', regex: /\AB\d{3}\z/i },
+                  skip: { type: :list, keyword: 's', regex: /\AB\d{3}\z/i },
                   baseline: { type: :file, keyword: 'b' },
                   ini: { type: :file, prefix: '--' },
                   'ignore-nosec': { type: :flag, prefix: '--' },
