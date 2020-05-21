@@ -316,7 +316,7 @@ describe Salus::Scanners::Bandit do
         logs = JSON.parse(scanner.report.to_h[:logs])
 
         expect(scanner.report.passed?).to eq(false)
-        files_scanned = logs['results'].map {|r| r['filename']}.uniq
+        files_scanned = logs['results'].map { |r| r['filename'] }.uniq
         expect(files_scanned).to eq(['./main.py', './main2.py'])
 
         # exclude main.py, only main2.py will be scanned
@@ -327,7 +327,7 @@ describe Salus::Scanners::Bandit do
         logs = JSON.parse(scanner.report.to_h[:logs])
 
         expect(scanner.report.passed?).to eq(false)
-        files_scanned = logs['results'].map {|r| r['filename']}.uniq
+        files_scanned = logs['results'].map { |r| r['filename'] }.uniq
         expect(files_scanned).to eq(['./main2.py'])
 
         # exclude both files, there will be 0 line of code
