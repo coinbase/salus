@@ -309,31 +309,26 @@ describe Salus::Scanners::Bandit do
       end
 
       it 'exclude path option should work' do
+        # repo contains main.py and main2.py
         repo = Salus::Repo.new("#{py_dir}/python_project_vulns2")
         scanner = Salus::Scanners::Bandit.new(repository: repo, config: {})
         scanner.run
         logs = JSON.parse(scanner.report.to_h[:logs])
-        confidence = logs['metrics']['_totals']
 
         expect(scanner.report.passed?).to eq(false)
-        expect(confidence['CONFIDENCE.HIGH']).to eq(5)
-        expect(confidence['CONFIDENCE.LOW']).to eq(0)
-        expect(confidence['CONFIDENCE.MEDIUM']).to eq(2)
-        expect(confidence['CONFIDENCE.UNDEFINED']).to eq(0)
+        files_scanned = logs['results'].map {|r| r['filename']}.uniq
+        expect(files_scanned).to eq(['./main.py', './main2.py'])
 
-        # exclude 1 file
+        # exclude main.py, only main2.py will be scanned
         config_file = "#{py_dir}/salus_configs/exclude1.yaml"
         configs = Salus::Config.new([File.read(config_file)]).scanner_configs['Bandit']
         scanner = Salus::Scanners::Bandit.new(repository: repo, config: configs)
         scanner.run
         logs = JSON.parse(scanner.report.to_h[:logs])
-        confidence = logs['metrics']['_totals']
 
         expect(scanner.report.passed?).to eq(false)
-        expect(confidence['CONFIDENCE.HIGH']).to eq(5)
-        expect(confidence['CONFIDENCE.LOW']).to eq(0)
-        expect(confidence['CONFIDENCE.MEDIUM']).to eq(1)
-        expect(confidence['CONFIDENCE.UNDEFINED']).to eq(0)
+        files_scanned = logs['results'].map {|r| r['filename']}.uniq
+        expect(files_scanned).to eq(['./main2.py'])
 
         # exclude both files, there will be 0 line of code
         config_file = "#{py_dir}/salus_configs/exclude2.yaml"
