@@ -1,0 +1,3 @@
+scanner_configs:
+  Bandit:
+    baseline: out0.json

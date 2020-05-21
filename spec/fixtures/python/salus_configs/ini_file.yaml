@@ -1,0 +1,3 @@
+scanner_configs:
+  Bandit:
+    ini: ini.txt

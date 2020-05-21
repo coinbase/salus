@@ -10,10 +10,15 @@ RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get inst
     curl \
     git  \
     python \
+    python3 \
     python-pip \
+    python3-pip \
     python-setuptools \
+    python3-setuptools \
     python-dev \
+    python3-dev \
     libpython-dev \
+    libpython3-dev \
     libicu-dev \
     cmake \
     pkg-config \
@@ -96,6 +101,15 @@ RUN yarn
 
 # prime the bundler-audit CVE DB
 RUN bundle exec bundle-audit update
+
+# install wheel, needed by bandit
+RUN pip install wheel
+RUN pip3 install wheel
+
+# Install bandit, python static code scanner
+RUN pip install bandit==1.6.2
+RUN mv /usr/local/bin/bandit /usr/local/bin/bandit2
+RUN pip3 install bandit==1.6.2
 
 # copy salus code
 COPY bin /home/bin
