@@ -1,5 +1,5 @@
 {
-  "version": "2.8.5",
+  "version": "2.10.0",
   "passed": true,
   "running_time": 0.0,
   "scans": {
@@ -51,9 +51,12 @@
           }
         ]
       },
-      "Brakeman": {
+      "Bandit": {
         "pass_on_raise": false
       },
+      "Brakeman": {
+        "pass_on_raise": false
+      },        
       "BundleAudit": {
         "pass_on_raise": false
       },

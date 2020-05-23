@@ -1,0 +1,4 @@
+[bandit]
+exclude = main2.py
+recursive = true
+targets = subdir

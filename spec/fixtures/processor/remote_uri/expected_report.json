@@ -1,5 +1,5 @@
 {
-  "version": "2.8.5",
+  "version": "2.10.0",
   "passed": true,
   "running_time": 0.0,
   "scans": {
@@ -51,6 +51,7 @@
   ],
   "config": {
     "active_scanners": [
+      "Bandit",
       "Brakeman",
       "BundleAudit",
       "Gosec",
@@ -71,9 +72,13 @@
       "NPMAudit",
       "PatternSearch",
       "RepoNotEmpty",
+      "Semgrep",
       "YarnAudit"
     ],
     "scanner_configs": {
+      "Bandit": {
+        "pass_on_raise": false
+      },
       "Brakeman": {
         "pass_on_raise": false
       },

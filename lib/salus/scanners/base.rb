@@ -188,6 +188,40 @@ module Salus::Scanners
       false
     end
 
+    # Ex. in scanner config yaml, 'level' can be 'LOW', 'MEDIUM', or 'HIGH'.
+    #     We want
+    #     level: LOW     mapped to config option -l
+    #     level: MEDIUM  mapped to config option -ll
+    #     level: HIGH    mapped to config option -lll
+    #
+    # Example input
+    #     {{'level' => { 'LOW' => 'l', 'MEDIUM' => 'll', 'HIGH' => 'lll'},
+    #      {'confidence' => { 'LOW' => 'i', 'MEDIUM' => 'ii', 'HIGH' => 'iii'}}
+    def build_flag_args_from_string(string_flag_map)
+      arg_map = {}
+      string_flag_map.each do |string_key, flag_map|
+        arg_map.merge!(build_flag_arg_from_string(string_key, flag_map))
+      end
+      arg_map
+    end
+
+    def build_flag_arg_from_string(key, flag_map)
+      arg_map = {}
+      val = @config[key]
+      if val
+        val.upcase!
+        flag = flag_map[val]
+        if flag
+          @config[flag] = true
+          arg_map[flag.to_sym] = { type: :flag, keyword: flag }
+        else
+          msg = "User specified val #{val} for key #{key} not found in scanner configs"
+          report_warn(:scanner_misconfiguration, msg)
+        end
+      end
+      arg_map
+    end
+
     def create_flag_option(keyword:, value:, prefix:, suffix:)
       return '' unless validate_bool_option(keyword, value)
 
