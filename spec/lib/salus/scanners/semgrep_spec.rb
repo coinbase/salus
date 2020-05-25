@@ -10,7 +10,8 @@ describe Salus::Scanners::Semgrep do
             {
               "pattern" => "$X == $X",
               "language" => "python",
-              "forbidden" => false
+              "forbidden" => false,
+              "exclude_directory" => ['invalid']
             }
           ]
         }
@@ -54,7 +55,8 @@ describe Salus::Scanners::Semgrep do
               "pattern" => "$X == $X",
               "language" => "python",
               "message" => "Useless equality test.",
-              "forbidden" => false
+              "forbidden" => false,
+              "exclude_directory" => ['invalid']
             }
           ]
         }
@@ -100,7 +102,8 @@ describe Salus::Scanners::Semgrep do
             {
               "pattern" => "$X == $X",
               "language" => "python",
-              "forbidden" => true
+              "forbidden" => true,
+              "exclude_directory" => ['invalid']
             }
           ]
         }
@@ -146,7 +149,8 @@ describe Salus::Scanners::Semgrep do
               "pattern" => "$X == $X",
               "language" => "python",
               "message" => "Useless equality test.",
-              "required" => true
+              "required" => true,
+              "exclude_directory" => ['invalid']
             }
           ]
         }
@@ -191,7 +195,8 @@ describe Salus::Scanners::Semgrep do
               "pattern" => "$X == 42",
               "language" => "python",
               "message" => "Should be 42",
-              "required" => true
+              "required" => true,
+              "exclude_directory" => ['invalid']
             }
           ]
         }
@@ -220,7 +225,7 @@ describe Salus::Scanners::Semgrep do
               "forbidden" => true
             }
           ],
-          'exclude_directory' => ['examples']
+          'exclude_directory' => %w[examples invalid]
         }
 
         scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
@@ -268,7 +273,7 @@ describe Salus::Scanners::Semgrep do
               "forbidden" => true
             }
           ],
-          'exclude_directory' => %w[examples vendor]
+          'exclude_directory' => %w[examples vendor invalid]
         }
 
         scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
@@ -314,7 +319,7 @@ describe Salus::Scanners::Semgrep do
               "language" => "python",
               "message" => "Useless equality test.",
               "forbidden" => true,
-              'exclude_directory' => ['examples']
+              'exclude_directory' => %w[examples invalid]
             }
           ]
         }
@@ -362,7 +367,7 @@ describe Salus::Scanners::Semgrep do
               "language" => "python",
               "message" => "Useless equality test.",
               "forbidden" => true,
-              'exclude_directory' => %w[examples vendor]
+              'exclude_directory' => %w[examples vendor invalid]
             }
           ]
         }
@@ -420,6 +425,55 @@ describe Salus::Scanners::Semgrep do
           status: 4, # semgrep exit code documentation
           stderr: "invalid pattern \"$\": "\
                   "Parse_info.Lexical_error(\"unrecognized symbol: $\", _)",
+          message: "Call to semgrep failed"
+        )
+      end
+    end
+
+    context "unparsable python code causes error" do
+      it "should record the STDERR of semgrep" do
+        repo = Salus::Repo.new("spec/fixtures/semgrep/invalid")
+        config = {
+          "matches" => [
+            {
+              "pattern" => "$X",
+              "language" => "python",
+              "forbidden" => false
+            }
+          ]
+        }
+        scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
+        scanner.run
+
+        errors = scanner.report.to_h.fetch(:errors)
+        expect(errors).to include(
+          status: 3, # semgrep exit code documentation
+          stderr: "semgrep: /home/spec/fixtures/semgrep/"\
+          "invalid/unparsable_py.py: ParseError",
+          message: "Call to semgrep failed"
+        )
+      end
+    end
+
+    context "unparsable javascript code causes error" do
+      it "should record the STDERR of semgrep" do
+        repo = Salus::Repo.new("spec/fixtures/semgrep/invalid")
+        config = {
+          "matches" => [
+            {
+              "pattern" => "$X",
+              "language" => "js",
+              "forbidden" => false
+            }
+          ]
+        }
+        scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
+        scanner.run
+
+        errors = scanner.report.to_h.fetch(:errors)
+        expect(errors).to include(
+          status: 3, # semgrep exit code documentation
+          stderr: "parse error ",
           message: "Call to semgrep failed"
         )
       end
