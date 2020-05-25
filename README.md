@@ -38,6 +38,7 @@ coinbase/salus pulls the docker image
 
 ## Supported Scanners
 
+- [Bandit](docs/scanners/bandit.md) - Execution of [Bandit](https://pypi.org/project/bandit/), looks for common security issues in Python code.
 - [BundleAudit](docs/scanners/bundle_audit.md) - Execution of [bundle-audit](https://github.com/rubysec/bundler-audit), looks for CVEs in ruby gem dependencies.
 - [Brakeman](docs/scanners/brakeman.md) - Execution of [Brakeman](https://brakemanscanner.org/), looks for vulnerable code in Rails projects.
 - [npm audit](docs/scanners/npm_audit.md) - Execution of [`npm audit`](https://docs.npmjs.com/getting-started/running-a-security-audit) which looks for CVEs in node module dependencies.
