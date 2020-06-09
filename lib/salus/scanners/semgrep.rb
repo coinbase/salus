@@ -9,8 +9,13 @@ require "json"
 #   - language: A global language flag if you don't want to set it per pattern.
 #   The above can also be provided per-pattern, and will override the global values.
 #   - matches: Array[Hash]
+#                                              External Semgrep Config:
+#       config:      <string>  (required)      config string to pass to semgrep.
+#
+#                                              Simple Pattern: (Required if `config` not defined)
 #       pattern:     <string>  (required)      pattern to match against.
-#       language:    <string>  (required) language the pattern is written in.
+#       language:    <string>  (required)      language the pattern is written in.
+#
 #       forbidden:   <boolean> (default false) if true, a hit on this pattern will fail the test.
 #       required:    <boolean> (default false) if true, the absense of this pattern is a failure.
 #       message:     <string>  (default '')    custom message to display among failure.
@@ -42,17 +47,35 @@ module Salus::Scanners
           match["required"] ||= false
           match["message"] ||= ""
 
-          command = [
-            "semgrep",
-            "--strict",
-            "--json",
-            "--pattern",
-            match['pattern'],
-            "--lang",
-            match['language'],
-            *(pattern_exclude_directory_flags || global_exclude_directory_flags),
-            base_path
-          ].compact
+          has_external_config = !match['config'].nil?
+
+          if has_external_config
+            config = match['config']
+            command = [
+              "semgrep",
+              "--strict",
+              "--json",
+              "--config",
+              File.join(base_path, config),
+              *(pattern_exclude_directory_flags || global_exclude_directory_flags),
+              base_path
+            ].compact
+            user_message = "config \"#{config}\""
+          else
+            pattern = match['pattern']
+            command = [
+              "semgrep",
+              "--strict",
+              "--json",
+              "--pattern",
+              pattern,
+              "--lang",
+              match['language'],
+              *(pattern_exclude_directory_flags || global_exclude_directory_flags),
+              base_path
+            ].compact
+            user_message = "pattern \"#{pattern}\""
+          end
 
           # run semgrep
           shell_return = run_shell(command)
@@ -65,22 +88,28 @@ module Salus::Scanners
             if hits.empty?
               # If there were no hits, but the pattern was required add an error message.
               if match["required"]
-                failure_messages << "Required pattern \"#{match['pattern']}\" was not found " \
+                failure_messages << "Required #{user_message} was not found " \
                 "- #{match['message']}"
               end
             else
               hits.each do |hit|
+                msg = if has_external_config
+                        hit['extra']['message']
+                      else
+                        match['message']
+                      end
                 if match["forbidden"]
-                  failure_messages << "Forbidden pattern \"#{match['pattern']}\" was found " \
-                  "- #{match['message']}\n" \
+                  failure_messages << "Forbidden #{user_message} was found " \
+                  "- #{msg}\n" \
                   "\t#{hit['path'].sub(base_path + '/', '')}:#{hit['start']['line']}:" \
                   "#{hit['extra']['lines']}"
                 end
                 all_hits << {
-                  pattern: match["pattern"],
+                  pattern: pattern,
+                  config: config,
                   forbidden: match["forbidden"],
                   required: match["required"],
-                  msg: match["message"],
+                  msg: msg,
                   hit: "#{hit['path'].sub(base_path + '/', '')}:#{hit['start']['line']}:" \
                   "#{hit['extra']['lines']}".rstrip
                 }
@@ -90,7 +119,7 @@ module Salus::Scanners
           # possible exit codes from https://github.com/returntocorp/semgrep/blob/9ac58092cb8ac02bb1f41f59808d4f03a5b8206e/semgrep/semgrep/util.py#L11-L18
           elsif [1, 2, 3, 4, 5, 6, 7].include?(shell_return.status)
             if match['required']
-              failure_messages << "Required pattern \"#{match['pattern']}\" was not found " \
+              failure_messages << "Required #{user_message} was not found " \
                 "- #{match['message']}"
             end
             # only take the first line of stderror because the other lines

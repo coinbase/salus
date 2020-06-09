@@ -23,6 +23,7 @@ describe Salus::Scanners::Semgrep do
         info = scanner.report.to_h.fetch(:info)
 
         expect(info[:hits]).to include(
+          config: nil,
           pattern: "$X == $X",
           forbidden: false,
           required: false,
@@ -31,6 +32,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          config: nil,
           pattern: "$X == $X",
           forbidden: false,
           required: false,
@@ -39,12 +41,61 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          config: nil,
           pattern: "$X == $X",
           forbidden: false,
           required: false,
           msg: "",
           hit: "vendor/trivial2.py:10:    if user.id == user.id:"
         )
+      end
+
+      context "external config" do
+        it "should report matches" do
+          repo = Salus::Repo.new("spec/fixtures/semgrep")
+          config = {
+            "matches" => [
+              {
+                "config" => "semgrep-config.yml",
+                "forbidden" => false,
+                "exclude_directory" => ['invalid']
+              }
+            ]
+          }
+          scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
+          scanner.run
+
+          expect(scanner.report.passed?).to eq(true)
+
+          info = scanner.report.to_h.fetch(:info)
+
+          expect(info[:hits]).to include(
+            config: "semgrep-config.yml",
+            pattern: nil,
+            forbidden: false,
+            required: false,
+            msg: "3 == 3 is always true",
+            hit: "trivial.py:3:if 3 == 3:"
+          )
+
+          expect(info[:hits]).to include(
+            config: "semgrep-config.yml",
+            pattern: nil,
+            forbidden: false,
+            required: false,
+            msg: "user.id == user.id is always true",
+            hit: "examples/trivial2.py:10:    if user.id == user.id:"
+          )
+
+          expect(info[:hits]).to include(
+            config: "semgrep-config.yml",
+            pattern: nil,
+            forbidden: false,
+            required: false,
+            msg: "user.id == user.id is always true",
+            hit: "vendor/trivial2.py:10:    if user.id == user.id:"
+          )
+        end
       end
 
       it "should report matches with a message" do
@@ -69,6 +120,7 @@ describe Salus::Scanners::Semgrep do
         info = scanner.report.to_h.fetch(:info)
 
         expect(info[:hits]).to include(
+          config: nil,
           pattern: "$X == $X",
           forbidden: false,
           required: false,
@@ -77,6 +129,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          config: nil,
           pattern: "$X == $X",
           forbidden: false,
           required: false,
@@ -85,6 +138,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          config: nil,
           pattern: "$X == $X",
           forbidden: false,
           required: false,
@@ -115,6 +169,7 @@ describe Salus::Scanners::Semgrep do
         info = scanner.report.to_h.fetch(:info)
 
         expect(info[:hits]).to include(
+          config: nil,
           pattern: "$X == $X",
           forbidden: true,
           required: false,
@@ -123,6 +178,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          config: nil,
           pattern: "$X == $X",
           forbidden: true,
           required: false,
@@ -131,6 +187,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          config: nil,
           pattern: "$X == $X",
           forbidden: true,
           required: false,
@@ -163,6 +220,7 @@ describe Salus::Scanners::Semgrep do
         info = scanner.report.to_h.fetch(:info)
 
         expect(info[:hits]).to include(
+          config: nil,
           pattern: "$X == $X",
           forbidden: false,
           required: true,
@@ -171,6 +229,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          config: nil,
           pattern: "$X == $X",
           forbidden: false,
           required: true,
@@ -179,6 +238,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          config: nil,
           pattern: "$X == $X",
           forbidden: false,
           required: true,
@@ -236,6 +296,7 @@ describe Salus::Scanners::Semgrep do
         info = scanner.report.to_h.fetch(:info)
 
         expect(info[:hits]).to include(
+          config: nil,
           pattern: "$X == $X",
           forbidden: true,
           required: false,
@@ -244,6 +305,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          config: nil,
           pattern: "$X == $X",
           forbidden: true,
           required: false,
@@ -252,6 +314,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).not_to include(
+          config: nil,
           pattern: "$X == $X",
           forbidden: true,
           required: false,
@@ -284,6 +347,7 @@ describe Salus::Scanners::Semgrep do
         info = scanner.report.to_h.fetch(:info)
 
         expect(info[:hits]).to include(
+          config: nil,
           pattern: "$X == $X",
           forbidden: true,
           required: false,
@@ -292,6 +356,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).not_to include(
+          config: nil,
           pattern: "$X == $X",
           forbidden: true,
           required: false,
@@ -300,6 +365,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).not_to include(
+          config: nil,
           pattern: "$X == $X",
           forbidden: true,
           required: false,
@@ -332,6 +398,7 @@ describe Salus::Scanners::Semgrep do
         info = scanner.report.to_h.fetch(:info)
 
         expect(info[:hits]).to include(
+          config: nil,
           pattern: "$X == $X",
           forbidden: true,
           required: false,
@@ -340,6 +407,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          config: nil,
           pattern: "$X == $X",
           forbidden: true,
           required: false,
@@ -348,6 +416,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).not_to include(
+          config: nil,
           pattern: "$X == $X",
           forbidden: true,
           required: false,
@@ -380,6 +449,7 @@ describe Salus::Scanners::Semgrep do
         info = scanner.report.to_h.fetch(:info)
 
         expect(info[:hits]).to include(
+          config: nil,
           pattern: "$X == $X",
           forbidden: true,
           required: false,
@@ -388,6 +458,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).not_to include(
+          config: nil,
           pattern: "$X == $X",
           forbidden: true,
           required: false,
@@ -396,6 +467,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).not_to include(
+          config: nil,
           pattern: "$X == $X",
           forbidden: true,
           required: false,
