@@ -13,7 +13,7 @@ module Salus::Scanners
       shell_return = Dir.chdir(@repository.path_to_repo) do
         # sometimes the go.sum needs to be forced updated to be able to correctly build packages.
         # forcing go get seems to do the trick
-        run_shell("go get")
+        run_shell("go get ./...")
         cmd = "gosec #{config_options}-fmt=json ./..."
         run_shell(cmd)
       end
