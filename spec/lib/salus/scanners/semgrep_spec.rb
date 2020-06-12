@@ -96,6 +96,120 @@ describe Salus::Scanners::Semgrep do
             hit: "vendor/trivial2.py:10:    if user.id == user.id:"
           )
         end
+
+        it "should report forbidden matches" do
+          repo = Salus::Repo.new("spec/fixtures/semgrep")
+          config = {
+            "matches" => [
+              {
+                "config" => "semgrep-config.yml",
+                "forbidden" => true,
+                "exclude_directory" => ['invalid']
+              }
+            ]
+          }
+          scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
+          scanner.run
+
+          expect(scanner.report.passed?).to eq(false)
+
+          info = scanner.report.to_h.fetch(:info)
+
+          expect(info[:hits]).to include(
+            config: "semgrep-config.yml",
+            pattern: nil,
+            forbidden: true,
+            required: false,
+            msg: "3 == 3 is always true",
+            hit: "trivial.py:3:if 3 == 3:"
+          )
+
+          expect(info[:hits]).to include(
+            config: "semgrep-config.yml",
+            pattern: nil,
+            forbidden: true,
+            required: false,
+            msg: "user.id == user.id is always true",
+            hit: "examples/trivial2.py:10:    if user.id == user.id:"
+          )
+
+          expect(info[:hits]).to include(
+            config: "semgrep-config.yml",
+            pattern: nil,
+            forbidden: true,
+            required: false,
+            msg: "user.id == user.id is always true",
+            hit: "vendor/trivial2.py:10:    if user.id == user.id:"
+          )
+        end
+
+        it "should report required matches" do
+          repo = Salus::Repo.new("spec/fixtures/semgrep")
+          config = {
+            "matches" => [
+              {
+                "config" => "semgrep-config.yml",
+                "required" => true,
+                "exclude_directory" => ['invalid']
+              }
+            ]
+          }
+          scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
+          scanner.run
+
+          expect(scanner.report.passed?).to eq(true)
+
+          info = scanner.report.to_h.fetch(:info)
+
+          expect(info[:hits]).to include(
+            config: "semgrep-config.yml",
+            pattern: nil,
+            forbidden: false,
+            required: true,
+            msg: "3 == 3 is always true",
+            hit: "trivial.py:3:if 3 == 3:"
+          )
+
+          expect(info[:hits]).to include(
+            config: "semgrep-config.yml",
+            pattern: nil,
+            forbidden: false,
+            required: true,
+            msg: "user.id == user.id is always true",
+            hit: "examples/trivial2.py:10:    if user.id == user.id:"
+          )
+
+          expect(info[:hits]).to include(
+            config: "semgrep-config.yml",
+            pattern: nil,
+            forbidden: false,
+            required: true,
+            msg: "user.id == user.id is always true",
+            hit: "vendor/trivial2.py:10:    if user.id == user.id:"
+          )
+        end
+
+        it "should report required matches" do
+          repo = Salus::Repo.new("spec/fixtures/semgrep")
+          config = {
+            "matches" => [
+              {
+                "config" => "semgrep-config-required.yml",
+                "required" => true,
+                "exclude_directory" => ['invalid']
+              }
+            ]
+          }
+          scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
+          scanner.run
+
+          expect(scanner.report.passed?).to eq(false)
+
+          failure_messages = scanner.report.to_h.fetch(:logs)
+          expect(failure_messages).to include(
+            'Required patterns in config "semgrep-config-required.yml" was not found - '
+          )
+        end
       end
 
       it "should report matches with a message" do

@@ -60,7 +60,7 @@ module Salus::Scanners
               *(pattern_exclude_directory_flags || global_exclude_directory_flags),
               base_path
             ].compact
-            user_message = "config \"#{config}\""
+            user_message = "patterns in config \"#{config}\""
           else
             pattern = match['pattern']
             command = [
