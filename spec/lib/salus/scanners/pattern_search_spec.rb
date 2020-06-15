@@ -322,6 +322,34 @@ describe Salus::Scanners::PatternSearch do
         )
       end
     end
+
+    context 'special chars should not be escaped' do
+      it 'quotes should not be consumed by shell' do
+        repo = Salus::Repo.new('spec/fixtures/pattern_search')
+        config = { 'matches' => [{ 'regex' => 'KEY: [\'"]off[\'"]', 'forbidden' => true }] }
+        scanner = Salus::Scanners::PatternSearch.new(repository: repo, config: config)
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+
+        expect(info[:hits]).to include(
+          regex: "KEY: ['\"]off['\"]",
+          forbidden: true,
+          required: false,
+          msg: '',
+          hit: 'special_chars.txt:1:KEY: "off"'
+        )
+        expect(info[:hits]).to include(
+          regex: 'KEY: [\'"]off[\'"]',
+          forbidden: true,
+          required: false,
+          msg: '',
+          hit: 'special_chars.txt:2:KEY: \'off\''
+        )
+      end
+    end
   end
 
   describe '#should_run?' do
