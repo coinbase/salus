@@ -24,6 +24,7 @@ module Salus::Scanners
   class Semgrep < Base
     def run
       global_exclude_directory_flags = flag_list('--exclude-dir', @config['exclude_directory'])
+      @config['strict'] ||= false
 
       # For each pattern, keep a running history of failures, errors, and hits
       # These will be reported on at the end.
@@ -45,15 +46,18 @@ module Salus::Scanners
           # Set defaults.
           match["forbidden"] ||= false
           match["required"] ||= false
+          match["strict"] ||= false
           match["message"] ||= ""
 
           has_external_config = !match['config'].nil?
+
+          strict_flag = @config['strict'] || match["strict"] ? '--strict' : nil
 
           if has_external_config
             config = match['config']
             command = [
               "semgrep",
-              "--strict",
+              strict_flag,
               "--json",
               "--config",
               File.join(base_path, config),
@@ -65,7 +69,7 @@ module Salus::Scanners
             pattern = match['pattern']
             command = [
               "semgrep",
-              "--strict",
+              strict_flag,
               "--json",
               "--pattern",
               pattern,

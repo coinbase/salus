@@ -10,8 +10,7 @@ describe Salus::Scanners::Semgrep do
             {
               "pattern" => "$X == $X",
               "language" => "python",
-              "forbidden" => false,
-              "exclude_directory" => ['invalid']
+              "forbidden" => false
             }
           ]
         }
@@ -57,8 +56,7 @@ describe Salus::Scanners::Semgrep do
             "matches" => [
               {
                 "config" => "semgrep-config.yml",
-                "forbidden" => false,
-                "exclude_directory" => ['invalid']
+                "forbidden" => false
               }
             ]
           }
@@ -103,8 +101,7 @@ describe Salus::Scanners::Semgrep do
             "matches" => [
               {
                 "config" => "semgrep-config.yml",
-                "forbidden" => true,
-                "exclude_directory" => ['invalid']
+                "forbidden" => true
               }
             ]
           }
@@ -149,8 +146,7 @@ describe Salus::Scanners::Semgrep do
             "matches" => [
               {
                 "config" => "semgrep-config.yml",
-                "required" => true,
-                "exclude_directory" => ['invalid']
+                "required" => true
               }
             ]
           }
@@ -195,8 +191,7 @@ describe Salus::Scanners::Semgrep do
             "matches" => [
               {
                 "config" => "semgrep-config-required.yml",
-                "required" => true,
-                "exclude_directory" => ['invalid']
+                "required" => true
               }
             ]
           }
@@ -220,8 +215,7 @@ describe Salus::Scanners::Semgrep do
               "pattern" => "$X == $X",
               "language" => "python",
               "message" => "Useless equality test.",
-              "forbidden" => false,
-              "exclude_directory" => ['invalid']
+              "forbidden" => false
             }
           ]
         }
@@ -270,8 +264,7 @@ describe Salus::Scanners::Semgrep do
             {
               "pattern" => "$X == $X",
               "language" => "python",
-              "forbidden" => true,
-              "exclude_directory" => ['invalid']
+              "forbidden" => true
             }
           ]
         }
@@ -320,8 +313,7 @@ describe Salus::Scanners::Semgrep do
               "pattern" => "$X == $X",
               "language" => "python",
               "message" => "Useless equality test.",
-              "required" => true,
-              "exclude_directory" => ['invalid']
+              "required" => true
             }
           ]
         }
@@ -369,8 +361,7 @@ describe Salus::Scanners::Semgrep do
               "pattern" => "$X == 42",
               "language" => "python",
               "message" => "Should be 42",
-              "required" => true,
-              "exclude_directory" => ['invalid']
+              "required" => true
             }
           ]
         }
@@ -399,7 +390,7 @@ describe Salus::Scanners::Semgrep do
               "forbidden" => true
             }
           ],
-          'exclude_directory' => %w[examples invalid]
+          'exclude_directory' => %w[examples]
         }
 
         scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
@@ -450,7 +441,7 @@ describe Salus::Scanners::Semgrep do
               "forbidden" => true
             }
           ],
-          'exclude_directory' => %w[examples vendor invalid]
+          'exclude_directory' => %w[examples vendor]
         }
 
         scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
@@ -499,7 +490,7 @@ describe Salus::Scanners::Semgrep do
               "language" => "python",
               "message" => "Useless equality test.",
               "forbidden" => true,
-              'exclude_directory' => %w[examples invalid]
+              'exclude_directory' => %w[examples]
             }
           ]
         }
@@ -550,7 +541,7 @@ describe Salus::Scanners::Semgrep do
               "language" => "python",
               "message" => "Useless equality test.",
               "forbidden" => true,
-              'exclude_directory' => %w[examples vendor invalid]
+              'exclude_directory' => %w[examples vendor]
             }
           ]
         }
@@ -624,7 +615,8 @@ describe Salus::Scanners::Semgrep do
             {
               "pattern" => "$X",
               "language" => "python",
-              "forbidden" => false
+              "forbidden" => false,
+              "strict" => true
             }
           ]
         }
@@ -651,7 +643,8 @@ describe Salus::Scanners::Semgrep do
               "language" => "js",
               "forbidden" => false
             }
-          ]
+          ],
+          "strict" => true
         }
         scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
         scanner.run
