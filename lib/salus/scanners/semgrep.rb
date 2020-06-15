@@ -24,7 +24,6 @@ module Salus::Scanners
   class Semgrep < Base
     def run
       global_exclude_directory_flags = flag_list('--exclude-dir', @config['exclude_directory'])
-      @config['strict'] ||= false
 
       # For each pattern, keep a running history of failures, errors, and hits
       # These will be reported on at the end.
