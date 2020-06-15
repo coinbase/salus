@@ -625,7 +625,8 @@ describe Salus::Scanners::Semgrep do
         errors = scanner.report.to_h.fetch(:errors)
         expect(errors).to include(
           status: 3, # semgrep exit code documentation
-          stderr: "run with --strict and 1 errors occurred during semgrep run; exiting",
+          stderr: "run with --strict and 1 errors occurred during semgrep run; exiting" \
+            "\n\nSyntax error\n\t/home/spec/fixtures/semgrep/invalid/unparsable_py.py:3",
           message: "Call to semgrep failed"
         )
       end
@@ -650,7 +651,8 @@ describe Salus::Scanners::Semgrep do
         errors = scanner.report.to_h.fetch(:errors)
         expect(errors).to include(
           status: 3, # semgrep exit code documentation
-          stderr: "run with --strict and 1 errors occurred during semgrep run; exiting",
+          stderr: "run with --strict and 1 errors occurred during semgrep run; exiting" \
+            "\n\nSyntax error\n\t/home/spec/fixtures/semgrep/invalid/unparsable_js.js:3",
           message: "Call to semgrep failed"
         )
       end

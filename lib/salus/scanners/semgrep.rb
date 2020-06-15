@@ -125,10 +125,27 @@ module Salus::Scanners
               failure_messages << "Required #{user_message} was not found " \
                 "- #{match['message']}"
             end
-            # only take the first line of stderror because the other lines
-            # are verbose debugging info generated based on a temp file
-            # so the filename is random and fails the test.
-            errors << { status: shell_return.status, stderr: shell_return.stderr.split("\n").first }
+            begin
+              # parse the output
+              output_data = JSON.parse(shell_return.stdout)
+              error_details = lines_from_errors(output_data["errors"])
+              # only take the first line of stderror because the other lines
+              # are verbose debugging info generated based on a temp file
+              # so the filename is random and fails the test.
+              errors << {
+                status: shell_return.status,
+                stderr: shell_return.stderr.split("\n").first \
+                + "\n\n" + error_details
+              }
+            rescue JSON::ParserError
+              # only take the first line of stderror because the other lines
+              # are verbose debugging info generated based on a temp file
+              # so the filename is random and fails the test.
+              errors << {
+                status: shell_return.status,
+                stderr: shell_return.stderr.split("\n").first
+              }
+            end
           else
             # only take the first line of stderror because the other lines
             # are verbose debugging info generated based on a temp file
@@ -161,6 +178,19 @@ module Salus::Scanners
       list&.map do |value|
         "#{flag}=#{value}"
       end
+    end
+
+    def lines_from_errors(list_of_errors)
+      list_of_errors&.map do |error|
+        data = error.fetch('data', {})
+        path = data.fetch('path', 'no path')
+        start = data.fetch('start', {})
+        start_line = start.fetch('line', 'no line number')
+        extra = data.fetch('extra', {})
+        message = extra.fetch('message', 'no message')
+        "#{message}\n" \
+        "\t#{path}:#{start_line}"
+      end&.join("\n")
     end
   end
 end
