@@ -599,9 +599,8 @@ describe Salus::Scanners::Semgrep do
 
         errors = scanner.report.to_h.fetch(:errors)
         expect(errors).to include(
-          status: 4, # semgrep exit code documentation
-          stderr: "invalid pattern \"$\": "\
-                  "Parse_info.Lexical_error(\"unrecognized symbol: $\", _)",
+          status: 2, # semgrep exit code documentation
+          stderr: "non-zero return code while invoking semgrep-core:",
           message: "Call to semgrep failed"
         )
       end
@@ -626,8 +625,7 @@ describe Salus::Scanners::Semgrep do
         errors = scanner.report.to_h.fetch(:errors)
         expect(errors).to include(
           status: 3, # semgrep exit code documentation
-          stderr: "semgrep: /home/spec/fixtures/semgrep/"\
-          "invalid/unparsable_py.py: ParseError",
+          stderr: "run with --strict and 1 errors occurred during semgrep run; exiting",
           message: "Call to semgrep failed"
         )
       end
@@ -652,7 +650,7 @@ describe Salus::Scanners::Semgrep do
         errors = scanner.report.to_h.fetch(:errors)
         expect(errors).to include(
           status: 3, # semgrep exit code documentation
-          stderr: "parse error ",
+          stderr: "run with --strict and 1 errors occurred during semgrep run; exiting",
           message: "Call to semgrep failed"
         )
       end
