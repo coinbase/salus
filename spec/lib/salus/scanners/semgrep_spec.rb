@@ -632,7 +632,43 @@ describe Salus::Scanners::Semgrep do
       end
     end
 
-    context "unparsable javascript code causes error" do
+    context "unparsable code causes warning" do
+      it "should record semgrep warning" do
+        repo = Salus::Repo.new("spec/fixtures/semgrep/invalid")
+        config = {
+          "matches" => [
+            {
+              "pattern" => "$X",
+              "language" => "js"
+            }
+          ]
+        }
+        scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
+        scanner.run
+
+        warnings = scanner.report.to_h.fetch(:warn)
+        expect(warnings[:semgrep_non_fatal]).to eq(
+          [{
+            message: "Syntax error\n\t/home/spec/fixtures/semgrep/invalid/unparsable_js.js:3",
+            details: {
+              path: "/home/spec/fixtures/semgrep/invalid/unparsable_js.js",
+              start: {
+                "line" => 3,
+                "col" => 7
+              },
+              end: {
+                "line" => 3,
+                "col" => 18
+              },
+              message: "Syntax error",
+              line: "cosnt badConstant = 42;"
+            }
+          }]
+        )
+      end
+    end
+
+    context "unparsable javascript code causes error with strict" do
       it "should record the STDERR of semgrep" do
         repo = Salus::Repo.new("spec/fixtures/semgrep/invalid")
         config = {
