@@ -28,7 +28,7 @@ Salus supports powerful configuration that allows for global defaults and local 
 
 ## Using Salus in your Repo
 
-For your given CI, update the config file to run salus. In circle, it will look like this: 
+For your given CI, update the config file to run Salus. In circle, it will look like this: 
 
 ```sh
 docker run --rm -t -v $(pwd):/home/repo coinbase/salus
