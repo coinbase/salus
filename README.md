@@ -58,7 +58,7 @@ Currently supported languages are:
 
 ## Configuration
 
-Salus is designed to be [highly configurable](docs/configuration.md) so that it can work in many different types of environments and with many different scanners. Salus supports environment variable interpolation and cascading configurations. 
+Salus is designed to be [highly configurable](docs/configuration.md) so that it can work in many different types of environments and with many different scanners. Salus supports environment variable interpolation and cascading configurations. Salus can read configuration and post reports over HTTP.
 
 Sometimes it's necessary to ignore certain CVEs, rules, tests, groups, directories, or otherwise modify the default configuration for a scanner. The [docs/scanners directory](docs/scanners) explains how to do so for each scanner that Salus supports.
 
