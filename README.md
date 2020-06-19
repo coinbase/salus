@@ -14,6 +14,12 @@
 
 Salus (Security Automation as a Lightweight Universal Scanner), named after the [Roman goddess of protection](https://en.wikipedia.org/wiki/Salus), is a tool for coordinating the execution of security scanners. You can run Salus on a repository via the Docker daemon and it will determine which scanners are relevant, run them and provide the output. Most scanners are other mature open source projects which we include directly in the container.
 
+Salus is particularly useful for CI/CD pipelines because it becomes a centralized place to coordinate scanning across a large fleet of repositories. Typically, scanners are configured at the repository level for each project. This means that when making org wide changes to how the scanners are run, each repository must be updated. Instead, you can update Salus and all builds will instantly inherit the change.
+
+Salus supports powerful configuration that allows for global defaults and local tweaks. Finally, Salus can report metrics on each repository, such as what packages are included or what concerns exist. These reports can be centrally evaluated in your infrastructure to allow for scalable security tracking.
+
+## Using Salus
+
 ```sh
 # Navigate to the root directory of the project you want to run Salus on
 cd /path/to/repo
@@ -21,20 +27,6 @@ cd /path/to/repo
 # Run the following line while in the root directory (No edits necessary)
 docker run --rm -t -v $(pwd):/home/repo coinbase/salus
 ```
-
-Salus is particularly useful for CI/CD pipelines because it becomes a centralized place to coordinate scanning across a large fleet of repositories. Typically, scanners are configured at the repository level for each project. This means that when making org wide changes to how the scanners are run, each repository must be updated. Instead, you can update Salus and all builds will instantly inherit the change.
-
-Salus supports powerful configuration that allows for global defaults and local tweaks. Finally, Salus can report metrics on each repository, such as what packages are included or what concerns exist. These reports can be centrally evaluated in your infrastructure to allow for scalable security tracking.
-
-## Using Salus in your Repo
-
-For your given CI, update the config file to run Salus. In circle, it will look like this: 
-
-```sh
-docker run --rm -t -v $(pwd):/home/repo coinbase/salus
-```
-
-coinbase/salus pulls the docker image
 
 ## Supported Scanners
 
@@ -48,17 +40,17 @@ coinbase/salus pulls the docker image
 
 ## Dependency Tracking
 
-Salus also parses dependency files and reports on what libraries and version are being used in any given project. This can be useful for tracking dependencies across your fleet.
+Salus also parses dependency files and reports which libraries and versions are being used. This can be useful for tracking dependencies across your fleet.
 
 Currently supported languages are:
 - Ruby
-- Node
+- Node.js
 - Python
 - Go
 
 ## Configuration
 
-Salus is designed to be [highly configurable](docs/configuration.md) so that it can work in many different types of environments and with many different scanners. Salus supports environment variable interpolation and cascading configurations. Salus can read configuration and post reports over HTTP.
+Salus is designed to be [highly configurable](docs/configuration.md) so that it can work in many different types of environments and with many different scanners. It supports environment variable interpolation and cascading configurations, and can read configuration and post reports over HTTP.
 
 Sometimes it's necessary to ignore certain CVEs, rules, tests, groups, directories, or otherwise modify the default configuration for a scanner. The [docs/scanners directory](docs/scanners) explains how to do so for each scanner that Salus supports.
 
