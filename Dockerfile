@@ -53,7 +53,7 @@ ENV GOLANG_VERSION 1.13.7
 ENV GOLANG_DOWNLOAD_URL https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz
 ENV GOLANG_DOWNLOAD_SHA256 b3dd4bd781a0271b33168e627f7f43886b4c5d1c794a4015abf34e99c6526ca3
 ENV SIFT_VERSION v0.9.0
-ENV GOSEC_VERSION 2.2.0
+ENV GOSEC_VERSION 2.3.0
 
 RUN curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz \
   && echo "$GOLANG_DOWNLOAD_SHA256  golang.tar.gz" | sha256sum -c - \
@@ -64,9 +64,7 @@ RUN curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz \
 RUN go get github.com/svent/sift@$SIFT_VERSION \
   && mv /root/go/bin/sift /usr/bin/
 
-# GOSEC SHA Commit 915e9ee (915e9eeba8982f1e8ec82186900dff2d729e6dd4)
-RUN go get github.com/securego/gosec/cmd/gosec@915e9ee \
-  && mv /root/go/bin/gosec /usr/bin/
+RUN curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s -- -b /usr/bin v$GOSEC_VERSION
 
 ### semgrep tool install https://semgrep.dev
 ENV SEMGREP_VERSION 0.10.1
