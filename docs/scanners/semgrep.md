@@ -43,7 +43,8 @@ scanner_configs:
           - tests
 ```
 
-Example semgrep_config_1.yaml
+Example semgrep_config_1.yaml.  The rule says find all patterns of the form
+`$X == $X`, but exclude `0 == 0`.
 ```yaml
 rules:
   - id: eqeq-always-true
