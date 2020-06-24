@@ -18,13 +18,13 @@ In adddition, simple rules can be specified directly in salus.yaml.
 
 #### Speciying path to Semgrep YAML config
 
-In salus.yaml, you can specify a semgrep rule with a path to a [Semgrep config file](https://github.com/returntocorp/semgrep/blob/develop/docs/configuration-files.md).  You **must specify
+In salus.yaml, you can specify a semgrep rule with a path to a [Semgrep config file](https://github.com/returntocorp/semgrep/blob/develop/docs/configuration-files.md).  You **must** specify
 
 * `config` - a full Semgrep config file
 * Either `required: true` or `forbidden: true`
 ** If a found pattern is forbidden, this scanner will fail and the `message` will be show to the developer in the report. A `required` pattern must be found in order for the scan to pass.
 
-In addition, you can **optionally specify
+In addition, you can **optionally** specify
 
 * `exclude_directory` - directory to exclude from scanning
 ** The glob pattern will match anywhere in the file path parts so for example `exclude_drectory: [node_modules]` will ignore both `./node_modules`, `lib/node_modules`, and `demo/demo2/node_modules`. Passing in full paths such as `exclude_drectory: [lib/node_modules]` is not supported.
@@ -60,13 +60,13 @@ rules:
 #### Adding simple rule directly (without Semgrep config file)
 
 Simple rules that can be expressed with a single `pattern` can be directly specified in salus.yaml.
-Each simple rule **must include
+Each simple rule **must** include
 
 * `pattern` - the single pattern
 * `forbidden: true` or `required: true
 * `language`- Any of: c, go, java, javascript, or python
 
-The user can **optionally provide
+The user can **optionally** provide
 * `exclude_directory` - directory to exclude from scanning
 ** The glob pattern will match anywhere in the file path parts so for example `exclude_drectory: [node_modules]` will ignore both `./node_modules`, `lib/node_modules`, and `demo/demo2/node_modules`. Passing in full paths such as `exclude_drectory: [lib/node_modules]` is not supported.
 * `message` - Message if rule (forbidden and found) or (required and not found)
