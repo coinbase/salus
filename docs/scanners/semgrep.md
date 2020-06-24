@@ -99,8 +99,6 @@ scanner_configs:
         message: All files need to get the dynamic logger. Please don't hardcode this.
         language: python
         required: true
-      - config: semgrep_config.yml
-        required: true
 ```
 
 ## Limitations of Semgrep
