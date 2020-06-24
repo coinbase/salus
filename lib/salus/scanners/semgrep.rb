@@ -39,6 +39,19 @@ module Salus::Scanners
           # semgrep has the following behavior:
           #   ouputs a json object with a 'results' and 'errors' key
 
+          if !match['config'].nil?
+            override_keys = %w[pattern language message]
+            override_keys.any? do |k|
+              if match.keys.include?(k)
+                err_msg = "[#{override_keys.join(', ')}] cannot be specified in both
+                           salus.yaml and -config semgrep_rule_file"
+                report_error(err_msg)
+                report_stderr(err_msg)
+                return report_failure
+              end
+            end
+          end
+
           # Set defaults.
           match["forbidden"] ||= false
           match["required"] ||= false
@@ -55,7 +68,6 @@ module Salus::Scanners
             base_path,
             pattern_exclude_directory_flags || global_exclude_directory_flags
           )
-
           # run semgrep
           shell_return = run_shell(command)
           # check to make sure it's successful
