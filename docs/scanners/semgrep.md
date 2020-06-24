@@ -22,12 +22,12 @@ In salus.yaml, you can specify a semgrep rule with a path to a [Semgrep config f
 
 * `config` - a full Semgrep config file
 * Either `required: true` or `forbidden: true`
-** If a found pattern is forbidden, this scanner will fail and the `message` will be show to the developer in the report. A `required` pattern must be found in order for the scan to pass.
+  - If a found pattern is forbidden, this scanner will fail and the `message` will be show to the developer in the report. A `required` pattern must be found in order for the scan to pass.
 
 In addition, you can **optionally** specify
 
 * `exclude_directory` - directory to exclude from scanning
-** The glob pattern will match anywhere in the file path parts so for example `exclude_drectory: [node_modules]` will ignore both `./node_modules`, `lib/node_modules`, and `demo/demo2/node_modules`. Passing in full paths such as `exclude_drectory: [lib/node_modules]` is not supported.
+  - The glob pattern will match anywhere in the file path parts so for example `exclude_drectory: [node_modules]` will ignore both `./node_modules`, `lib/node_modules`, and `demo/demo2/node_modules`. Passing in full paths such as `exclude_drectory: [lib/node_modules]` is not supported.
 
 Here is an example semgrep section of a salus.yaml.  Each match represents a rule.
 
