@@ -16,7 +16,7 @@ There are two types of rules in Semgrep:
 In salus.yaml, both simple and advanced rules can be specified with a path to a [Semgrep YAML config file](https://github.com/returntocorp/semgrep/blob/develop/docs/configuration-files.md).
 In adddition, simple rules can be specified directly in salus.yaml.
 
-### Speciying path to Semgrep YAML config
+### Specifying path to Semgrep YAML config
 
 In salus.yaml, you can specify a semgrep rule with a path to a [Semgrep config file](https://github.com/returntocorp/semgrep/blob/develop/docs/configuration-files.md).  You **must** specify
 
