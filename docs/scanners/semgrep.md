@@ -36,7 +36,7 @@ scanner_configs:
   Semgrep:
     matches:
       - config: semgrep_config_1.yaml
-        required: true
+        forbidden: true
       - config: semgrep_config_2.yaml
         forbidden: true
         exclude_directory:
