@@ -16,13 +16,13 @@ There are two types of rules in Semgrep:
 In salus.yaml, both simple and advanced rules can be specified with a path to a [Semgrep YAML config file](https://github.com/returntocorp/semgrep/blob/develop/docs/configuration-files.md).
 In adddition, simple rules can be specified directly in salus.yaml.
 
-#### Speciying path to Semgrep YAML config
+### Speciying path to Semgrep YAML config
 
 In salus.yaml, you can specify a semgrep rule with a path to a [Semgrep config file](https://github.com/returntocorp/semgrep/blob/develop/docs/configuration-files.md).  You **must** specify
 
 * `config` - a full Semgrep config file
 * Either `required: true` or `forbidden: true`
-  - If a found pattern is forbidden, this scanner will fail and the `message` will be show to the developer in the report. A `required` pattern must be found in order for the scan to pass.
+  - If a found pattern is forbidden or if a not found pattern is required, then the scanner will fail and the `message` will be show to the developer in the report.
 
 In addition, you can **optionally** specify
 
@@ -57,10 +57,10 @@ rules:
     severity: ERROR                       # One of: WARNING, ERROR (required)
 ```
 
-#### Adding simple rule directly (without Semgrep config file)
+### Adding simple rule directly (without Semgrep config file)
 
 Simple rules that can be expressed with a single `pattern` can be directly specified in salus.yaml.
-Each simple rule **must** include
+Each simple rule in salus.yaml **must** include
 
 * `pattern` - the single pattern
 * `forbidden: true` or `required: true
@@ -100,7 +100,7 @@ scanner_configs:
 ## Limitations of Semgrep
 
 * There may be parser-related issues from Semgrep
-  - Parser-realted issues are will be displayed as warnings and will not cause salus to fail.
-  - Salus will still show semgrep results on files that do not have parser issues.
+  - Parser-related issues will be displayed as warnings and do not cause salus to fail.
+  - Salus will still show semgrep results from files that do not have parser issues.
 * Salus semgrep currently does not support scanning against [pre-built rules.](https://github.com/returntocorp/semgrep#run-pre-built-rules)
   - But we plan to support this in the near future!
