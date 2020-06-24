@@ -72,10 +72,10 @@ RUN curl -sfL "$GOSEC_DOWNLOAD_URL" -o gosec.tar.gz \
   && mv gosec /usr/bin
 
 ### semgrep tool install https://semgrep.dev
-ENV SEMGREP_VERSION 0.10.1
+ENV SEMGREP_VERSION 0.7.0
 ENV SEMGREP_TARBALL_FILE semgrep-v$SEMGREP_VERSION-ubuntu-16.04.tgz
 ENV SEMGREP_DOWNLOAD_URL https://github.com/returntocorp/semgrep/releases/download/v$SEMGREP_VERSION/$SEMGREP_TARBALL_FILE
-ENV SEMGREP_DOWNLOAD_SHA256 7d07d223e88d52a2e8886e748726e1c8488d8d81ced34b80b128c362d9b57a0a
+ENV SEMGREP_DOWNLOAD_SHA256 8e47d0d9ef6a7ee324723018b7ef374a026b7a4f385d0060d5e04424ad130027
 
 RUN curl -fsSL "$SEMGREP_DOWNLOAD_URL" -o semgrep.tar.gz \
   && echo "$SEMGREP_DOWNLOAD_SHA256 semgrep.tar.gz" | sha256sum -c - \
