@@ -43,19 +43,24 @@ scanner_configs:
           - tests
 ```
 
-Example semgrep config file
+Example semgrep_config_1.yaml
 ```yaml
-# semgrep_config_1.yaml
 rules:
-  - id: eqeq-always-true                  # Unique, descriptive identifier (required)
-    patterns:                             # patterns or pattern or pattern-regex (required)
+  - id: eqeq-always-true
+    patterns:
       - pattern: $X == $X
       - pattern-not: 0 == 0
-    message: "$X == $X is always true"    # Message if rule (forbidden and found) (optional)
-                                                         or (required and not found)
-    languages: [python]                   # Any of: c, go, java, javascript, or python (required)
-    severity: ERROR                       # One of: WARNING, ERROR (required)
+    message: "$X == $X is always true"
+    languages: [python]
+    severity: ERROR
 ```
+Keywords in this file:
+* `id` - Unique, descriptive identifier (required)
+* `patterns` or `pattern` - patterns or pattern or pattern-regex (required)
+* `message` - Message if rule (forbidden and found) or (required and not found) (optional)
+* `languages` - Any of: c, go, java, javascript, or python (required)
+* `severity` - One of: WARNING, ERROR (required)
+
 
 ### Adding simple rule directly (without Semgrep config file)
 
