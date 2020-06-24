@@ -68,7 +68,7 @@ Each simple rule **must** include
 
 The user can **optionally** provide
 * `exclude_directory` - directory to exclude from scanning
-** The glob pattern will match anywhere in the file path parts so for example `exclude_drectory: [node_modules]` will ignore both `./node_modules`, `lib/node_modules`, and `demo/demo2/node_modules`. Passing in full paths such as `exclude_drectory: [lib/node_modules]` is not supported.
+-- The glob pattern will match anywhere in the file path parts so for example `exclude_drectory: [node_modules]` will ignore both `./node_modules`, `lib/node_modules`, and `demo/demo2/node_modules`. Passing in full paths such as `exclude_drectory: [lib/node_modules]` is not supported.
 * `message` - Message if rule (forbidden and found) or (required and not found)
 
 Example,
@@ -100,7 +100,7 @@ scanner_configs:
 ## Limitations of Semgrep
 
 * There may be parser-related issues from Semgrep
-** Parser-realted issues are will be displayed as warnings and will not cause salus to fail.
-** Salus will still show semgrep results on files that do not have parser issues.
+- Parser-realted issues are will be displayed as warnings and will not cause salus to fail.
+- Salus will still show semgrep results on files that do not have parser issues.
 * Salus semgrep currently does not support scanning against [pre-built rules.](https://github.com/returntocorp/semgrep#run-pre-built-rules)
-** But we plan to support this in the near future!
+- But we plan to support this in the near future!
