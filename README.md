@@ -14,6 +14,12 @@
 
 Salus (Security Automation as a Lightweight Universal Scanner), named after the [Roman goddess of protection](https://en.wikipedia.org/wiki/Salus), is a tool for coordinating the execution of security scanners. You can run Salus on a repository via the Docker daemon and it will determine which scanners are relevant, run them and provide the output. Most scanners are other mature open source projects which we include directly in the container.
 
+Salus is particularly useful for CI/CD pipelines because it becomes a centralized place to coordinate scanning across a large fleet of repositories. Typically, scanners are configured at the repository level for each project. This means that when making org wide changes to how the scanners are run, each repository must be updated. Instead, you can update Salus and all builds will instantly inherit the change.
+
+Salus supports powerful configuration that allows for global defaults and local tweaks. Finally, Salus can report metrics on each repository, such as what packages are included or what concerns exist. These reports can be centrally evaluated in your infrastructure to allow for scalable security tracking.
+
+## Using Salus
+
 ```sh
 # Navigate to the root directory of the project you want to run Salus on
 cd /path/to/repo
@@ -22,40 +28,33 @@ cd /path/to/repo
 docker run --rm -t -v $(pwd):/home/repo coinbase/salus
 ```
 
-Salus is particularly useful for CI/CD pipelines because it becomes a centralized place to coordinate scanning across a large fleet of repositories. Typically, scanners are configured at the repository level for each project. This means that when making org wide changes to how the scanners are run, each repository must be updated. Instead, you can update Salus and all builds will instantly inherit the change.
-
-Salus supports powerful configuration that allows for global defaults and local tweaks. Finally, Salus can report metrics on each repository, such as what packages are included or what concerns exist. These reports can be centrally evaluated in your infrastructure to allow for scalable security tracking.
-
-## Using Salus in your Repo
-
-For your given CI, update the config file to run salus. In circle, it will look like this: 
-
-```sh
-docker run --rm -t -v $(pwd):/home/repo coinbase/salus
-```
-
-coinbase/salus pulls the docker image
-
 ## Supported Scanners
 
 - [Bandit](docs/scanners/bandit.md) - Execution of [Bandit](https://pypi.org/project/bandit/), looks for common security issues in Python code.
-- [BundleAudit](docs/scanners/bundle_audit.md) - Execution of [bundle-audit](https://github.com/rubysec/bundler-audit), looks for CVEs in ruby gem dependencies.
 - [Brakeman](docs/scanners/brakeman.md) - Execution of [Brakeman](https://brakemanscanner.org/), looks for vulnerable code in Rails projects.
+- [semgrep](docs/scanners/semgrep.md) - Execution of [`semgrep`](https://semgrep.dev) which looks for semantic and syntactical patterns in code at the AST level.
+- [BundleAudit](docs/scanners/bundle_audit.md) - Execution of [bundle-audit](https://github.com/rubysec/bundler-audit), looks for CVEs in ruby gem dependencies.
 - [npm audit](docs/scanners/npm_audit.md) - Execution of [`npm audit`](https://docs.npmjs.com/getting-started/running-a-security-audit) which looks for CVEs in node module dependencies.
 - [yarn audit](docs/scanners/yarn_audit.md) - Execution of [`yarn audit`](https://yarnpkg.com/lang/en/docs/cli/audit/) which looks for CVEs in node module dependencies.
 - [PatternSearch](docs/scanners/pattern_search.md) - Looks for certain strings in a project that might be dangerous or could require that certain strings be present.
-- [semgrep](docs/scanners/semgrep.md) - Execution of [`semgrep`](https://semgrep.dev) which looks for semantic and syntactical patterns in code at the AST level.
 
-Salus also parses dependency files and reports on what libraries and version are being used in any given project. This can be useful for tracking dependencies across your fleet.The currently supported languages are:
+## Dependency Tracking
+
+Salus also parses dependency files and reports which libraries and versions are being used. This can be useful for tracking dependencies across your fleet.
+
+Currently supported languages are:
 - Ruby
-- Node
+- Node.js
 - Python
 - Go
 
-Sometimes it's necessary to whitelist certain CVEs that Salus detects. The [docs/scanners directory](docs/scanners) explains how to do so for each scanner that Salus supports.
+## Configuration
+
+Salus is designed to be [highly configurable](docs/configuration.md) so that it can work in many different types of environments and with many different scanners. It supports environment variable interpolation and cascading configurations, and can read configuration and post reports over HTTP.
+
+Sometimes it's necessary to ignore certain CVEs, rules, tests, groups, directories, or otherwise modify the default configuration for a scanner. The [docs/scanners directory](docs/scanners) explains how to do so for each scanner that Salus supports.
 
 If you would like to build custom scanners or support more languages that are not currently supported, you can use [this method of building custom Salus images](docs/custom_salus.md).
-
 
 ## CircleCI Integration
 
