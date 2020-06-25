@@ -41,10 +41,10 @@ module Salus::Scanners
 
           if !match['config'].nil?
             override_keys = %w[pattern language message]
-            override_keys.any? do |k|
+            override_keys.each do |k|
               if match.keys.include?(k)
-                err_msg = "[#{override_keys.join(', ')}] cannot be specified in both
-                           salus.yaml and -config semgrep_rule_file"
+                err_msg = "[#{override_keys.join(', ')}] cannot be specified in salus.yaml
+                           if -config semgrep_rule_file is provided for the same rule"
                 report_error(err_msg)
                 report_stderr(err_msg)
                 return report_failure
