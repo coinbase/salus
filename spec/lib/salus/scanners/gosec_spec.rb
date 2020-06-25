@@ -6,17 +6,6 @@ describe Salus::Scanners::Gosec do
 
     before { scanner.run }
 
-    context 'go get ./... fails' do
-      let(:repo) { Salus::Repo.new('spec/fixtures/gosec/bad_gomod_app') }
-
-      it 'should display go get error and not run gosec' do
-        expect(scanner.should_run?).to eq(true)
-        expect(scanner.report.passed?).to eq(false)
-        err_msg = scanner.report.to_h.fetch(:errors).first[:message]
-        expect(err_msg).to include('Unable to start gosec because go get ./... failed.')
-      end
-    end
-
     context 'non-go project' do
       let(:repo) { Salus::Repo.new('spec/fixtures/blank_repository') }
 
