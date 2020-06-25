@@ -66,7 +66,7 @@ describe Salus::Scanners::Semgrep do
 
           expect(scanner.report.passed?).to eq(false)
           info = scanner.report.to_h.fetch(:info)
-          msg = "cannot be specified in both"
+          msg = "cannot be specified in salus.yaml"
           expect(info[:stderr]).to include(msg)
         end
 
