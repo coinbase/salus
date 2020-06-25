@@ -8,6 +8,8 @@ If a found pattern is forbidden this scanner will fail and the `message` will be
 
 There is also a `exclude_directory` option for excluding directories -- the glob pattern will match anywhere in the file path parts so for example `exclude_drectory: [node_modules]` will ignore both `./node_modules`, `lib/node_modules`, and `demo/demo2/node_modules`. Passing in full paths such as `exclude_drectory: [lib/node_modules]` is not supported.
 
+There is also support for external config files / registry keys under a `config` key. Any value entered here will directly be passed to `semgrep` and override `pattern`, `language`, and `message`.
+
 ## Configuration
 
 ```yaml
@@ -29,5 +31,7 @@ scanner_configs:
       - pattern: $LOG_ENDPOINT = os.getenv("LOGGER_ENDPOINT", ...)
         message: All files need to get the dynamic logger. Please don't hardcode this.
         language: python
+        required: true
+      - config: .semgrep.yml
         required: true
 ```
