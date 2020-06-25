@@ -50,6 +50,26 @@ describe Salus::Scanners::Semgrep do
       end
 
       context "external config" do
+        it "should not allow pattern defined in both salus config and external config" do
+          repo = Salus::Repo.new("spec/fixtures/semgrep")
+          config = {
+            "matches" => [
+              {
+                "config" => "semgrep-config.yml",
+                "forbidden" => false,
+                "pattern" => "$X = 1"
+              }
+            ]
+          }
+          scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
+          scanner.run
+
+          expect(scanner.report.passed?).to eq(false)
+          info = scanner.report.to_h.fetch(:info)
+          msg = "cannot be specified in salus.yaml"
+          expect(info[:stderr]).to include(msg)
+        end
+
         it "should report matches" do
           repo = Salus::Repo.new("spec/fixtures/semgrep")
           config = {

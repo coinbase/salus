@@ -9,19 +9,7 @@ module Salus::Scanners
     def run
       # Shell Instructions:
       #   - -fmt=json for JSON output
-      #   - gosec can scan go modules as of 2.0.0.
       shell_return = Dir.chdir(@repository.path_to_repo) do
-        # sometimes the go.sum needs to be forced updated to be able to correctly build packages.
-        # forcing go get seems to do the trick
-        if File.size?('go.mod')
-          go_get_ret = run_shell("go get ./...")
-          if go_get_ret.status != 0
-            go_get_err = "Unable to start gosec because go get ./... failed. #{go_get_ret.stderr}"
-            report_error(go_get_err, status: go_get_ret.status)
-            report_stderr(go_get_err)
-            return report_failure
-          end
-        end
         cmd = "gosec #{config_options}-fmt=json ./..."
         run_shell(cmd)
       end
