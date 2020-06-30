@@ -26,6 +26,8 @@ module Salus
       .to_h
       .freeze
 
+    # This is the base configuration file, and we merge all other configuration
+    # provided into this file to create one final configuration.
     DEFAULT_CONFIG = YAML.load_file(
       File.join(File.dirname(__FILE__), '../../salus-default.yaml'),
       safe: true

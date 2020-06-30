@@ -56,7 +56,7 @@
       },
       "Brakeman": {
         "pass_on_raise": false
-      },        
+      },
       "BundleAudit": {
         "pass_on_raise": false
       },
@@ -97,8 +97,13 @@
         "format": "json"
       }
     ],
-    "sources": [
-      "file:///salus.yaml"
-    ]
+    "sources": {
+      "configured": [
+        "file:///salus.yaml"
+      ],
+      "valid": [
+        "file:///salus.yaml"
+      ]
+    }
   }
 }
