@@ -10,6 +10,7 @@ describe Salus::Processor do
     let(:file_config_uri)  { "file:///explicit_salus.yaml" }
     let(:http_config_uri)  { 'https://nerv.com/salus/config' }
     let(:http_config_file) { config_file }
+    let(:missing_config_uri) { "file:///namewithtypo.yaml" }
 
     context 'explicit sources of config given files given' do
       it 'should load the config from the given file and URI sources and add them to the report' do
@@ -23,7 +24,7 @@ describe Salus::Processor do
           processor = Salus::Processor.new([file_config_uri, http_config_uri])
 
           reported_config = processor.report.to_h[:config]
-          expect(reported_config[:sources]).to include(file_config_uri, http_config_uri)
+          expect(reported_config[:sources][:valid]).to include(file_config_uri, http_config_uri)
           expect(reported_config[:active_scanners]).to include(
             'BundleAudit',
             'Brakeman',
@@ -36,37 +37,15 @@ describe Salus::Processor do
           expect(reported_config[:enforced_scanners]).to include('BundleAudit', 'Brakeman')
         end
       end
-    end
 
-    context 'implicitly look for file' do
-      it 'should load the default config from the salus.yaml and add to report' do
-        expect(Salus::Config).to receive(:new).once.with([config_file]).and_call_original
-        Dir.chdir('spec/fixtures/processor') do
-          processor = Salus::Processor.new
+      it 'should not use config files when they do not exist' do
+        expect(Salus::Config).to receive(:new).once.and_call_original
+        Dir.chdir('spec/fixtures/processor/repo') do
+          processor = Salus::Processor.new([missing_config_uri])
 
           reported_config = processor.report.to_h[:config]
-          expect(reported_config[:sources]).to eq(['file:///salus.yaml'])
-          expect(reported_config[:active_scanners]).to include(
-            'BundleAudit',
-            'Brakeman',
-            'PatternSearch',
-            'ReportGoDep',
-            'ReportNodeModules',
-            'ReportRubyGems'
-          )
-          expect(reported_config[:enforced_scanners]).to include('BundleAudit', 'Brakeman')
-        end
-      end
-    end
-
-    context 'no config given' do
-      it 'should use default configuration and report it' do
-        expect(Salus::Config).to receive(:new).once.with([]).and_call_original
-        Dir.chdir('spec/fixtures/blank_repository') do
-          processor = Salus::Processor.new
-
-          reported_config = processor.report.to_h[:config]
-          expect(reported_config[:sources]).to eq(['file:///salus.yaml'])
+          expect(reported_config[:sources][:configured]).to eq([missing_config_uri])
+          expect(reported_config[:sources][:valid]).to eq([])
           expect(reported_config[:active_scanners]).to include(
             'BundleAudit',
             'Brakeman',
@@ -76,6 +55,27 @@ describe Salus::Processor do
             'ReportRubyGems'
           )
           expect(reported_config[:enforced_scanners]).not_to be_empty
+        end
+      end
+    end
+
+    context 'implicitly look for file' do
+      it 'should load the default config from the salus.yaml and add to report' do
+        expect(Salus::Config).to receive(:new).once.with([config_file]).and_call_original
+        Dir.chdir('spec/fixtures/processor') do
+          processor = Salus::Processor.new
+
+          reported_config = processor.report.to_h[:config]
+          expect(reported_config[:sources][:valid]).to eq(['file:///salus.yaml'])
+          expect(reported_config[:active_scanners]).to include(
+            'BundleAudit',
+            'Brakeman',
+            'PatternSearch',
+            'ReportGoDep',
+            'ReportNodeModules',
+            'ReportRubyGems'
+          )
+          expect(reported_config[:enforced_scanners]).to include('BundleAudit', 'Brakeman')
         end
       end
     end

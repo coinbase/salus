@@ -125,8 +125,13 @@
         "format": "json"
       }
     ],
-    "sources": [
-      "file:///salus.yaml"
-    ]
+    "sources": {
+      "configured": [
+        "file:///salus.yaml"
+      ],
+      "valid": [
+        "file:///salus.yaml"
+      ]
+    }
   }
 }
