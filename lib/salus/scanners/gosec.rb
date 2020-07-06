@@ -6,18 +6,94 @@ require 'json'
 
 module Salus::Scanners
   class Gosec < Base
+
+    # *  run gosec ./... from each directory that contains a go dependency file
+    #    each time gosec runs, exclude all subdirs that contain dependency file
+    #
+    # *  salus.yaml may contain exclude-dir, which are paths relative to the top-level dir
+    #    when running subdir, each exclude-dir path from salus.yaml must be either
+    #       1) removed if exclude-dir path does not reside in subdir
+    #       2) updated to a path relative to the subdir
+    #
+    # *  go dependency file = go.mod / go.sum / Gopkg.lock
     def run
+      go_dirs = []                # list of dirs to run gosec run
+      salus_yaml_ex_dir = nil     # original list of exclude-dir values in salus.yaml
+      repo_prefix = @repository.path_to_repo
+      @gosec_failed = false
+
+      # remove trailing / from directories specified by exclude-dir in salus.yaml
+      if @config['exclude-dir']
+        @config['exclude-dir'].map! {|d| d.end_with?('/') ? d.delete_suffix('/') : d}
+        salus_yaml_ex_dir = @config['exclude-dir'].freeze
+      end
+
+      # get all directories containing go dependency files
+      Dir.chdir(@repository.path_to_repo) do
+        go_dirs = go_dep_dirs()
+        # gosec ignores vendor dirs
+        go_dirs.delete_if do |d|
+          d.start_with?('vendor/') || d.include?('/vendor/') || d == 'vendor'
+        end
+      end
+
+      if go_dirs.empty?
+        report_stderr("There is no go.mod / go.sum / Gopkg.lock in your repo")
+        return report_failure
+      end
+
+
+      # remove directories that are specified by exclude-dirs in salus.yaml
+      go_dirs -= salus_yaml_ex_dir if salus_yaml_ex_dir
+
+      go_dirs.each do |d|
+        @repository.instance_variable_set(:@path_to_repo, repo_prefix + '/' + d)
+        ex_dirs = []
+        @config['exclude-dir'] = []
+
+        # for each dir in salus.yaml exclude-dir
+        # if dir is a subdir in the current go_dir
+        # update the exclude-dir path to be relative to the subdir
+        # Ex. if --exclude-dir = subdir/subdir2 and gosec runs from subdir
+        #     then update --exclude-dir = subdir2
+        if salus_yaml_ex_dir
+          salus_yaml_ex_dir.each do |e|
+            repo_rel_path = repo_prefix + '/' + e
+            if repo_rel_path.start_with?(@repository.path_to_repo + '/')
+              ex_path = repo_rel_path.delete_prefix(@repository.path_to_repo + '/')
+              @config['exclude-dir'].push(ex_path)
+            end
+          end
+        end
+
+        # exclude subdirs containing go dependency files
+        go_dep_subdirs = []
+        Dir.chdir(@repository.path_to_repo) do
+          go_dep_subdirs = go_dep_dirs('*/**')
+        end
+
+        @config['exclude-dir'] += go_dep_subdirs if !go_dep_subdirs.empty?
+        @config.delete('exclude-dir') if @config['exclude-dir'].empty?
+
+        run_gosec
+        report_failure if @gosec_failed
+      end
+    end
+    
+    def run_gosec
+      
       # Shell Instructions:
-      #   - -fmt=json for JSON output
+      #   --fmt=json for JSON output
       shell_return = Dir.chdir(@repository.path_to_repo) do
         cmd = "gosec #{config_options}-fmt=json ./..."
         run_shell(cmd)
       end
-
+      
       # This produces no JSON output so must be checked before parsing stdout
       if shell_return.stdout.blank? && shell_return.stderr.include?('No packages found')
+        @gosec_failed = true
         report_error(
-          '0 lines of code were scanned',
+          "0 lines of code were scanned in #{@repository.path_to_repo}",
           status: shell_return.status
         )
         report_stderr(shell_return.stderr)
@@ -35,19 +111,30 @@ module Salus::Scanners
       #   - build error    - status 1, logs to STDERR only
       return report_success if shell_return.success? && lines_scanned.positive?
 
+      @gosec_failed = true      
       report_failure
       if shell_return.status == 1 && (!golang_errors.empty? || !found_issues.empty?)
-        report_stdout(shell_return.stdout)
-        log(shell_return.stdout)
+        shell_return_stdout_json =  JSON.parse(shell_return.stdout)
+        shell_return_stdout_json["Directory"] = @repository.path_to_repo
+        shell_return_stdout = JSON.pretty_generate(shell_return_stdout_json)
+        report_stdout(shell_return_stdout)
+        log(shell_return_stdout)
+
+#        report_error(shell_return_stdout, status: shell_return.status)
+ #       report_stderr(shell_return_stdout)
+        
+
+#        report_stdout(shell_return.stdout)
+#        log(shell_return.stdout)
       elsif lines_scanned.zero?
         report_error(
-          "0 lines of code were scanned",
+          "0 lines of code were scanned in #{@repository.path_to_repo}",
           status: shell_return.status
         )
         report_stderr(shell_return.stderr)
       else
         report_error(
-          "gosec exited with build error: #{shell_return.stderr}",
+          "gosec exited with build error in #{@repository.path_to_repo}: #{shell_return.stderr}",
           status: shell_return.status
         )
         report_stderr(shell_return.stderr)
@@ -94,6 +181,17 @@ module Salus::Scanners
         @repository.go_mod_present? ||
         @repository.go_sum_present? ||
         go_file?
+    end
+
+    # directories containing go dependency files
+    def go_dep_dirs(prefix='**')
+      dep_files = ['go.mod', 'go.sum', 'Gopkg.lock']
+      dirs = []
+      dep_files.each do |dep_file|
+        new_dirs = Dir.glob(prefix + '/' + dep_file).map {|f| File.dirname(f)}
+        dirs.concat(new_dirs)
+      end
+      dirs.uniq
     end
 
     def go_file?
