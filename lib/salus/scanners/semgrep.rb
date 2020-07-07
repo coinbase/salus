@@ -172,12 +172,17 @@ module Salus::Scanners
 
       if has_external_config
         config = match['config']
+        config_val = if config.start_with?('http:') || config.start_with?('https:')
+                       config
+                     else
+                       File.join(base_path, config)
+                     end
         command = [
           "semgrep",
           strict_flag,
           "--json",
           "--config",
-          File.join(base_path, config),
+          config_val,
           *exclude_directories_flags,
           base_path
         ].compact
