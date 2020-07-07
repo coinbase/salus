@@ -172,7 +172,7 @@ module Salus::Scanners
 
       if has_external_config
         config = match['config']
-        config_val = if config.start_with?('http:') || config.start_with?('https:')
+        config_val = if config.start_with?('https:')
                        config
                      else
                        File.join(base_path, config)
