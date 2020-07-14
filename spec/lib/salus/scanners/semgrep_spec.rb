@@ -92,7 +92,7 @@ describe Salus::Scanners::Semgrep do
             pattern: nil,
             forbidden: false,
             required: false,
-            msg: "3 == 3 is always true",
+            msg: "3 == 3 is always true\n\trule_id: semgrep-eqeq-test",
             hit: "trivial.py:3:if 3 == 3:"
           )
 
@@ -101,7 +101,7 @@ describe Salus::Scanners::Semgrep do
             pattern: nil,
             forbidden: false,
             required: false,
-            msg: "user.id == user.id is always true",
+            msg: "user.id == user.id is always true\n\trule_id: semgrep-eqeq-test",
             hit: "examples/trivial2.py:10:    if user.id == user.id:"
           )
 
@@ -110,7 +110,7 @@ describe Salus::Scanners::Semgrep do
             pattern: nil,
             forbidden: false,
             required: false,
-            msg: "user.id == user.id is always true",
+            msg: "user.id == user.id is always true\n\trule_id: semgrep-eqeq-test",
             hit: "vendor/trivial2.py:10:    if user.id == user.id:"
           )
         end
@@ -137,7 +137,7 @@ describe Salus::Scanners::Semgrep do
             pattern: nil,
             forbidden: true,
             required: false,
-            msg: "3 == 3 is always true",
+            msg: "3 == 3 is always true\n\trule_id: semgrep-eqeq-test",
             hit: "trivial.py:3:if 3 == 3:"
           )
 
@@ -146,7 +146,7 @@ describe Salus::Scanners::Semgrep do
             pattern: nil,
             forbidden: true,
             required: false,
-            msg: "user.id == user.id is always true",
+            msg: "user.id == user.id is always true\n\trule_id: semgrep-eqeq-test",
             hit: "examples/trivial2.py:10:    if user.id == user.id:"
           )
 
@@ -155,7 +155,7 @@ describe Salus::Scanners::Semgrep do
             pattern: nil,
             forbidden: true,
             required: false,
-            msg: "user.id == user.id is always true",
+            msg: "user.id == user.id is always true\n\trule_id: semgrep-eqeq-test",
             hit: "vendor/trivial2.py:10:    if user.id == user.id:"
           )
         end
@@ -182,7 +182,7 @@ describe Salus::Scanners::Semgrep do
             pattern: nil,
             forbidden: false,
             required: true,
-            msg: "3 == 3 is always true",
+            msg: "3 == 3 is always true\n\trule_id: semgrep-eqeq-test",
             hit: "trivial.py:3:if 3 == 3:"
           )
 
@@ -191,7 +191,7 @@ describe Salus::Scanners::Semgrep do
             pattern: nil,
             forbidden: false,
             required: true,
-            msg: "user.id == user.id is always true",
+            msg: "user.id == user.id is always true\n\trule_id: semgrep-eqeq-test",
             hit: "examples/trivial2.py:10:    if user.id == user.id:"
           )
 
@@ -200,7 +200,7 @@ describe Salus::Scanners::Semgrep do
             pattern: nil,
             forbidden: false,
             required: true,
-            msg: "user.id == user.id is always true",
+            msg: "user.id == user.id is always true\n\trule_id: semgrep-eqeq-test",
             hit: "vendor/trivial2.py:10:    if user.id == user.id:"
           )
         end

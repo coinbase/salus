@@ -207,7 +207,7 @@ module Salus::Scanners
     def message_from_hit(hit, match)
       has_external_config = !match['config'].nil?
       msg = if has_external_config
-              hit['extra']['message']
+              hit['extra']['message'] + "\n\trule_id: " + hit['check_id']
             else
               match['message']
             end
