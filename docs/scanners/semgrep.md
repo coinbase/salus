@@ -26,8 +26,10 @@ In salus.yaml, you can specify a set of semgrep rules with a path to a [Semgrep 
 
 In addition, you can **optionally** specify
 
-* `exclude_directory` - directory to exclude from scanning
-  - The glob pattern will match anywhere in the file path parts so for example `exclude_drectory: [node_modules]` will ignore both `./node_modules`, `lib/node_modules`, and `demo/demo2/node_modules`. Passing in full paths such as `exclude_drectory: [lib/node_modules]` is not supported.
+* `exclude` - Skip any file or directory that matches this pattern
+  - `--exclude='*.py'` will ignore the following: foo.py,
+    src/foo.py, foo.py/bar.sh. --exclude='tests' will ignore tests/foo.py as well as a/b/tests/c/foo.py. Can add
+    multiple times.
 
 Here is an example semgrep section of a salus.yaml.
 
@@ -39,7 +41,7 @@ scanner_configs:
         forbidden: true
       - config: semgrep_config_2.yaml
         forbidden: true
-        exclude_directory:
+        exclude:
           - tests
 ```
 
@@ -73,8 +75,10 @@ Each simple rule in salus.yaml **must** include
 * `language`- Any of: c, go, java, javascript, or python
 
 The user can **optionally** provide
-* `exclude_directory` - directory to exclude from scanning
-  - The glob pattern will match anywhere in the file path parts so for example `exclude_drectory: [node_modules]` will ignore both `./node_modules`, `lib/node_modules`, and `demo/demo2/node_modules`. Passing in full paths such as `exclude_drectory: [lib/node_modules]` is not supported.
+* `exclude` - Skip any file or directory that matches this pattern
+  - `--exclude='*.py'` will ignore the following: foo.py,
+    src/foo.py, foo.py/bar.sh. --exclude='tests' will ignore tests/foo.py as well as a/b/tests/c/foo.py. Can add
+    multiple times.
 * `message` - Message if rule (forbidden and found) or (required and not found)
 
 Example,
@@ -87,13 +91,13 @@ scanner_configs:
         message: Useless equlity check
         language: python
         forbidden: true
-        exclude_directory:
+        exclude:
           - tests
       - pattern: $X.unsanitize(...)
         message: Don't call `unsanitize()` methods without careful review
         language: js
         forbidden: true
-        exclude_directory:
+        exclude:
           - node_modules
       - pattern: $LOG_ENDPOINT = os.getenv("LOGGER_ENDPOINT", ...)
         message: All files need to get the dynamic logger. Please don't hardcode this.
