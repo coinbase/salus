@@ -18,7 +18,7 @@ In adddition, simple rules can be specified directly in salus.yaml.
 
 ### Specifying path to Semgrep YAML config
 
-In salus.yaml, you can specify a semgrep rule with a path to a [Semgrep config file](https://github.com/returntocorp/semgrep/blob/develop/docs/configuration-files.md).  You **must** specify
+In salus.yaml, you can specify a set of semgrep rules with a path to a [Semgrep config file](https://github.com/returntocorp/semgrep/blob/develop/docs/configuration-files.md).  You **must** specify
 
 * `config` - a full Semgrep config file
 * Either `required: true` or `forbidden: true`
@@ -29,7 +29,7 @@ In addition, you can **optionally** specify
 * `exclude_directory` - directory to exclude from scanning
   - The glob pattern will match anywhere in the file path parts so for example `exclude_drectory: [node_modules]` will ignore both `./node_modules`, `lib/node_modules`, and `demo/demo2/node_modules`. Passing in full paths such as `exclude_drectory: [lib/node_modules]` is not supported.
 
-Here is an example semgrep section of a salus.yaml.  Each match represents a rule.
+Here is an example semgrep section of a salus.yaml.
 
 ```yaml
 scanner_configs:
@@ -56,7 +56,7 @@ rules:
     severity: ERROR
 ```
 Keywords in this file:
-* `id` - Unique, descriptive identifier (required)
+* `id` - Unique, descriptive identifier, cannot contain whitespaces (required)
 * `patterns` or `pattern` - patterns or pattern or pattern-regex (required)
 * `message` - Message if rule (forbidden and found) or (required and not found) (optional)
 * `languages` - Any of: c, go, java, javascript, or python (required)
