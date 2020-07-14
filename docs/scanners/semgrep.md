@@ -101,6 +101,10 @@ scanner_configs:
         required: true
 ```
 
+## Whitelisting Findings
+
+Please see [semgrep's ignoring findings documentation](https://github.com/returntocorp/semgrep/blob/develop/docs/configuration-files.md#ignoring-findings).
+
 ## Limitations of Semgrep
 
 * There may be parser-related issues from Semgrep
