@@ -86,14 +86,14 @@ module Salus::Scanners
             if hits.empty?
               # If there were no hits, but the pattern was required add an error message.
               if match["required"]
-                failure_messages << "Required #{user_message} was not found " \
+                failure_messages << "\nRequired #{user_message} was not found " \
                 "- #{match['message']}"
               end
             else
               hits.each do |hit|
                 msg = message_from_hit(hit, match)
                 if match["forbidden"]
-                  failure_messages << "Forbidden #{user_message} was found " \
+                  failure_messages << "\nForbidden #{user_message} was found " \
                   "- #{msg}\n" \
                   "\t#{hit_to_string(hit, base_path)}"
                 end
