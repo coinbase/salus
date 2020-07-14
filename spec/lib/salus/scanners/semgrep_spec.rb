@@ -621,7 +621,7 @@ describe Salus::Scanners::Semgrep do
         expect(errors).to include(
           status: 4, # semgrep exit code documentation
           stderr: "error: invalid pattern\n\nPattern could not be parsed as a Python " \
-                  "semgrep pattern (error)\n\tCLI Input:1",
+                  "semgrep pattern (error)\n\tCLI Input:1-1",
           message: "Call to semgrep failed"
         )
       end
@@ -647,7 +647,7 @@ describe Salus::Scanners::Semgrep do
         expect(errors).to include(
           status: 3, # semgrep exit code documentation
           stderr: "warn: parse error\n\nCould not parse unparsable_py.py as python (warn)" \
-                  "\n\tunparsable_py.py:3",
+                  "\n\tunparsable_py.py:3-3",
           message: "Call to semgrep failed"
         )
       end
@@ -716,7 +716,7 @@ describe Salus::Scanners::Semgrep do
         expect(errors).to include(
           status: 3, # semgrep exit code documentation
           stderr: "warn: parse error\n\nCould not parse unparsable_js.js as js (warn)" \
-                  "\n\tunparsable_js.js:3",
+                  "\n\tunparsable_js.js:3-3",
           message: "Call to semgrep failed"
         )
       end
