@@ -5,7 +5,7 @@ require "json"
 # semgrep is a grep like tool for doing AST pattern matching.
 # See https://semgrep.dev for more info and documentation.
 # Config file can provide:
-#   - exclude_directories: Array of directories in the repo to exclude from the search.
+#   - exclude: Skip any file or directory that matches this pattern;
 #   - language: A global language flag if you don't want to set it per pattern.
 #   The above can also be provided per-pattern, and will override the global values.
 #   - matches: Array[Hash]
@@ -23,7 +23,7 @@ require "json"
 module Salus::Scanners
   class Semgrep < Base
     def run
-      global_exclude_directory_flags = flag_list('--exclude-dir', @config['exclude_directory'])
+      global_exclude_flags = flag_list('--exclude', @config['exclude'])
 
       # For each pattern, keep a running history of failures, errors, warnings, and hits
       # These will be reported on at the end.
@@ -58,18 +58,19 @@ module Salus::Scanners
           match["strict"] ||= false
           match["message"] ||= ""
 
-          pattern_exclude_directory_flags = flag_list(
-            '--exclude-dir', match['exclude_directory']
+          pattern_exclude_flags = flag_list(
+            '--exclude', match['exclude']
           )
 
           command, user_message = build_command_and_message(
             match,
             @config['strict'] || match["strict"],
             base_path,
-            pattern_exclude_directory_flags || global_exclude_directory_flags
+            pattern_exclude_flags || global_exclude_flags
           )
           # run semgrep
           shell_return = run_shell(command)
+
           # check to make sure it's successful
           if shell_return.success?
             # parse the output
@@ -79,10 +80,7 @@ module Salus::Scanners
             semgrep_non_fatal_errors&.map do |nfe|
               nfe_str = error_to_string(nfe)
               warning_messages << nfe_str
-              warnings << {
-                message: nfe_str,
-                details: error_to_object(nfe)
-              }
+              warnings << error_to_object(nfe)
             end
 
             if hits.empty?
@@ -166,7 +164,7 @@ module Salus::Scanners
       true # we will always run this on the provided folder
     end
 
-    def build_command_and_message(match, strict, base_path, exclude_directories_flags)
+    def build_command_and_message(match, strict, base_path, exclude_flags)
       has_external_config = !match['config'].nil?
       strict_flag = strict ? '--strict' : nil
 
@@ -183,7 +181,7 @@ module Salus::Scanners
           "--json",
           "--config",
           config_val,
-          *exclude_directories_flags,
+          *exclude_flags,
           base_path
         ].compact
         user_message = "patterns in config \"#{config}\""
@@ -197,7 +195,7 @@ module Salus::Scanners
           pattern,
           "--lang",
           match['language'],
-          *exclude_directories_flags,
+          *exclude_flags,
           base_path
         ].compact
         user_message = "pattern \"#{pattern}\""
@@ -229,25 +227,34 @@ module Salus::Scanners
     end
 
     def error_to_object(err)
-      data = err.fetch('data', {})
-      path = data.fetch('path', 'no path')
-      start = data.fetch('start', {})
-      end_obj = data.fetch('end', {})
-      extra = data.fetch('extra', {})
-      message = extra.fetch('message', 'no message')
-      line = extra.fetch('line', '')
+      type = err.fetch('type', '')
+      message = err.fetch('long_msg', '')
+      level = err.fetch('level', '')
+      spans = err.fetch('spans', {}).map do |s|
+        start = s.fetch('start', {})
+        end_obj = s.fetch('end', {})
+        file = s.fetch('file', {})
+        {
+          file: file,
+          start: start,
+          end: end_obj
+        }
+      end
+
       {
-        path: path,
-        start: start,
-        end: end_obj,
+        type: type,
         message: message,
-        line: line
+        level: level,
+        spans: spans
       }
     end
 
     def error_to_string(err)
       err_obj = error_to_object(err)
-      "#{err_obj[:message]}\n\t#{err_obj[:path]}:#{err_obj[:start].fetch('line', '')}"
+      spans = err_obj[:spans].map do |s|
+        "#{s[:file]}:#{s[:start].fetch('line', '')}-#{s[:end].fetch('line', '')}"
+      end.join(', ')
+      "#{err_obj[:message]} (#{err_obj[:level]})\n\t#{spans}"
     end
 
     def messages_str_from_errors(list_of_errors)
