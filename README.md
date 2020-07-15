@@ -30,14 +30,14 @@ docker run --rm -t -v $(pwd):/home/repo coinbase/salus
 
 ## Supported Scanners
 
-- [Bandit](docs/scanners/bandit.md) - Execution of [Bandit](https://pypi.org/project/bandit/), looks for common security issues in Python code.
-- [Brakeman](docs/scanners/brakeman.md) - Execution of [Brakeman](https://brakemanscanner.org/), looks for vulnerable code in Rails projects.
-- [semgrep](docs/scanners/semgrep.md) - Execution of [`semgrep`](https://semgrep.dev) which looks for semantic and syntactical patterns in code at the AST level.
-- [BundleAudit](docs/scanners/bundle_audit.md) - Execution of [bundle-audit](https://github.com/rubysec/bundler-audit), looks for CVEs in ruby gem dependencies.
-- [Gosec](docs/scanners/gosec.md) - Execution of [gosec](https://github.com/securego/gosec), looks for security problems in go code.
-- [npm audit](docs/scanners/npm_audit.md) - Execution of [`npm audit`](https://docs.npmjs.com/getting-started/running-a-security-audit) which looks for CVEs in node module dependencies.
-- [yarn audit](docs/scanners/yarn_audit.md) - Execution of [`yarn audit`](https://yarnpkg.com/lang/en/docs/cli/audit/) which looks for CVEs in node module dependencies.
-- [PatternSearch](docs/scanners/pattern_search.md) - Looks for certain strings in a project that might be dangerous or could require that certain strings be present.
+- [Bandit](docs/scanners/bandit.md) - Execution of [Bandit](https://pypi.org/project/bandit/) 1.6.2, looks for common security issues in Python code.
+- [Brakeman](docs/scanners/brakeman.md) - Execution of [Brakeman](https://brakemanscanner.org/) 4.8.2, looks for vulnerable code in Rails projects.
+- [semgrep](docs/scanners/semgrep.md) - Execution of [`semgrep`](https://semgrep.dev) 0.14.0 which looks for semantic and syntactical patterns in code at the AST level.
+- [BundleAudit](docs/scanners/bundle_audit.md) - Execution of [bundle-audit](https://github.com/rubysec/bundler-audit) 0.6.1, looks for CVEs in ruby gem dependencies.
+- [Gosec](docs/scanners/gosec.md) - Execution of [gosec](https://github.com/securego/gosec) 2.3.0, looks for security problems in go code.
+- [npm audit](docs/scanners/npm_audit.md) - Execution of [`npm audit`](https://docs.npmjs.com/getting-started/running-a-security-audit) 6.13.7 which looks for CVEs in node module dependencies.
+- [yarn audit](docs/scanners/yarn_audit.md) - Execution of [`yarn audit`](https://yarnpkg.com/lang/en/docs/cli/audit/) 1.22.0 which looks for CVEs in node module dependencies.
+- [PatternSearch](docs/scanners/pattern_search.md) - Execution of [`sift`](https://sift-tool.org/docs) 0.9.0, looks for certain strings in a project that might be dangerous or could require that certain strings be present.
 
 ## Dependency Tracking
 
