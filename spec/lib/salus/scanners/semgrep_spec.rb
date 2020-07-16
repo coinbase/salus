@@ -92,7 +92,7 @@ describe Salus::Scanners::Semgrep do
             pattern: nil,
             forbidden: false,
             required: false,
-            msg: "3 == 3 is always true",
+            msg: "3 == 3 is always true\n\trule_id: semgrep-eqeq-test",
             hit: "trivial.py:3:if 3 == 3:"
           )
 
@@ -101,7 +101,7 @@ describe Salus::Scanners::Semgrep do
             pattern: nil,
             forbidden: false,
             required: false,
-            msg: "user.id == user.id is always true",
+            msg: "user.id == user.id is always true\n\trule_id: semgrep-eqeq-test",
             hit: "examples/trivial2.py:10:    if user.id == user.id:"
           )
 
@@ -110,7 +110,7 @@ describe Salus::Scanners::Semgrep do
             pattern: nil,
             forbidden: false,
             required: false,
-            msg: "user.id == user.id is always true",
+            msg: "user.id == user.id is always true\n\trule_id: semgrep-eqeq-test",
             hit: "vendor/trivial2.py:10:    if user.id == user.id:"
           )
         end
@@ -137,7 +137,7 @@ describe Salus::Scanners::Semgrep do
             pattern: nil,
             forbidden: true,
             required: false,
-            msg: "3 == 3 is always true",
+            msg: "3 == 3 is always true\n\trule_id: semgrep-eqeq-test",
             hit: "trivial.py:3:if 3 == 3:"
           )
 
@@ -146,7 +146,7 @@ describe Salus::Scanners::Semgrep do
             pattern: nil,
             forbidden: true,
             required: false,
-            msg: "user.id == user.id is always true",
+            msg: "user.id == user.id is always true\n\trule_id: semgrep-eqeq-test",
             hit: "examples/trivial2.py:10:    if user.id == user.id:"
           )
 
@@ -155,7 +155,7 @@ describe Salus::Scanners::Semgrep do
             pattern: nil,
             forbidden: true,
             required: false,
-            msg: "user.id == user.id is always true",
+            msg: "user.id == user.id is always true\n\trule_id: semgrep-eqeq-test",
             hit: "vendor/trivial2.py:10:    if user.id == user.id:"
           )
         end
@@ -182,7 +182,7 @@ describe Salus::Scanners::Semgrep do
             pattern: nil,
             forbidden: false,
             required: true,
-            msg: "3 == 3 is always true",
+            msg: "3 == 3 is always true\n\trule_id: semgrep-eqeq-test",
             hit: "trivial.py:3:if 3 == 3:"
           )
 
@@ -191,7 +191,7 @@ describe Salus::Scanners::Semgrep do
             pattern: nil,
             forbidden: false,
             required: true,
-            msg: "user.id == user.id is always true",
+            msg: "user.id == user.id is always true\n\trule_id: semgrep-eqeq-test",
             hit: "examples/trivial2.py:10:    if user.id == user.id:"
           )
 
@@ -200,7 +200,7 @@ describe Salus::Scanners::Semgrep do
             pattern: nil,
             forbidden: false,
             required: true,
-            msg: "user.id == user.id is always true",
+            msg: "user.id == user.id is always true\n\trule_id: semgrep-eqeq-test",
             hit: "vendor/trivial2.py:10:    if user.id == user.id:"
           )
         end
@@ -410,7 +410,7 @@ describe Salus::Scanners::Semgrep do
               "forbidden" => true
             }
           ],
-          'exclude_directory' => %w[examples]
+          'exclude' => %w[examples]
         }
 
         scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
@@ -461,7 +461,7 @@ describe Salus::Scanners::Semgrep do
               "forbidden" => true
             }
           ],
-          'exclude_directory' => %w[examples vendor]
+          'exclude' => %w[examples vendor]
         }
 
         scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
@@ -510,7 +510,7 @@ describe Salus::Scanners::Semgrep do
               "language" => "python",
               "message" => "Useless equality test.",
               "forbidden" => true,
-              'exclude_directory' => %w[examples]
+              'exclude' => %w[examples]
             }
           ]
         }
@@ -561,7 +561,7 @@ describe Salus::Scanners::Semgrep do
               "language" => "python",
               "message" => "Useless equality test.",
               "forbidden" => true,
-              'exclude_directory' => %w[examples vendor]
+              'exclude' => %w[examples vendor]
             }
           ]
         }
@@ -619,8 +619,9 @@ describe Salus::Scanners::Semgrep do
 
         errors = scanner.report.to_h.fetch(:errors)
         expect(errors).to include(
-          status: 2, # semgrep exit code documentation
-          stderr: "non-zero return code while invoking semgrep-core:",
+          status: 4, # semgrep exit code documentation
+          stderr: "error: invalid pattern\n\nPattern could not be parsed as a Python " \
+                  "semgrep pattern (error)\n\tCLI Input:1-1",
           message: "Call to semgrep failed"
         )
       end
@@ -645,8 +646,8 @@ describe Salus::Scanners::Semgrep do
         errors = scanner.report.to_h.fetch(:errors)
         expect(errors).to include(
           status: 3, # semgrep exit code documentation
-          stderr: "run with --strict and 1 errors occurred during semgrep run; exiting" \
-            "\n\nSyntax error\n\t/home/spec/fixtures/semgrep/invalid/unparsable_py.py:3",
+          stderr: "warn: parse error\n\nCould not parse unparsable_py.py as python (warn)" \
+                  "\n\tunparsable_py.py:3-3",
           message: "Call to semgrep failed"
         )
       end
@@ -668,22 +669,29 @@ describe Salus::Scanners::Semgrep do
 
         warnings = scanner.report.to_h.fetch(:warn)
         expect(warnings[:semgrep_non_fatal]).to eq(
-          [{
-            message: "Syntax error\n\t/home/spec/fixtures/semgrep/invalid/unparsable_js.js:3",
-            details: {
-              path: "/home/spec/fixtures/semgrep/invalid/unparsable_js.js",
-              start: {
-                "line" => 3,
-                "col" => 7
-              },
-              end: {
-                "line" => 3,
-                "col" => 18
-              },
-              message: "Syntax error",
-              line: "cosnt badConstant = 42;"
+          [
+            {
+              level: "warn",
+              message: "Could not parse unparsable_js.js as js",
+              spans:
+              [
+                {
+                  end:
+                    {
+                      "col" => 18,
+                      "line" => 3
+                    },
+                  file: "unparsable_js.js",
+                  start:
+                    {
+                      "col" => 7,
+                      "line" => 3
+                    }
+                }
+              ],
+              type: "SourceParseError"
             }
-          }]
+          ]
         )
       end
     end
@@ -707,8 +715,8 @@ describe Salus::Scanners::Semgrep do
         errors = scanner.report.to_h.fetch(:errors)
         expect(errors).to include(
           status: 3, # semgrep exit code documentation
-          stderr: "run with --strict and 1 errors occurred during semgrep run; exiting" \
-            "\n\nSyntax error\n\t/home/spec/fixtures/semgrep/invalid/unparsable_js.js:3",
+          stderr: "warn: parse error\n\nCould not parse unparsable_js.js as js (warn)" \
+                  "\n\tunparsable_js.js:3-3",
           message: "Call to semgrep failed"
         )
       end
