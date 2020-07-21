@@ -10,6 +10,7 @@ from os import chdir
 if len(argv) > 1:
     chdir(argv[1])
 
+# Note this will break for pip 20.1+
 try: # for pip >= 10
     from pip._internal.req import parse_requirements
 except ImportError: # for pip <= 9.0.3

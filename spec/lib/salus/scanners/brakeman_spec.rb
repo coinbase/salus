@@ -33,7 +33,8 @@ describe Salus::Scanners::Brakeman do
 
       it 'should respect the config for user defined app path if no top-level app dir' do
         repo = Salus::Repo.new('spec/fixtures/')
-        path = '/home/spec/fixtures/brakeman/vulnerable_rails_app'
+        path = File.join(Dir.pwd, 'spec', 'fixtures', 'brakeman', 'vulnerable_rails_app')
+
         scanner = Salus::Scanners::Brakeman.new(repository: repo, config: { 'path' => path })
         scanner.run
 
@@ -50,7 +51,8 @@ describe Salus::Scanners::Brakeman do
 
       it 'should respect the config for user defined app path' do
         repo = Salus::Repo.new('spec/fixtures/')
-        path = '/home/spec/fixtures/brakeman/vulnerable_rails_app'
+        path = File.join(Dir.pwd, 'spec', 'fixtures', 'brakeman', 'vulnerable_rails_app')
+
         scanner = Salus::Scanners::Brakeman.new(
           repository: repo,
           config: {

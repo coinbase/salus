@@ -25,6 +25,11 @@ RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get inst
     wget \
   && rm -rf /var/lib/apt/lists/*
 
+# Rust
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+RUN cargo install cargo-audit
+
 # Required so that Brakeman doesn't run into encoding
 # issues when it parses non-ASCII characters.
 ENV LANG C.UTF-8
