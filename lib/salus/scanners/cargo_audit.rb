@@ -1,10 +1,10 @@
 require 'json'
-# Rust Audit scanner integration. Flags known malicious or vulnerable
+# Rust Cargo Audit scanner integration. Flags known malicious or vulnerable
 # dependencies in rust projects that are packaged with cargo.
 # https://github.com/RustSec/cargo-audit
 
 module Salus::Scanners
-  class RustAudit < Base
+  class CargoAudit < Base
     def should_run?
       @repository.cargo_lock_present?
     end

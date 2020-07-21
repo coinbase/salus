@@ -54,6 +54,7 @@
       "Bandit",
       "Brakeman",
       "BundleAudit",
+      "CargoAudit",
       "Gosec",
       "NPMAudit",
       "PatternSearch",
@@ -62,7 +63,6 @@
       "ReportNodeModules",
       "ReportPythonModules",
       "ReportRubyGems",
-      "RustAudit",
       "Semgrep",
       "YarnAudit"
     ],
@@ -84,6 +84,9 @@
         "pass_on_raise": false
       },
       "BundleAudit": {
+        "pass_on_raise": false
+      },
+      "CargoAudit": {
         "pass_on_raise": false
       },
       "Gosec": {
@@ -108,9 +111,6 @@
         "pass_on_raise": false
       },
       "ReportRubyGems": {
-        "pass_on_raise": false
-      },
-      "RustAudit": {
         "pass_on_raise": false
       },
       "Semgrep": {
