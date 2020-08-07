@@ -86,6 +86,9 @@ describe Salus::Scanners::PatternSearch do
           hit: 'lance.txt:3:Nerv housed the lance.'
         )
 
+        logs = scanner.report.to_h.fetch(:logs)
+        failure_str = 'seal.txt:3:Nerv is tasked with taking over when the UN fails'
+        expect(logs).to include(failure_str)
         expect(info[:hits]).to include(
           regex: 'Nerv',
           forbidden: true,
@@ -319,34 +322,6 @@ describe Salus::Scanners::PatternSearch do
           stderr:
             "Error: cannot parse pattern: error parsing regexp: missing closing ): `(?m)(`\n",
           message: "Call to sift failed"
-        )
-      end
-    end
-
-    context 'special chars should not be escaped' do
-      it 'quotes should not be consumed by shell' do
-        repo = Salus::Repo.new('spec/fixtures/pattern_search')
-        config = { 'matches' => [{ 'regex' => 'KEY: [\'"]off[\'"]', 'forbidden' => true }] }
-        scanner = Salus::Scanners::PatternSearch.new(repository: repo, config: config)
-        scanner.run
-
-        expect(scanner.report.passed?).to eq(false)
-
-        info = scanner.report.to_h.fetch(:info)
-
-        expect(info[:hits]).to include(
-          regex: "KEY: ['\"]off['\"]",
-          forbidden: true,
-          required: false,
-          msg: '',
-          hit: 'special_chars.txt:1:KEY: "off"'
-        )
-        expect(info[:hits]).to include(
-          regex: 'KEY: [\'"]off[\'"]',
-          forbidden: true,
-          required: false,
-          msg: '',
-          hit: 'special_chars.txt:2:KEY: \'off\''
         )
       end
     end
