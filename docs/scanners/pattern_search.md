@@ -29,3 +29,14 @@ scanner_configs:
           - rb
           - js
 ```
+
+## Limitations
+
+Unless you exclude scanning yaml files, PatternSearch will scan the salus.yaml in your repo. Since all forbidden patterns are found in salus.yaml, PatternSearch may report all forbidden patterns are found.  We plan to address this issue as future work.
+
+In the mean while, you can exclude yaml files with
+
+```yaml
+        exclude_extension:
+          - yaml
+```
