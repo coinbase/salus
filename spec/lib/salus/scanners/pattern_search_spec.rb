@@ -86,6 +86,9 @@ describe Salus::Scanners::PatternSearch do
           hit: 'lance.txt:3:Nerv housed the lance.'
         )
 
+        logs = scanner.report.to_h.fetch(:logs)
+        failure_str = 'seal.txt:3:Nerv is tasked with taking over when the UN fails'
+        expect(logs).to include(failure_str)
         expect(info[:hits]).to include(
           regex: 'Nerv',
           forbidden: true,
