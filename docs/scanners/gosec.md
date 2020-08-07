@@ -26,7 +26,7 @@ The [Gosec Scanner](https://github.com/securego/gosec) is a static analysis tool
       no-fail: false                     # Do not fail the scanning, even if issues were found
       tests: false                       # Scan tests files
       exclude-dir:                       # excludes only folders from scan (files are ignored)
-        - tests/
-        - temp/
-        - vendor/
+        - tests
+        - temp
+        - vendor
 ```

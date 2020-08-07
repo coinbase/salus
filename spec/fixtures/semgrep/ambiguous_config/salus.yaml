@@ -1,0 +1,6 @@
+scanner_configs:
+  Semgrep:
+    matches:
+      - config: semgrep.yaml
+        forbidden: true
+        pattern: $X == 123

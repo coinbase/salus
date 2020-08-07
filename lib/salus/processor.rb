@@ -7,6 +7,8 @@ module Salus
 
     attr_reader :config, :report
 
+    # If configuration sources are not provided, we'll automatically scan the
+    # repo root for a configuration file with this default name
     DEFAULT_CONFIG_SOURCE = "file:///salus.yaml".freeze
 
     def initialize(configuration_sources = [], repo_path: DEFAULT_REPO_PATH)
@@ -14,20 +16,33 @@ module Salus
 
       # Add default file path to the configs if empty.
       configuration_sources << DEFAULT_CONFIG_SOURCE if configuration_sources.empty?
+      valid_sources = []
+      source_data = []
 
       # Import each config file in order.
-      files = configuration_sources.map { |source| fetch_config_file(source, repo_path) }
+      configuration_sources.each do |source|
+        body = fetch_config_file(source, repo_path)
+        if !body.nil?
+          source_data << body
+          valid_sources << source
+        end
+      end
 
-      # Compact to account for the cases where fetching the config file gave nil.
-      @config = Salus::Config.new(files.compact)
+      @config = Salus::Config.new(source_data)
 
       report_uris = interpolate_local_report_uris(@config.report_uris)
+      sources = {
+        sources: {
+          configured: configuration_sources,
+          valid: valid_sources
+        }
+      }
 
       @report = Report.new(
         report_uris: report_uris,
         project_name: @config.project_name,
         custom_info: @config.custom_info,
-        config: @config.to_h.merge(sources: configuration_sources)
+        config: @config.to_h.merge(sources)
       )
     end
 

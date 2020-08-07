@@ -42,13 +42,18 @@ module Salus::Scanners
                                                          match['exclude_extension'])
           match_include_extension_flags = extension_flag('--ext', match['include_extension'])
 
-          command_string = [
-            "sift -n -e \"#{match['regex']}\" .",
-            match_exclude_directory_flags || global_exclude_directory_flags,
-            match_exclude_extension_flags || global_exclude_extension_flags,
-            match_include_extension_flags || global_include_extension_flags
-          ].compact.join(' ')
-          shell_return = run_shell(command_string)
+          command_array = [
+            "sift",
+            "-n",
+            "-e",
+            match['regex'],
+            ".",
+            *(match_exclude_directory_flags || global_exclude_directory_flags),
+            *(match_exclude_extension_flags || global_exclude_extension_flags),
+            *(match_include_extension_flags || global_include_extension_flags)
+          ].compact
+
+          shell_return = run_shell(command_array)
 
           # Set defaults.
           match['forbidden'] ||= false
@@ -129,7 +134,7 @@ module Salus::Scanners
     def flag_list(flag, list)
       list&.map do |value|
         "#{flag}=#{value}"
-      end&.join(' ')
+      end
     end
   end
 end

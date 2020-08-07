@@ -167,8 +167,11 @@ Long arrays have been shortened for brevity.
 :version: 1.0.0
 :custom_info: ''
 :configuration:
-  sources:
-  - file:///salus.yaml
+  :sources:
+    :configured:
+    - file:///salus.yaml
+    :valid:
+    - file:///salus.yaml
   active_scanners:
   - Brakeman
   - BundleAudit
@@ -298,9 +301,14 @@ Long arrays have been shortened for brevity.
   "version": "1.0.0",
   "custom_info": "",
   "configuration": {
-    "sources": [
-      "file:///salus.yaml"
-    ],
+    "sources": {
+      "configured": [
+        "file:///salus.yaml"
+      ],
+      "valid": [
+        "file:///salus.yaml"
+      ]
+    },
     "active_scanners": [
       "Brakeman",
       "BundleAudit",
@@ -381,8 +389,11 @@ __YAML form verbose__
 :version: 1.0.0
 :custom_info: ''
 :configuration:
-  sources:
-  - file:///salus.yaml
+  :sources:
+    :configured:
+    - file:///salus.yaml
+    :valid:
+    - file:///salus.yaml
   active_scanners:
   - Brakeman
   - BundleAudit
@@ -439,9 +450,14 @@ __JSON form verbose__
   "version": "1.0.0",
   "custom_info": "",
   "configuration": {
-    "sources": [
-      "file:///salus.yaml"
-    ],
+    "sources": {
+      "configured": [
+        "file:///salus.yaml"
+      ],
+      "valid": [
+        "file:///salus.yaml"
+      ]
+    },
     "active_scanners": [
       "Brakeman",
       "BundleAudit",
