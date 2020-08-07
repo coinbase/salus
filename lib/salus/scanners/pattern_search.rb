@@ -62,8 +62,8 @@ module Salus::Scanners
 
           if shell_return.success? # hit
             if match['forbidden']
-              failure_messages << "Forbidden pattern \"#{match['regex']}\" was found " \
-                "- #{match['message']}"
+              failure_messages << "\nForbidden pattern \"#{match['regex']}\" was found " \
+                "\n#{shell_return.stdout} - #{match['message']}"
             end
 
             hits = shell_return.stdout.encode(
