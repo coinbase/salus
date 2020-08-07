@@ -1,0 +1,7 @@
+rules:
+    - id: semgrep-eq-42
+      patterns:
+        - pattern: $X == 42
+      message: 42 must be in all files
+      languages: [python]
+      severity: WARNING

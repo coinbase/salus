@@ -87,7 +87,6 @@ module Salus
       # Adjust the wrap by 2 because we're wrapping indented paragraphs
       indented_wrap = (wrap.nil? ? nil : wrap - INDENT_SIZE)
 
-      # Only add config if verbose mode is on.
       if verbose
         # Dump config in particular as YAML rather than JSON, because salus
         # config files are YAML. Also, stringify the keys before serializing,
@@ -95,8 +94,13 @@ module Salus
         # annoying
         stringified_config = YAML.dump(@config.deep_stringify_keys, indentation: INDENT_SIZE)
         output += "\n\n==== Salus Configuration\n\n"
-        output += indent(wrapify(stringified_config, indented_wrap))
+      else
+        # Include some info on which configuration files were used
+        stringified_config = @config[:sources][:valid].join("\n")
+        output += "\n\n==== Salus Configuration Files Used:\n\n"
       end
+
+      output += indent(wrapify(stringified_config, indented_wrap))
 
       if !@errors.empty?
         stringified_errors = JSON.pretty_generate(@errors)
