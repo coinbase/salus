@@ -78,8 +78,6 @@ module Salus
         ]
       end
 
-      output += "\n\n#{render_summary(scan_reports, use_colors: use_colors)}"
-
       scan_reports.each do |report, _required|
         output += "\n\n#{report.to_s(verbose: verbose, wrap: wrap, use_colors: use_colors)}"
       end
@@ -108,6 +106,7 @@ module Salus
         output += indent(wrapify(stringified_errors, indented_wrap))
       end
 
+      output += "\n\n#{render_summary(scan_reports, use_colors: use_colors)}"
       output
     end
 
