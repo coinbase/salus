@@ -1,0 +1,12 @@
+scanner_configs:
+  PatternSearch:
+    matches:
+      - regex: hello
+        forbidden: true
+        exclude_extension:
+          - html
+        exclude_filepaths:
+          - file.rb
+          - file.py
+        exclude_directory:
+          - subdir

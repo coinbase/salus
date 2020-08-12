@@ -379,6 +379,28 @@ describe Salus::Scanners::PatternSearch do
           hit: 'subdir/subdir2/file.txt:1:hello'
         )
       end
+
+      it 'exclude_filepaths, exclude_directory, and exclude_extension can be used together' do
+        repo_dir = 'spec/fixtures/pattern_search/test_paths2'
+        # this config uses exclude_filepaths, exclude_directory, and exclude_extension together
+        config_file = "#{repo_dir}/salus.yaml"
+        repo = Salus::Repo.new(repo_dir)
+        configs = Salus::Config.new([File.read(config_file)]).scanner_configs['PatternSearch']
+        scanner = Salus::Scanners::PatternSearch.new(repository: repo, config: configs)
+        scanner.run
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+
+        expect(info[:hits].size).to eq(1)
+        expect(info[:hits]).to include(
+          regex: 'hello',
+          forbidden: true,
+          required: false,
+          msg: '',
+          hit: 'file.txt:1:hello'
+        )
+      end
     end
 
     context 'invalid regex or settings which causes error' do
