@@ -1,0 +1,9 @@
+scanner_configs:
+  PatternSearch:
+    matches:
+      - regex: hello
+        forbidden: true
+        exclude_filepaths:
+          - file.txt
+          - subdir/file.txt
+          - salus2.yaml
