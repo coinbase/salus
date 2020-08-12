@@ -2,7 +2,7 @@
 
 This scanner can flag anti-patterns found in a codebase or require that certain strings be present. This might be useful for preventing the use of dangerous methods like `eval()` in Ruby (which might allow for RCE) or `dangerouslySetInnerHTML` in React (which might allow for XSS). By default, all found patterns are added to the info section of the report. If a found pattern is forbidden, this scanner will fail and the `message` will be show to the developer in the report to give additional context on why this was an issue. A `required` pattern must be found in order for the scan to pass.
 
-The scanner also allows the options below.  These options can be set globally and per-match.
+The scanner also allows the options below.  These options can be set globally and per-match.  In addition, the `exclude_` options can be used together.
 
 * `exclude_extension` and `include_extension` for excluding and including file extensions, respectively. While these options can be combined, exclusions take precedence when extensions conflict (are both included and excluded) in declarations.
 * `exclude_directory` for excluding directories whose name matches GLOB.
