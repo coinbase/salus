@@ -309,6 +309,52 @@ describe Salus::Scanners::PatternSearch do
       end
     end
 
+    context 'exclude filepaths are given' do
+      let(:repo_dir) { "spec/fixtures/pattern_search/test_paths" }
+
+      it 'files specified with --exclude-filepaths should be excluded' do
+        config_file = "#{repo_dir}/salus.yaml"
+        repo = Salus::Repo.new(repo_dir)
+        configs = Salus::Config.new([File.read(config_file)]).scanner_configs['PatternSearch']
+        scanner = Salus::Scanners::PatternSearch.new(repository: repo, config: configs)
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+
+        expect(info[:hits].size).to eq(1)
+        expect(info[:hits]).to include(
+          regex: 'hello',
+          forbidden: true,
+          required: false,
+          msg: '',
+          hit: 'subdir/subdir2/file.txt:1:hello'
+        )
+      end
+
+      it '--exclude-filepatch for match should include global --exclude-filepatch vals' do
+        config_file = "#{repo_dir}/salus2.yaml"
+        repo = Salus::Repo.new(repo_dir)
+        configs = Salus::Config.new([File.read(config_file)]).scanner_configs['PatternSearch']
+        scanner = Salus::Scanners::PatternSearch.new(repository: repo, config: configs)
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+
+        expect(info[:hits].size).to eq(1)
+        expect(info[:hits]).to include(
+          regex: 'hello',
+          forbidden: true,
+          required: false,
+          msg: '',
+          hit: 'subdir/subdir2/file.txt:1:hello'
+        )
+      end
+    end
+
     context 'invalid regex or settings which causes error' do
       it 'should record the STDERR of bundle-audit' do
         repo = Salus::Repo.new('spec/fixtures/pattern_search')

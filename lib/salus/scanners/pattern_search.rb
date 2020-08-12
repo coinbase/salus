@@ -42,11 +42,20 @@ module Salus::Scanners
                                                          match['exclude_extension'])
           match_include_extension_flags = extension_flag('--ext', match['include_extension'])
 
+          # --exclude_filepaths can be specified at the global level and match level
+          # if both are specified, they should be joined
+          ex_paths = (match['exclude_filepaths'] || []) | (@config['exclude_filepaths'] || [])
+          exclude_filepath_pattern = filepath_pattern(ex_paths)
+
           command_array = [
             "sift",
             "-n",
             "-e",
             match['regex'],
+            "--exclude-path",
+            exclude_filepath_pattern,
+            "--exclude-files",
+            "salus.yaml",
             ".",
             *(match_exclude_directory_flags || global_exclude_directory_flags),
             *(match_exclude_extension_flags || global_exclude_extension_flags),
@@ -135,6 +144,16 @@ module Salus::Scanners
       list&.map do |value|
         "#{flag}=#{value}"
       end
+    end
+
+    # filepaths need to be joined into a sift path pattern
+    # Ex. [file1, file2, file3] need to be joined into
+    #       ^file1$|^file2$|^file3$
+    def filepath_pattern(filepaths)
+      return "" if filepaths.empty?
+
+      filepaths.map! { |path| '^' + path + '$' }
+      filepaths.join('|')
     end
   end
 end
