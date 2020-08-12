@@ -2,9 +2,11 @@ scanner_configs:
   PatternSearch:
     exclude_filepaths:
       - file.txt
-      - salus2.yaml
+      - subdir/file.txt
     matches:
       - regex: hello
         forbidden: true
         exclude_filepaths:
-          - subdir/file.txt
+          - file.txt
+        exclude_extension:
+          - yaml

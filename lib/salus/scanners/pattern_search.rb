@@ -44,7 +44,7 @@ module Salus::Scanners
 
           # --exclude_filepaths can be specified at the global level and match level
           # if both are specified, they should be joined
-          ex_paths = (match['exclude_filepaths'] || []) | (@config['exclude_filepaths'] || [])
+          ex_paths = match['exclude_filepaths'] || @config['exclude_filepaths']
           exclude_filepath_pattern = filepath_pattern(ex_paths)
 
           command_array = [
@@ -63,7 +63,6 @@ module Salus::Scanners
           ].compact
 
           shell_return = run_shell(command_array)
-
           # Set defaults.
           match['forbidden'] ||= false
           match['required'] ||= false
@@ -150,7 +149,7 @@ module Salus::Scanners
     # Ex. [file1, file2, file3] need to be joined into
     #       ^file1$|^file2$|^file3$
     def filepath_pattern(filepaths)
-      return "" if filepaths.empty?
+      return "" if filepaths.nil?
 
       filepaths.map! { |path| '^' + path + '$' }
       filepaths.join('|')

@@ -312,13 +312,12 @@ describe Salus::Scanners::PatternSearch do
     context 'exclude filepaths are given' do
       let(:repo_dir) { "spec/fixtures/pattern_search/test_paths" }
 
-      it 'files specified with --exclude-filepaths should be excluded' do
+      it 'files specified with exclude_filepaths at the match level  should be excluded' do
         config_file = "#{repo_dir}/salus.yaml"
         repo = Salus::Repo.new(repo_dir)
         configs = Salus::Config.new([File.read(config_file)]).scanner_configs['PatternSearch']
         scanner = Salus::Scanners::PatternSearch.new(repository: repo, config: configs)
         scanner.run
-
         expect(scanner.report.passed?).to eq(false)
 
         info = scanner.report.to_h.fetch(:info)
@@ -333,13 +332,40 @@ describe Salus::Scanners::PatternSearch do
         )
       end
 
-      it '--exclude-filepatch for match should include global --exclude-filepatch vals' do
+      it 'exclude_paths of the match should override global exclude_filepaths' do
         config_file = "#{repo_dir}/salus2.yaml"
         repo = Salus::Repo.new(repo_dir)
         configs = Salus::Config.new([File.read(config_file)]).scanner_configs['PatternSearch']
         scanner = Salus::Scanners::PatternSearch.new(repository: repo, config: configs)
         scanner.run
 
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+
+        expect(info[:hits].size).to eq(2)
+        expect(info[:hits]).to include(
+          regex: 'hello',
+          forbidden: true,
+          required: false,
+          msg: '',
+          hit: 'subdir/file.txt:1:hello'
+        )
+        expect(info[:hits]).to include(
+          regex: 'hello',
+          forbidden: true,
+          required: false,
+          msg: '',
+          hit: 'subdir/subdir2/file.txt:1:hello'
+        )
+      end
+
+      it 'files specified with global exclude_filepaths should be excluded' do
+        config_file = "#{repo_dir}/salus3.yaml"
+        repo = Salus::Repo.new(repo_dir)
+        configs = Salus::Config.new([File.read(config_file)]).scanner_configs['PatternSearch']
+        scanner = Salus::Scanners::PatternSearch.new(repository: repo, config: configs)
+        scanner.run
         expect(scanner.report.passed?).to eq(false)
 
         info = scanner.report.to_h.fetch(:info)
