@@ -1,0 +1,10 @@
+scanner_configs:
+  PatternSearch:
+    exclude_filepaths:
+      - file.txt
+      - subdir/file.txt
+    matches:
+      - regex: hello
+        forbidden: true
+        exclude_extension:
+          - yaml
