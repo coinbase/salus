@@ -94,5 +94,5 @@ Special configuration that exist for particular scanners is defined in the [scan
 It's sometimes useful, especially in CI clusters, to have a generalized configuration file that can reference environment variables. Salus will interpolate the configuration files before parsing it. To reference an environment variable, put the name of the envar in two parenthesis, `{{ENVAR_NAME}}`.
 
 ```yaml
-project_name: {{GITHUB_ORG}}-{{GITHUB_REPO}}-{{COMMIT_SHA}}
+project_name: "{{GITHUB_ORG}}-{{GITHUB_REPO}}-{{COMMIT_SHA}}"
 ```
