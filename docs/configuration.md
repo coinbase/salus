@@ -41,6 +41,10 @@ Each configuration file should be valid YAML and may contain the following value
 # Used in the report to identify the project being scanned.
 project_name: "my-repo"
 
+# salus build url, usually a buildkite or circle ci build url
+# please see [#envar-interpolation](Envar Interpolation) on setting the value
+build_url: "{{BUILDKITE_BUILD_URL}}"
+
 # String
 # Used in the report for any additional information
 # that might be used by the consumer of the Salus report.
@@ -95,4 +99,5 @@ It's sometimes useful, especially in CI clusters, to have a generalized configur
 
 ```yaml
 project_name: {{GITHUB_ORG}}-{{GITHUB_REPO}}-{{COMMIT_SHA}}
+build_url: "{{BUILDKITE_BUILD_URL}}"
 ```
