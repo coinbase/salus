@@ -42,6 +42,7 @@ module Salus
         report_uris: report_uris,
         project_name: @config.project_name,
         custom_info: @config.custom_info,
+        build_url: @config.build_url,
         config: @config.to_h.merge(sources)
       )
     end

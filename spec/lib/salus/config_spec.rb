@@ -27,6 +27,7 @@ describe Salus::Config do
         config = Salus::Config.new
         expect(config.project_name).to be_nil
         expect(config.custom_info).to be_nil
+        expect(config.build_url).to be_nil
         expect(config.active_scanners).to eq(Set.new(Salus::Config::SCANNERS.keys))
         expect(config.enforced_scanners).not_to be_empty
         expect(config.scanner_configs['BundleAudit']).to include('pass_on_raise' => false)
@@ -52,12 +53,14 @@ describe Salus::Config do
         allow(ENV).to receive(:[]).with('PROJECT_NAME').and_return('Microvac')
         allow(ENV).to receive(:[]).with('PROJECT_AUTHOR').and_return('Asimov')
         allow(ENV).to receive(:[]).with('PROJECT_DATE').and_return('1956')
+        allow(ENV).to receive(:[]).with('BUILD_URL').and_return('https://example.com/builds/1234')
         allow(ENV).to receive(:[]).with('REPORT_URI').and_return('https://example.com/salus')
 
         config = Salus::Config.new([envar_config_file])
 
         expect(config.project_name).to eq('Microvac')
         expect(config.custom_info).to eq('Asimov-1956')
+        expect(config.build_url).to eq('https://example.com/builds/1234')
         expect(config.report_uris).to match_array(
           [
             {

@@ -5,3 +5,4 @@ reports:
   - uri: '{{REPORT_URI}}'
     format: json
     verbose: true
+build_url: '{{BUILD_URL}}'

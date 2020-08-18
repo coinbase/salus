@@ -19,13 +19,15 @@ module Salus
 
     SUMMARY_TABLE_HEADINGS = ['Scanner', 'Running Time', 'Required', 'Passed'].freeze
 
-    def initialize(report_uris: [], project_name: nil, custom_info: nil, config: nil)
+    def initialize(report_uris: [], project_name: nil, custom_info: nil, config: nil,
+                   build_url: nil)
       @report_uris = report_uris     # where we will send this report
       @project_name = project_name   # the project_name we are scanning
       @scan_reports = []             # ScanReports for each scan run
       @errors = []                   # errors from Salus execution
       @custom_info = custom_info     # some additional info to send
       @config = config               # the configuration for this run
+      @build_url = build_url         # ex. circle or buildkite build url
       @running_time = nil            # overall running time for the scan; see #record
     end
 
@@ -59,6 +61,7 @@ module Salus
         scans: scans,
         errors: @errors,
         custom_info: @custom_info,
+        build_url: @build_url,
         config: @config
       }.compact
     end
@@ -67,6 +70,7 @@ module Salus
     def to_s(verbose: false, wrap: WRAP, use_colors: false)
       output = "==== Salus Scan v#{VERSION}"
       output += " for #{@project_name}" unless @project_name.nil?
+      output += "\n\n     build_url = #{@build_url}" unless @build_url.nil?
 
       # Sort scan reports required before optional, failed before passed,
       # and alphabetically by scanner name

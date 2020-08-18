@@ -92,6 +92,7 @@ describe Salus::Processor do
 
       expect(report_hsh[:project_name]).to eq('EVA-01')
       expect(report_hsh[:custom_info]).to eq('Purple unit')
+      expect(report_hsh[:build_url]).to eq('http://example.com/builds/2')
       expect(report_hsh[:version]).to eq(Salus::VERSION)
       expect(report_hsh[:passed]).to eq(false)
       expect(report_hsh[:errors]).to eq([])

@@ -12,6 +12,7 @@ module Salus
 
     attr_reader :project_name,
                 :custom_info,
+                :build_url,
                 :report_uris,
                 :active_scanners,
                 :enforced_scanners,
@@ -57,6 +58,7 @@ module Salus
       @scanner_configs   = final_config['scanner_configs'] || {}
       @project_name      = final_config['project_name']&.to_s
       @custom_info       = final_config['custom_info']
+      @build_url         = final_config['build_url']&.to_s
       @report_uris       = final_config['reports'] || []
 
       apply_default_scanner_config!
@@ -78,6 +80,7 @@ module Salus
         scanner_configs: @scanner_configs,
         project_name: @project_name,
         custom_info: @custom_info,
+        build_url: @build_url,
         report_uris: @report_uris
       }.compact
     end

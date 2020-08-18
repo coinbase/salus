@@ -9,8 +9,10 @@ describe Salus::Report do
       name = 'Neon Genesis Evangelion'
       custom_info = { bitcoin_price: 100_000 }
       config = { lemurs: 'contained', raptors: 'loose' }
+      build_url = 'https://example.com/builds/1'
 
-      report = Salus::Report.new(project_name: name, custom_info: custom_info, config: config)
+      report = Salus::Report.new(project_name: name, custom_info: custom_info, config: config,
+                                 build_url: build_url)
 
       # The actual content here doesn't really matter -
       # that functionality is speced out in the ScanReport unit tests
@@ -32,6 +34,7 @@ describe Salus::Report do
       expect(hsh.fetch(:project_name)).to eq(name)
       expect(hsh.fetch(:custom_info)).to eq(custom_info)
       expect(hsh.fetch(:config)).to eq(config)
+      expect(hsh.fetch(:build_url)).to eq(build_url)
 
       hsh.fetch(:errors).each do |error|
         expect(error[:message]).to eq('some top-level error')
@@ -54,6 +57,7 @@ describe Salus::Report do
       expect(hsh.key?(:project_name)).to eq(false)
       expect(hsh.key?(:custom_info)).to eq(false)
       expect(hsh.key?(:config)).to eq(false)
+      expect(hsh.key?(:build_url)).to eq(false)
     end
   end
 
@@ -126,7 +130,8 @@ describe Salus::Report do
       report = Salus::Report.new(
         report_uris: [report_uri],
         project_name: 'eva00',
-        custom_info: 'test unit'
+        custom_info: 'test unit',
+        build_url: 'https://example.com/builds/3'
       )
 
       3.times do
@@ -205,7 +210,8 @@ describe Salus::Report do
         report = Salus::Report.new(
           report_uris: [directive],
           project_name: 'eva00',
-          custom_info: 'test unit'
+          custom_info: 'test unit',
+          build_url: 'http://example.com/builds/4'
         )
 
         expect { report.export_report }.to raise_error(
