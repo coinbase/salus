@@ -20,6 +20,7 @@ The report, structurally, is a Hash of the following form:
 {
   "version": <String, semantic version of this report format>,
   "project_name": <String, comes from Salus configuration, typically used for identifying the codebase for this report>,
+  "build_url": <String, salus build url, usually a buildkite or circle ci build url>,
   "custom_info": <String or hash, comes from Salus configuration, used to pipe additional data from Salus runner to report consumer>,
   "configuration": <Hash, exact configuration used while Salus executed>,
   "scans": {
@@ -166,6 +167,7 @@ Long arrays have been shortened for brevity.
 :errors: {}
 :version: 1.0.0
 :custom_info: ''
+:build_url: https://example.com/1234
 :configuration:
   :sources:
     :configured:
@@ -207,6 +209,7 @@ Long arrays have been shortened for brevity.
 ```json
 {
   "project_name": "Project",
+  "build_url": "http://mybuildkite.com/job/1234",
   "scans": {
     "Brakeman": {
       "passed": true
