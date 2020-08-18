@@ -42,7 +42,7 @@ Each configuration file should be valid YAML and may contain the following value
 project_name: "my-repo"
 
 # salus build url, usually a buildkite or circle ci build url
-# please see [#envar-interpolation](Envar Interpolation) on setting the value
+# please see Envar Interpolation section on setting the value
 build_url: "{{BUILDKITE_BUILD_URL}}"
 
 # String
@@ -98,6 +98,6 @@ Special configuration that exist for particular scanners is defined in the [scan
 It's sometimes useful, especially in CI clusters, to have a generalized configuration file that can reference environment variables. Salus will interpolate the configuration files before parsing it. To reference an environment variable, put the name of the envar in two parenthesis, `{{ENVAR_NAME}}`.
 
 ```yaml
-project_name: {{GITHUB_ORG}}-{{GITHUB_REPO}}-{{COMMIT_SHA}}
+project_name: "{{GITHUB_ORG}}-{{GITHUB_REPO}}-{{COMMIT_SHA}}"
 build_url: "{{BUILDKITE_BUILD_URL}}"
 ```
