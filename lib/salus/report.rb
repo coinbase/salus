@@ -70,7 +70,6 @@ module Salus
     def to_s(verbose: false, wrap: WRAP, use_colors: false)
       output = "==== Salus Scan v#{VERSION}"
       output += " for #{@project_name}" unless @project_name.nil?
-      output += "\n\n     build_url = #{@build_url}" unless @build_url.nil?
 
       # Sort scan reports required before optional, failed before passed,
       # and alphabetically by scanner name
@@ -111,6 +110,7 @@ module Salus
       end
 
       output += "\n\n#{render_summary(scan_reports, use_colors: use_colors)}"
+      output += "\n\n  build_url = #{@build_url}" unless @build_url.nil?
       output
     end
 
