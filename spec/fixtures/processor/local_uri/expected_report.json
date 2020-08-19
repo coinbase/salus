@@ -125,6 +125,10 @@
         "format": "json"
       }
     ],
+    "builds": {
+      "url": "http://example.com/builds/123",
+      "service_name": "buildkite"
+    },
     "sources": {
       "configured": [
         "file:///salus.yaml"
