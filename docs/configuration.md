@@ -60,6 +60,11 @@ reports:
     format: json
     verbose: true
 
+# Hash with build info. Can contain arbitrary keys.
+builds:
+  url: "{{BUILD_URL}}"   # See Envar Interpolation section
+  service_name: circle_ci
+
 # Array[String] or String.
 # Array[String] - lists all the scanner to execute if Salus determines that
 #                 they are relevant to the source code in the repository.
