@@ -53,6 +53,8 @@ describe Salus::Config do
         allow(ENV).to receive(:[]).with('PROJECT_AUTHOR').and_return('Asimov')
         allow(ENV).to receive(:[]).with('PROJECT_DATE').and_return('1956')
         allow(ENV).to receive(:[]).with('REPORT_URI').and_return('https://example.com/salus')
+        allow(ENV).to receive(:[]).with('BUILD_URL').and_return('https://example.com/builds/0')
+        allow(ENV).to receive(:[]).with('SERVICE_NAME').and_return('Cirle CI')
 
         config = Salus::Config.new([envar_config_file])
 
@@ -66,6 +68,12 @@ describe Salus::Config do
               'verbose' => true
             }
           ]
+        )
+        expect(config.builds).to eq(
+          {
+            'url' => 'https://example.com/builds/0',
+            'service_name' => 'Cirle CI'
+          }
         )
       end
     end
