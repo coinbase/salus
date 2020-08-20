@@ -97,6 +97,8 @@
         "format": "json"
       }
     ],
+    "builds": {
+    },
     "sources": {
       "configured": [
         "file:///salus.yaml"
