@@ -27,5 +27,5 @@ yarn audit v1.22.5
 │ More info     │ https://www.npmjs.com/advisories/1179                        │
 └───────────────┴──────────────────────────────────────────────────────────────┘
 2 vulnerabilities found - Packages audited: 361
-Severity: 0 Low | 1 Moderate | 1 High
+Severity: 1 Low | 1 Moderate
 Done in 0.71s.
