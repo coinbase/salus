@@ -54,26 +54,23 @@ module Salus::Scanners
     private
 
     def parse_output(lines)
-      empty_cell = "│               │"
       vulns = []
 
       i = 0
       while i < lines.size
         if lines[i].start_with?("┌─") && lines[i].end_with?("─┐")
           vuln = {}
-        elsif lines[i] =~ /^\│ [A-Za-z]/
-          # line has attr name and val, like
-          # | Path          | eslint > file-entry-cache > flat-cache > write > mkdirp >    |
+        elsif lines[i].start_with? "│ "
           line_split = lines[i].split("│")
-          key = line_split[1].strip
+          curr_key = line_split[1].strip
           val = line_split[2].strip
-          vuln[key] = val
-        elsif lines[i].start_with?(empty_cell)
-          # multi-line attribute val, like the 2nd line here
-          # | Path          | eslint > file-entry-cache > flat-cache > write > mkdirp >    |
-          # |               | minimist                                                     |
-          val = lines[i].split(empty_cell)[1].split("│")[0].strip
-          vuln[key] += ' ' + val
+
+          if curr_key != ""
+            vuln[curr_key] = val
+            prev_key = curr_key
+          else
+            vuln[prev_key] += ' ' + val
+          end
         elsif lines[i].start_with?("└─") && lines[i].end_with?("─┘")
           vulns.push vuln
         end
