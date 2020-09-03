@@ -10,8 +10,6 @@ module Salus::Scanners
     # the command was previously 'yarn audit --json', which had memory allocation issues
     # see https://github.com/yarnpkg/yarn/issues/7404
     AUDIT_COMMAND = 'yarn audit --no-color'.freeze
-    TT = "┌───────────────┬──────────────────────────────────────────────────────────────┐".freeze
-    TB = "└───────────────┴──────────────────────────────────────────────────────────────┘".freeze
 
     def should_run?
       @repository.yarn_lock_present?
@@ -27,8 +25,8 @@ module Salus::Scanners
         return report_success if shell_return.success?
 
         stdout_lines = shell_return.stdout.split("\n")
-        table_start_pos = stdout_lines.index(TT)
-        table_end_pos = stdout_lines.rindex(TB)
+        table_start_pos = stdout_lines.index { |l| l.start_with?("┌─") and l.end_with?("─┐") }
+        table_end_pos = stdout_lines.rindex { |l| l.start_with?("└─") and l.end_with?("─┘") }
         table_lines = stdout_lines[table_start_pos..table_end_pos]
         # lines contain 1 or more vuln tables
 
@@ -61,7 +59,7 @@ module Salus::Scanners
 
       i = 0
       while i < lines.size
-        if lines[i] == TT
+        if lines[i].start_with?("┌─") and lines[i].end_with?("─┐")
           vuln = {}
         elsif lines[i] =~ /^\│ [A-Za-z]/
           # line has attr name and val, like
@@ -76,7 +74,7 @@ module Salus::Scanners
           # |               | minimist                                                     |
           val = lines[i].split(empty_cell)[1].split("│")[0].strip
           vuln[key] += ' ' + val
-        elsif lines[i] == TB
+        elsif lines[i].start_with?("└─") and lines[i].end_with?("─┘")
           vulns.push vuln
         end
         i += 1
