@@ -8,6 +8,8 @@ require 'salus/scanners/node_audit'
 module Salus::Scanners
   class YarnAudit < NodeAudit
     AUDIT_COMMAND = 'yarn audit --no-color'.freeze
+    TT = "┌───────────────┬──────────────────────────────────────────────────────────────┐".freeze
+    TB = "└───────────────┴──────────────────────────────────────────────────────────────┘".freeze
 
     def should_run?
       @repository.yarn_lock_present?
@@ -22,7 +24,20 @@ module Salus::Scanners
         report_info(:ignored_cves, excpts)
         return report_success if shell_return.success?
 
-        vulns = parse_output(shell_return.stdout)
+        stdout_lines = shell_return.stdout.split("\n")
+        table_start_pos = stdout_lines.index(TT)
+        table_end_pos = stdout_lines.rindex(TB)
+        table_lines = stdout_lines[table_start_pos..table_end_pos]
+        # lines contain 1 or more vuln tables
+
+        # if no table in output
+        if table_start_pos.nil? || table_end_pos.nil?
+          report_error(shell_return.stderr, status: shell_return.status)
+          report_stderr(shell_return.stderr)
+          return report_failure
+        end
+
+        vulns = parse_output(table_lines)
         vuln_ids = vulns.map { |v| v['id'] }
         report_info(:vulnerabilities, vuln_ids.uniq)
 
@@ -36,26 +51,15 @@ module Salus::Scanners
       end
     end
 
-    def parse_output(out)
-      table_top = "┌───────────────┬──────────────────────────────────────────────────────────────┐"
-      table_bot = "└───────────────┴──────────────────────────────────────────────────────────────┘"
+    private
+
+    def parse_output(lines)
       empty_cell = "│               │"
       vulns = []
-      lines = out.split("\n")
-
-      table_start_pos = lines.index(table_top)
-      table_end_pos = lines.rindex(table_bot)
-      # lines contain 1 or more vuln tables
-      lines = lines[table_start_pos..table_end_pos]
-
-      if table_start_pos.nil? || table_end_pos.nil?
-        report_stdout("Output has no vuln tables: #{out}")
-        log(out)
-      end
 
       i = 0
       while i < lines.size
-        if lines[i] == table_top
+        if lines[i] == TT
           vuln = {}
         elsif lines[i] =~ /^\│ [A-Za-z]/
           # line has attr name and val, like
@@ -70,7 +74,7 @@ module Salus::Scanners
           # |               | minimist                                                     |
           val = lines[i].split(empty_cell)[1].split("│")[0].strip
           vuln[key] += ' ' + val
-        elsif lines[i] == table_bot
+        elsif lines[i] == TB
           vulns.push vuln
         end
         i += 1
@@ -78,8 +82,6 @@ module Salus::Scanners
 
       vulns.each { |vln| normalize_vuln(vln) }
     end
-
-    private
 
     def scan_deps
       dep_types = @config.fetch('exclude_groups', [])
