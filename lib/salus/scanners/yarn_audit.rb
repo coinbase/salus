@@ -7,6 +7,8 @@ require 'salus/scanners/node_audit'
 
 module Salus::Scanners
   class YarnAudit < NodeAudit
+    # the command was previously 'yarn audit --json', which had memory allocation issues
+    # see https://github.com/yarnpkg/yarn/issues/7404
     AUDIT_COMMAND = 'yarn audit --no-color'.freeze
     TT = "┌───────────────┬──────────────────────────────────────────────────────────────┐".freeze
     TB = "└───────────────┴──────────────────────────────────────────────────────────────┘".freeze
