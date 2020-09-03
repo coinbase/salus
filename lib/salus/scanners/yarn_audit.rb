@@ -25,8 +25,8 @@ module Salus::Scanners
         return report_success if shell_return.success?
 
         stdout_lines = shell_return.stdout.split("\n")
-        table_start_pos = stdout_lines.index { |l| l.start_with?("┌─") and l.end_with?("─┐") }
-        table_end_pos = stdout_lines.rindex { |l| l.start_with?("└─") and l.end_with?("─┘") }
+        table_start_pos = stdout_lines.index { |l| l.start_with?("┌─") && l.end_with?("─┐") }
+        table_end_pos = stdout_lines.rindex { |l| l.start_with?("└─") && l.end_with?("─┘") }
         table_lines = stdout_lines[table_start_pos..table_end_pos]
         # lines contain 1 or more vuln tables
 
@@ -59,7 +59,7 @@ module Salus::Scanners
 
       i = 0
       while i < lines.size
-        if lines[i].start_with?("┌─") and lines[i].end_with?("─┐")
+        if lines[i].start_with?("┌─") && lines[i].end_with?("─┐")
           vuln = {}
         elsif lines[i] =~ /^\│ [A-Za-z]/
           # line has attr name and val, like
@@ -74,7 +74,7 @@ module Salus::Scanners
           # |               | minimist                                                     |
           val = lines[i].split(empty_cell)[1].split("│")[0].strip
           vuln[key] += ' ' + val
-        elsif lines[i].start_with?("└─") and lines[i].end_with?("─┘")
+        elsif lines[i].start_with?("└─") && lines[i].end_with?("─┘")
           vulns.push vuln
         end
         i += 1
