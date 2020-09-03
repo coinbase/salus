@@ -27,8 +27,6 @@ module Salus::Scanners
         stdout_lines = shell_return.stdout.split("\n")
         table_start_pos = stdout_lines.index { |l| l.start_with?("┌─") && l.end_with?("─┐") }
         table_end_pos = stdout_lines.rindex { |l| l.start_with?("└─") && l.end_with?("─┘") }
-        table_lines = stdout_lines[table_start_pos..table_end_pos]
-        # lines contain 1 or more vuln tables
 
         # if no table in output
         if table_start_pos.nil? || table_end_pos.nil?
@@ -36,6 +34,9 @@ module Salus::Scanners
           report_stderr(shell_return.stderr)
           return report_failure
         end
+
+        table_lines = stdout_lines[table_start_pos..table_end_pos]
+        # lines contain 1 or more vuln tables
 
         vulns = parse_output(table_lines)
         vuln_ids = vulns.map { |v| v['id'] }
