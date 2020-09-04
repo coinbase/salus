@@ -7,13 +7,79 @@ require 'salus/scanners/node_audit'
 
 module Salus::Scanners
   class YarnAudit < NodeAudit
-    AUDIT_COMMAND = 'yarn audit --json'.freeze
+    # the command was previously 'yarn audit --json', which had memory allocation issues
+    # see https://github.com/yarnpkg/yarn/issues/7404
+    AUDIT_COMMAND = 'yarn audit --no-color'.freeze
 
     def should_run?
       @repository.yarn_lock_present?
     end
 
+    def run
+      shell_return = Dir.chdir(@repository.path_to_repo) do
+        command = "#{AUDIT_COMMAND} #{scan_deps}"
+        shell_return = run_shell(command)
+
+        excpts = @config.fetch('exceptions', []).map { |e| e["advisory_id"].to_i }
+        report_info(:ignored_cves, excpts)
+        return report_success if shell_return.success?
+
+        stdout_lines = shell_return.stdout.split("\n")
+        table_start_pos = stdout_lines.index { |l| l.start_with?("┌─") && l.end_with?("─┐") }
+        table_end_pos = stdout_lines.rindex { |l| l.start_with?("└─") && l.end_with?("─┘") }
+
+        # if no table in output
+        if table_start_pos.nil? || table_end_pos.nil?
+          report_error(shell_return.stderr, status: shell_return.status)
+          report_stderr(shell_return.stderr)
+          return report_failure
+        end
+
+        table_lines = stdout_lines[table_start_pos..table_end_pos]
+        # lines contain 1 or more vuln tables
+
+        vulns = parse_output(table_lines)
+        vuln_ids = vulns.map { |v| v['id'] }
+        report_info(:vulnerabilities, vuln_ids.uniq)
+
+        vulns.reject! { |v| excpts.include?(v['id']) }
+        # vulns were all whitelisted
+        return report_success if vulns.empty?
+
+        log(format_vulns(vulns))
+        report_stdout(vulns.to_json)
+        report_failure
+      end
+    end
+
     private
+
+    def parse_output(lines)
+      vulns = []
+
+      i = 0
+      while i < lines.size
+        if lines[i].start_with?("┌─") && lines[i].end_with?("─┐")
+          vuln = {}
+        elsif lines[i].start_with? "│ "
+          line_split = lines[i].split("│")
+          curr_key = line_split[1].strip
+          val = line_split[2].strip
+
+          if curr_key != ""
+            vuln[curr_key] = val
+            prev_key = curr_key
+          else
+            vuln[prev_key] += ' ' + val
+          end
+        elsif lines[i].start_with?("└─") && lines[i].end_with?("─┘")
+          vulns.push vuln
+        end
+        i += 1
+      end
+
+      vulns.each { |vln| normalize_vuln(vln) }
+    end
 
     def scan_deps
       dep_types = @config.fetch('exclude_groups', [])
@@ -35,19 +101,41 @@ module Salus::Scanners
       command << 'optionalDependencies ' unless dep_types.include?('optionalDependencies')
     end
 
-    def scan_for_cves
-      # Yarn gives us a new-line separated list of JSON blobs.
-      # But the last JSON blob is a summary that we can discard.
-      # We must also pluck out only the standard advisory hashes.
-      command = "#{AUDIT_COMMAND} #{scan_deps}"
-      command_output = run_shell(command)
+    # severity and vuln title in the yarn output looks like
+    # | low           | Prototype Pollution                                          |
+    # which are stored in the vuln hash as "low" ==> "Prototype Pollution"
+    # need to update that to
+    #     1) "severity" => "low"
+    #     2) "title" => "Prototype Pollution"
+    #
+    # Also, add a separate id field
+    def normalize_vuln(vuln)
+      sev_levels = %w[info low moderate high critical]
 
-      report_stdout(command_output.stdout)
-
-      command_output.stdout.split("\n")[0..-2].map do |raw_advisory|
-        advisory_hash = JSON.parse(raw_advisory, symbolize_names: true)
-        advisory_hash[:data][:advisory]
+      sev_levels.each do |sev|
+        if vuln[sev]
+          vuln['severity'] = sev
+          vuln['title'] = vuln[sev]
+          vuln.delete(sev)
+          break
+        end
       end
+
+      # "More info" looks like https://www.npmjs.com/advisories/1179
+      # need to extract the id at the end
+      id = vuln["More info"].split("https://www.npmjs.com/advisories/")[1]
+      vuln['id'] = id.to_i
+    end
+
+    def format_vulns(vulns)
+      str = ""
+      vulns.each do |vul|
+        vul.each do |k, v|
+          str += "#{k}: #{v}\n"
+        end
+        str += "\n"
+      end
+      str
     end
   end
 end

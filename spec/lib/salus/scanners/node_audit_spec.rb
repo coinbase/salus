@@ -24,15 +24,23 @@ describe Salus::Scanners::NodeAudit do
           expect(scanner.report.passed?).to eq(false)
           info = scanner.report.to_h.fetch(:info)
           expect(info.key?(:stdout)).to eq(true)
-          expect(info).to include(
-            prod_advisories: %w[39 48],
-            dev_advisories: [],
-            unexcepted_prod_advisories: %w[39 48],
-            exceptions: [],
-            prod_exceptions: [],
-            dev_exceptions: [],
-            useless_exceptions: []
-          )
+
+          if klass_str == 'NPMAudit'
+            expect(info).to include(
+              prod_advisories: %w[39 48],
+              dev_advisories: [],
+              unexcepted_prod_advisories: %w[39 48],
+              exceptions: [],
+              prod_exceptions: [],
+              dev_exceptions: [],
+              useless_exceptions: []
+            )
+          else # YarnAudit
+            expect(info).to include(
+              vulnerabilities: [39, 48],
+              ignored_cves: []
+            )
+          end
         end
 
         it 'should fail, recording advisory ids and npm output' do
@@ -43,15 +51,22 @@ describe Salus::Scanners::NodeAudit do
           expect(scanner.report.passed?).to eq(false)
           info = scanner.report.to_h.fetch(:info)
           expect(info.key?(:stdout)).to eq(true)
-          expect(info).to include(
-            prod_advisories: %w[39 48 722],
-            dev_advisories: [],
-            unexcepted_prod_advisories: %w[39 48 722],
-            exceptions: [],
-            prod_exceptions: [],
-            dev_exceptions: [],
-            useless_exceptions: []
-          )
+          if klass_str == 'NPMAudit'
+            expect(info).to include(
+              prod_advisories: %w[39 48 722],
+              dev_advisories: [],
+              unexcepted_prod_advisories: %w[39 48 722],
+              exceptions: [],
+              prod_exceptions: [],
+              dev_exceptions: [],
+              useless_exceptions: []
+            )
+          else # YarnAudit
+            expect(info).to include(
+              vulnerabilities: [39, 48, 722],
+              ignored_cves: []
+            )
+          end
         end
       end
 
@@ -63,12 +78,19 @@ describe Salus::Scanners::NodeAudit do
           expect(scanner.report.passed?).to eq(true)
 
           info = scanner.report.to_h.fetch(:info)
-          expect(info.key?(:stdout)).to eq(true)
-          expect(info).to include(
-            prod_advisories: [],
-            dev_advisories: [],
-            unexcepted_prod_advisories: []
-          )
+          if klass_str == 'NPMAudit'
+            expect(info.key?(:stdout)).to eq(true)
+            expect(info).to include(
+              prod_advisories: [],
+              dev_advisories: [],
+              unexcepted_prod_advisories: []
+            )
+          else # YarnAudit
+            expect(info.key?(:stdout)).to eq(false)
+            expect(info).to include(
+              ignored_cves: []
+            )
+          end
         end
       end
 
@@ -85,16 +107,25 @@ describe Salus::Scanners::NodeAudit do
 
           expect(scanner.report.passed?).to eq(true)
           info = scanner.report.to_h.fetch(:info)
-          expect(info.key?(:stdout)).to eq(true)
-          expect(info).to include(
-            prod_advisories: %w[39 48],
-            dev_advisories: [],
-            unexcepted_prod_advisories: [],
-            exceptions: %w[39 48],
-            prod_exceptions: %w[39 48],
-            dev_exceptions: [],
-            useless_exceptions: []
-          )
+          if klass_str == 'NPMAudit'
+            expect(info.key?(:stdout)).to eq(true)
+            expect(info).to include(
+              prod_advisories: %w[39 48],
+              dev_advisories: [],
+              unexcepted_prod_advisories: [],
+              exceptions: %w[39 48],
+              prod_exceptions: %w[39 48],
+              dev_exceptions: [],
+              useless_exceptions: []
+            )
+          else # YarnAudit
+            # YarnAudit no longer displays vulns that have been whitelisted
+            expect(info.key?(:stdout)).to eq(false)
+            expect(info).to include(
+              ignored_cves: [39, 48],
+              vulnerabilities: [39, 48]
+            )
+          end
         end
       end
     end
