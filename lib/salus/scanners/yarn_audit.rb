@@ -55,7 +55,7 @@ module Salus::Scanners
     private
 
     def parse_output(lines)
-      vulns = []
+      vulns = Set.new
 
       i = 0
       while i < lines.size
@@ -66,19 +66,22 @@ module Salus::Scanners
           curr_key = line_split[1].strip
           val = line_split[2].strip
 
-          if curr_key != ""
+          if curr_key != "" && curr_key != 'Path'
             vuln[curr_key] = val
             prev_key = curr_key
-          else
+          elsif curr_key == 'Path'
+            prev_key = curr_key
+          elsif prev_key != 'Path'
             vuln[prev_key] += ' ' + val
           end
         elsif lines[i].start_with?("└─") && lines[i].end_with?("─┘")
-          vulns.push vuln
+          vulns.add(vuln)
         end
         i += 1
       end
 
-      vulns.each { |vln| normalize_vuln(vln) }
+      vulns = vulns.to_a
+      vulns.each { |vln| normalize_vuln(vln) }.sort { |a, b| a['id'] <=> b['id'] }
     end
 
     def scan_deps
