@@ -32,16 +32,16 @@ describe Salus::Scanners::YarnAudit do
                 "Patched in" => ">= 2.4.24",
                 "Dependency of" => "uglify-js",
                 "More info" => "https://www.npmjs.com/advisories/39",
-                "severity" => "low",
-                "title" => "Incorrect Handling of Non-Boolean Comparisons During Minification",
-                "id" => 39 }
+                "Severity" => "low",
+                "Title" => "Incorrect Handling of Non-Boolean Comparisons During Minification",
+                "ID" => 39 }
       vuln1 = { "Package" => "uglify-js",
                 "Patched in" => ">=2.6.0",
                 "Dependency of" => "uglify-js",
                 "More info" => "https://www.npmjs.com/advisories/48",
-                "severity" => "low",
-                "title" => "Regular Expression Denial of Service",
-                "id" => 48 }
+                "Severity" => "low",
+                "Title" => "Regular Expression Denial of Service",
+                "ID" => 48 }
       expect(vulns[0]).to eq(vuln0)
       expect(vulns[1]).to eq(vuln1)
 
