@@ -86,6 +86,9 @@ describe Salus::Scanners::PatternSearch do
           hit: 'lance.txt:3:Nerv housed the lance.'
         )
 
+        logs = scanner.report.to_h.fetch(:logs)
+        failure_str = 'seal.txt:3:Nerv is tasked with taking over when the UN fails'
+        expect(logs).to include(failure_str)
         expect(info[:hits]).to include(
           regex: 'Nerv',
           forbidden: true,
@@ -306,6 +309,100 @@ describe Salus::Scanners::PatternSearch do
       end
     end
 
+    context 'exclude filepaths are given' do
+      let(:repo_dir) { "spec/fixtures/pattern_search/test_paths" }
+
+      it 'files specified with exclude_filepaths at the match level  should be excluded' do
+        config_file = "#{repo_dir}/salus.yaml"
+        repo = Salus::Repo.new(repo_dir)
+        configs = Salus::Config.new([File.read(config_file)]).scanner_configs['PatternSearch']
+        scanner = Salus::Scanners::PatternSearch.new(repository: repo, config: configs)
+        scanner.run
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+
+        expect(info[:hits].size).to eq(1)
+        expect(info[:hits]).to include(
+          regex: 'hello',
+          forbidden: true,
+          required: false,
+          msg: '',
+          hit: 'subdir/subdir2/file.txt:1:hello'
+        )
+      end
+
+      it 'exclude_paths of the match should override global exclude_filepaths' do
+        config_file = "#{repo_dir}/salus2.yaml"
+        repo = Salus::Repo.new(repo_dir)
+        configs = Salus::Config.new([File.read(config_file)]).scanner_configs['PatternSearch']
+        scanner = Salus::Scanners::PatternSearch.new(repository: repo, config: configs)
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+
+        expect(info[:hits].size).to eq(2)
+        expect(info[:hits]).to include(
+          regex: 'hello',
+          forbidden: true,
+          required: false,
+          msg: '',
+          hit: 'subdir/file.txt:1:hello'
+        )
+        expect(info[:hits]).to include(
+          regex: 'hello',
+          forbidden: true,
+          required: false,
+          msg: '',
+          hit: 'subdir/subdir2/file.txt:1:hello'
+        )
+      end
+
+      it 'files specified with global exclude_filepaths should be excluded' do
+        config_file = "#{repo_dir}/salus3.yaml"
+        repo = Salus::Repo.new(repo_dir)
+        configs = Salus::Config.new([File.read(config_file)]).scanner_configs['PatternSearch']
+        scanner = Salus::Scanners::PatternSearch.new(repository: repo, config: configs)
+        scanner.run
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+
+        expect(info[:hits].size).to eq(1)
+        expect(info[:hits]).to include(
+          regex: 'hello',
+          forbidden: true,
+          required: false,
+          msg: '',
+          hit: 'subdir/subdir2/file.txt:1:hello'
+        )
+      end
+
+      it 'exclude_filepaths, exclude_directory, and exclude_extension can be used together' do
+        repo_dir = 'spec/fixtures/pattern_search/test_paths2'
+        # this config uses exclude_filepaths, exclude_directory, and exclude_extension together
+        config_file = "#{repo_dir}/salus.yaml"
+        repo = Salus::Repo.new(repo_dir)
+        configs = Salus::Config.new([File.read(config_file)]).scanner_configs['PatternSearch']
+        scanner = Salus::Scanners::PatternSearch.new(repository: repo, config: configs)
+        scanner.run
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+
+        expect(info[:hits].size).to eq(1)
+        expect(info[:hits]).to include(
+          regex: 'hello',
+          forbidden: true,
+          required: false,
+          msg: '',
+          hit: 'file.txt:1:hello'
+        )
+      end
+    end
+
     context 'invalid regex or settings which causes error' do
       it 'should record the STDERR of bundle-audit' do
         repo = Salus::Repo.new('spec/fixtures/pattern_search')
@@ -319,6 +416,34 @@ describe Salus::Scanners::PatternSearch do
           stderr:
             "Error: cannot parse pattern: error parsing regexp: missing closing ): `(?m)(`\n",
           message: "Call to sift failed"
+        )
+      end
+    end
+
+    context 'special chars should not be escaped' do
+      it 'quotes should not be consumed by shell' do
+        repo = Salus::Repo.new('spec/fixtures/pattern_search')
+        config = { 'matches' => [{ 'regex' => 'KEY: [\'"]off[\'"]', 'forbidden' => true }] }
+        scanner = Salus::Scanners::PatternSearch.new(repository: repo, config: config)
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+
+        expect(info[:hits]).to include(
+          regex: "KEY: ['\"]off['\"]",
+          forbidden: true,
+          required: false,
+          msg: '',
+          hit: 'special_chars.txt:1:KEY: "off"'
+        )
+        expect(info[:hits]).to include(
+          regex: 'KEY: [\'"]off[\'"]',
+          forbidden: true,
+          required: false,
+          msg: '',
+          hit: 'special_chars.txt:2:KEY: \'off\''
         )
       end
     end

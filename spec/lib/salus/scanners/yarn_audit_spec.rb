@@ -26,12 +26,43 @@ describe Salus::Scanners::YarnAudit do
       scanner.run
 
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
+      vulns = JSON.parse(scanner.report.to_h[:info][:stdout])
+      expect(vulns.size).to eq(2)
+      vuln0 = { "Package" => "uglify-js",
+                "Patched in" => ">= 2.4.24",
+                "Dependency of" => "uglify-js",
+                "Path" => "uglify-js",
+                "More info" => "https://www.npmjs.com/advisories/39",
+                "severity" => "low",
+                "title" => "Incorrect Handling of Non-Boolean Comparisons During Minification",
+                "id" => 39 }
+      vuln1 = { "Package" => "uglify-js",
+                "Patched in" => ">=2.6.0",
+                "Dependency of" => "uglify-js",
+                "Path" => "uglify-js",
+                "More info" => "https://www.npmjs.com/advisories/48",
+                "severity" => "low",
+                "title" => "Regular Expression Denial of Service",
+                "id" => 48 }
+      expect(vulns[0]).to eq(vuln0)
+      expect(vulns[1]).to eq(vuln1)
 
       repo = Salus::Repo.new('spec/fixtures/yarn_audit/failure-2')
       scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
       scanner.run
 
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
+    end
+
+    it 'should fail with error if there are errors' do
+      repo = Salus::Repo.new('spec/fixtures/yarn_audit/failure-3')
+      scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
+      scanner.run
+
+      report = scanner.report.to_h
+      expect(report.fetch(:passed)).to eq(false)
+      info = scanner.report.to_h.fetch(:info)
+      expect(info[:stderr]).to include("classnames-repo-does-not-exist: Not found")
     end
 
     it 'should pass if vulnerable devDependencies are excluded' do

@@ -19,8 +19,9 @@ module Salus
 
     SUMMARY_TABLE_HEADINGS = ['Scanner', 'Running Time', 'Required', 'Passed'].freeze
 
-    def initialize(report_uris: [], project_name: nil, custom_info: nil, config: nil)
+    def initialize(report_uris: [], builds: {}, project_name: nil, custom_info: nil, config: nil)
       @report_uris = report_uris     # where we will send this report
+      @builds = builds               # build hash, could have arbitrary keys
       @project_name = project_name   # the project_name we are scanning
       @scan_reports = []             # ScanReports for each scan run
       @errors = []                   # errors from Salus execution
@@ -78,8 +79,6 @@ module Salus
         ]
       end
 
-      output += "\n\n#{render_summary(scan_reports, use_colors: use_colors)}"
-
       scan_reports.each do |report, _required|
         output += "\n\n#{report.to_s(verbose: verbose, wrap: wrap, use_colors: use_colors)}"
       end
@@ -108,6 +107,7 @@ module Salus
         output += indent(wrapify(stringified_errors, indented_wrap))
       end
 
+      output += "\n\n#{render_summary(scan_reports, use_colors: use_colors)}"
       output
     end
 

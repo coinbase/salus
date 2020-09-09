@@ -618,12 +618,11 @@ describe Salus::Scanners::Semgrep do
         scanner.run
 
         errors = scanner.report.to_h.fetch(:errors)
-        expect(errors).to include(
-          status: 4, # semgrep exit code documentation
-          stderr: "error: invalid pattern\n\nPattern could not be parsed as a Python " \
-                  "semgrep pattern (error)\n\tCLI Input:1-1",
-          message: "Call to semgrep failed"
-        )
+        expect(errors.size).to eq(1)
+        expect(errors[0][:status]).to eq(4)
+        expect(errors[0][:stderr]).to include("Pattern could not be parsed as a Python " \
+                                              "semgrep pattern (error)\n\tCLI Input:1-1")
+        expect(errors[0][:message]).to eq("Call to semgrep failed")
       end
     end
 
@@ -644,12 +643,11 @@ describe Salus::Scanners::Semgrep do
         scanner.run
 
         errors = scanner.report.to_h.fetch(:errors)
-        expect(errors).to include(
-          status: 3, # semgrep exit code documentation
-          stderr: "warn: parse error\n\nCould not parse unparsable_py.py as python (warn)" \
-                  "\n\tunparsable_py.py:3-3",
-          message: "Call to semgrep failed"
-        )
+        expect(errors.size).to eq(1)
+        expect(errors[0][:status]).to eq(3) # semgrep exit code documentation
+        expect(errors[0][:stderr]).to include("Could not parse unparsable_py.py as python (warn)" \
+                                              "\n\tunparsable_py.py:3-3")
+        expect(errors[0][:message]).to eq("Call to semgrep failed")
       end
     end
 
@@ -713,12 +711,11 @@ describe Salus::Scanners::Semgrep do
         scanner.run
 
         errors = scanner.report.to_h.fetch(:errors)
-        expect(errors).to include(
-          status: 3, # semgrep exit code documentation
-          stderr: "warn: parse error\n\nCould not parse unparsable_js.js as js (warn)" \
-                  "\n\tunparsable_js.js:3-3",
-          message: "Call to semgrep failed"
-        )
+        expect(errors.size).to eq(1)
+        expect(errors[0][:status]).to eq(3) # semgrep exit code documentation
+        expect(errors[0][:stderr]).to include("Could not parse unparsable_js.js as js " \
+                                              "(warn)\n\tunparsable_js.js:3-3")
+        expect(errors[0][:message]).to eq("Call to semgrep failed")
       end
     end
   end

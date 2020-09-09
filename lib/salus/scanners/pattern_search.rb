@@ -42,14 +42,27 @@ module Salus::Scanners
                                                          match['exclude_extension'])
           match_include_extension_flags = extension_flag('--ext', match['include_extension'])
 
-          command_string = [
-            "sift -n -e \"#{match['regex']}\" .",
-            match_exclude_directory_flags || global_exclude_directory_flags,
-            match_exclude_extension_flags || global_exclude_extension_flags,
-            match_include_extension_flags || global_include_extension_flags
-          ].compact.join(' ')
-          shell_return = run_shell(command_string)
+          # --exclude_filepaths can be specified at the global level and match level
+          # if both are specified, they should be joined
+          ex_paths = match['exclude_filepaths'] || @config['exclude_filepaths']
+          exclude_filepath_pattern = filepath_pattern(ex_paths)
 
+          command_array = [
+            "sift",
+            "-n",
+            "-e",
+            match['regex'],
+            "--exclude-path",
+            exclude_filepath_pattern,
+            "--exclude-files",
+            "salus.yaml",
+            ".",
+            *(match_exclude_directory_flags || global_exclude_directory_flags),
+            *(match_exclude_extension_flags || global_exclude_extension_flags),
+            *(match_include_extension_flags || global_include_extension_flags)
+          ].compact
+
+          shell_return = run_shell(command_array)
           # Set defaults.
           match['forbidden'] ||= false
           match['required'] ||= false
@@ -57,8 +70,8 @@ module Salus::Scanners
 
           if shell_return.success? # hit
             if match['forbidden']
-              failure_messages << "Forbidden pattern \"#{match['regex']}\" was found " \
-                "- #{match['message']}"
+              failure_messages << "\nForbidden pattern \"#{match['regex']}\" was found " \
+                "\n#{shell_return.stdout} - #{match['message']}"
             end
 
             hits = shell_return.stdout.encode(
@@ -129,7 +142,17 @@ module Salus::Scanners
     def flag_list(flag, list)
       list&.map do |value|
         "#{flag}=#{value}"
-      end&.join(' ')
+      end
+    end
+
+    # filepaths need to be joined into a sift path pattern
+    # Ex. [file1, file2, file3] need to be joined into
+    #       ^file1$|^file2$|^file3$
+    def filepath_pattern(filepaths)
+      return "" if filepaths.nil?
+
+      filepaths.map! { |path| '^' + path + '$' }
+      filepaths.join('|')
     end
   end
 end

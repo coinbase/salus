@@ -2,3 +2,6 @@
 reports:
   - uri: file://salus_reports_folder/salus-report.json
     format: json
+builds:
+  url: http://example.com/builds/123
+  service_name: buildkite
