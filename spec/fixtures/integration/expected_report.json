@@ -60,6 +60,9 @@
       "BundleAudit": {
         "pass_on_raise": false
       },
+      "CargoAudit": {
+        "pass_on_raise": false
+      },
       "Gosec": {
         "pass_on_raise": false
       },
