@@ -39,10 +39,10 @@ module Salus::Scanners
         # lines contain 1 or more vuln tables
 
         vulns = parse_output(table_lines)
-        vuln_ids = vulns.map { |v| v['id'] }
+        vuln_ids = vulns.map { |v| v['ID'] }
         report_info(:vulnerabilities, vuln_ids.uniq)
 
-        vulns.reject! { |v| excpts.include?(v['id']) }
+        vulns.reject! { |v| excpts.include?(v['ID']) }
         # vulns were all whitelisted
         return report_success if vulns.empty?
 
@@ -55,7 +55,7 @@ module Salus::Scanners
     private
 
     def parse_output(lines)
-      vulns = []
+      vulns = Set.new
 
       i = 0
       while i < lines.size
@@ -66,19 +66,22 @@ module Salus::Scanners
           curr_key = line_split[1].strip
           val = line_split[2].strip
 
-          if curr_key != ""
+          if curr_key != "" && curr_key != 'Path'
             vuln[curr_key] = val
             prev_key = curr_key
-          else
+          elsif curr_key == 'Path'
+            prev_key = curr_key
+          elsif prev_key != 'Path'
             vuln[prev_key] += ' ' + val
           end
         elsif lines[i].start_with?("└─") && lines[i].end_with?("─┘")
-          vulns.push vuln
+          vulns.add(vuln)
         end
         i += 1
       end
 
-      vulns.each { |vln| normalize_vuln(vln) }
+      vulns = vulns.to_a
+      vulns.each { |vln| normalize_vuln(vln) }.sort { |a, b| a['ID'] <=> b['ID'] }
     end
 
     def scan_deps
@@ -114,8 +117,8 @@ module Salus::Scanners
 
       sev_levels.each do |sev|
         if vuln[sev]
-          vuln['severity'] = sev
-          vuln['title'] = vuln[sev]
+          vuln['Severity'] = sev
+          vuln['Title'] = vuln[sev]
           vuln.delete(sev)
           break
         end
@@ -124,7 +127,7 @@ module Salus::Scanners
       # "More info" looks like https://www.npmjs.com/advisories/1179
       # need to extract the id at the end
       id = vuln["More info"].split("https://www.npmjs.com/advisories/")[1]
-      vuln['id'] = id.to_i
+      vuln['ID'] = id.to_i
     end
 
     def format_vulns(vulns)
