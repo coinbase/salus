@@ -40,6 +40,7 @@ module Salus
 
       @report = Report.new(
         report_uris: report_uris,
+        builds: @config.builds,
         project_name: @config.project_name,
         custom_info: @config.custom_info,
         config: @config.to_h.merge(sources)

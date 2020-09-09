@@ -60,6 +60,11 @@ reports:
     format: json
     verbose: true
 
+# Hash with build info. Can contain arbitrary keys.
+builds:
+  url: "{{BUILD_URL}}"   # See Envar Interpolation section
+  service_name: circle_ci
+
 # Array[String] or String.
 # Array[String] - lists all the scanner to execute if Salus determines that
 #                 they are relevant to the source code in the repository.
@@ -94,5 +99,5 @@ Special configuration that exist for particular scanners is defined in the [scan
 It's sometimes useful, especially in CI clusters, to have a generalized configuration file that can reference environment variables. Salus will interpolate the configuration files before parsing it. To reference an environment variable, put the name of the envar in two parenthesis, `{{ENVAR_NAME}}`.
 
 ```yaml
-project_name: {{GITHUB_ORG}}-{{GITHUB_REPO}}-{{COMMIT_SHA}}
+project_name: "{{GITHUB_ORG}}-{{GITHUB_REPO}}-{{COMMIT_SHA}}"
 ```
