@@ -29,7 +29,7 @@ module Salus::Scanners
         #   - status: 1
         #   - stderr: String with details on the error prenting the run (not JSON)
         #   - stdout: ""
- 
+
         return report_success if shell_return.success?
 
         if shell_return.stderr.empty?
@@ -56,10 +56,10 @@ module Salus::Scanners
       #     -h, --help                output help information and exit
       #     --version                 output version and exit
       #     -c, --color COLOR         color configuration: always, never (default: auto)
-      #     -d, --db DB               advisory database git repo path (default: ~/.cargo/advisory-db)
+      #     -d, --db DB               advisory database git repo path
       #     -D, --deny-warnings       exit with an error if any warning advisories are found
-      #     -f, --file FILE           Cargo lockfile to inspect (or `-` for STDIN, default: Cargo.lock)
-      #     --ignore                  ADVISORY_ID Advisory id to ignore (can be specified multiple times)
+      #     -f, --file FILE           Cargo lockfile to inspect
+      #     --ignore                  ADVISORY_ID Advisory id to ignore
       #     -n, --no-fetch            do not perform a git fetch on the advisory DB
       #     --stale                   allow stale database
       #     --target-arch TARGET-ARCH filter vulnerabilities by CPU (default: no filter)
@@ -71,16 +71,14 @@ module Salus::Scanners
 
       opts = ["--json"]  # return vulnerabilities in an easily digestible manner
       opts << "-c never" # to prevent color chars in stderr upon failure
-      opts += fetch_exception_ids.map{ |id| "--ignore #{id}" } unless  fetch_exception_ids.empty?
+      opts += fetch_exception_ids.map { |id| "--ignore #{id}" }
 
       "cargo audit #{opts.join(' ')}"
     end
 
     def fetch_exception_ids
       exceptions = @config.fetch('exceptions', [])
-
       ids = []
-
       exceptions.each do |exception|
         if !exception.is_a?(Hash) || exception.keys.sort != %w[advisory_id changed_by notes]
           report_error(
@@ -89,12 +87,9 @@ module Salus::Scanners
           )
           next
         end
-
         ids << exception.fetch('advisory_id').to_s
       end
-
       ids
     end
-
   end
 end

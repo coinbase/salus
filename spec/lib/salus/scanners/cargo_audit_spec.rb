@@ -20,7 +20,7 @@ describe Salus::Scanners::CargoAudit do
   end
 
   describe '#run' do
-     it 'should pass when there are no vulnerabilities' do
+    it 'should pass when there are no vulnerabilities' do
       repo = Salus::Repo.new('spec/fixtures/cargo_audit/success')
       scanner = Salus::Scanners::CargoAudit.new(repository: repo, config: {})
       scanner.run
