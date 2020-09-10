@@ -5,8 +5,8 @@ require 'salus/scanners/base'
 
 module Salus::Scanners
   class ReportRustCrates < Base
-    LOCK_FILE = 'Cargo.lock'
-    MANIFEST_FILE = 'Cargo.toml'
+    LOCK_FILE = 'Cargo.lock'.freeze
+    MANIFEST_FILE = 'Cargo.toml'.freeze
 
     def should_run?
       @repository.cargo_present? || @repository.cargo_lock_present?
@@ -14,7 +14,7 @@ module Salus::Scanners
 
     def run
       if should_run?
-       record_dependencies
+        record_dependencies
       else
         raise InvalidScannerInvocationError,
               'Cannot report on crates without a manifest or lock file'
@@ -26,7 +26,7 @@ module Salus::Scanners
     def with_lock_file
       manifest_path = File.join(@repository.path_to_repo, MANIFEST_FILE)
       lock_path = File.join(@repository.path_to_repo, LOCK_FILE)
- 
+
       existing_lock = File.exist?(lock_path)
 
       # Cargo tree will generate the lock and return the list of dependencies
@@ -39,7 +39,6 @@ module Salus::Scanners
       File.delete(lock_path) if !existing_lock && File.exist?(lock_path)
     end
 
- 
     def record_dependencies
       with_lock_file do
         record_dependencies_from_lock
@@ -67,5 +66,3 @@ module Salus::Scanners
     end
   end
 end
-
-

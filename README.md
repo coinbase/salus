@@ -50,6 +50,7 @@ Currently supported languages are:
 - Node.js
 - Python
 - Go
+- Rust
 
 ## Configuration
 
