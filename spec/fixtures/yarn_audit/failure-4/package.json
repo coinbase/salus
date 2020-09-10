@@ -1,0 +1,27 @@
+{
+  "name": "www",
+  "version": "1.0.0",
+  "description": "Test package.json file.",
+  "main": "index.js",
+  "engines": {
+    "npm": ">= 4.0.0",
+    "node": ">= 6.9"
+  },
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "test"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "classnames": "^2.2.5",
+    "mobx": "^3.2.1",
+    "uglify-js": "1.2.3",
+    "lodash": "4.17.14",
+    "yargs-parser": "11.1.1",
+    "dot-prop": "4.2.0"
+  }
+}
