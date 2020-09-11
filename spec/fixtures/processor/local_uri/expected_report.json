@@ -63,6 +63,7 @@
       "ReportNodeModules",
       "ReportPythonModules",
       "ReportRubyGems",
+      "ReportRustCrates",
       "Semgrep",
       "YarnAudit"
     ],
@@ -111,6 +112,9 @@
         "pass_on_raise": false
       },
       "ReportRubyGems": {
+        "pass_on_raise": false
+      },
+      "ReportRustCrates": {
         "pass_on_raise": false
       },
       "Semgrep": {
