@@ -84,6 +84,9 @@
       "ReportRubyGems": {
         "pass_on_raise": false
       },
+      "ReportRustCrates": {
+        "pass_on_raise": false
+      },
       "Semgrep": {
         "pass_on_raise": false
       },

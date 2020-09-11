@@ -1,7 +1,12 @@
 require 'toml'
 require 'salus/scanners/base'
 
-# Report the use of any Rust Crates.
+# Report the use of any Rust Crates.  Reports the
+# create name, version and repository URL.
+#
+# The lock file (Cargo.lock) will be used if present.
+# If no lock file is present we will use cargo tree to analyze the
+# dependencies.  Cargo added tree support in version 1.44
 
 module Salus::Scanners
   class ReportRustCrates < Base
