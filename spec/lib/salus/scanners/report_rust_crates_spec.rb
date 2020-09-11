@@ -118,18 +118,31 @@ describe Salus::Scanners::ReportRustCrates do
     it 'should calculate and report all the dependencies in the manifest if lock is absent' do
       repo = Salus::Repo.new('spec/fixtures/report_rust_crates/manifest_only')
       scanner = Salus::Scanners::ReportRustCrates.new(repository: repo, config: {})
+
+      # We will stub the lock file generate to keep our specs from needing to
+      # hit the internet and pulldown the dependency graph
+      allow(scanner).to receive(:run_shell).with(/cargo tree/) do
+        existing_lock = 'spec/fixtures/report_rust_crates/lock_only/Cargo.lock'
+        mock_lock = File.join(repo.path_to_repo, 'Cargo.lock')
+        FileUtils.cp existing_lock, mock_lock
+      end
+
       scanner.run
 
       info = scanner.report.to_h.fetch(:info)
+      expect(info[:dependencies]).to match_array(expected_packages)
+    end
 
-      # Our manifest only has one top level dependency.  When we analyze we will
-      # walk the graph and we'll get back 10 or so dependencies
-      dependency = info[:dependencies].first
+    it 'should raise an error when unable to generate the .lock file' do
+      repo = Salus::Repo.new('spec/fixtures/report_rust_crates/manifest_only')
+      scanner = Salus::Scanners::ReportRustCrates.new(repository: repo, config: {})
 
-      # Check that we have the expected fields
-      expect(dependency.keys).to match_array(%i[name type reference version_tag dependency_file])
-      # And check that our single dependency should have fanned out into multiple
-      expect(info[:dependencies].size).to be > 1
+      # Mock with an empty stub to prevent the .lock file from being generated
+      expect(scanner).to receive(:run_shell).with(/cargo tree/)
+
+      msg = 'Rust .lock file missing.Check write premissions and Cargo version is at least 1.44'
+      expect { scanner.run }.to raise_error(Salus::Scanners::ReportRustCrates::MissingRustLock,
+                                            msg)
     end
 
     it 'should report all deps in lock' do

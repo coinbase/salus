@@ -26,7 +26,6 @@ module Salus::Scanners
     def with_lock_file
       manifest_path = File.join(@repository.path_to_repo, MANIFEST_FILE)
       lock_path = File.join(@repository.path_to_repo, LOCK_FILE)
-
       existing_lock = File.exist?(lock_path)
 
       # Cargo tree will generate the lock and return the list of dependencies
@@ -45,7 +44,14 @@ module Salus::Scanners
       end
     end
 
+    class MissingRustLock < StandardError; end
+
     def record_dependencies_from_lock
+      unless @repository.cargo_lock_present?
+        raise MissingRustLock, "Rust .lock file missing." \
+          "Check write premissions and Cargo version is at least 1.44"
+      end
+
       deps = TOML::Parser.new(@repository.cargo_lock).parsed
 
       # Sample Package
