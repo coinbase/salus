@@ -34,6 +34,7 @@ module Salus::Scanners
 
         if shell_return.stderr.empty?
           report_failure
+          # shell_return.stdout will be JSON of the discovered vulnerabilities
           report_stdout(shell_return.stdout)
           log(shell_return.stdout)
         else
@@ -69,7 +70,7 @@ module Salus::Scanners
       #     --json                    Output report in JSON format
       #     --no-local-crates         Vulnerability querying does not consider local crates
 
-      opts = ["--json"]  # return vulnerabilities in an easily digestible manner
+      opts = ["--json"]  # return vulnerabilities in an easily digestible manner (JSON)
       opts << "-c never" # to prevent color chars in stderr upon failure
       opts += fetch_exception_ids.map { |id| "--ignore #{id}" }
 
