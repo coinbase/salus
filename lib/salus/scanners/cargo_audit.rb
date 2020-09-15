@@ -37,7 +37,8 @@ module Salus::Scanners
         if shell_return.stderr.empty?
           # shell_return.stdout will be JSON of the discovered vulnerabilities
           report_stdout(shell_return.stdout)
-          log(shell_return.stdout)
+          pretty_json = JSON.pretty_generate(JSON.parse(shell_return.stdout))
+          log(pretty_json)
         else
           report_error(
             "cargo exited with an unexpected exit status",

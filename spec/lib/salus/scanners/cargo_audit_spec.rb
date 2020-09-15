@@ -61,10 +61,11 @@ describe Salus::Scanners::CargoAudit do
       path = 'spec/fixtures/cargo_audit/failure-vulnerability-present'
       repo = Salus::Repo.new(path)
       audit_json = File.read(File.join(path, 'expected_audit.json'))
+      pretty_json = JSON.pretty_generate(JSON.parse(audit_json))
 
       scanner = Salus::Scanners::CargoAudit.new(repository: repo, config: {})
 
-      expect(scanner).to receive(:log).with(audit_json)
+      expect(scanner).to receive(:log).with(pretty_json)
       scanner.run
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
     end
