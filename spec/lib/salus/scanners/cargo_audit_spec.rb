@@ -23,6 +23,7 @@ describe Salus::Scanners::CargoAudit do
     it 'should pass when there are no vulnerabilities' do
       repo = Salus::Repo.new('spec/fixtures/cargo_audit/success')
       scanner = Salus::Scanners::CargoAudit.new(repository: repo, config: {})
+      expect(scanner).not_to receive(:report_failure)
       scanner.run
       expect(scanner.report.to_h.fetch(:passed)).to eq(true)
     end
@@ -30,6 +31,7 @@ describe Salus::Scanners::CargoAudit do
     it 'should fail when there are missing dependencies' do
       repo = Salus::Repo.new('spec/fixtures/cargo_audit/failure-missing-dependency')
       scanner = Salus::Scanners::CargoAudit.new(repository: repo, config: {})
+      expect(scanner).to receive(:report_failure).and_call_original
       scanner.run
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
     end
@@ -37,7 +39,9 @@ describe Salus::Scanners::CargoAudit do
     it 'should fail when there are vulnerabilities' do
       repo = Salus::Repo.new('spec/fixtures/cargo_audit/failure-vulnerability-present')
       scanner = Salus::Scanners::CargoAudit.new(repository: repo, config: {})
+      expect(scanner).to receive(:report_failure).and_call_original
       scanner.run
+
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
     end
 
@@ -59,7 +63,24 @@ describe Salus::Scanners::CargoAudit do
       audit_json = File.read(File.join(path, 'expected_audit.json'))
 
       scanner = Salus::Scanners::CargoAudit.new(repository: repo, config: {})
+
       expect(scanner).to receive(:log).with(audit_json)
+      scanner.run
+      expect(scanner.report.to_h.fetch(:passed)).to eq(false)
+    end
+
+    it 'should report error if there were issues in running cargo audit' do
+      repo = Salus::Repo.new('spec/fixtures/cargo_audit/non_project_directory')
+      scanner = Salus::Scanners::CargoAudit.new(repository: repo, config: {})
+
+      expect(scanner).to receive(:report_failure).and_call_original
+      expect(scanner).not_to receive(:report_stdout)
+      expect(scanner).not_to receive(:log)
+      expect(scanner).to receive(:report_error).and_call_original
+      error = "error: Couldn't load Cargo.lock: I/O error: I/O operation failed: " \
+              "couldn't open Cargo.lock: No such file or directory (os error 2)\n"
+      expect(scanner).to receive(:report_stderr).with(error)
+
       scanner.run
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
     end

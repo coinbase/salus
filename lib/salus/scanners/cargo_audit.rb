@@ -32,8 +32,9 @@ module Salus::Scanners
 
         return report_success if shell_return.success?
 
+        report_failure
+
         if shell_return.stderr.empty?
-          report_failure
           # shell_return.stdout will be JSON of the discovered vulnerabilities
           report_stdout(shell_return.stdout)
           log(shell_return.stdout)
