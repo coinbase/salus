@@ -49,7 +49,8 @@ describe Salus::Scanners::CargoAudit do
       repo = Salus::Repo.new('spec/fixtures/cargo_audit/failure-vulnerability-present')
       scanner = Salus::Scanners::CargoAudit.new(repository: repo, config: {})
       # -D will deny warnings
-      expect(scanner).to receive(:run_shell).with('cargo audit --json -c never -D').and_call_original
+      cmd = 'cargo audit --json -c never -D'
+      expect(scanner).to receive(:run_shell).with(cmd).and_call_original
       scanner.run
     end
 
