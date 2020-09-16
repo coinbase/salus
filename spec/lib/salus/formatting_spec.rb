@@ -9,7 +9,7 @@ describe Salus::Formatting do
     let(:instance) { DummyClass.new }
     it 'returns pretty json from valid json string' do
       json_str = '{"hello": "world"}'
-      expected = %Q({\n  "hello": "world"\n})
+      expected = %({\n  "hello": "world"\n})
 
       pretty = instance.prettify_json_string(json_str)
       expect(pretty).to eq(expected)

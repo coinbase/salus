@@ -139,7 +139,7 @@ module Salus
       begin
         json = JSON.parse(json_string)
       rescue JSON::ParserError
-       return json_string
+        return json_string
       end
       JSON.pretty_generate(json)
     end
