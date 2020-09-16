@@ -45,6 +45,14 @@ describe Salus::Scanners::CargoAudit do
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
     end
 
+    it 'should elevate warnings as errors' do
+      repo = Salus::Repo.new('spec/fixtures/cargo_audit/failure-vulnerability-present')
+      scanner = Salus::Scanners::CargoAudit.new(repository: repo, config: {})
+      # -D will deny warnings
+      expect(scanner).to receive(:run_shell).with('cargo audit --json -c never -D').and_call_original
+      scanner.run
+    end
+
     it 'should honor exceptions in the config' do
       fixture_directory = 'spec/fixtures/cargo_audit/failure-vulnerability-present'
       repo = Salus::Repo.new(fixture_directory)

@@ -75,6 +75,7 @@ module Salus::Scanners
 
       opts = ["--json"]  # return vulnerabilities in an easily digestible manner (JSON)
       opts << "-c never" # to prevent color chars in stderr upon failure
+      opts << "-D" # elevate all warnings as errors
       opts += fetch_exception_ids.map { |id| "--ignore #{id}" }
 
       "cargo audit #{opts.join(' ')}"
