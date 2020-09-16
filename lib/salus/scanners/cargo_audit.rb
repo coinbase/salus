@@ -5,6 +5,8 @@ require 'json'
 
 module Salus::Scanners
   class CargoAudit < Base
+    include Salus::Formatting
+
     def should_run?
       @repository.cargo_lock_present?
     end
@@ -37,8 +39,7 @@ module Salus::Scanners
         if shell_return.stderr.empty?
           # shell_return.stdout will be JSON of the discovered vulnerabilities
           report_stdout(shell_return.stdout)
-          pretty_json = JSON.pretty_generate(JSON.parse(shell_return.stdout))
-          log(pretty_json)
+          log(prettify_json_string(shell_return.stdout))
         else
           report_error(
             "cargo exited with an unexpected exit status",

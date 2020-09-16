@@ -134,5 +134,14 @@ module Salus
     def uncolorize(string)
       string.gsub(/#{'\e'}\[(\d+)m/, '')
     end
+
+    def prettify_json_string(json_string)
+      begin
+        json = JSON.parse(json_string)
+      rescue JSON::ParserError
+       return json_string
+      end
+      JSON.pretty_generate(json)
+    end
   end
 end
