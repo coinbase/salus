@@ -24,6 +24,9 @@ module Salus
       # Python
       { handle: :requirements_txt, filename: 'requirements.txt' },
       { handle: :setup_cfg, filename: 'setup.cfg' },
+      # Rust
+      { handle: :cargo, filename: 'Cargo.toml' },
+      { handle: :cargo_lock, filename: 'Cargo.lock' },
       # Mobile Scanners
       { handle: :android_app, filename: '.apk', wildcard: true },
       { handle: :ios_app, filename: '.ipa', wildcard: true }

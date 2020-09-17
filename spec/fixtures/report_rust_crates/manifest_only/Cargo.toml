@@ -1,0 +1,8 @@
+[package]
+name = "foo"
+version = "0.1.0"
+authors = ["joshua-ostrom <joshua.ostrom@coinbase.com>"]
+edition = "2018"
+
+[dependencies]
+rand = "0.7"
