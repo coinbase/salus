@@ -70,6 +70,7 @@
     "enforced_scanners": [
       "Brakeman",
       "BundleAudit",
+      "CargoAudit",
       "Gosec",
       "NPMAudit",
       "PatternSearch",
