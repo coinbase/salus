@@ -78,7 +78,6 @@ describe Salus::Scanners::CargoAudit do
       expect(scanner.report.to_h.fetch(:passed)).to eq(true)
     end
 
-
     it 'should send the audit log as json' do
       path = 'spec/fixtures/cargo_audit/failure-vulnerability-present'
       repo = Salus::Repo.new(path)
