@@ -7,6 +7,8 @@ module Salus::Scanners
   class CargoAudit < Base
     include Salus::Formatting
 
+    ELEVATE_WARNINGS = 'elevate_warnings'.freeze
+
     def should_run?
       @repository.cargo_lock_present?
     end
@@ -20,19 +22,24 @@ module Salus::Scanners
         # - vulnerability NOT found:
         #   - status: 0
         #   - stderr: ""
-        #   - stdout: Milestones, counts of crates scanned
+        #   - stdout: JSON Milestones, counts of crates scanned
         #
         # - vulnerability found:
         #   - status: 1
         #   - stderr: ""
         #   - stdout: JSON detail of the vulnerability
         #
+        # - warning found:
+        #   - status: 0
+        #   - stderr: ""
+        #   - stdout: JSON detail of the warning
+        #
         # - Error running audit:
         #   - status: 1
         #   - stderr: String with details on the error prenting the run (not JSON)
         #   - stdout: ""
 
-        return report_success if shell_return.success?
+        return report_success if shell_return.success? && !has_vulnerabilities?(shell_return.stdout)
 
         report_failure
 
@@ -51,6 +58,17 @@ module Salus::Scanners
     end
 
     protected
+
+    def has_vulnerabilities?(json_string)
+      json = JSON.parse(json_string)
+      # We will treat warnings as vulnerabilities
+      json["vulnerabilities"]["found"] || (elevate_warnings? && json["warnings"].present?)
+    end
+
+    def elevate_warnings?
+      # default to elevating warnings if the config lacks an entry
+      @config.key?(ELEVATE_WARNINGS) ? @config[ELEVATE_WARNINGS] : true
+    end
 
     def command
       # USAGE:
@@ -72,10 +90,10 @@ module Salus::Scanners
       #     -q, --quiet               Avoid printing unnecessary information
       #     --json                    Output report in JSON format
       #     --no-local-crates         Vulnerability querying does not consider local crates
+      # Note that -D is not yet supported with --json
 
       opts = ["--json"]  # return vulnerabilities in an easily digestible manner (JSON)
       opts << "-c never" # to prevent color chars in stderr upon failure
-      opts << "-D" # elevate all warnings as errors
       opts += fetch_exception_ids.map { |id| "--ignore #{id}" }
 
       "cargo audit #{opts.join(' ')}"

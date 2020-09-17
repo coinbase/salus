@@ -1,0 +1,81 @@
+{
+  "database": {
+    "advisory-count": 113,
+    "last-commit": "49dba073a8966457720ac568c68d332a53fd1717",
+    "last-updated": "2020-09-06T22:16:47Z"
+  },
+  "lockfile": {
+    "dependency-count": 2
+  },
+  "settings": {
+    "target_arch": null,
+    "target_os": null,
+    "severity": null,
+    "ignore": [
+
+    ],
+    "informational_warnings": [
+      "unmaintained"
+    ],
+    "package_scope": null
+  },
+  "vulnerabilities": {
+    "found": false,
+    "count": 0,
+    "list": [
+
+    ]
+  },
+  "warnings": {
+    "unmaintained": [
+      {
+        "kind": "unmaintained",
+        "package": {
+          "name": "bigint",
+          "version": "4.4.3",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "c0e8c8a600052b52482eff2cf4d810e462fdff1f656ac1ecb6232132a1ed7def",
+          "replace": null
+        },
+        "advisory": {
+          "id": "RUSTSEC-2020-0025",
+          "package": "bigint",
+          "title": "bigint is unmaintained, use uint instead",
+          "description": "The `bigint` crate is not maintained any more and contains several known bugs (including a soundness bug);\nuse [`uint`](https://crates.io/crates/uint) instead.\n",
+          "date": "2020-05-07",
+          "aliases": [
+
+          ],
+          "references": [
+
+          ],
+          "collection": "crates",
+          "categories": [
+
+          ],
+          "keywords": [
+
+          ],
+          "cvss": null,
+          "informational": "unmaintained",
+          "obsolete": false,
+          "url": "https://github.com/paritytech/bigint/commit/7e71521a61b009afc94c91135353102658550d42",
+          "patched_versions": [
+
+          ],
+          "unaffected_versions": [
+
+          ]
+        },
+        "versions": {
+          "patched": [
+
+          ],
+          "unaffected": [
+
+          ]
+        }
+      }
+    ]
+  }
+}

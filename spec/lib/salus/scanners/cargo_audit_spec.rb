@@ -46,12 +46,23 @@ describe Salus::Scanners::CargoAudit do
     end
 
     it 'should elevate warnings as errors' do
-      repo = Salus::Repo.new('spec/fixtures/cargo_audit/failure-vulnerability-present')
+      path = 'spec/fixtures/cargo_audit/warnings-only'
+      repo = Salus::Repo.new(path)
+      audit_json = File.read(File.join(path, 'expected_log.json'))
       scanner = Salus::Scanners::CargoAudit.new(repository: repo, config: {})
-      # -D will deny warnings
-      cmd = 'cargo audit --json -c never -D'
-      expect(scanner).to receive(:run_shell).with(cmd).and_call_original
+
+      expect(scanner).to receive(:log).with(audit_json)
       scanner.run
+      expect(scanner.report.to_h.fetch(:passed)).to eq(false)
+    end
+
+    it 'should ignore warnings if disabled in the config' do
+      path = 'spec/fixtures/cargo_audit/warnings-only'
+      repo = Salus::Repo.new(path)
+      config = { Salus::Scanners::CargoAudit::ELEVATE_WARNINGS => false }
+      scanner = Salus::Scanners::CargoAudit.new(repository: repo, config: config)
+      scanner.run
+      expect(scanner.report.to_h.fetch(:passed)).to eq(true)
     end
 
     it 'should honor exceptions in the config' do
@@ -63,8 +74,10 @@ describe Salus::Scanners::CargoAudit do
 
       scanner = Salus::Scanners::CargoAudit.new(repository: repo, config: config)
       scanner.run
+
       expect(scanner.report.to_h.fetch(:passed)).to eq(true)
     end
+
 
     it 'should send the audit log as json' do
       path = 'spec/fixtures/cargo_audit/failure-vulnerability-present'
