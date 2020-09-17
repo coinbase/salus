@@ -25,6 +25,18 @@ RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get inst
     wget \
   && rm -rf /var/lib/apt/lists/*
 
+# Rust
+# We'll download rust manually to ensure signing looks good
+COPY .rust-key.gpg.ascii .rust-key.gpg.ascii
+COPY .rust-pgp-signature.asc rust-1.46.0-x86_64-unknown-linux-gnu.tar.gz.asc
+RUN wget https://static.rust-lang.org/dist/rust-1.46.0-x86_64-unknown-linux-gnu.tar.gz
+RUN cat .rust-key.gpg.ascii | gpg --import
+RUN gpg --verify rust-1.46.0-x86_64-unknown-linux-gnu.tar.gz.asc rust-1.46.0-x86_64-unknown-linux-gnu.tar.gz
+RUN tar -xf rust-1.46.0-x86_64-unknown-linux-gnu.tar.gz
+RUN rust-1.46.0-x86_64-unknown-linux-gnu/install.sh
+ENV PATH="/root/.cargo/bin:${PATH}"
+RUN cargo install cargo-audit --version 0.12.0
+
 # Required so that Brakeman doesn't run into encoding
 # issues when it parses non-ASCII characters.
 ENV LANG C.UTF-8

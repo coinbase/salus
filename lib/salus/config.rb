@@ -104,7 +104,7 @@ module Salus
 
     # Applies default scanner config for anything not already defined.
     def apply_default_scanner_config!
-      SCANNERS.keys.each do |scanner|
+      SCANNERS.each_key do |scanner|
         @scanner_configs[scanner] ||= {}
         @scanner_configs[scanner] = DEFAULT_SCANNER_CONFIG
           .dup

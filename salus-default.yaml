@@ -28,3 +28,4 @@ enforced_scanners:
   - YarnAudit
   - PatternSearch
   - Semgrep
+  - CargoAudit
