@@ -1,4 +1,6 @@
 require 'json'
+require 'salus/scanners/base'
+
 # Rust Cargo Audit scanner integration. Flags known malicious or vulnerable
 # dependencies in rust projects that are packaged with cargo.
 # https://github.com/RustSec/cargo-audit
