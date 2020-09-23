@@ -1,5 +1,45 @@
 require_relative '../../../spec_helper.rb'
 
+RSpec::Matchers.define :pretty_json do
+  match do |actual|
+    JSON.pretty_generate(JSON.parse(actual)) == actual
+  end
+end
+
+RSpec::Matchers.define :json_with_keys do |keys|
+  match do |actual|
+    begin
+      json = JSON.parse(actual)
+    rescue JSON::ParserError
+      return false
+    end
+    (json.keys - keys).empty?
+  end
+end
+
+class ProcessStatusDouble
+  attr_accessor :exitstatus
+  def initialize(exitstatus)
+    @exitstatus = exitstatus
+  end
+
+  def success?
+    @exitstatus == 0
+  end
+end
+
+class ShellResultDouble
+  def initialize(stdout, stderr, status)
+    @stdout = stdout
+    @stderr = stderr
+    @status = status
+  end
+
+  def shell_result
+    Salus::ShellResult.new(@stdout, @stderr, ProcessStatusDouble.new(@status))
+  end
+end
+
 describe Salus::Scanners::CargoAudit do
   describe '#should_run?' do
     it 'should return false in the absence of Cargo.lock' do
@@ -50,7 +90,8 @@ describe Salus::Scanners::CargoAudit do
       repo = Salus::Repo.new(path)
       audit_json = File.read(File.join(path, 'expected_log.json'))
       scanner = Salus::Scanners::CargoAudit.new(repository: repo, config: {})
-
+      shell_result = ShellResultDouble.new(audit_json, '', 0).shell_result
+      expect(scanner).to receive(:run_shell).and_return(shell_result)
       expect(scanner).to receive(:log).with(audit_json)
       scanner.run
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
@@ -82,8 +123,17 @@ describe Salus::Scanners::CargoAudit do
       path = 'spec/fixtures/cargo_audit/failure-vulnerability-present'
       repo = Salus::Repo.new(path)
       audit_json = File.read(File.join(path, 'expected_audit.json'))
-      pretty_json = JSON.pretty_generate(JSON.parse(audit_json))
+      json_keys = JSON.parse(audit_json).keys
+      scanner = Salus::Scanners::CargoAudit.new(repository: repo, config: {})
 
+      expect(scanner).to receive(:log).with(json_with_keys(json_keys))
+      scanner.run
+      expect(scanner.report.to_h.fetch(:passed)).to eq(false)
+    end
+
+    it 'should log pretty json' do
+      path = 'spec/fixtures/cargo_audit/failure-vulnerability-present'
+      repo = Salus::Repo.new(path)
       scanner = Salus::Scanners::CargoAudit.new(repository: repo, config: {})
 
       expect(scanner).to receive(:log).with(pretty_json)
