@@ -35,7 +35,7 @@ docker run --rm -t -v $(pwd):/home/repo coinbase/salus
 - [semgrep](docs/scanners/semgrep.md) - Execution of [`semgrep`](https://semgrep.dev) 0.14.0 which looks for semantic and syntactical patterns in code at the AST level.
 - [BundleAudit](docs/scanners/bundle_audit.md) - Execution of [bundle-audit](https://github.com/rubysec/bundler-audit) 0.6.1, looks for CVEs in ruby gem dependencies.
 - [Gosec](docs/scanners/gosec.md) - Execution of [gosec](https://github.com/securego/gosec) 2.4.0, looks for security problems in go code.
-- [npm audit](docs/scanners/npm_audit.md) - Execution of [`npm audit`](https://docs.npmjs.com/getting-started/running-a-security-audit) 6.13.7 which looks for CVEs in node module dependencies.
+- [npm audit](docs/scanners/npm_audit.md) - Execution of [`npm audit`](https://docs.npmjs.com/getting-started/running-a-security-audit) 6.14.8 which looks for CVEs in node module dependencies.
 - [yarn audit](docs/scanners/yarn_audit.md) - Execution of [`yarn audit`](https://yarnpkg.com/lang/en/docs/cli/audit/) 1.22.0 which looks for CVEs in node module dependencies.
 - [PatternSearch](docs/scanners/pattern_search.md) - Execution of [`sift`](https://sift-tool.org/docs) 0.9.0, looks for certain strings in a project that might be dangerous or could require that certain strings be present.
 - [Cargo Audit](docs/scanners/cargo_audit.md) - Execution of [Cargo Audit](https://github.com/RustSec/cargo-audit) 0.12.0 Audit Cargo.lock files for crates with security vulnerabilities reported to the RustSec Advisory Database
