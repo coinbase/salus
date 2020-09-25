@@ -1,0 +1,9 @@
+version: 2
+updates:
+  # Enable version updates for npm
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "hourly"
+      # Disable all pull requests for Docker dependencies
+    open-pull-requests-limit: 100
