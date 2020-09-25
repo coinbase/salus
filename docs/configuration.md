@@ -90,6 +90,10 @@ scanner_configs:
   BundleAudit:
     ignore:
       - CVE-XXXX-YYYY # irrelevant CVE which does not have a patch yet
+
+# String        - path to plugins directory (optional)
+plugins_directory: plugins
+
 ```
 
 Special configuration that exist for particular scanners is defined in the [scanners directory](/docs/scanners).

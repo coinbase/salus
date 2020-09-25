@@ -46,6 +46,22 @@ describe Salus::CLI do
       end
     end
 
+    context 'with plugin and configuration build hash' do
+      it 'applies the plugin custom logic to the config' do
+        Dir.chdir('spec/fixtures/salus/plugin_config') do
+          ENV['SALUS_CONFIGURATION'] = 'file:///salus.yaml'
+
+          expect(Salus::Report).to receive(:new).with(report_uris: anything,
+            builds: anything,
+            project_name: 'raboof',
+            custom_info: anything,
+            config: anything).at_least(:once).and_call_original
+
+          expect(Salus.scan(quiet: true)).to eq(Salus::EXIT_SUCCESS)
+        end
+      end
+    end
+
     context 'With heartbeat set' do
       it 'outputs a heartbeat' do
         Dir.chdir('spec/fixtures/salus/success') do

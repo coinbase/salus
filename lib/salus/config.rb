@@ -1,5 +1,6 @@
 require 'safe_yaml'
 require 'set'
+require 'salus/plugin_manager'
 
 module Salus
   class Config
@@ -16,7 +17,8 @@ module Salus
                 :builds,
                 :active_scanners,
                 :enforced_scanners,
-                :scanner_configs
+                :scanner_configs,
+                :plugin_directory
 
     # Dynamically get all Scanner classes
     ABSTRACT_SCANNERS = %i[Base NodeAudit].freeze
@@ -52,6 +54,13 @@ module Salus
       # Check if any of the values are actually pointing to envars.
       final_config = fetch_envars(final_config)
 
+      # We wait to load plugins until we have the config as the user
+      # can configure where they want the plugins loaded from
+      Salus::PluginManager.load_plugins(final_config['plugin_directory'])
+
+      # Apply any config filters the user has defined
+      final_config = apply_config_filters(final_config)
+
       # Parse and store configuration.
       @active_scanners   = all_none_some(SCANNERS.keys, final_config['active_scanners'])
       @enforced_scanners = all_none_some(SCANNERS.keys, final_config['enforced_scanners'])
@@ -83,6 +92,18 @@ module Salus
         report_uris: @report_uris,
         builds: @builds
       }.compact
+    end
+
+    @@filters = []
+    def self.register_filter(filter)
+      @@filters << filter
+    end
+
+    def apply_config_filters(config_hash)
+      @@filters.each do |filter|
+        config_hash = filter.filter_config(config_hash) if filter.respond_to?(:filter_config)
+      end
+      config_hash
     end
 
     private
