@@ -1,8 +1,0 @@
-version: 2
-updates:
-  - package-ecosystem: "ruby:bundler"
-    directory: "/"
-    schedule:
-      interval: "hourly"
-
-

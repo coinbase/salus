@@ -1,0 +1,12 @@
+version: 2
+updates:
+  - package-ecosystem: "ruby:bundler"
+    directory: "/"
+    schedule:
+      interval: "live"
+  - package-ecosystem: "Dockerfile"
+    directory: "/"
+    schedule:
+      interval: "live"
+
+
