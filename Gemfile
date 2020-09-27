@@ -13,7 +13,7 @@ gem 'bundler-audit', '~> 0.6.1'
 gem 'faraday', '~> 0.9'
 gem 'github-linguist', '~> 6.0.1'
 gem 'safe_yaml', '~> 1.0'
-gem 'thor', '~> 0.19.4'
+gem 'thor', '~> 0.20.3'
 gem 'toml', '~> 0.1.2'
 
 group :test, :development do
