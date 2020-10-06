@@ -9,6 +9,8 @@ module Salus
 
     def initialize(scanner_name, custom_failure_message: nil)
       @scanner_name = scanner_name
+      scanner_version = Salus::Scanners::Base::SCANNER_VERSIONS[@scanner_name]
+      @version = scanner_version ? scanner_version.to_s : ''
       @passed = nil
       @running_time = nil
       @logs = nil
@@ -71,6 +73,7 @@ module Salus
     def to_h
       {
         scanner_name: scanner_name,
+        version: @version,
         passed: passed?,
         running_time: @running_time,
         logs: @logs&.chomp,
@@ -130,7 +133,7 @@ module Salus
       status = passed? ? 'PASSED' : 'FAILED'
       status = colorize(status, (passed? ? :green : :red)) if use_colors
 
-      banner = "==== #{@scanner_name}: #{status}"
+      banner = "==== #{@scanner_name} #{@version}: #{status}"
       banner += " in #{@running_time}s" if @running_time
 
       banner

@@ -14,6 +14,18 @@ module Salus::Scanners
 
     attr_reader :report
 
+    SCANNER_VERSIONS = {
+      'Bandit' => '1.6.2',
+      'Brakeman' => '4.9.1',
+      'BundleAudit' => '0.6.1',
+      'CargoAudit' => '0.12.0',
+      'Gosec' => '2.4.0',
+      'NPMAudit' => '6.14.8',
+      'PatternSearch' => '0.9.0',
+      'Semgrep' => '0.14.0',
+      'YarnAudit' => '1.22.0'
+    }.freeze
+
     def initialize(repository:, config:)
       @repository = repository
       @config = config
