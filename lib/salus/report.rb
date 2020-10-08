@@ -192,6 +192,7 @@ module Salus
       response = Faraday.post do |req|
         req.url remote_uri
         req.headers['Content-Type'] = CONTENT_TYPE_FOR_FORMAT[format]
+        req.headers['X-Scanner'] = "salus"
         req.body = data
       end
 
