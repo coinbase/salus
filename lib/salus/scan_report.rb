@@ -133,7 +133,7 @@ module Salus
       status = passed? ? 'PASSED' : 'FAILED'
       status = colorize(status, (passed? ? :green : :red)) if use_colors
 
-      banner = "==== #{@scanner_name} #{@version}: #{status}"
+      banner = "==== #{@scanner_name} v#{@version}: #{status}"
       banner += " in #{@running_time}s" if @running_time
 
       banner
