@@ -9,8 +9,6 @@ module Salus
 
     def initialize(scanner_name, custom_failure_message: nil)
       @scanner_name = scanner_name
-      scanner_version = Salus::Scanners::Base::SCANNER_VERSIONS[@scanner_name]
-      @version = scanner_version ? scanner_version.to_s : ''
       @passed = nil
       @running_time = nil
       @logs = nil
@@ -18,6 +16,10 @@ module Salus
       @warn = {}
       @errors = []
       @custom_failure_message = custom_failure_message
+    end
+
+    def add_version(scanner_version)
+      @version = scanner_version
     end
 
     def record

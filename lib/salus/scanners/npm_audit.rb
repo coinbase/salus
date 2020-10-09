@@ -13,6 +13,12 @@ module Salus::Scanners
       @repository.package_lock_json_present?
     end
 
+    def version
+      shell_return = run_shell('npm audit --version')
+      # shell_return has newline at the end
+      shell_return.stdout.strip
+    end
+
     private
 
     def scan_for_cves

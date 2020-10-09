@@ -14,18 +14,6 @@ module Salus::Scanners
 
     attr_reader :report
 
-    SCANNER_VERSIONS = {
-      'Bandit' => '1.6.2',
-      'Brakeman' => '4.9.1',
-      'BundleAudit' => '0.6.1',
-      'CargoAudit' => '0.12.0',
-      'Gosec' => '2.4.0',
-      'NPMAudit' => '6.14.8',
-      'PatternSearch' => '0.9.0',
-      'Semgrep' => '0.14.0',
-      'YarnAudit' => '1.22.0'
-    }.freeze
-
     def initialize(repository:, config:)
       @repository = repository
       @config = config
@@ -33,6 +21,21 @@ module Salus::Scanners
         name,
         custom_failure_message: @config['failure_message']
       )
+
+      # using a begin/rescue in case scanner version format gets updated
+      # reoprt_warn will send warning to bugsnag
+      begin
+        version_number = version
+      rescue StandardError => e
+        report_warn(:scanner_version_error, "Unable to get #{self.class} version: #{e}")
+        version_number = ''
+      end
+
+      @report.add_version(version_number)
+    end
+
+    def version
+      ''
     end
 
     def name

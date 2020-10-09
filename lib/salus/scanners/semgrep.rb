@@ -164,6 +164,12 @@ module Salus::Scanners
       true # we will always run this on the provided folder
     end
 
+    def version
+      shell_return = run_shell('semgrep --version')
+      # version string has newline at the end
+      shell_return.stdout.strip
+    end
+
     def build_command_and_message(match, strict, base_path, exclude_flags)
       has_external_config = !match['config'].nil?
       strict_flag = strict ? '--strict' : nil
