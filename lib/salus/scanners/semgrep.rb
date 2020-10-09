@@ -32,24 +32,21 @@ module Salus::Scanners
       errors = []
       warnings = []
       all_hits = []
+      override_keys = %w[pattern language message]
 
       Dir.chdir(@repository.path_to_repo) do
         base_path = Dir.pwd
+
         @config["matches"]&.each do |match|
           # semgrep has the following behavior:
           #   ouputs a json object with a 'results' and 'errors' key
 
-          if !match['config'].nil?
-            override_keys = %w[pattern language message]
-            override_keys.each do |k|
-              if match.keys.include?(k)
-                err_msg = "[#{override_keys.join(', ')}] cannot be specified in salus.yaml
-                           if -config semgrep_rule_file is provided for the same rule"
-                report_error(err_msg)
-                report_stderr(err_msg)
-                return report_failure
-              end
-            end
+          if !match['config'].nil? && override_keys.intersection(match.keys) != []
+            err_msg = "[#{override_keys.join(', ')}] cannot be specified in salus.yaml
+                       if -config semgrep_rule_file is provided for the same rule"
+            report_error(err_msg)
+            report_stderr(err_msg)
+            return report_failure
           end
 
           # Set defaults.

@@ -10,10 +10,10 @@ gem 'bugsnag', '~> 6.13.1'
 #  https://github.com/bundler/bundler/issues/7511 are resolved.
 gem 'bundler', '= 2.0.2'
 gem 'bundler-audit', '~> 0.6.1'
-gem 'faraday', '~> 0.9'
+gem 'faraday', '~> 1.0'
 gem 'github-linguist', '~> 6.0.1'
 gem 'safe_yaml', '~> 1.0'
-gem 'thor', '~> 0.19.4'
+gem 'thor', '~> 0.20.3'
 gem 'toml', '~> 0.1.2'
 
 group :test, :development do
@@ -24,7 +24,7 @@ end
 group :test do
   gem 'rspec', '~> 3.4'
   gem 'rspec_junit_formatter'
-  gem 'rubocop', '~> 0.53', require: false
-  gem 'simplecov', '~> 0.15.1'
-  gem 'webmock', '~> 3.0'
+  gem 'rubocop', '~> 0.92', require: false
+  gem 'simplecov', '~> 0.19.0'
+  gem 'webmock', '~> 3.9'
 end
