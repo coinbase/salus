@@ -52,6 +52,12 @@ module Salus::Scanners
       end
     end
 
+    def version
+      shell_return = run_shell('yarn audit --version')
+      # shell_return has newline at the end
+      shell_return.stdout.strip
+    end
+
     private
 
     def parse_output(lines)
@@ -82,12 +88,6 @@ module Salus::Scanners
 
       vulns = vulns.to_a
       vulns.each { |vln| normalize_vuln(vln) }.sort { |a, b| a['ID'] <=> b['ID'] }
-    end
-
-    def version
-      shell_return = run_shell('yarn audit --version')
-      # shell_return has newline at the end
-      shell_return.stdout.strip
     end
 
     def scan_deps
