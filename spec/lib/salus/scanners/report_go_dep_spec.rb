@@ -69,7 +69,7 @@ describe Salus::Scanners::ReportGoDep do
       it 'should return true' do
         repo = Salus::Repo.new("dir")
         scanner = Salus::Scanners::ReportGoDep.new(repository: repo, config: {})
-        expect(version_valid?(scanner.version)).to be_falsey
+        expect(scanner.version).to eq('')
       end
     end
   end

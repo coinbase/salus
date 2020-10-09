@@ -198,7 +198,7 @@ describe Salus::Scanners::ReportRustCrates do
       it 'should return true' do
         repo = Salus::Repo.new("dir")
         scanner = Salus::Scanners::ReportRustCrates.new(repository: repo, config: {})
-        expect(version_valid?(scanner.version)).to be_falsey
+        expect(scanner.version).to eq('')
       end
     end
   end
