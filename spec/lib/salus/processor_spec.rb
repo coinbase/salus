@@ -141,9 +141,7 @@ describe Salus::Processor do
           times: 1
         ) do |req|
           remove_runtime(req.body) == remove_runtime(expected_report)
-          req.body == remove_runtime(expected_report)
         end
-
       end
     end
 
