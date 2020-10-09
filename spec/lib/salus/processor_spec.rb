@@ -138,9 +138,12 @@ describe Salus::Processor do
           :post,
           remote_uri,
           headers: { 'Content-Type' => 'application/json' },
-          body: expected_report,
           times: 1
-        )
+        ) do |req|
+          remove_runtime(req.body) == remove_runtime(expected_report)
+          req.body == remove_runtime(expected_report)
+        end
+
       end
     end
 
@@ -160,7 +163,9 @@ describe Salus::Processor do
         processor.scan_project
         processor.export_report
 
-        expect(File.read(local_uri)).to eq(expected_report)
+        expected_data = remove_runtime(expected_report)
+        local_data = remove_runtime(File.read(local_uri))
+        expect(local_data).to eq(expected_data)
 
         # remove report file that was generated from Salus execution
         remove_file(local_uri)
