@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.7.0'
+ruby '2.7.2'
 
 gem 'activesupport', '~> 6.0.3'
 gem 'brakeman', '= 4.9.1'
