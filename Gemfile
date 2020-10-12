@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.7.0'
+ruby '2.7.2'
 
 gem 'activesupport', '~> 6.0.3'
 gem 'brakeman', '= 4.9.1'
@@ -11,7 +11,7 @@ gem 'bugsnag', '~> 6.13.1'
 gem 'bundler', '= 2.0.2'
 gem 'bundler-audit', '~> 0.6.1'
 gem 'faraday', '~> 1.0'
-gem 'github-linguist', '~> 6.0.1'
+gem 'github-linguist', '~> 7.11.1'
 gem 'safe_yaml', '~> 1.0'
 gem 'thor', '~> 0.20.3'
 gem 'toml', '~> 0.1.2'
