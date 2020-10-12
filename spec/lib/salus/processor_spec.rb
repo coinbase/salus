@@ -1,5 +1,20 @@
 require_relative '../../spec_helper.rb'
 
+RSpec::Matchers.define :match_report_json do |expected|
+  def remove_key(json_string, key = 'running_time')
+    json = JSON.parse(json_string)
+    json.delete(key)
+    json['scans'].each do |scanner, _|
+      json['scans'][scanner].delete(key)
+    end
+    json
+  end
+
+  match do |actual|
+    remove_key(actual) == remove_key(expected)
+  end
+end
+
 describe Salus::Processor do
   describe '#initialize' do
     let(:config_file_path) { 'spec/fixtures/processor/repo/salus.yaml' }
@@ -138,9 +153,10 @@ describe Salus::Processor do
           :post,
           remote_uri,
           headers: { 'Content-Type' => 'application/json' },
-          body: expected_report,
           times: 1
-        )
+        ) do |req|
+          expect(req.body).to match_report_json(expected_report)
+        end
       end
     end
 
@@ -160,7 +176,7 @@ describe Salus::Processor do
         processor.scan_project
         processor.export_report
 
-        expect(File.read(local_uri)).to eq(expected_report)
+        expect(File.read(local_uri)).to match_report_json(expected_report)
 
         # remove report file that was generated from Salus execution
         remove_file(local_uri)
