@@ -9,7 +9,7 @@ describe Salus::Scanners::BundleAudit do
       # Mock out the system() call and ensure it was called
       expect(Bundler::Audit::Database)
         .to receive(:system)
-        .with("git", "pull", "--quiet", "origin", "master")
+        .with("git", "pull", "--no-rebase", "--quiet", "origin", "master")
         .and_return(true)
 
       scanner.run
