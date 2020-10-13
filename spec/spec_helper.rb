@@ -123,3 +123,9 @@ RSpec.configure do |config|
   Kernel.srand config.seed
 =end
 end
+
+RSpec::Matchers.define :be_a_valid_version do
+  match do |actual|
+    !/^\d+\.\d+(.\d+)*$/.match(actual).nil?
+  end
+end

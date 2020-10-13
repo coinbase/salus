@@ -462,7 +462,7 @@ describe Salus::Scanners::PatternSearch do
       it 'should return true' do
         repo = Salus::Repo.new("dir")
         scanner = Salus::Scanners::PatternSearch.new(repository: repo, config: {})
-        expect(version_valid?(scanner.version)).to be_truthy
+        expect(scanner.version).to be_a_valid_version
       end
     end
   end
