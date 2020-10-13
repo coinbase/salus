@@ -129,7 +129,7 @@ module Salus::Scanners
       # using sift version
       shell_return = run_shell('sift --version')
       # stdout looks like "sift 0.9.0 (linux/amd64)\nCopyright (C) 2014-2016 ..."
-      shell_return.stdout.split[1]
+      shell_return.stdout&.split&.dig(1)
     end
 
     private

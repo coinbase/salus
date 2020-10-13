@@ -16,7 +16,7 @@ module Salus::Scanners
     def version
       shell_return = run_shell('npm audit --version')
       # shell_return has newline at the end
-      shell_return.stdout.strip
+      shell_return.stdout&.strip
     end
 
     private

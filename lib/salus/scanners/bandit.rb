@@ -65,7 +65,7 @@ module Salus::Scanners
     def version
       shell_return = run_shell('bandit --version')
       # stdout looks like "bandit 1.6.2\n  ..."
-      shell_return.stdout.split("\n")[0].split('bandit')[1].strip
+      shell_return.stdout&.split("\n")&.dig(0)&.split('bandit')&.dig(1)&.strip
     end
 
     def config_options
