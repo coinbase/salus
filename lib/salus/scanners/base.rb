@@ -23,7 +23,8 @@ module Salus::Scanners
       )
 
       version_number = version
-      if !version_valid?(version_number) && self.class.instance_methods(false).include?(:version)
+      if !version_valid?(version_number) && self.class.instance_methods(false).include?(:version) &&
+          self.class != Salus::Scanners::Base
         # scanner version format may get updated
         # report_warn will send warning to bugsnag
         # 2nd condition in the if checks if version is defined on the scanner class
