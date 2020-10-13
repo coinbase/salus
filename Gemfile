@@ -4,7 +4,7 @@ ruby '2.7.2'
 
 gem 'activesupport', '~> 6.0.3'
 gem 'brakeman', '= 4.9.1'
-gem 'bugsnag', '~> 6.13.1'
+gem 'bugsnag', '~> 6.17.0'
 # TODO: Lock `bundler` until:
 #  https://github.com/rubysec/bundler-audit/issues/235 and
 #  https://github.com/bundler/bundler/issues/7511 are resolved.
@@ -14,7 +14,7 @@ gem 'faraday', '~> 1.0'
 gem 'github-linguist', '~> 7.11.1'
 gem 'safe_yaml', '~> 1.0'
 gem 'thor', '~> 0.20.3'
-gem 'toml', '~> 0.1.2'
+gem 'toml', '~> 0.2.0'
 
 group :test, :development do
   gem 'pry', '~> 0.10'
