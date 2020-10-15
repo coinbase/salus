@@ -16,6 +16,7 @@ describe Salus::ScanReport do
       report.pass
       report.log(log_string)
       report.info(info_type, info_value)
+      report.add_version('')
     end
 
     context 'not verbose and passed' do

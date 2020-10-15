@@ -105,4 +105,14 @@ describe Salus::Scanners::BundleAudit do
       expect(scanner.should_run?).to eq(true)
     end
   end
+
+  describe '#version_valid?' do
+    context 'scanner version is valid' do
+      it 'should return true' do
+        repo = Salus::Repo.new("dir")
+        scanner = Salus::Scanners::BundleAudit.new(repository: repo, config: {})
+        expect(scanner.version).to be_a_valid_version
+      end
+    end
+  end
 end

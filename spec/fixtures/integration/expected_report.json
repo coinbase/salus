@@ -5,6 +5,7 @@
   "scans": {
     "PatternSearch": {
       "scanner_name": "PatternSearch",
+      "version": "0.9.0",
       "passed": true,
       "running_time": 0.0,
       "warn": {

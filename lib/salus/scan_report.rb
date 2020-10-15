@@ -18,6 +18,10 @@ module Salus
       @custom_failure_message = custom_failure_message
     end
 
+    def add_version(scanner_version)
+      @version = scanner_version
+    end
+
     def record
       started_at = monotime
 
@@ -71,6 +75,7 @@ module Salus
     def to_h
       {
         scanner_name: scanner_name,
+        version: @version,
         passed: passed?,
         running_time: @running_time,
         logs: @logs&.chomp,
@@ -130,7 +135,8 @@ module Salus
       status = passed? ? 'PASSED' : 'FAILED'
       status = colorize(status, (passed? ? :green : :red)) if use_colors
 
-      banner = "==== #{@scanner_name}: #{status}"
+      version_str = @version.empty? ? @version : " v#{@version}"
+      banner = "==== #{@scanner_name}#{version_str}: #{status}"
       banner += " in #{@running_time}s" if @running_time
 
       banner
