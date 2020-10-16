@@ -21,6 +21,29 @@ module Salus::Scanners
         name,
         custom_failure_message: @config['failure_message']
       )
+
+      version_number = version
+      if !version_valid?(version_number) && self.class.instance_methods(false).include?(:version) &&
+          self.class != Salus::Scanners::Base
+        # scanner version format may get updated
+        # report_warn will send warning to bugsnag
+        # 2nd condition in the if checks if version is defined on the scanner class
+        #     (the false arg) means exclude methods defined on ancestors
+        report_warn(:scanner_version_error, "Unable to get #{self.class} version")
+        version_number = ''
+      end
+
+      @report.add_version(version_number)
+    end
+
+    def version
+      ''
+    end
+
+    def version_valid?(version)
+      return false if !version.is_a?(String)
+
+      !/^\d+\.\d+(.\d+)*$/.match(version).nil?
     end
 
     def name

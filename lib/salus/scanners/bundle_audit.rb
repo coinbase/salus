@@ -38,6 +38,10 @@ module Salus::Scanners
       @repository.gemfile_lock_present?
     end
 
+    def version
+      Gem.loaded_specs['bundler-audit'].version.to_s
+    end
+
     private
 
     def serialize_vuln(vuln)

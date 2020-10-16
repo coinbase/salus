@@ -62,6 +62,12 @@ module Salus::Scanners
       @repository.requirements_txt_present? || @repository.setup_cfg_present?
     end
 
+    def version
+      shell_return = run_shell('bandit --version')
+      # stdout looks like "bandit 1.6.2\n  ..."
+      shell_return.stdout&.split("\n")&.dig(0)&.split('bandit')&.dig(1)&.strip
+    end
+
     def config_options
       # config options taken from https://pypi.org/project/bandit/
 

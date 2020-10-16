@@ -54,6 +54,12 @@ module Salus::Scanners
       end
     end
 
+    def version
+      shell_return = run_shell('gosec --version')
+      # stdout looks like "Version: 2.4.0\nGit tag: v2.4.0\nBuild date: 2020-07-24T07:54:54Z"
+      shell_return.stdout&.split('Version:')&.dig(1)&.split("\n")&.dig(0)&.strip
+    end
+
     # flag options taken from https://github.com/securego/gosec/blob/2.0.0/cmd/gosec/main.go
     def config_options
       lmh_regex = /\Alow|medium|high\z/i

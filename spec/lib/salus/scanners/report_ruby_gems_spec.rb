@@ -114,4 +114,14 @@ describe Salus::Scanners::ReportRubyGems do
       end
     end
   end
+
+  describe '#version_valid?' do
+    context 'scanner version is valid' do
+      it 'should return true' do
+        repo = Salus::Repo.new("dir")
+        scanner = Salus::Scanners::ReportRubyGems.new(repository: repo, config: {})
+        expect(scanner.version).to eq('')
+      end
+    end
+  end
 end
