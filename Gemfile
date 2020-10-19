@@ -10,7 +10,7 @@ gem 'bugsnag', '~> 6.17.0'
 #  https://github.com/bundler/bundler/issues/7511 are resolved.
 gem 'bundler', '= 2.0.2'
 gem 'bundler-audit', '~> 0.7.0'
-gem 'faraday', '~> 1.0'
+gem 'faraday', '~> 1.1'
 gem 'github-linguist', '~> 7.11.1'
 gem 'safe_yaml', '~> 1.0'
 gem 'thor', '~> 0.20.3'
