@@ -67,6 +67,7 @@ module Salus::Scanners
     # - catches any exceptions, appending them to both the scan report's error
     #   collection and the global salus scan's error collection
     def run!(salus_report:, required:, pass_on_raise:, reraise:)
+      @salus_report = salus_report
       salus_report.add_scan_report(@report, required: required)
 
       begin
@@ -123,6 +124,10 @@ module Salus::Scanners
     # Report a scanner warning such as a possible misconfiguration
     def report_warn(type, message)
       @report.warn(type, message)
+      if @salus_report&.builds
+        scanner = @report.scanner_name
+        message = "#{scanner} warning: #{type}, #{message}, build: #{@salus_report.builds}"
+      end
       bugsnag_notify(message)
     end
 
@@ -140,6 +145,9 @@ module Salus::Scanners
     def report_error(message, hsh = {})
       hsh[:message] = message
       @report.error(hsh)
+      if @salus_report&.builds
+        message = "#{@report.scanner_name} error: #{message}, build: #{@salus_report.builds}"
+      end
       bugsnag_notify(message)
     end
 
