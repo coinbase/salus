@@ -15,6 +15,8 @@ gem 'github-linguist', '~> 7.11.1'
 gem 'safe_yaml', '~> 1.0'
 gem 'thor', '~> 1.0.1'
 gem 'toml', '~> 0.2.0'
+gem 'parser', '~> 2.7.1'
+gem 'rgl', '~> 0.5.6'
 
 group :test, :development do
   gem 'pry', '~> 0.10'
