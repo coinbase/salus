@@ -11,7 +11,7 @@ gem 'bugsnag', '~> 6.18.0'
 gem 'bundler', '= 2.0.2'
 gem 'bundler-audit', '~> 0.7.0'
 gem 'faraday', '~> 1.1'
-gem 'github-linguist', '~> 7.11.1'
+gem 'github-linguist', '~> 7.12.0'
 gem 'parser', '~> 2.7.1'
 gem 'rgl', '~> 0.5.6'
 gem 'safe_yaml', '~> 1.0'
@@ -24,9 +24,9 @@ group :test, :development do
 end
 
 group :test do
-  gem 'rspec', '~> 3.4'
+  gem 'rspec', '~> 3.10'
   gem 'rspec_junit_formatter'
   gem 'rubocop', '~> 0.93', require: false
   gem 'simplecov', '~> 0.19.1'
-  gem 'webmock', '~> 3.9'
+  gem 'webmock', '~> 3.10'
 end
