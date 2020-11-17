@@ -55,6 +55,7 @@ module Salus
         raise e if ENV['RUNNING_SALUS_TESTS']
 
         puts "Could not send Salus report: (#{e.class}: #{e.message})"
+        e = "Could not send Salus report. Exception: #{e}, Build info: #{processor.report.builds}"
         bugsnag_notify(e)
       end
 
