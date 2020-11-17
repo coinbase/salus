@@ -14,5 +14,3 @@ describe 'Bugsnag' do
     end
   end
 end
-
-
