@@ -29,11 +29,12 @@ RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get inst
 # We'll download rust manually to ensure signing looks good
 COPY .rust-key.gpg.ascii .rust-key.gpg.ascii
 COPY .rust-pgp-signature.asc rust-1.46.0-x86_64-unknown-linux-gnu.tar.gz.asc
-RUN wget https://static.rust-lang.org/dist/rust-1.46.0-x86_64-unknown-linux-gnu.tar.gz
-RUN cat .rust-key.gpg.ascii | gpg --import
-RUN gpg --verify rust-1.46.0-x86_64-unknown-linux-gnu.tar.gz.asc rust-1.46.0-x86_64-unknown-linux-gnu.tar.gz
-RUN tar -xf rust-1.46.0-x86_64-unknown-linux-gnu.tar.gz
-RUN rust-1.46.0-x86_64-unknown-linux-gnu/install.sh
+RUN wget https://static.rust-lang.org/dist/rust-1.46.0-x86_64-unknown-linux-gnu.tar.gz \
+  && cat .rust-key.gpg.ascii | gpg --import \
+  && gpg --verify rust-1.46.0-x86_64-unknown-linux-gnu.tar.gz.asc rust-1.46.0-x86_64-unknown-linux-gnu.tar.gz \
+  && tar -xf rust-1.46.0-x86_64-unknown-linux-gnu.tar.gz \
+  && rm rust-1.46.0-x86_64-unknown-linux-gnu.tar.gz \
+  && rust-1.46.0-x86_64-unknown-linux-gnu/install.sh
 ENV PATH="/root/.cargo/bin:${PATH}"
 RUN cargo install cargo-audit --version 0.12.0
 
@@ -81,6 +82,7 @@ RUN go get github.com/svent/sift@$SIFT_VERSION \
 RUN curl -sfL "$GOSEC_DOWNLOAD_URL" -o gosec.tar.gz \
   && echo "$GOSEC_DOWNLOAD_SHA256 gosec.tar.gz" | sha256sum -c - \
   && tar -zxf gosec.tar.gz \
+  && rm gosec.tar.gz \
   && mv gosec /usr/bin
 
 ### semgrep tool install https://semgrep.dev
@@ -107,24 +109,27 @@ RUN gem install bundler -v'2.0.2'
 
 # ruby gems
 COPY Gemfile Gemfile.lock /home/
-RUN gem update --system
-RUN bundle install --deployment --without development:test
+RUN gem update --system \
+  && bundle install --deployment --without development:test \
+  && bundle clean
 
 # node modules
 COPY package.json yarn.lock /home/
-RUN yarn
+RUN yarn \
+  && yarn cache clean \
+  && rm -rf /tmp/*
 
 # prime the bundler-audit CVE DB
 RUN bundle exec bundle-audit update
 
 # install wheel, needed by bandit
-RUN pip install wheel
-RUN pip3 install wheel
+RUN pip install --no-cache-dir wheel \
+  && pip3 install --no-cache-dir wheel
 
 # Install bandit, python static code scanner
-RUN pip install bandit==1.6.2
-RUN mv /usr/local/bin/bandit /usr/local/bin/bandit2
-RUN pip3 install bandit==1.6.2
+RUN pip install --no-cache-dir bandit==1.6.2 \
+  && mv /usr/local/bin/bandit /usr/local/bin/bandit2 \
+  && pip3 install --no-cache-dir bandit==1.6.2
 
 # copy salus code
 COPY bin /home/bin
