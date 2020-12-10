@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby '2.7.2'
 
-gem 'activesupport', '~> 6.0.3'
+gem 'activesupport', '~> 6.1.0'
 gem 'brakeman', '4.10.0'
 gem 'bugsnag', '~> 6.18.0'
 # TODO: Lock `bundler` until:
