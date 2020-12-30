@@ -62,7 +62,7 @@ If you would like to build custom scanners or support more languages that are no
 
 ## CircleCI Integration
 
-Salus can be integrated with CircleCI by using a public Orb. All Salus configuration options are supported, and defaults are the same as for Salus itself. 
+Salus can be integrated with CircleCI by using a public Orb. All Salus configuration options are supported, and defaults are the same as for Salus itself.
 
 Example CircleCI `config.yml`:
 
@@ -82,7 +82,7 @@ workflows:
 
 ## Github Actions Integration
 
-Salus can also be used with Github Actions. 
+Salus can also be used with Github Actions.
 
 Example `.github/workflows/main.yml`:
 

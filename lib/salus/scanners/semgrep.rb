@@ -164,7 +164,7 @@ module Salus::Scanners
 
     def version
       shell_return = run_shell('semgrep --version')
-      # version string has newline at the end
+      # stdout looks like "0.14.0\n"
       shell_return.stdout&.strip
     end
 

@@ -61,7 +61,8 @@ module Salus::Scanners
 
     def version
       shell_return = run_shell('cargo audit --version')
-      shell_return.stdout&.split("cargo-audit")&.dig(1)&.strip
+      # stdout looks like "cargo-audit 0.12.0\n"
+      shell_return.stdout&.split&.dig(1)
     end
 
     protected
