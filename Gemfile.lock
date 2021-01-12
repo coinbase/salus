@@ -27,7 +27,7 @@ GEM
     faraday (1.1.0)
       multipart-post (>= 1.2, < 3)
       ruby2_keywords
-    github-linguist (7.12.0)
+    github-linguist (7.12.2)
       charlock_holmes (~> 0.7.7)
       escape_utils (~> 1.2.0)
       mini_mime (~> 1.0)
@@ -115,7 +115,7 @@ DEPENDENCIES
   bundler (= 2.0.2)
   bundler-audit (~> 0.7.0)
   faraday (~> 1.1)
-  github-linguist (~> 7.12.0)
+  github-linguist (~> 7.12.2)
   parser (~> 2.7.1)
   pry (~> 0.10)
   pry-byebug (~> 3.4)
