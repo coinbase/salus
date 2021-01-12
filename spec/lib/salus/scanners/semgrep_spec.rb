@@ -645,15 +645,17 @@ describe Salus::Scanners::Semgrep do
         errors = scanner.report.to_h.fetch(:errors)
         expect(errors.size).to eq(1)
         expect(errors[0][:status]).to eq(3) # semgrep exit code documentation
-        expect(errors[0][:stderr]).to include("Could not parse unparsable_py.py as python (warn)" \
-                                              "\n\tunparsable_py.py:3-3")
+        expect(errors[0][:stderr]).to match(
+          /Could not parse unparsable_py\.py as python \(warn\)\n\t.+?unparsable_py\.py:3-3/
+        )
         expect(errors[0][:message]).to eq("Call to semgrep failed")
       end
     end
 
     context "unparsable code causes warning" do
       it "should record semgrep warning" do
-        repo = Salus::Repo.new("spec/fixtures/semgrep/invalid")
+        base = "spec/fixtures/semgrep/invalid"
+        repo = Salus::Repo.new(base)
         config = {
           "matches" => [
             {
@@ -664,6 +666,8 @@ describe Salus::Scanners::Semgrep do
         }
         scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
         scanner.run
+
+        file = File.expand_path(File.join(base, "unparsable_js.js"))
 
         warnings = scanner.report.to_h.fetch(:warn)
         expect(warnings[:semgrep_non_fatal]).to eq(
@@ -676,13 +680,13 @@ describe Salus::Scanners::Semgrep do
                 {
                   end:
                     {
-                      "col" => 18,
+                      "col" => 6,
                       "line" => 3
                     },
-                  file: "unparsable_js.js",
+                  file: file,
                   start:
                     {
-                      "col" => 7,
+                      "col" => 1,
                       "line" => 3
                     }
                 }
@@ -713,8 +717,9 @@ describe Salus::Scanners::Semgrep do
         errors = scanner.report.to_h.fetch(:errors)
         expect(errors.size).to eq(1)
         expect(errors[0][:status]).to eq(3) # semgrep exit code documentation
-        expect(errors[0][:stderr]).to include("Could not parse unparsable_js.js as js " \
-                                              "(warn)\n\tunparsable_js.js:3-3")
+        expect(errors[0][:stderr]).to match(
+          /Could not parse unparsable_js\.js as js \(warn\)\n\t.+?unparsable_js\.js:3-3/
+        )
         expect(errors[0][:message]).to eq("Call to semgrep failed")
       end
     end
