@@ -31,5 +31,5 @@ group :test do
   gem 'rspec_junit_formatter'
   gem 'rubocop', '~> 0.93', require: false
   gem 'simplecov', '~> 0.19.1'
-  gem 'webmock', '~> 3.10'
+  gem 'webmock', '~> 3.11'
 end
