@@ -38,7 +38,7 @@ module Salus::Scanners
         #
         # - Error running audit:
         #   - status: 1
-        #   - stderr: String with details on the error prenting the run (not JSON)
+        #   - stderr: String with details on the error preventing the run (not JSON)
         #   - stdout: ""
 
         return report_success if shell_return.success? && !has_vulnerabilities?(shell_return.stdout)

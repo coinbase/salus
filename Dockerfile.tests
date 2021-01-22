@@ -7,6 +7,10 @@
 
 FROM salus-local
 
+RUN apt-get install -y make gcc
+
+COPY Gemfile Gemfile.lock ./
+
 RUN bundle install --with test
 
 COPY spec /home/spec
