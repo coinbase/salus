@@ -1,4 +1,4 @@
-FROM ruby:2.7.2@sha256:0fee695f3bf397bb521d8ced9e30963835fac44bc27f46393a5b91941c8a40aa as builder
+FROM ruby:2.7.2@sha256:abe7034da4092958d306c37aded76a751ea9d35d5c90d1ad9e92290561bd5f3f
 MAINTAINER security@coinbase.com
 
 RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get install -y --no-install-recommends \
@@ -106,7 +106,7 @@ RUN bundle install --deployment --without development:test
 
 
 
-FROM ruby:2.7.2-slim
+FROM ruby:2.7.2-slim@sha256:b9eebc5a6956f1def4698fac0930e7a1398a50c4198313fe87af0402cab8d149
 
 ENV PATH="/root/.cargo/bin:/root/.local/bin:${PATH}"
 
