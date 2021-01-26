@@ -8,7 +8,7 @@ gem 'bugsnag', '~> 6.18.0'
 #  https://github.com/rubysec/bundler-audit/issues/235 and
 #  https://github.com/bundler/bundler/issues/7511 are resolved.
 gem 'bundler', '= 2.0.2'
-gem 'faraday', '~> 1.1'
+gem 'faraday', '~> 1.3'
 gem 'github-linguist', '~> 7.12.2'
 gem 'parser', '~> 2.7.1'
 gem 'rgl', '~> 0.5.6'
