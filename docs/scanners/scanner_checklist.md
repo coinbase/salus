@@ -15,10 +15,10 @@ The filename key is the file to look for. For a generic android app scanner, we 
 
 The wildcard option performs an expensive recursive search in the entire repo for a match against `*{filename}` which in this example is `*.apk` as a valid match. *TODO: The filename could be updated to take a regex match instead.*
 
-For a filename that we do know the exact file name say like a known library manifest file like  `gemfile.lock` for ruby projects, we can specify this entire filename and omit the wildcard option entirely. The default for wildcard is `false`.
+For a filename that we do know the exact file name say like a known library manifest file like  `Gemfile.lock` for ruby projects, we can specify this entire filename and omit the wildcard option entirely. The default for wildcard is `false`.
 
 2. Add the scanner to the Docker container
-If you are relying on some OSS scanner that you need to have available locally, then you will need to add the installation steps in the Docker container. Please follow the instructions for the scanner on installation steps.
+If you are relying on some Open Source Software (OSS) scanner that you need to have available locally, then you will need to add the installation steps in the Docker container. Please follow the instructions for the scanner on installation steps.
 
 3. Define your scanner by defining two methods
   - `should_run?` which returns a Boolean
