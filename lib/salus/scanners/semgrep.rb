@@ -118,9 +118,10 @@ module Salus::Scanners
               # only take the first line of stderror because the other lines
               # are verbose debugging info generated based on a temp file
               # so the filename is random and fails the test.
+
               errors << {
                 status: shell_return.status,
-                stderr: shell_return.stderr.split("\n").first \
+                stderr: (shell_return.stderr.split("\n").first || "") \
                 + "\n\n" + error_str
               }
             rescue JSON::ParserError
