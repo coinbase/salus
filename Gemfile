@@ -13,7 +13,7 @@ gem 'github-linguist', '~> 7.12.2'
 gem 'parser', '~> 2.7.1'
 gem 'rgl', '~> 0.5.7'
 gem 'safe_yaml', '~> 1.0'
-gem 'thor', '~> 1.0.1'
+gem 'thor', '~> 1.1.0'
 gem 'toml', '~> 0.2.0'
 
 group :scanners do
