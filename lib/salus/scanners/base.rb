@@ -178,6 +178,16 @@ module Salus::Scanners
       false
     end
 
+    def validate_int_option(keyword, value)
+      return true if value&.to_s&.match?(/\d+/)
+
+      report_warn(:scanner_misconfiguration, "Expecting #{keyword} to be a numeric "\
+                                              "value but got "\
+                                              "#{"'#{value}'" || 'empty string'} "\
+                                              "instead.")
+      false
+    end
+
     def validate_string_option(keyword, value, regex)
       return true if value&.match?(regex)
 
@@ -278,6 +288,12 @@ module Salus::Scanners
       "#{prefix}#{keyword}#{separator}#{Shellwords.escape(value)}#{suffix}"
     end
 
+    def create_int_option(keyword:, value:, prefix:, separator:, suffix:)
+      return '' unless validate_int_option(keyword, value)
+
+      "#{prefix}#{keyword}#{separator}#{Shellwords.escape(value)}#{suffix}"
+    end
+
     def create_file_option(keyword:, value:, prefix:, separator:, suffix:)
       return '' unless validate_file_option(keyword, value)
 
@@ -326,7 +342,7 @@ module Salus::Scanners
     )
       clean_type = type.to_sym.downcase
       case clean_type
-      when :flag, :string, :bool, :booleans, :file # Allow repeat values
+      when :flag, :string, :bool, :booleans, :int, :file # Allow repeat values
         if max_depth.positive? && value.is_a?(Array)
           value.reduce('') do |options, item|
             options + build_option(
@@ -360,8 +376,21 @@ module Salus::Scanners
               suffix: suffix,
               separator: separator
             )
+          when :int
+            create_int_option(
+              keyword: keyword,
+              value: value,
+              prefix: prefix,
+              suffix: suffix,
+              separator: separator
+            )
           when :flag
-            create_flag_option(keyword: keyword, value: value, prefix: prefix, suffix: suffix)
+            create_flag_option(
+              keyword: keyword,
+              value: value,
+              prefix: prefix,
+              suffix: suffix
+            )
           when :file
             create_file_option(
               keyword: keyword,

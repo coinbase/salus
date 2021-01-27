@@ -3,6 +3,20 @@
   "passed": true,
   "running_time": 0.0,
   "scans": {
+    "Gitleaks": {
+      "scanner_name": "Gitleaks",
+      "version": "7.2.1",
+      "passed": true,
+      "running_time": 0.00,
+      "warn": {
+      },
+      "info": {
+        "hits": [
+        ]
+      },
+      "errors": [
+      ]
+    },
     "PatternSearch": {
       "scanner_name": "PatternSearch",
       "version": "0.9.0",
@@ -64,6 +78,7 @@
       "Brakeman",
       "BundleAudit",
       "CargoAudit",
+      "Gitleaks",
       "Gosec",
       "NPMAudit",
       "PatternSearch",
@@ -98,6 +113,9 @@
         "pass_on_raise": false
       },
       "CargoAudit": {
+        "pass_on_raise": false
+      },
+      "Gitleaks": {
         "pass_on_raise": false
       },
       "Gosec": {

@@ -1,0 +1,13 @@
+Add another secret
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# Author:    User <user@example.com>
+#
+# On branch master
+# Changes to be committed:
+#	new file:   test
+#
+# Untracked files:
+#	gitleaks.conf
+#

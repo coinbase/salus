@@ -66,6 +66,9 @@
       "CargoAudit": {
         "pass_on_raise": false
       },
+      "Gitleaks": {
+        "pass_on_raise": false
+      },
       "Gosec": {
         "pass_on_raise": false
       },

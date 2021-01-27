@@ -66,7 +66,7 @@ RUN cd /home \
 
 
 ### Golang
-# required for sift and gosec
+# required for sift, gitleaks and gosec
 ENV GOLANG_VERSION 1.15.11
 ENV GOLANG_TARBALL_FILE go$GOLANG_VERSION.linux-amd64.tar.gz
 ENV GOLANG_DOWNLOAD_URL https://golang.org/dl/${GOLANG_TARBALL_FILE}
@@ -91,6 +91,14 @@ RUN curl -fsSL "$GOSEC_DOWNLOAD_URL" -o gosec.tar.gz \
 ENV SIFT_VERSION v0.9.0
 
 RUN go get github.com/svent/sift@${SIFT_VERSION}
+
+
+### gitleaks
+ENV GITLEAKS_VERSION v7.2.2
+ENV GITLEAKS_DOWNLOAD_URL https://github.com/zricethezav/gitleaks/releases/download/${GITLEAKS_VERSION}/gitleaks-linux-amd64
+
+RUN curl -fsSL "$GITLEAKS_DOWNLOAD_URL" -o /usr/local/bin/gitleaks \
+  && chmod +x /usr/local/bin/gitleaks
 
 
 ### semgrep
@@ -149,6 +157,7 @@ RUN curl -fsSL "$NODE_DOWNLOAD_URL" -o node.tar.gz \
 ENV PIP_VERSION 18.1
 COPY --from=builder /root/go/bin/sift /usr/local/bin
 COPY --from=builder /root/gosec/gosec /usr/local/bin
+COPY --from=builder /usr/local/bin/gitleaks /usr/local/bin
 COPY --from=builder /usr/local/bin/cargo /usr/local/bin
 COPY --from=builder /root/vendor /home/vendor
 COPY --from=builder /root/.local /root/.local
