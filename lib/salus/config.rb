@@ -40,7 +40,7 @@ module Salus
 
     LOCAL_FILE_SCHEME_REGEX = /\Afile\z/.freeze # like file://foobar
     REMOTE_URI_SCHEME_REGEX = /\Ahttps?\z/.freeze
-    REPORT_FORMATS = %w[txt json yaml].freeze
+    REPORT_FORMATS = %w[txt json yaml sarif].freeze
 
     def initialize(configuration_files = [])
       # Merge default and custom configuration files.

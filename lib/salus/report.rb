@@ -14,7 +14,8 @@ module Salus
     CONTENT_TYPE_FOR_FORMAT = {
       'json' => 'application/json',
       'yaml' => 'text/x-yaml',
-      'txt'  => 'text/plain'
+      'txt'  => 'text/plain',
+      'sarif' => 'application/sarif'
     }.freeze
 
     SUMMARY_TABLE_HEADINGS = ['Scanner', 'Running Time', 'Required', 'Passed'].freeze
@@ -121,6 +122,10 @@ module Salus
       JSON.pretty_generate(to_h)
     end
 
+    def to_sarif
+      Sarif::SarifReport.new(@scan_reports).to_sarif
+    end
+
     # Send the report to given URIs (which could be remove or local).
     def export_report
       @report_uris.each do |directive|
@@ -131,6 +136,7 @@ module Salus
                         when 'txt' then to_s(verbose: verbose)
                         when 'json' then to_json
                         when 'yaml' then to_yaml
+                        when 'sarif' then to_sarif
                         else
                           raise ExportReportError, "unknown report format #{directive['format']}"
                         end
