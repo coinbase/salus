@@ -1,17 +1,17 @@
 module Sarif
   class BaseSarif
     DEFAULT_URI = "https://github.com/coinbase/salus".freeze
-  
+
     attr_reader :name, :tool, :results, :scan_report
     def initialize(scan_report)
       @name = scan_report.scanner_name
       @scan_report = scan_report
-      @tool = get_tool
-      @results = get_results
+      @tool = tool_info
+      @results = results_info
     end
-    
+
     # Retrieve tool section for sarif report
-    def get_tool
+    def tool_info
       {
         "driver": {
           "name" => @scan_report.scanner_name,
@@ -20,9 +20,9 @@ module Sarif
         }
       }
     end
-    
+
     # Retreives result section for sarif report
-    def get_results
+    def results_info
       {
         "ruleId"  => "SALUS001",
         "message" => {
@@ -30,11 +30,11 @@ module Sarif
         }
       }
     end
-    
+
     # Returns 'runs' object for the scanners report
     def sarif_report
       {
-        "tool" => @tool, 
+        "tool" => @tool,
         "result" => @results
       }
     end
