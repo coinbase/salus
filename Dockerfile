@@ -142,7 +142,7 @@ RUN curl -fsSL "$NODE_DOWNLOAD_URL" -o node.tar.gz \
   && npm install -g yarn@${YARN_VERSION} \
   && cd /home \
   && yarn install \
-  && rm -rf package.json yarn.lock /tmp/* ~/.npm
+  && rm -rf /node.tar.gz package.json yarn.lock /tmp/* ~/.npm
 
 
 ### All other tools
