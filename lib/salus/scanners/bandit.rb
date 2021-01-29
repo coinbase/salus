@@ -65,12 +65,11 @@ module Salus::Scanners
     def version
       shell_return = run_shell('bandit --version')
       # stdout looks like "bandit 1.6.2\n  ..."
-      shell_return.stdout&.split("\n")&.dig(0)&.split('bandit')&.dig(1)&.strip
+      shell_return.stdout&.split("\n")&.dig(0)&.split&.dig(1)
     end
 
+    # Taken from https://pypi.org/project/bandit/#usage
     def config_options
-      # config options taken from https://pypi.org/project/bandit/
-
       string_to_flag_map = {
         'level' => { 'LOW' => 'l', 'MEDIUM' => 'll', 'HIGH' => 'lll' },
         'confidence' => { 'LOW' => 'i', 'MEDIUM' => 'ii', 'HIGH' => 'iii' }
