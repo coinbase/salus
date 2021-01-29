@@ -1,7 +1,7 @@
 require 'salus/scanners/base'
 require 'json'
 
-# Gosec scanner check Go for insecure coding patters.
+# Gosec scanner check Go for insecure coding patterns.
 # https://github.com/securego/gosec
 
 module Salus::Scanners
@@ -56,8 +56,8 @@ module Salus::Scanners
 
     def version
       shell_return = run_shell('gosec --version')
-      # stdout looks like "Version: 2.4.0\nGit tag: v2.4.0\nBuild date: 2020-07-24T07:54:54Z"
-      shell_return.stdout&.split('Version:')&.dig(1)&.split("\n")&.dig(0)&.strip
+      # stdout looks like "Version: 2.4.0\nGit tag: v2.4.0\nBuild date: 2020-07-24T07:54:54Z\n"
+      shell_return.stdout&.split('\n')&.dig(0)&.split&.dig(1)
     end
 
     # flag options taken from https://github.com/securego/gosec/blob/2.0.0/cmd/gosec/main.go
