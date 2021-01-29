@@ -38,7 +38,7 @@ module Salus::Scanners
         #
         # - Error running audit:
         #   - status: 1
-        #   - stderr: String with details on the error prenting the run (not JSON)
+        #   - stderr: String with details on the error preventing the run (not JSON)
         #   - stdout: ""
 
         return report_success if shell_return.success? && !has_vulnerabilities?(shell_return.stdout)
@@ -61,7 +61,8 @@ module Salus::Scanners
 
     def version
       shell_return = run_shell('cargo audit --version')
-      shell_return.stdout&.split("cargo-audit")&.dig(1)&.strip
+      # stdout looks like "cargo-audit 0.12.0\n"
+      shell_return.stdout&.split&.dig(1)
     end
 
     protected

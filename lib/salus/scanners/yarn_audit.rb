@@ -54,7 +54,7 @@ module Salus::Scanners
 
     def version
       shell_return = run_shell('yarn audit --version')
-      # shell_return has newline at the end
+      # stdout looks like "1.22.0\n"
       shell_return.stdout&.strip
     end
 

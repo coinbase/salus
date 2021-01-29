@@ -95,7 +95,7 @@ module Salus::Scanners
 
     # Runs a command on the terminal.
     def run_shell(command, env: {}, stdin_data: '')
-      # If we're passed a string, convert it to an array beofre passing to capture3
+      # If we're passed a string, convert it to an array before passing to capture3
       command = command.split unless command.is_a?(Array)
       Salus::ShellResult.new(*Open3.capture3(env, *command, stdin_data: stdin_data))
     end
@@ -162,20 +162,20 @@ module Salus::Scanners
     def validate_bool_option(keyword, value)
       return true if %w[true false].include?(value.to_s.downcase)
 
-      report_warn(:scanner_misconfiguration, "Expecting #{keyword} to be a Boolean (true/false) \
-                                              value but got \
-                                              #{"'#{value}'" || 'empty string'} \
-                                              instead.")
+      report_warn(:scanner_misconfiguration, "Expecting #{keyword} to be a Boolean (true/false) "\
+                                              "value but got "\
+                                              "#{"'#{value}'" || 'empty string'} "\
+                                              "instead.")
       false
     end
 
     def validate_string_option(keyword, value, regex)
       return true if value&.match?(regex)
 
-      report_warn(:scanner_misconfiguration, "Expecting #{keyword} to match the regex #{regex} \
-                                              but got \
-                                              #{"'#{value}'" || 'empty string'} \
-                                              instead.")
+      report_warn(:scanner_misconfiguration, "Expecting #{keyword} to match the regex #{regex} "\
+                                              "but got "\
+                                              "#{"'#{value}'" || 'empty string'} "\
+                                              "instead.")
       false
     end
 
@@ -188,34 +188,34 @@ module Salus::Scanners
       return true if value&.all? { |option| option.match?(regex) }
 
       offending_values = value&.reject { |option| option.match?(regex) }
-      report_warn(:scanner_misconfiguration, "Expecting values in #{keyword} to match regex \
-                                              '#{regex}' value but the offending values are \
-                                              '#{offending_values.join(', ')}'.")
+      report_warn(:scanner_misconfiguration, "Expecting values in #{keyword} to match regex "\
+                                              "'#{regex}' value but the offending values are "\
+                                              "'#{offending_values.join(', ')}'.")
       false
     end
 
     def validate_file_option(keyword, value)
       if value.nil?
-        report_warn(:scanner_misconfiguration, "Expecting file/dir defined by #{keyword} to be \
-                                                a located in the project repo but got empty string \
-                                                instead.")
+        report_warn(:scanner_misconfiguration, "Expecting file/dir defined by #{keyword} to be a"\
+                                                "location in the project repo but got empty "\
+                                                "string instead.")
         return false
       end
 
       begin
         config_dir = File.realpath(value)
       rescue Errno::ENOENT
-        report_warn(:scanner_misconfiguration, "Could not find #{config_dir} defined by \
-                                                #{keyword} when expanded into a fully qualified \
-                                                path. Value was #{value}")
+        report_warn(:scanner_misconfiguration, "Could not find #{config_dir} defined by "\
+                                                "#{keyword} when expanded into a fully qualified "\
+                                                "path. Value was #{value}")
         return false
       end
 
       return true if config_dir.include?(Dir.pwd) # assumes the current directory is the proj dir
 
-      report_warn(:scanner_misconfiguration, "Expecting #{value} defined by \
-                                              #{keyword} to be a dir in the project repo but was \
-                                               located at '#{config_dir}' instead.")
+      report_warn(:scanner_misconfiguration, "Expecting #{value} defined by "\
+                                              "#{keyword} to be a dir in the project repo but was "\
+                                               "located at '#{config_dir}' instead.")
       false
     end
 
@@ -385,8 +385,8 @@ module Salus::Scanners
       else
         report_warn(
           :scanner_misconfiguration,
-          "Could not interpolate config #{keyword_string} \
-          the type of #{type}. "
+          "Could not interpolate config #{keyword} "\
+          "to the type of #{type}. "
         )
         '' # Return an empty string and warn
       end
@@ -412,8 +412,8 @@ module Salus::Scanners
                      )
                    when Hash # If you are doing something complicated
                      if type_value[:type].nil?
-                       warning = "Could not interpolate config \
-                       defined by since there was no type defined in the hash "
+                       warning = "Could not interpolate config "\
+                         "defined by since there was no type defined in the hash "
                        report_warn(:scanner_misconfiguration, warning)
                        '' # Return an empty string and warn
                      else
@@ -440,8 +440,9 @@ module Salus::Scanners
                        regex: type_value
                      )
                    else
-                     warning = "Could not interpolate config for #{keyword}  \
-                     defined by since the value provided was not a String, Symbol, Regexp or Hash"
+                     warning = "Could not interpolate config for #{keyword} "\
+                       "defined by since the value provided was not a String, "\
+                       "Symbol, Regexp or Hash"
                      report_warn(:scanner_misconfiguration, warning)
                      '' # Return an empty string and warn
                    end
