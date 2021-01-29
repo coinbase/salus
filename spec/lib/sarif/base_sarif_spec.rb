@@ -6,7 +6,6 @@ describe Sarif::BaseSarif do
 
   describe 'tool_info' do
     it 'returns a Hash with the right fields' do
-      puts base_sarif.get_tool
       expected = {
         driver: {
           name: {
@@ -29,7 +28,7 @@ describe Sarif::BaseSarif do
           "text": "This Scanner does not currently Support SARIF"
         }
       }
-      expect(base_sarif.esults == expected)
+      expect(base_sarif.results_info == expected)
     end
   end
 end
