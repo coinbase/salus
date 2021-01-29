@@ -5,8 +5,8 @@ module Sarif
   class SarifReport
     SARIF_VERSION = "2.1.0".freeze
 
-    SARIF_SCHEMA = "https://schemastore.azurewebsites.net/schemas
-      /json/sarif-2.1.0-rtm.5.json".freeze
+    SARIF_SCHEMA = "https://schemastore.azurewebsites.net/schemas"\
+      "/json/sarif-2.1.0-rtm.5.json".freeze
 
     def initialize(scan_reports)
       @scan_reports = scan_reports
