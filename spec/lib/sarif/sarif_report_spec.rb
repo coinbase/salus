@@ -1,5 +1,6 @@
 require_relative '../../spec_helper.rb'
 require 'json'
+require 'json-schema'
 
 describe Sarif::SarifReport do
   let(:name1) { 'Unsupported_Scanner' }
@@ -11,12 +12,12 @@ describe Sarif::SarifReport do
 
   describe 'to_sarif' do
     it 'it returns a sarif report with all ScanReports' do
+      schema = JSON.parse(File.read('spec/fixtures/sarif/sarif-schema.json'))
+
       body = JSON.parse(sarif_report.to_sarif)
       report1 = body['runs'][0]['tool']
       report2 = body['runs'][1]['tool']
-      expect(body['version']).to eq('2.1.0')
-
-      expect(body['$schema']).to eq('https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json')
+      expect(JSON::Validator.validate(schema, body)).to be true
       expect(report1["driver"]['name']).to eq('Unsupported_Scanner')
       expect(report2['driver']['name'].downcase).to eq('GoSec'.downcase)
     end
