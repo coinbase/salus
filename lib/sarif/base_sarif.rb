@@ -15,8 +15,8 @@ module Sarif
     def tool_info
       {
         "driver": {
-          "name" => scan_report.scanner_name[:scanner_name],
-          "version" => scan_report.scanner_name[:version] || ""
+          "name" => scan_report.scanner_name,
+          "version" => scan_report.version || ""
         }
       }
     end

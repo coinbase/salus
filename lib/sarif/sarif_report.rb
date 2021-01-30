@@ -22,7 +22,7 @@ module Sarif
         "runs" => []
       }
       # for each scanner report, run the appropriate converter
-      @scan_reports.each { |scan_report| sarif_report["runs"] << converter(scan_report) }
+      @scan_reports.each { |scan_report| sarif_report["runs"] << converter(scan_report[0]) }
       JSON.pretty_generate(sarif_report)
     end
 
@@ -31,7 +31,7 @@ module Sarif
     # @params sarif_report [Salus::ScanReport]
     # @return
     def converter(scan_report)
-      adapter = "Sarif::#{scan_report.scanner_name[:scanner_name].capitalize}Sarif"
+      adapter = "Sarif::#{scan_report.scanner_name.capitalize}Sarif"
       converter = Object.const_get(adapter).new(scan_report)
       converter.sarif_report
     rescue NameError
