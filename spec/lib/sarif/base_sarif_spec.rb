@@ -1,34 +1,22 @@
 require_relative '../../spec_helper.rb'
+require 'json-schema'
 
 describe Sarif::BaseSarif do
-  let(:scan_report) { Salus::ScanReport.new(scanner_name: "Bandit", version: '1.1.1') }
+  let(:scan_report) { Salus::ScanReport.new("Bandit") }
   let(:base_sarif) { Sarif::BaseSarif.new(scan_report) }
 
-  describe 'tool_info' do
-    it 'returns a Hash with the right fields' do
-      expected = {
-        driver: {
-          name: {
-            scanner_name: "Bandit",
-            version: "1.1.1"
-          },
-          semanticVersion: "",
-          informationUri: "https://github.com/coinbase/salus"
-        }
-      }
-      expect(base_sarif.tool_info == expected)
-    end
+  before do
+    scan_report.add_version('1.1.1')
   end
 
-  describe 'results' do
-    it 'returns the default result section for unsupported scanners' do
-      expected = {
-        "ruleId"  => "SALUS001",
-        "message" => {
-          "text": "This Scanner does not currently Support SARIF"
-        }
-      }
-      expect(base_sarif.results_info == expected)
+  describe 'sarif_report' do
+    it 'returns the runs object for an unsupported scanner' do
+      schema = JSON.parse(File.read('spec/fixtures/sarif/sarif-schema.json'))
+      body = JSON.pretty_generate({ "version" => "2.1.0",
+        "$schema" => "https://schemastore.azurewebsites.net/schemas"\
+        "/json/sarif-2.1.0-rtm.5.json",
+        "runs" => [base_sarif.sarif_report] })
+      expect(JSON::Validator.validate(schema, JSON.parse(body))).to be true
     end
   end
 end

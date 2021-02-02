@@ -16,7 +16,7 @@ module Sarif
       {
         "driver": {
           "name" => scan_report.scanner_name,
-          "version" => scan_report.version || ""
+          "version" => scan_report.version
         }
       }
     end

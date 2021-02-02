@@ -15,9 +15,12 @@ describe Sarif::SarifReport do
       custom_info = { bitcoin_price: 100_000 }
       config = { lemurs: 'contained', raptors: 'loose' }
       report = Salus::Report.new(project_name: name, custom_info: custom_info, config: config)
-      scan_reports.each { |scan_report| report.add_scan_report(scan_report, required: false) }
+      scan_reports.each do |scan_report|
+        scan_report.add_version('')
+        report.add_scan_report(scan_report, required: false)
+      end
       schema = JSON.parse(File.read('spec/fixtures/sarif/sarif-schema.json'))
-
+      puts report.to_sarif
       body = JSON.parse(report.to_sarif)
       report1 = body['runs'][0]['tool']
       report2 = body['runs'][1]['tool']

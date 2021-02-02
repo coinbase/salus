@@ -31,7 +31,7 @@ module Sarif
     # @params sarif_report [Salus::ScanReport]
     # @return
     def converter(scan_report)
-      adapter = "Sarif::#{scan_report.scanner_name.capitalize}Sarif"
+      adapter = "Sarif::#{scan_report.scanner_name}Sarif"
       converter = Object.const_get(adapter).new(scan_report)
       converter.sarif_report
     rescue NameError
