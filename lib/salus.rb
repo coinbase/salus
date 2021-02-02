@@ -8,7 +8,7 @@ require 'salus/config'
 require 'salus/processor'
 
 module Salus
-  VERSION = '2.10.14'.freeze
+  VERSION = '2.10.15'.freeze
   DEFAULT_REPO_PATH = './repo'.freeze # This is inside the docker container at /home/repo.
 
   SafeYAML::OPTIONS[:default_mode] = :safe

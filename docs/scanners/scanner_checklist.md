@@ -33,7 +33,7 @@ Make sure to integrate at least common options for the scanner. You can do this 
 - A good example can be found in `spec/lib/salus/scanners/gosec_spec.rb`
 - You will need to define fixtures as a sample applications to run the scanners against. These fixtures should be very small self-contained programs. Each scanner will have its own folder under `spec/fixtures`.
 
-5. Submit your PR if you can make the scanner public. For non-public scanners, you can build from the public Docker container and copy over relevant files.
+5. Submit your PR if you can make the scanner public. For non-public scanners, you can build from the public Docker container and copy over relevant files, like below.
 
 ```
 FROM coinbase/salus:2.10.14@sha256:940c68181cfb76ef50eb58b0d9c2f45a98ad7c09073e6ec78fb6a2f6ea844e5c
