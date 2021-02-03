@@ -1,8 +1,11 @@
 require 'json'
+require 'json-schema'
 require_relative './base_sarif'
 module Sarif
   # Class for generating sarif reports
   class SarifReport
+    class SarifInvalidFormatError < StandardError; end
+
     SARIF_VERSION = "2.1.0".freeze
 
     SARIF_SCHEMA = "https://schemastore.azurewebsites.net/schemas"\
@@ -23,7 +26,14 @@ module Sarif
       }
       # for each scanner report, run the appropriate converter
       @scan_reports.each { |scan_report| sarif_report["runs"] << converter(scan_report[0]) }
-      JSON.pretty_generate(sarif_report)
+      report = JSON.pretty_generate(sarif_report)
+      path = File.expand_path('schema/sarif-schema.json', __dir__)
+      schema = JSON.parse(File.read(path))
+
+      if JSON::Validator.validate(schema, report)
+        report
+      else
+        raise SarifInvalidFormatError, 'Incorrect Sarif Output' end
     end
 
     # Converts a ScanReport to a sarif report for the given scanner
