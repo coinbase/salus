@@ -36,8 +36,7 @@ describe Sarif::BaseSarif do
       expect(base_sarif.sarif_report).to include({ "tool" => base_sarif.tool_info,
         "conversion" => base_sarif.conversion,
         "results" => [],
-        "invocations" => base_sarif.invocations
-      })
+        "invocations" => base_sarif.invocations })
     end
   end
 end
