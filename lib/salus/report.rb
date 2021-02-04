@@ -20,6 +20,7 @@ module Salus
     SUMMARY_TABLE_HEADINGS = ['Scanner', 'Running Time', 'Required', 'Passed'].freeze
 
     attr_reader :builds
+    attr_accessor :scan_reports
 
     def initialize(report_uris: [], builds: {}, project_name: nil, custom_info: nil, config: nil)
       @report_uris = report_uris     # where we will send this report

@@ -16,7 +16,8 @@ module Salus
                 :builds,
                 :active_scanners,
                 :enforced_scanners,
-                :scanner_configs
+                :scanner_configs,
+                :diff
 
     # Dynamically get all Scanner classes
     ABSTRACT_SCANNERS = %i[Base NodeAudit].freeze
@@ -60,6 +61,7 @@ module Salus
       @custom_info       = final_config['custom_info']
       @report_uris       = final_config['reports'] || []
       @builds            = final_config['builds'] || {}
+      @diff              = final_config['diff'] || {}
 
       apply_default_scanner_config!
       apply_node_audit_patch!

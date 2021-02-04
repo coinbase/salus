@@ -1,0 +1,125 @@
+==== Salus Scan v2.10.15
+
+==== PatternSearch v0.9.0: FAILED in 0.26s
+
+ ~~ Scanner Logs:
+
+
+  Forbidden pattern "report_warn" was found 
+  junk2:10:  Forbidden pattern "report_warn" was found 
+  junk2:11:  junk:10:  Forbidden pattern "report_warn" was found 
+  junk2:12:  junk:11:  lib/salus/scanners/base.rb:29:        # report_warn will send warning to bugs
+  nag
+  junk2:13:  junk:12:  lib/salus/scanners/base.rb:32:        report_warn(:scanner_version_error, "Un
+  able to get
+  junk2:15:  junk:14:  lib/salus/scanners/base.rb:125:    def report_warn(type, message)
+  junk2:16:  junk:15:  lib/salus/scanners/base.rb:165:      report_warn(:scanner_misconfiguration, "
+  Expecting #
+  junk2:18:  junk:17:  lib/salus/scanners/base.rb:175:      report_warn(:scanner_misconfiguration, "
+  Expecting #
+  junk2:20:  junk:19:  lib/salus/scanners/base.rb:184:        report_warn(:scanner_misconfiguration,
+   "Expecting
+  junk2:22:  junk:21:  lib/salus/scanners/base.rb:191:      report_warn(:scanner_misconfiguration, "
+  Expecting v
+  junk2:24:  junk:23:  lib/salus/scanners/base.rb:199:        report_warn(:scanner_misconfiguration,
+   "Expecting
+  junk2:26:  junk:25:  lib/salus/scanners/base.rb:208:        report_warn(:scanner_misconfiguration,
+   "Could not
+  junk2:28:  junk:27:  lib/salus/scanners/base.rb:216:      report_warn(:scanner_misconfiguration, "
+  Expecting #
+  junk2:30:  junk:29:  lib/salus/scanners/base.rb:250:          report_warn(:scanner_misconfiguratio
+  n, msg)
+  junk2:31:  junk:30:  lib/salus/scanners/base.rb:386:        report_warn(
+  junk2:32:  junk:31:  lib/salus/scanners/base.rb:417:                       report_warn(:scanner_mi
+  sconfigurat
+  junk2:34:  junk:33:  lib/salus/scanners/base.rb:446:                     report_warn(:scanner_misc
+  onfiguratio
+  junk2:36:  junk:35:  lib/salus/scanners/semgrep.rb:149:        report_warn(:semgrep_non_fatal, war
+  nings) unle
+  junk2:38:  junk:37:  lib/salus/scanners/yarn_audit.rb:104:        report_warn(:scanner_misconfigur
+  ation, "Sca
+  junk2:40:  lib/salus/scanners/base.rb:29:        # report_warn will send warning to bugsnag
+  junk2:41:  lib/salus/scanners/base.rb:32:        report_warn(:scanner_version_error, "Unable to ge
+  t #{self.cl
+  junk2:43:  lib/salus/scanners/base.rb:125:    def report_warn(type, message)
+  junk2:44:  lib/salus/scanners/base.rb:165:      report_warn(:scanner_misconfiguration, "Expecting 
+  #{keyword} 
+  junk2:46:  lib/salus/scanners/base.rb:175:      report_warn(:scanner_misconfiguration, "Expecting 
+  #{keyword} 
+  junk2:48:  lib/salus/scanners/base.rb:184:        report_warn(:scanner_misconfiguration, "Expectin
+  g non-empty
+  junk2:50:  lib/salus/scanners/base.rb:191:      report_warn(:scanner_misconfiguration, "Expecting 
+  values in #
+  junk2:52:  lib/salus/scanners/base.rb:199:        report_warn(:scanner_misconfiguration, "Expectin
+  g file/dir 
+  junk2:54:  lib/salus/scanners/base.rb:208:        report_warn(:scanner_misconfiguration, "Could no
+  t find #{co
+  junk2:56:  lib/salus/scanners/base.rb:216:      report_warn(:scanner_misconfiguration, "Expecting 
+  #{value} de
+  junk2:58:  lib/salus/scanners/base.rb:250:          report_warn(:scanner_misconfiguration, msg)
+  junk2:59:  lib/salus/scanners/base.rb:386:        report_warn(
+  junk2:60:  lib/salus/scanners/base.rb:417:                       report_warn(:scanner_misconfigura
+  tion, warni
+  junk2:62:  lib/salus/scanners/base.rb:446:                     report_warn(:scanner_misconfigurati
+  on, warning
+  junk2:64:  lib/salus/scanners/yarn_audit.rb:104:        report_warn(:scanner_misconfiguration, "Sc
+  anning only
+  junk2:66:  lib/salus/scanners/semgrep.rb:149:        report_warn(:semgrep_non_fatal, warnings) unl
+  ess warning
+  lib/salus/scanners/base.rb:29:        # report_warn will send warning to bugsnag
+  lib/salus/scanners/base.rb:32:        report_warn(:scanner_version_error, "Unable to get #{self.cl
+  ass} version")
+  lib/salus/scanners/base.rb:125:    def report_warn(type, message)
+  lib/salus/scanners/base.rb:165:      report_warn(:scanner_misconfiguration, "Expecting #{keyword} 
+  to be a Boolean (true/false) "\
+  lib/salus/scanners/base.rb:175:      report_warn(:scanner_misconfiguration, "Expecting #{keyword} 
+  to match the regex #{regex} "\
+  lib/salus/scanners/base.rb:184:        report_warn(:scanner_misconfiguration, "Expecting non-empty
+   values in #{keyword}")
+  lib/salus/scanners/base.rb:191:      report_warn(:scanner_misconfiguration, "Expecting values in #
+  {keyword} to match regex "\
+  lib/salus/scanners/base.rb:199:        report_warn(:scanner_misconfiguration, "Expecting file/dir 
+  defined by #{keyword} to be a"\
+  lib/salus/scanners/base.rb:208:        report_warn(:scanner_misconfiguration, "Could not find #{co
+  nfig_dir} defined by "\
+  lib/salus/scanners/base.rb:216:      report_warn(:scanner_misconfiguration, "Expecting #{value} de
+  fined by "\
+  lib/salus/scanners/base.rb:250:          report_warn(:scanner_misconfiguration, msg)
+  lib/salus/scanners/base.rb:386:        report_warn(
+  lib/salus/scanners/base.rb:417:                       report_warn(:scanner_misconfiguration, warni
+  ng)
+  lib/salus/scanners/base.rb:446:                     report_warn(:scanner_misconfiguration, warning
+  )
+  lib/salus/scanners/semgrep.rb:149:        report_warn(:semgrep_non_fatal, warnings) unless warning
+  s.empty?
+  lib/salus/scanners/yarn_audit.rb:104:        report_warn(:scanner_misconfiguration, "Scanning only
+   optionalDependencies!")
+   - A random msg
+
+==== BundleAudit v0.7.0.1: PASSED in 0.78s
+
+==== Gosec v2.4.0: PASSED in 1.05s
+
+==== RepoNotEmpty: PASSED in 0.0s
+
+==== Semgrep v0.36.0: PASSED in 0.0s
+
+==== ReportRubyGems: PASSED in 0.0s
+
+==== Salus Configuration Files Used:
+
+  file://salus.yaml
+
+
+Overall scan status: FAILED in 3.53s
+
+┌────────────────┬──────────────┬──────────┬────────┐
+│ Scanner        │ Running Time │ Required │ Passed │
+├────────────────┼──────────────┼──────────┼────────┤
+│ PatternSearch  │ 0.26s        │ yes      │ no     │
+│ BundleAudit    │ 0.78s        │ yes      │ yes    │
+│ Gosec          │ 1.05s        │ yes      │ yes    │
+│ RepoNotEmpty   │ 0.0s         │ yes      │ yes    │
+│ Semgrep        │ 0.0s         │ yes      │ yes    │
+│ ReportRubyGems │ 0.0s         │ no       │ yes    │
+└────────────────┴──────────────┴──────────┴────────┘

@@ -37,7 +37,6 @@ module Salus
           valid: valid_sources
         }
       }
-
       @report = Report.new(
         report_uris: report_uris,
         builds: @config.builds,
@@ -62,6 +61,51 @@ module Salus
     end
 
     def scan_project
+      weeks_ago = 10
+      scan_project_once
+      report1_str = @report.to_s
+
+      Dir.chdir(@repo_path) do
+        if @config.diff  # TODO: add weeks n
+          # TODO: add some error checking
+          one_week_ago_date = (Time.now - weeks_ago.weeks).strftime("%Y-%m-%d")
+          old_git_commit = `git log --before=#{one_week_ago_date} --max-count=1`
+          old_commit_hash = extract_commit_hash(old_git_commit)
+          puts "OLD HAHS is #{old_commit_hash}"
+        end
+      end
+
+      report.scan_reports = []
+      scan_project_once
+      report2_str = @report.to_s
+
+      file = File.open("salus_out1.txt", 'w')
+      file.write(report1_str)
+      file.close
+
+      file = File.open("salus_out2.txt", 'w')
+      file.write(report2_str)
+      file.close      
+
+      diff_str = `diff salus_out1.txt salus_out2.txt`
+      puts "DIFF STR"
+      puts diff_str
+    end
+    
+    def extract_commit_hash(git_commit_str)
+      # a commit string looks like
+      #  commit ab12345678abcd12345478980 (HEAD -> master, origin/master, origin/HEAD)
+      #  Merge: a12345b b12345c
+      #  Author: ...
+      #  Date:   Mon Jan 11 09:47:43 2021 -0800
+      begin
+        git_commit_str&.split("\n")[0]&.split("commit ")[1]
+      rescue NoMethodError
+        nil
+      end
+    end    
+
+    def scan_project_once
       repo = Repo.new(@repo_path)
 
       # Record overall running time of the scan
