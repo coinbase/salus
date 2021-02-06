@@ -1,6 +1,8 @@
 require 'json'
 require 'json-schema'
 require_relative './base_sarif'
+require_relative './gosec_sarif'
+
 module Sarif
   # Class for generating sarif reports
   class SarifReport
@@ -46,9 +48,9 @@ module Sarif
         converter = Object.const_get(adapter).new(scan_report)
       rescue NameError
         converter = BaseSarif.new(scan_report)
-        return converter.sarif_report
+        return converter.build_runs_object
       end
-      converter.sarif_report
+      converter.build_runs_object
     end
   end
 end
