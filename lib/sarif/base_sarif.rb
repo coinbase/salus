@@ -17,7 +17,7 @@ module Sarif
     end
 
     # Retrieve tool section for sarif report
-    def build_tool(rules: nil)
+    def build_tool(rules: [])
       {
         "driver": {
           "name" => @scan_report.scanner_name,
