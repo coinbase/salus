@@ -4,7 +4,7 @@ require 'json-schema'
 
 describe Sarif::SarifReport do
   let(:scan_report1) { Salus::ScanReport.new(name: 'Unsupported_Scanner') }
-  let(:scan_report2) { Salus::ScanReport.new('Gosec') }
+  let(:scan_report2) { Salus::ScanReport.new('Neon_Scanner') }
   let(:scan_reports) { [scan_report1, scan_report2] }
 
   describe 'to_sarif' do
@@ -39,7 +39,7 @@ describe Sarif::SarifReport do
       report1 = body['runs'][0]['tool']
       report2 = body['runs'][1]['tool']
       expect(report1["driver"]['name']).to eq('Unsupported_Scanner')
-      expect(report2['driver']['name']).to eq('Gosec')
+      expect(report2['driver']['name']).to eq('Neon_Scanner')
     end
   end
 end
