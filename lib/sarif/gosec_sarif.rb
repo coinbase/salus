@@ -25,7 +25,7 @@ module Sarif
     def parse_error(error)
       line = error['line'].to_i
       column = error['column'].to_i
-      line = 1 if line.zero? 
+      line = 1 if line.zero?
       column = 1 if column.zero?
       {
         id: 'SAL0002',
