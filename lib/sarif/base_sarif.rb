@@ -76,6 +76,9 @@ module Sarif
         }
         @mapped_rules[parsed_issue[:id]] = @rule_index
         @rule_index += 1
+        if rule[:id] == 'SAL0002'
+          rule[:fullDescription][:text] = 'Golang errors generated at runtime'
+        end
         rule
       end
     end

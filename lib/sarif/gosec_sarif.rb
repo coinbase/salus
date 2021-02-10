@@ -22,14 +22,6 @@ module Sarif
       end
     end
 
-    def build_rule(parsed_issue) 
-      rule = super
-      if rule[:id] == 'SAL0002'
-        rule[:fullDescription][:text] = 'Golang errors generated at runtime'
-      end
-      rule
-    end
-
     def parse_error(error)
       line = error['line'].to_i
       column = error['column'].to_i
