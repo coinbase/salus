@@ -25,8 +25,8 @@ module Sarif
     def parse_error(error)
       line = error['line'].to_i
       column = error['column'].to_i
-      if line.zero? then line = 1 end
-      if column.zero? then column = 1 end
+      line = 1 if line.zero? 
+      column = 1 if column.zero?
       {
         id: 'SAL0002',
         name: "Golang Error",
