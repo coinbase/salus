@@ -68,11 +68,12 @@ describe Sarif::GosecSarif do
 
         expect(rules[0]['id']).to eq('SAL0002')
         expect(rules[0]['name']).to eq('Golang Error')
-        expect(rules[0]['fullDescription']['text']).to eq('Pintl not declared by package fmt')
+        expect(rules[0]['fullDescription']['text']).to eq("Golang errors generated at runtime")
         expect(rules[0]['helpUri']).to eq('https://github.com/coinbase/salus/blob/master/docs/salus_reports.md')
 
         expect(result['ruleId']).to eq('SAL0002')
         expect(result['ruleIndex']).to eq(0)
+        expect(result['message']['text']).to eq('Pintl not declared by package fmt')
         expect(result['level']).to eq('note')
         expect(result['locations'][0]['physicalLocation']['region']['startLine']).to eq(8)
       end
