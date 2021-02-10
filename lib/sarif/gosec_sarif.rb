@@ -22,14 +22,26 @@ module Sarif
       end
     end
 
+    def build_rule(parsed_issue) 
+      rule = super
+      if rule[:id] == 'SAL0002'
+        rule[:fullDescription][:text] = 'Golang errors generated at runtime'
+      end
+      rule
+    end
+
     def parse_error(error)
+      line = error['line'].to_i
+      column = error['column'].to_i
+      if line.zero? then line = 1 end
+      if column.zero? then column = 1 end
       {
         id: 'SAL0002',
         name: "Golang Error",
         level: "NOTE",
         details: error['error'],
-        start_line: error['line'].to_i,
-        start_column: error['column'].to_i,
+        start_line: line,
+        start_column: column,
         uri: error['uri'],
         help_url: "https://github.com/coinbase/salus/blob/master/docs/salus_reports.md",
         code: ""
