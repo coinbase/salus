@@ -58,6 +58,26 @@ describe Sarif::GosecSarif do
       end
     end
 
+    context 'go project with errors' do
+      let(:repo) { Salus::Repo.new('spec/fixtures/gosec/malformed_goapp') }
+      it 'should parse golang errors' do
+        report = Salus::Report.new(project_name: "Neon Genesis")
+        report.add_scan_report(scanner.report, required: false)
+        result = JSON.parse(report.to_sarif)["runs"][0]["results"][0]
+        rules = JSON.parse(report.to_sarif)["runs"][0]["tool"]["driver"]["rules"]
+
+        expect(rules[0]['id']).to eq('SAL0002')
+        expect(rules[0]['name']).to eq('Golang Error')
+        expect(rules[0]['fullDescription']['text']).to eq('Pintl not declared by package fmt')
+        expect(rules[0]['helpUri']).to eq('https://github.com/coinbase/salus/blob/master/docs/salus_reports.md')
+
+        expect(result['ruleId']).to eq('SAL0002')
+        expect(result['ruleIndex']).to eq(0)
+        expect(result['level']).to eq('note')
+        expect(result['locations'][0]['physicalLocation']['region']['startLine']).to eq(8)
+      end
+    end
+
     context 'go project with vulnerabilities' do
       let(:repo) { Salus::Repo.new('spec/fixtures/gosec/recursive_vulnerable_goapp') }
 

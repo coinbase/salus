@@ -6,31 +6,59 @@ module Sarif
       super(scan_report)
       @uri = GOSEC_URI
       begin
-        @logs = JSON.parse(scan_report.log(''))['Issues']
+        json_obj = JSON.parse(scan_report.log(''))
+        issues = json_obj['Issues']
+        errors = json_obj['Golang errors']
+        parsed_errors = []
+        errors.each do |key|
+          key[1].each do |location|
+            location['uri'] = key[0]
+            parsed_errors << parse_error(location)
+          end
+        end
+        @logs = issues.concat parsed_errors
       rescue JSON::ParserError
         @logs = []
       end
     end
 
-    def parse_issue(issue)
+    def parse_error(error)
       {
-        id: issue['rule_id'],
-        name: "CWE-#{issue['cwe']['ID']}",
-        level: issue['severity'],
-        details: issue['details'],
-        start_line: issue['line'].to_i,
-        start_column: issue['column'].to_i,
-        uri: issue['file'],
-        help_url: issue['cwe']['URL'],
-        code: issue['code']
+        id: 'SAL0002',
+        name: "Golang Error",
+        level: "NOTE",
+        details: error['error'],
+        start_line: error['line'].to_i,
+        start_column: error['column'].to_i,
+        uri: error['uri'],
+        help_url: "https://github.com/coinbase/salus/blob/master/docs/salus_reports.md",
+        code: ""
       }
     end
 
-    def build_invocations
-      if @logs.empty? && !@scan_report.passed?
-        error = @scan_report.to_h.fetch(:info)[:stderr]
+    def parse_issue(issue)
+      if issue[:id] == 'SAL0002'
+        issue
+      else
         {
-          "executionSuccessful": false,
+          id: issue['rule_id'],
+          name: "CWE-#{issue['cwe']['ID']}",
+          level: issue['severity'],
+          details: issue['details'],
+          start_line: issue['line'].to_i,
+          start_column: issue['column'].to_i,
+          uri: issue['file'],
+          help_url: issue['cwe']['URL'],
+          code: issue['code']
+        }
+      end
+    end
+
+    def build_invocations
+      error = @scan_report.to_h.fetch(:info)[:stderr]
+      if error
+        {
+          "executionSuccessful": @scan_report.passed?,
           "toolExecutionNotifications": [{
             "descriptor": {
               "id": ""
