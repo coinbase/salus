@@ -15,7 +15,7 @@ module Sarif
       @scan_reports = scan_reports
     end
 
-    # Builds Sarif Report
+    # Builds Sarif Report. Raises an SarifInvalidFormatError if generated SARIF report is invalid
     #
     # @return [JSON]
     def to_sarif
