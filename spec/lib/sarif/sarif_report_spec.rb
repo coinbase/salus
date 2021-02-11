@@ -24,7 +24,10 @@ describe Sarif::SarifReport do
     it 'fails if generated sarif format is incorrect' do
       expect { report.to_sarif }.to raise_error(
         Sarif::SarifReport::SarifInvalidFormatError,
-        'Incorrect Sarif Output'
+        "Incorrect Sarif Output: [\"The property '#/runs/0/tool/driver/name'"\
+        " of type object did not match the following type: string in schema "\
+        "https://raw.githubusercontent.com/schemastore/schemastore/master/src"\
+        "/schemas/json/sarif-2.1.0-rtm.5.json#\"]"
       )
     end
 
