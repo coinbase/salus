@@ -98,6 +98,7 @@ describe Sarif::GosecSarif do
         expect(result['ruleIndex']).to eq(0)
         expect(result['level']).to eq('error')
         expect(result['locations'][0]['physicalLocation']['region']['startLine']).to eq(8)
+        expect(result['locations'][0]['physicalLocation']['region']['startColumn']).to eq(2)
         expected = "7: func main() {\n8: \tpassword := \"hhend77dyyydbh&^psNSSZ)JSM--_%\"\n9: "\
         "\tfmt.Println(\"hello, from the vulnerable app\" + password)\n"
         snippet = result['locations'][0]['physicalLocation']['region']['snippet']['text'].to_s
