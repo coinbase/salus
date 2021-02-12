@@ -17,7 +17,8 @@ module Sarif
         id: issue[:cve],
         name: issue[:advisory_title],
         level: "MEDIUM",
-        details: issue[:description],
+        details: "Name: #{issue[:name]}\nVersion: #{issue[:version]}\nDesciption: "\
+        "#{issue[:description]}\nPatched Versions: #{issue[:patched_versions]}",
         uri: 'Gemfile.lock',
         help_url: issue[:url]
       }
