@@ -52,7 +52,6 @@ module Sarif
         result[:locations][0][:physicalLocation][:region] = {
           "startLine": parsed_issue[:start_line].to_i,
           "startColumn": parsed_issue[:start_column].to_i,
-          # "endLine": parsed_issue[:end_line.to_i]
           "snippet": {
             "text": parsed_issue[:code]
           }
@@ -105,6 +104,8 @@ module Sarif
       rules = []
       @logs.each do |issue|
         parsed_issue = parse_issue(issue)
+        next if !parsed_issue
+
         rule = build_rule(parsed_issue)
         rules << rule if rule
         results << build_result(parsed_issue)

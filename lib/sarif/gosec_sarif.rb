@@ -48,7 +48,8 @@ module Sarif
           id: issue['rule_id'],
           name: "CWE-#{issue['cwe']['ID']}",
           level: issue['severity'],
-          details: issue['details'],
+          details: "#{issue['details']} \nSeverity: #{issue['severity']}\nConfidence:"\
+          " #{issue['confidence']}\nCWE: #{issue['cwe']['URL']}",
           start_line: issue['line'].to_i,
           start_column: issue['column'].to_i,
           uri: issue['file'],
