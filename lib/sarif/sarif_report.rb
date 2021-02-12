@@ -1,6 +1,8 @@
 require 'json'
 require 'json-schema'
 require_relative './base_sarif'
+require_relative './bundle_audit_sarif'
+
 module Sarif
   # Class for generating sarif reports
   class SarifReport
