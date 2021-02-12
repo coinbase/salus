@@ -10,9 +10,15 @@ module Sarif
       rescue JSON::ParserError
         @logs = []
       end
+      @unique_issues = Set.new
     end
 
     def parse_issue(issue)
+      key = ""
+      key << issue["filename"].upcase + issue["line_number"].to_s + issue['issue_text']
+      return nil if @unique_issues.include? key
+
+      @unique_issues.add(key)
       endline = issue['line_range'][issue['line_range'].size - 1]
       {
         id: issue['test_id'],
