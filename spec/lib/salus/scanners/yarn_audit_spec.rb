@@ -93,7 +93,8 @@ describe Salus::Scanners::YarnAudit do
       report = scanner.report.to_h
       expect(report.fetch(:passed)).to eq(false)
       info = scanner.report.to_h.fetch(:info)
-      expect(info[:stderr]).to include("classnames-repo-does-not-exist: Not found")
+      err_msg = "Couldn't find any versions for \"classnames-repo-does-not-exist\" that matches"
+      expect(info[:stderr]).to include(err_msg)
     end
 
     it 'should pass if vulnerable devDependencies are excluded' do
