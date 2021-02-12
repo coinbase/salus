@@ -22,5 +22,9 @@ module Sarif
         help_url: issue[:url]
       }
     end
+
+    def build_invocations
+      { "executionSuccessful": @scan_report.passed? || false }
+    end
   end
 end
