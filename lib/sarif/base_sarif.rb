@@ -51,6 +51,7 @@ module Sarif
       if parsed_issue[:code]
         result[:locations][0][:physicalLocation][:region] = {
           "startLine": parsed_issue[:start_line].to_i,
+          "endLine": parsed_issue[:end_line].to_i,
           "startColumn": parsed_issue[:start_column].to_i,
           "snippet": {
             "text": parsed_issue[:code]

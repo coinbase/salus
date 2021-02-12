@@ -17,7 +17,8 @@ describe Sarif::BanditSarif do
           id: "B403",
           name: "blacklist",
           level: "LOW",
-          details: "Consider possible security implications associated with cPickle module.",
+          details: "Consider possible security implications associated with cPickle module. "\
+          "\nissue_confidence: LOW\nissue_severity: LOW",
           start_line: 1,
           start_column: 1,
           help_url: "https://bandit.readthedocs.io/en/latest/blacklists/blacklist_imports.html"\
@@ -69,7 +70,7 @@ describe Sarif::BanditSarif do
         # Check rule info
         expect(rules[0]['id']).to eq('B403')
         expect(rules[0]['name']).to eq('blacklist')
-        expect(rules[0]['fullDescription']['text']).to eq("Consider possible security"\
+        expect(rules[0]['fullDescription']['text']).to include("Consider possible security"\
           " implications associated with cPickle module.")
         expect(rules[0]['helpUri']).to eq("https://bandit.readthedocs.io/en/latest/"\
           "blacklists/blacklist_imports.html#b403-import-pickle")
