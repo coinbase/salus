@@ -6,9 +6,13 @@ module Sarif
       super(scan_report)
       @logs = @scan_report.to_h[:info][:vulnerabilities]
       @uri = BUNDLEAUDIT_URI
+      @urls = Set.new
     end
 
     def parse_issue(issue)
+      return nil if @urls.include?(issue[:url])
+
+      @urls.add(issue[:url])
       {
         id: issue[:cve],
         name: issue[:advisory_title],
