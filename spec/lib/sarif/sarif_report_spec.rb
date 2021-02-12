@@ -4,7 +4,7 @@ require 'json-schema'
 
 describe Sarif::SarifReport do
   let(:scan_report1) { Salus::ScanReport.new(name: 'Unsupported_Scanner') }
-  let(:scan_report2) { Salus::ScanReport.new('Gosec') }
+  let(:scan_report2) { Salus::ScanReport.new('Neon_Scanner') }
   let(:scan_reports) { [scan_report1, scan_report2] }
 
   describe 'to_sarif' do
@@ -24,7 +24,10 @@ describe Sarif::SarifReport do
     it 'fails if generated sarif format is incorrect' do
       expect { report.to_sarif }.to raise_error(
         Sarif::SarifReport::SarifInvalidFormatError,
-        'Incorrect Sarif Output'
+        "Incorrect Sarif Output: [\"The property '#/runs/0/tool/driver/name'"\
+        " of type object did not match the following type: string in schema "\
+        "https://raw.githubusercontent.com/schemastore/schemastore/master/src"\
+        "/schemas/json/sarif-2.1.0-rtm.5.json#\"]"
       )
     end
 
@@ -39,7 +42,7 @@ describe Sarif::SarifReport do
       report1 = body['runs'][0]['tool']
       report2 = body['runs'][1]['tool']
       expect(report1["driver"]['name']).to eq('Unsupported_Scanner')
-      expect(report2['driver']['name']).to eq('Gosec')
+      expect(report2['driver']['name']).to eq('Neon_Scanner')
     end
   end
 end

@@ -33,7 +33,8 @@ module Sarif
       if JSON::Validator.validate(schema, report)
         report
       else
-        raise SarifInvalidFormatError, 'Incorrect Sarif Output' end
+        errors = JSON::Validator.fully_validate(schema, report)
+        raise SarifInvalidFormatError, "Incorrect Sarif Output: #{errors}" end
     end
 
     # Converts a ScanReport to a sarif report for the given scanner
@@ -46,9 +47,9 @@ module Sarif
         converter = Object.const_get(adapter).new(scan_report)
       rescue NameError
         converter = BaseSarif.new(scan_report)
-        return converter.sarif_report
+        return converter.build_runs_object
       end
-      converter.sarif_report
+      converter.build_runs_object
     end
   end
 end
