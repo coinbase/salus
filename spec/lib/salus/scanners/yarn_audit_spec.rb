@@ -93,7 +93,7 @@ describe Salus::Scanners::YarnAudit do
       report = scanner.report.to_h
       expect(report.fetch(:passed)).to eq(false)
       info = scanner.report.to_h.fetch(:info)
-      err_msg = "Couldn't find any versions for \"classnames-repo-does-not-exist\" that matches"
+      err_msg = "Received malformed response from registry for \"classnames-repo-does-not-exist\""
       expect(info[:stderr]).to include(err_msg)
     end
 
