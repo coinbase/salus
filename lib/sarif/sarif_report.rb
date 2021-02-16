@@ -10,8 +10,8 @@ module Sarif
 
     SARIF_VERSION = "2.1.0".freeze
 
-    SARIF_SCHEMA = "https://schemastore.azurewebsites.net/schemas"\
-      "/json/sarif-2.1.0-rtm.5.json".freeze
+    SARIF_SCHEMA = "https://docs.oasis-open.org/sarif/sarif/v2.0/csprd01/schemas/"\
+    "sarif-schema.json".freeze
 
     def initialize(scan_reports)
       @scan_reports = scan_reports
@@ -49,7 +49,7 @@ module Sarif
         converter = Object.const_get(adapter).new(scan_report)
       rescue NameError
         converter = BaseSarif.new(scan_report)
-        return converter.build_runs_object
+        converter.build_runs_object
       end
       converter.build_runs_object
     end
