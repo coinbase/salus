@@ -6,6 +6,7 @@ require 'salus/repo'
 require 'salus/scanners'
 require 'salus/config'
 require 'salus/processor'
+require 'sarif/sarif_report'
 
 module Salus
   VERSION = '2.10.16'.freeze

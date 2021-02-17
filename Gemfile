@@ -33,3 +33,5 @@ group :test do
   gem 'simplecov', '~> 0.21.2'
   gem 'webmock', '~> 3.11'
 end
+
+gem "json-schema", "~> 2.8"
