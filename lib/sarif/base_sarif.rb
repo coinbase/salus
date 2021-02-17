@@ -52,7 +52,7 @@ module Sarif
       if parsed_issue[:start_line]
         location[:region] = {
           "startLine": parsed_issue[:start_line].to_i,
-          "startColumn": parsed_issue[:start_column].to_i,
+          "startColumn": parsed_issue[:start_column].to_i
         }
       end
       location[:region][:snippet] = { "text": parsed_issue[:code] } if parsed_issue[:code]
