@@ -1,7 +1,7 @@
 require_relative '../../spec_helper.rb'
 require 'json'
 
-describe Sarif::BrakemanSarif do
+describe Sarif::CargoAuditSarif do
   describe '#parse_issue' do
     let(:scanner) { Salus::Scanners::CargoAudit.new(repository: repo, config: {}) }
     before { scanner.run }
