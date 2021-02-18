@@ -19,8 +19,8 @@ describe Sarif::NPMAuditSarif do
           details: "Package:uglify-js \nDescription:Versions of `uglify-js` prior to 2.4.24 are"\
           " affected by a vulnerability which may cause crafted JavaScript to have altered"\
           " functionality after minification.\n\n \nRecommendation: Upgrade UglifyJS to version"\
-          " >= 2.4.24.\nVulnerable Versions: <= 2.4.23 \nSeverity:low \nPatched Versions: >= 2.4.24"\
-          "\nCWE: CWE-95 ",
+          " >= 2.4.24.\nVulnerable Versions: <= 2.4.23 \nSeverity:low \nPatched Versions:"\
+          " >= 2.4.24\nCWE: CWE-95 ",
           help_url: "https://npmjs.com/advisories/39",
           uri: "package-lock.json"
         )
@@ -67,7 +67,7 @@ describe Sarif::NPMAuditSarif do
         expected = "Package:uglify-js \nDescription:Versions of `uglify-js` prior to 2.4.24 are"\
         " affected by a vulnerability which may cause crafted JavaScript to have altered"\
         " functionality after minification.\n\n \nRecommendation: Upgrade UglifyJS to version"\
-        " >= 2.4.24.\nVulnerable Versions: <= 2.4.23 \nSeverity:lowPatched Versions: >= 2.4.24"\
+        " >= 2.4.24.\nVulnerable Versions: <= 2.4.23 \nSeverity:low \nPatched Versions: >= 2.4.24"\
         "\nCWE: CWE-95 "
         expect(rules[0]['fullDescription']['text']).to eq(expected)
         expect(rules[0]['helpUri']).to eq("https://npmjs.com/advisories/39")
