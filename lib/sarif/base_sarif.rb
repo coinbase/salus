@@ -1,6 +1,7 @@
 module Sarif
   class BaseSarif
     DEFAULT_URI = "https://github.com/coinbase/salus".freeze
+    NON_AUDITS = Set['Brakeman', 'Gosec', 'Bandit']
 
     SARIF_WARNINGS = {
       error: "error",
@@ -135,7 +136,15 @@ module Sarif
     def sarif_level(severity)
       case severity
       when "LOW"
+        if NON_AUDITS.include?(@scan_report.scanner_name)
+          SARIF_WARNINGS[:warning]
+        else
+          SARIF_WARNINGS[:note]
+        end
+      when "MODERATE"
         SARIF_WARNINGS[:warning]
+      when "CRITICAL"
+        SARIF_WARNINGS[:error]
       when "MEDIUM"
         SARIF_WARNINGS[:error]
       when "HIGH"

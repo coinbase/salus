@@ -33,8 +33,17 @@ describe Sarif::BaseSarif do
     end
   end
 
+  describe '#sarif_level' do
+    it 'returns a different `low` severity mapping for audit type scanners' do
+      non_audit = Salus::ScanReport.new("Gosec")
+      adapter = Sarif::GosecSarif.new(non_audit)
+      expect(adapter.sarif_level('LOW')).to eq('warning')
+      expect(base_sarif.sarif_level('LOW')).to eq('note')
+    end
+  end
+
   describe 'sarif_report' do
-    it 'returns' do
+    it 'returns sarif report' do
       expect(base_sarif.build_runs_object).to include({ "tool" => base_sarif.build_tool,
         "conversion" => base_sarif.build_conversion,
         "results" => [],
