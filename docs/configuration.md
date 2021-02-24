@@ -51,7 +51,7 @@ custom_info: "PR-123"
 #
 # Each Hash must contain keys for `uri` and `format`.
 # URIs can point to either the local file system or remote HTTP destinations.
-# The available formats are `json`, `yaml` and `txt`.
+# The available formats are `json`, `yaml`, `txt` and `sarif`.
 # `verbose` is an optional key and defaults to false.
 reports:
   - uri: file://tests/salus-report.txt
@@ -59,6 +59,8 @@ reports:
   - uri: https://salus-config.internal.net/salus-report
     format: json
     verbose: true
+  - uri: file://tests/salus-report.sarif
+    format: sarif
 
 # Hash with build info. Can contain arbitrary keys.
 builds:
