@@ -6,22 +6,24 @@ module Sarif
       super(scan_report)
       @uri = GOSEC_URI
       @issues = Set.new
-      begin
-        json_obj = JSON.parse(scan_report.log(''))
-        issues = json_obj['Issues']
-        errors = json_obj['Golang errors']
-        parsed_errors = []
-        errors.each do |key|
-          key[1].each do |location|
-            location['uri'] = key[0]
-            parsed_errors << parse_error(location)
-          end
+      @logs = parse_scan_report!(scan_report)
+    end
+
+    def parse_scan_report!(scan_report)
+      json_obj = JSON.parse(scan_report.log(''))
+      issues = json_obj['Issues']
+      errors = json_obj['Golang errors']
+      parsed_errors = []
+      errors.each do |key|
+        key[1].each do |location|
+          location['uri'] = key[0]
+          parsed_errors << parse_error(location)
         end
-        parsed_errors.compact!
-        @logs = issues.concat parsed_errors
-      rescue JSON::ParserError
-        @logs = []
       end
+      parsed_errors.compact!
+      issues.concat parsed_errors
+    rescue JSON::ParserError
+      []
     end
 
     def parse_error(error)
