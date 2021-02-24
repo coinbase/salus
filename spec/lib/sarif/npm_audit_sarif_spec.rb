@@ -26,6 +26,34 @@ describe Sarif::NPMAuditSarif do
         )
       end
     end
+
+    context 'Duplicate advisories' do
+      let(:repo) { Salus::Repo.new('spec/fixtures/npm_audit/failure-2') }
+      it 'should be parsed once' do
+        issue = scanner.report.to_h[:info][:stdout][:advisories].values[0]
+
+        npm_sarif = Sarif::NPMAuditSarif.new(scanner.report)
+        expect(npm_sarif.parse_issue(issue).empty?).to eq(false)
+        expect(npm_sarif.parse_issue(issue)).to eq(nil)
+      end
+    end
+  end
+
+  describe '#sarif_level' do
+    let(:scanner) { Salus::Scanners::NPMAudit.new(repository: repo, config: {}) }
+    before { scanner.run }
+    context 'NPM severities' do
+      let(:repo) { Salus::Repo.new('spec/fixtures/npm_audit/success') }
+      it 'should be mapped to the right sarif levels' do
+        # NPM Severities: https://docs.npmjs.com/about-audit-reports#severity
+        adapter = Sarif::NPMAuditSarif.new(scanner.report)
+
+        expect(adapter.sarif_level('CRITICAL')).to eq('error')
+        expect(adapter.sarif_level('HIGH')).to eq('error')
+        expect(adapter.sarif_level('MODERATE')).to eq('warning')
+        expect(adapter.sarif_level('LOW')).to eq('note')
+      end
+    end
   end
 
   describe '#sarif_report' do
