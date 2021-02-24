@@ -1,10 +1,12 @@
 require 'faraday'
 require 'json'
 require 'salus/formatting'
+require 'salus/bugsnag'
 
 module Salus
   class Report
     include Formatting
+    include Salus::SalusBugsnag
 
     class ExportReportError < StandardError; end
 
@@ -125,7 +127,7 @@ module Salus
     def to_sarif
       Sarif::SarifReport.new(@scan_reports).to_sarif
     rescue Sarif::SarifReport::SarifInvalidFormatError => e
-      e.message
+      bugsnag_notify(e.message)
     end
 
     # Send the report to given URIs (which could be remove or local).

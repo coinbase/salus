@@ -22,12 +22,16 @@ describe Sarif::SarifReport do
     end
 
     it 'fails if generated sarif format is incorrect' do
-      expect(report.to_sarif).to eq(
+      scanner = Salus::Scanners::RepoNotEmpty.new(repository: repo, config: {})
+      scanner.run
+      report.add_scan_report(scanner.report, required: false)
+      expect(report).to receive(:bugsnag_notify).with(
         "Incorrect Sarif Output: [\"The property '#/runs/0/tool/driver/name'"\
         " of type object did not match the following type: string in schema "\
         "https://raw.githubusercontent.com/schemastore/schemastore/master/src"\
         "/schemas/json/sarif-2.1.0-rtm.5.json#\"]"
       )
+      report.to_sarif
     end
 
     it 'contains the right scanners' do
