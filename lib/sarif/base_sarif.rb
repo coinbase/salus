@@ -135,12 +135,10 @@ module Sarif
     def sarif_level(severity)
       case severity
       when "LOW"
-        SARIF_WARNINGS[:note]
-      when "MEDIUM"
         SARIF_WARNINGS[:warning]
-      when "HIGH"
+      when "MEDIUM"
         SARIF_WARNINGS[:error]
-      when "CRITICAL"
+      when "HIGH"
         SARIF_WARNINGS[:error]
       else
         SARIF_WARNINGS[:note]
