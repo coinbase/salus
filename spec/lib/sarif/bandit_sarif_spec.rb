@@ -26,6 +26,30 @@ describe Sarif::BanditSarif do
           code: expected
         )
       end
+
+      it 'dont have duplicate entries' do
+        bandit_sarif = Sarif::BanditSarif.new(scanner.report)
+        issue = JSON.parse(scanner.log(''))['results'][0]
+
+        expect(bandit_sarif.parse_issue(issue).nil?).to eq(false)
+        expect(bandit_sarif.parse_issue(issue).nil?).to eq(true)
+      end
+    end
+  end
+
+  describe '#sarif_level' do
+    let(:scanner) { Salus::Scanners::Bandit.new(repository: repo, config: {}) }
+    let(:py_dir) { 'spec/fixtures/python' }
+
+    context 'Bandit Severities' do
+      let(:repo) { Salus::Repo.new("#{py_dir}/python_project_no_vulns") }
+
+      it 'are mapped to the right sarif levels' do
+        adapter = Sarif::BanditSarif.new(scanner.report)
+        expect(adapter.sarif_level("HIGH")).to eq("error")
+        expect(adapter.sarif_level("LOW")).to eq("warning")
+        expect(adapter.sarif_level("MEDIUM")).to eq("error")
+      end
     end
   end
 

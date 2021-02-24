@@ -5,17 +5,19 @@ module Sarif
     def initialize(scan_report)
       super(scan_report)
       @uri = BANDIT_URI
-      begin
-        @logs = JSON.parse(@scan_report.log(''))['results']
-      rescue JSON::ParserError
-        @logs = []
-      end
+      @logs = parse_scan_report!
       @unique_issues = Set.new
+    end
+
+    def parse_scan_report!
+      JSON.parse(@scan_report.log(''))['results']
+    rescue JSON::ParserError
+      []
     end
 
     def parse_issue(issue)
       key = ""
-      key << issue["filename"].upcase + issue["line_number"].to_s + issue['issue_text']
+      key << issue["filename"] + issue["line_number"].to_s + issue['issue_text']
       return nil if @unique_issues.include? key
 
       @unique_issues.add(key)
