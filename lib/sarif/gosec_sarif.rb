@@ -5,6 +5,7 @@ module Sarif
     def initialize(scan_report)
       super(scan_report)
       @uri = GOSEC_URI
+      @issues = Set.new
       begin
         json_obj = JSON.parse(scan_report.log(''))
         issues = json_obj['Issues']
@@ -16,6 +17,7 @@ module Sarif
             parsed_errors << parse_error(location)
           end
         end
+        parsed_errors.compact!
         @logs = issues.concat parsed_errors
       rescue JSON::ParserError
         @logs = []
@@ -27,6 +29,11 @@ module Sarif
       column = error['column'].to_i
       line = 1 if line.zero?
       column = 1 if column.zero?
+
+      id = error['error'] + error['uri'] + line.to_s
+      return nil if @issues.include?(id)
+
+      @issues.add(id)
       {
         id: 'SAL0002',
         name: "Golang Error",
@@ -44,6 +51,10 @@ module Sarif
       if issue[:id] == 'SAL0002'
         issue
       else
+        id = issue['details'] + issue['file'] + issue['line']
+        return nil if @issues.include?(id)
+
+        @issues.add(id)
         {
           id: issue['rule_id'],
           name: "CWE-#{issue['cwe']['ID']}",

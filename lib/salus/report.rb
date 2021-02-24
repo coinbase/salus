@@ -124,6 +124,8 @@ module Salus
 
     def to_sarif
       Sarif::SarifReport.new(@scan_reports).to_sarif
+    rescue Sarif::SarifReport::SarifInvalidFormatError => e
+      e.message
     end
 
     # Send the report to given URIs (which could be remove or local).
