@@ -43,6 +43,7 @@ describe Sarif::GosecSarif do
       context 'gosec severities' do
         let(:repo) { Salus::Repo.new('spec/fixtures/gosec/safe_goapp') }
         it 'are mapped to sarif levels' do
+          scan_report = Salus::ScanReport.new(scanner_name: "Gosec")
           adapter = Sarif::GosecSarif.new(scan_report)
           expect(adapter.sarif_level("MEDIUM")).to eq("error")
           expect(adapter.sarif_level("HIGH")).to eq("error")
