@@ -12,7 +12,8 @@ describe Sarif::SarifReport do
     let(:name) { 'Neon Genesis Evangelion' }
     let(:custom_info) { { bitcoin_price: 100_000 } }
     let(:config) { { lemurs: 'contained', raptors: 'loose' } }
-    let(:report) { Salus::Report.new(project_name: name, custom_info: custom_info, config: config) }
+    let(:build) { { "url": "https://github.com" } }
+    let(:report) { Salus::Report.new(project_name: name, custom_info: custom_info, builds: build) }
 
     before do
       scan_reports.each do |scan_report|
@@ -29,7 +30,7 @@ describe Sarif::SarifReport do
         "Incorrect Sarif Output: [\"The property '#/runs/0/tool/driver/name'"\
         " of type object did not match the following type: string in schema "\
         "https://raw.githubusercontent.com/schemastore/schemastore/master/src"\
-        "/schemas/json/sarif-2.1.0-rtm.5.json#\"]"
+        "/schemas/json/sarif-2.1.0-rtm.5.json#\"]\nBuild Info:{:url=>\"https://github.com\"}"
       )
       report.to_sarif
     end

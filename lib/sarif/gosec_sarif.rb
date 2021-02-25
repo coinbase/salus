@@ -53,7 +53,7 @@ module Sarif
       if issue[:id] == 'SAL0002'
         issue
       else
-        id = issue['details'] + issue['file'] + issue['line']
+        id = issue['details'] + ' ' + issue['file'] + ' ' + issue['line']
         return nil if @issues.include?(id)
 
         @issues.add(id)
