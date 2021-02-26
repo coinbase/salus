@@ -107,4 +107,22 @@ describe Sarif::NPMAuditSarif do
       end
     end
   end
+
+  describe '#to_sarif' do
+    context 'Should generate report when parse error is generated' do
+      let(:repo) { Salus::Repo.new('spec/fixtures/npm_audit/failure-3') }
+      it 'should be parsed once' do
+        scanner = Salus::Scanners::NPMAudit.new(repository: repo, config: {})
+        scanner.run
+
+      rescue RuntimeError
+        report = Salus::Report.new(project_name: "Neon Genesis")
+        report.add_scan_report(scanner.report, required: false)
+        report_object = JSON.parse(report.to_sarif)['runs'][0]
+        expect(report_object['invocations'][0]['executionSuccessful']).to eq(false)
+        uri = "https://docs.npmjs.com/cli/v7/commands/npm-audit"
+        expect(report_object['tool']['driver']['informationUri']).to eq(uri)
+      end
+    end
+  end
 end

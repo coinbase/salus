@@ -5,8 +5,15 @@ module Sarif
     def initialize(scan_report)
       super(scan_report)
       @uri = NPM_URI
-      @logs = @scan_report.to_h[:info][:stdout][:advisories].values
+      @logs = parse_scan_report!
       @issues = Set.new
+    end
+
+    def parse_scan_report!
+      log = @scan_report.to_h.dig(:info, :stdout, :advisories)
+      return [] if log.nil?
+
+      log.values
     end
 
     def parse_issue(issue)
@@ -28,7 +35,23 @@ module Sarif
     end
 
     def build_invocations
-      { "executionSuccessful": @scan_report.passed? }
+      error = @scan_report.to_h[:errors]
+      if error
+        {
+          "executionSuccessful": @scan_report.passed?,
+          "toolExecutionNotifications": [{
+            "descriptor": {
+              "id": ""
+            },
+            "level": "error",
+            "message": {
+              "text": "==== Salus Errors\n#{JSON.pretty_generate(error)}"
+            }
+          }]
+        }
+      else
+        { "executionSuccessful": @scan_report.passed? }
+      end
     end
 
     def sarif_level(severity)
