@@ -1,5 +1,9 @@
+require 'salus/bugsnag'
+
 module Sarif
   class GosecSarif < BaseSarif
+    include Salus::SalusBugsnag
+
     GOSEC_URI = 'https://github.com/securego/gosec'.freeze
 
     def initialize(scan_report)
@@ -22,7 +26,8 @@ module Sarif
       end
       parsed_errors.compact!
       issues.concat parsed_errors
-    rescue JSON::ParserError
+    rescue JSON::ParserError => e
+      bugsnag_notify(e.message)
       []
     end
 
