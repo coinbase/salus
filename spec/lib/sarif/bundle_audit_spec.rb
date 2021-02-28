@@ -30,7 +30,7 @@ describe Sarif::BundleAuditSarif do
           id: "CVE-2020-8164",
           details: expected,
           name: "Possible Strong Parameters Bypass in ActionPack",
-          level: "MEDIUM",
+          level: 0,
           help_url: "https://groups.google.com/forum/#!topic/rubyonrails-security/f6ioe4sdpbY",
           uri: "Gemfile.lock"
         )
@@ -56,7 +56,7 @@ describe Sarif::BundleAuditSarif do
     context 'ruby project with vulnerabilities' do
       let(:repo) { Salus::Repo.new('spec/fixtures/bundle_audit/cves_found') }
 
-      it 'should record failure and record the STDOUT from bundle-audit' do
+      it 'should return valid sarif report' do
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
         result = JSON.parse(report.to_sarif)["runs"][0]["results"][0]
@@ -86,8 +86,19 @@ describe Sarif::BundleAuditSarif do
         # Check result info
         expect(result['ruleId']).to eq('CVE-2020-8164')
         expect(result['ruleIndex']).to eq(0)
-        expect(result['level']).to eq('error')
+        expect(result['level']).to eq(0)
         expect(result['message']['text']).to include(expected)
+      end
+    end
+  end
+
+  describe '#sarif_level' do
+    context 'Bundler audit severities' do
+      it 'should be mapped to the right sarif level' do
+        adapter = Sarif::BundleAuditSarif.new([])
+        expect(adapter.sarif_level(0)).to eq("note")
+        expect(adapter.sarif_level(5.6)).to eq("warning")
+        expect(adapter.sarif_level(9.7)).to eq("error")
       end
     end
   end
