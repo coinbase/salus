@@ -1,4 +1,6 @@
+require 'salus/bugsnag'
 module Sarif
+  include Salus::SalusBugsnag
   class YarnAuditSarif < BaseSarif
     YARN_URI = 'https://classic.yarnpkg.com/en/docs/cli/audit/'.freeze
 
@@ -7,16 +9,18 @@ module Sarif
       @uri = YARN_URI
       begin
         @logs = scan_report.to_h.fetch(:logs).dump.split("\\n\\n")
-      rescue KeyError
+      rescue KeyError => e
+        bugsnag_notify(e.message)
         @logs = []
       end
+      @issues = Set.new
     end
 
     def parse_issue(issue)
-      issue = issue.split('\\n')
+      parsed_issue = issue.split('\\n')
       index = 0
       h = {}
-      issue.each do |item|
+      parsed_issue.each do |item|
         seperator = item.index(':')
         next if !seperator
 
@@ -26,34 +30,56 @@ module Sarif
       end
       return nil if h.empty?
 
+      id = h['ID']
+      return nil if @issues.include?(id)
+
+      @issues.add(id)
       {
         id: format('YARN%<number>.4d', number: h['ID'].to_i),
         name: h['Title'],
         level: h['Severity'].upcase,
-        details: "Package: #{h['Package']}\nUpgrade to: #{h['Patched in']}\nDependency of:"\
-        "#{h['Dependency of']}",
-        uri: "Yarn.lock",
+        details: "Title: #{h['Title']}\nPackage: #{h['Package']}\nPatched in: #{h['Patched in']}"\
+        "\nDependency of:#{h['Dependency of']} \nSeverity: #{h['Severity']}",
+        uri: "yarn.lock",
         help_url: h['More info']
       }
     end
 
     def build_invocations
-      if @logs.empty? && !@scan_report.passed?
-        error = @scan_report.to_h.fetch(:info)[:stderr]
+      error = @scan_report.to_h[:errors]
+      if !error.empty?
+        error = @scan_report.to_h[:errors]
         {
-          "executionSuccessful": false,
+          "executionSuccessful": @scan_report.passed?,
           "toolExecutionNotifications": [{
             "descriptor": {
               "id": ""
             },
             "level": "error",
             "message": {
-              "text": "#{@scan_report.to_h.fetch(:errors).first[:message] || ''}, #{error}"
+              "text": "SALUS ERRORS:\n #{JSON.pretty_generate(error)}"
             }
           }]
         }
       else
         { "executionSuccessful": @scan_report.passed? }
+      end
+    end
+
+    def sarif_level(severity)
+      case severity
+      when "LOW"
+        "note"
+      when "MODERATE"
+        "warning"
+      when "HIGH"
+        "error"
+      when "INFO"
+        "note"
+      when "CRITICAL"
+        "error"
+      else
+        "note"
       end
     end
   end

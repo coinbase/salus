@@ -16,9 +16,10 @@ describe Sarif::YarnAuditSarif do
           id: "YARN0039",
           name: "Incorrect Handling of Non-Boolean Comparisons During Minification",
           level: "LOW",
-          details: "Package: uglify-js\nUpgrade to: >= 2.4.24\nDependency of:uglify-js",
+          details: "Title: Incorrect Handling of Non-Boolean Comparisons During Minification\n"\
+          "Package: uglify-js\nPatched in: >= 2.4.24\nDependency of:uglify-js \nSeverity: low",
           help_url: "https://www.npmjs.com/advisories/39",
-          uri: "Yarn.lock"
+          uri: "yarn.lock"
         )
       end
     end
@@ -37,8 +38,7 @@ describe Sarif::YarnAuditSarif do
         expect(report_object['invocations'][0]['executionSuccessful']).to eq(false)
 
         message = report_object['invocations'][0]['toolExecutionNotifications'][0]['message']
-        expect(message['text']).to include("Received malformed response from registry for"\
-          " \"classnames-repo-does-not-exist\".")
+        expect(message['text']).to include("SALUS ERRORS")
       end
     end
 
@@ -53,7 +53,7 @@ describe Sarif::YarnAuditSarif do
       end
     end
 
-    context 'go project with vulnerabilities' do
+    context 'yarn project with vulnerabilities' do
       let(:repo) { Salus::Repo.new('spec/fixtures/yarn_audit/failure-4') }
       it 'should generate the right results and rules' do
         report = Salus::Report.new(project_name: "Neon Genesis")
@@ -64,15 +64,27 @@ describe Sarif::YarnAuditSarif do
         expect(rules[0]['id']).to eq('YARN0039')
         expect(rules[0]['name']).to eq("Incorrect Handling of Non-Boolean Comparisons During"\
           " Minification")
-        expect(rules[0]['fullDescription']['text']).to eq("Package: uglify-js\nUpgrade to:"\
-          " >= 2.4.24\nDependency of:uglify-js")
+        expect(rules[0]['fullDescription']['text']).to eq("Title: Incorrect Handling of"\
+          " Non-Boolean Comparisons During Minification\nPackage: uglify-js\nPatched in:"\
+          " >= 2.4.24\nDependency of:uglify-js \nSeverity: low")
         expect(rules[0]['helpUri']).to eq("https://www.npmjs.com/advisories/39")
 
         # Check result info
         expect(result['ruleId']).to eq('YARN0039')
         expect(result['ruleIndex']).to eq(0)
-        expect(result['level']).to eq('warning')
+        expect(result['level']).to eq('note')
       end
+    end
+  end
+
+  describe '#sarif_level' do
+    it 'maps severities to the right sarif level' do
+      adapter = Sarif::YarnAuditSarif.new([])
+      expect(adapter.sarif_level("INFO")).to eq("note")
+      expect(adapter.sarif_level("LOW")).to eq("note")
+      expect(adapter.sarif_level("MODERATE")).to eq("warning")
+      expect(adapter.sarif_level("HIGH")).to eq("error")
+      expect(adapter.sarif_level("CRITICAL")).to eq("error")
     end
   end
 end
