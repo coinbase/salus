@@ -1,19 +1,21 @@
 require 'salus/bugsnag'
 module Sarif
-  include Salus::SalusBugsnag
   class YarnAuditSarif < BaseSarif
+    include Salus::SalusBugsnag
     YARN_URI = 'https://classic.yarnpkg.com/en/docs/cli/audit/'.freeze
 
     def initialize(scan_report)
       super(scan_report)
       @uri = YARN_URI
-      begin
-        @logs = scan_report.to_h.fetch(:logs).dump.split("\\n\\n")
-      rescue KeyError => e
-        bugsnag_notify(e.message)
-        @logs = []
-      end
+      parse_scan_report!
       @issues = Set.new
+    end
+
+    def parse_scan_report!
+      @logs = @scan_report.to_h.fetch(:logs).dump.split("\\n\\n")
+    rescue KeyError => e
+      bugsnag_notify(e.message)
+      @logs = []
     end
 
     def parse_issue(issue)
@@ -69,17 +71,17 @@ module Sarif
     def sarif_level(severity)
       case severity
       when "LOW"
-        "note"
+        SARIF_WARNINGS[:note]
       when "MODERATE"
         "warning"
       when "HIGH"
         "error"
       when "INFO"
-        "note"
+        SARIF_WARNINGS[:note]
       when "CRITICAL"
         "error"
       else
-        "note"
+        SARIF_WARNINGS[:note]
       end
     end
   end
