@@ -73,13 +73,13 @@ module Sarif
       when "LOW"
         SARIF_WARNINGS[:note]
       when "MODERATE"
-        "warning"
+        SARIF_WARNINGS[:warning]
       when "HIGH"
-        "error"
+        SARIF_WARNINGS[:error]
       when "INFO"
         SARIF_WARNINGS[:note]
       when "CRITICAL"
-        "error"
+        SARIF_WARNINGS[:error]
       else
         SARIF_WARNINGS[:note]
       end
