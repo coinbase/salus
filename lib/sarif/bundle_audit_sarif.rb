@@ -34,7 +34,7 @@ module Sarif
             "descriptor": {
               "id": ""
             },
-            "level": "error",
+            "level": SARIF_WARNINGS[:error],
             "message": {
               "text": "==== Salus Errors\n#{JSON.pretty_generate(error)}"
             }
