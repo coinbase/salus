@@ -12,14 +12,14 @@ module Sarif
     end
 
     def parse_scan_report!
-      @logs = @scan_report.to_h.fetch(:logs).dump.split("\\n\\n")
+      @logs = @scan_report.to_h.fetch(:logs).split("\n\n")
     rescue KeyError => e
       bugsnag_notify(e.message)
       @logs = []
     end
 
     def parse_issue(issue)
-      parsed_issue = issue.split('\\n')
+      parsed_issue = issue.split("\n")
       index = 0
       h = {}
       parsed_issue.each do |item|
@@ -32,12 +32,12 @@ module Sarif
       end
       return nil if h.empty?
 
-      id = h['ID']
+      id = h['ID'] + ' ' + h['Package'] + ' ' + h['Dependency of']
       return nil if @issues.include?(id)
 
       @issues.add(id)
       {
-        id: format('YARN%<number>.4d', number: h['ID'].to_i),
+        id: h['ID'],
         name: h['Title'],
         level: h['Severity'].upcase,
         details: "Title: #{h['Title']}\nPackage: #{h['Package']}\nPatched in: #{h['Patched in']}"\
@@ -66,6 +66,16 @@ module Sarif
       else
         { "executionSuccessful": @scan_report.passed? }
       end
+    end
+
+    # fullDescription on a rule should not explain a single vulnerability
+    # since multiple vulnerabilites can have the same RuleID
+    def build_rule(parsed_issue)
+      rule = super(parsed_issue)
+      return nil if rule.nil?
+
+      rule[:fullDescription][:text] = rule[:name]
+      rule
     end
 
     def sarif_level(severity)
