@@ -50,7 +50,6 @@ module Sarif
     def build_invocations
       error = @scan_report.to_h[:errors]
       if !error.empty?
-        error = @scan_report.to_h[:errors]
         {
           "executionSuccessful": @scan_report.passed?,
           "toolExecutionNotifications": [{
