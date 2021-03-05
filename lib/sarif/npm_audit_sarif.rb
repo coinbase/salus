@@ -17,7 +17,7 @@ module Sarif
     end
 
     def parse_issue(issue)
-      id = issue[:id].to_i
+      id = issue[:id]
       return nil if @issues.include?(id)
 
       @issues.add(id)
