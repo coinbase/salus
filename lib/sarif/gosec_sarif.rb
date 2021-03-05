@@ -37,7 +37,7 @@ module Sarif
       line = 1 if line.zero?
       column = 1 if column.zero?
 
-      id = error['error'] + error['uri'] + line.to_s
+      id = error['error'] + ' ' + error['uri'] + ' ' + line.to_s
       return nil if @issues.include?(id)
 
       @issues.add(id)
