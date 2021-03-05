@@ -22,7 +22,7 @@ module Sarif
 
       @issues.add(id)
       {
-        id: format('NPM%<number>.4d', number: issue[:id].to_i),
+        id: issue[:id].to_i,
         name: issue[:title],
         level: issue[:severity].upcase,
         details: "Package:#{issue[:module_name]} \nDescription:#{issue[:overview]}"\

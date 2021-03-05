@@ -13,7 +13,7 @@ describe Sarif::NPMAuditSarif do
         npm_sarif = Sarif::NPMAuditSarif.new(scanner.report)
 
         expect(npm_sarif.parse_issue(issue)).to include(
-          id: "NPM0039",
+          id: "39",
           name: "Incorrect Handling of Non-Boolean Comparisons During Minification",
           level: "LOW",
           details: "Package:uglify-js \nDescription:Versions of `uglify-js` prior to 2.4.24 are"\
@@ -89,7 +89,7 @@ describe Sarif::NPMAuditSarif do
         result = JSON.parse(report.to_sarif)["runs"][0]["results"][0]
         rules = JSON.parse(report.to_sarif)["runs"][0]["tool"]["driver"]["rules"]
         # Check rule info
-        expect(rules[0]['id']).to eq('NPM0039')
+        expect(rules[0]['id']).to eq('39')
         expect(rules[0]['name']).to eq("Incorrect Handling of Non-Boolean Comparisons During"\
           " Minification")
         expected = "Package:uglify-js \nDescription:Versions of `uglify-js` prior to 2.4.24 are"\
@@ -101,7 +101,7 @@ describe Sarif::NPMAuditSarif do
         expect(rules[0]['helpUri']).to eq("https://npmjs.com/advisories/39")
 
         # Check result info
-        expect(result['ruleId']).to eq('NPM0039')
+        expect(result['ruleId']).to eq('39')
         expect(result['ruleIndex']).to eq(0)
         expect(result['level']).to eq('note')
       end
