@@ -17,12 +17,12 @@ module Sarif
     end
 
     def parse_issue(issue)
-      id = issue[:id]
+      id = issue[:id].to_s
       return nil if @issues.include?(id)
 
       @issues.add(id)
       {
-        id: issue[:id],
+        id: issue[:id].to_s,
         name: issue[:title],
         level: issue[:severity].upcase,
         details: "Package:#{issue[:module_name]} \nDescription:#{issue[:overview]}"\
