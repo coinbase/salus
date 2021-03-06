@@ -106,20 +106,34 @@ describe Sarif::NPMAuditSarif do
         expect(result['level']).to eq('note')
       end
     end
-  end
 
-  describe '#to_sarif' do
-    context 'Should generate report when parse error is generated' do
-      let(:repo) { Salus::Repo.new('spec/fixtures/npm_audit/failure-3') }
-      it 'should be parsed once' do
-        scanner = Salus::Scanners::NPMAudit.new(repository: repo, config: {})
+    context 'npm project with exceptions' do
+      let(:repo) { Salus::Repo.new('spec/fixtures/npm_audit/success_with_exceptions') }
+      it 'does not contain excluded cves' do
+        config_file = YAML.load_file(
+          "spec/fixtures/npm_audit/success_with_exceptions/salus.yaml"
+        )
+        scanner = Salus::Scanners::NPMAudit.new(
+          repository: repo, config: config_file['scanner_configs']['NPMAudit']
+        )
         scanner.run
-
-      rescue RuntimeError
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
         report_object = JSON.parse(report.to_sarif)['runs'][0]
-        expect(report_object['invocations'][0]['executionSuccessful']).to eq(false)
+        expect(report_object['results'].empty?).to eq(true)
+        expect(report_object['invocations'][0]['executionSuccessful']).to eq(true)
+      end
+    end
+  end
+
+  describe '#to_sarif' do
+    let(:scanner) { Salus::Scanners::NPMAudit.new(repository: repo, config: {}) }
+    context 'Should generate report when parse error is generated' do
+      let(:repo) { Salus::Repo.new('spec/fixtures/npm_audit/failure-3') }
+      it 'should be parsed once' do
+        report = Salus::Report.new(project_name: "Neon Genesis")
+        report.add_scan_report(scanner.report, required: true)
+        report_object = JSON.parse(report.to_sarif)['runs'][0]
         uri = "https://docs.npmjs.com/cli/v7/commands/npm-audit"
         expect(report_object['tool']['driver']['informationUri']).to eq(uri)
       end

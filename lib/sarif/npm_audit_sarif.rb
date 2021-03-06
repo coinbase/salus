@@ -7,6 +7,8 @@ module Sarif
       @uri = NPM_URI
       @logs = parse_scan_report!
       @issues = Set.new
+      @exceptions = Set.new(@scan_report.to_h.dig(:info, :exceptions))
+      @results = []
     end
 
     def parse_scan_report!
@@ -18,11 +20,11 @@ module Sarif
 
     def parse_issue(issue)
       id = issue[:id].to_s
-      return nil if @issues.include?(id)
+      return nil if @issues.include?(id) || @exceptions.include?(id)
 
       @issues.add(id)
       {
-        id: issue[:id].to_s,
+        id: id,
         name: issue[:title],
         level: issue[:severity].upcase,
         details: "Package:#{issue[:module_name]} \nDescription:#{issue[:overview]}"\
@@ -36,7 +38,7 @@ module Sarif
 
     def build_invocations
       error = @scan_report.to_h[:errors]
-      if error
+      if !error.empty?
         {
           "executionSuccessful": @scan_report.passed?,
           "toolExecutionNotifications": [{
@@ -50,7 +52,7 @@ module Sarif
           }]
         }
       else
-        { "executionSuccessful": @scan_report.passed? }
+        { "executionSuccessful": @issues.empty? || @scan_report.passed? }
       end
     end
 
