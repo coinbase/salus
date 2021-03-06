@@ -27,9 +27,9 @@ describe Sarif::SarifReport do
       scanner.run
       report.add_scan_report(scanner.report, required: false)
       expect(report).to receive(:bugsnag_notify).with(
-        "Incorrect Sarif Output: [\"The property '#/runs/0/tool/driver/name'"\
-        " of type object did not match the following type: string in schema "\
-        "https://raw.githubusercontent.com/schemastore/schemastore/master/src"\
+        "Sarif::SarifReport::SarifInvalidFormatError Incorrect Sarif Output: [\"The property "\
+        "'#/runs/0/tool/driver/name' of type object did not match the following type: string "\
+        "in schema https://raw.githubusercontent.com/schemastore/schemastore/master/src"\
         "/schemas/json/sarif-2.1.0-rtm.5.json#\"]\nBuild Info:{:url=>\"https://github.com\"}"
       )
       report.to_sarif

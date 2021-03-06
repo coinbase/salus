@@ -126,8 +126,8 @@ module Salus
 
     def to_sarif
       Sarif::SarifReport.new(@scan_reports).to_sarif
-    rescue Sarif::SarifReport::SarifInvalidFormatError => e
-      bugsnag_notify(e.message + "\nBuild Info:" + @builds.to_s)
+    rescue StandardError => e
+      bugsnag_notify(e.class.to_s + " " + e.message + "\nBuild Info:" + @builds.to_s)
     end
 
     # Send the report to given URIs (which could be remove or local).
