@@ -26,7 +26,8 @@ describe Sarif::BundleAuditSarif do
         "SomeModel.check(v) if k == :name }\nend\n```\n\nNote the mistaken use of `each` in the"\
         " `clean_up_params` method in the above\nexample.\n\nWorkarounds\n-----------\nDo not use"\
         " the return values of `each`, `each_value`, or `each_pair` in your\napplication.\n\n"\
-        "Patched Versions: patched_versions\nUnaffected Versions: "
+        "Patched Versions: [\"~> 5.2.4.3\", \">= 6.0.3.1\"]\nUnaffected Versions: [\"< 4.0.0\"]\n"\
+        "CVSS: \nOSVDB "
 
         expect(bundle_audit_sarif.parse_issue(issue)).to include(
           id: "CVE-2020-8164",
@@ -78,7 +79,8 @@ describe Sarif::BundleAuditSarif do
         "SomeModel.check(v) if k == :name }\nend\n```\n\nNote the mistaken use of `each` in the"\
         " `clean_up_params` method in the above\nexample.\n\nWorkarounds\n-----------\nDo not use"\
         " the return values of `each`, `each_value`, or `each_pair` in your\napplication.\n\n"\
-        "Patched Versions: patched_versions\nUnaffected Versions: "
+        "Patched Versions: [\"~> 5.2.4.3\", \">= 6.0.3.1\"]\nUnaffected Versions: [\"< 4.0.0\"]\n"\
+        "CVSS: \nOSVDB "
 
         # Check rule info
         expect(rules['id']).to eq('CVE-2020-8164')
