@@ -12,7 +12,8 @@ describe Sarif::SarifReport do
     let(:name) { 'Neon Genesis Evangelion' }
     let(:custom_info) { { bitcoin_price: 100_000 } }
     let(:config) { { lemurs: 'contained', raptors: 'loose' } }
-    let(:report) { Salus::Report.new(project_name: name, custom_info: custom_info, config: config) }
+    let(:build) { { "url": "https://github.com" } }
+    let(:report) { Salus::Report.new(project_name: name, custom_info: custom_info, builds: build) }
 
     before do
       scan_reports.each do |scan_report|
@@ -22,13 +23,16 @@ describe Sarif::SarifReport do
     end
 
     it 'fails if generated sarif format is incorrect' do
-      expect { report.to_sarif }.to raise_error(
-        Sarif::SarifReport::SarifInvalidFormatError,
-        "Incorrect Sarif Output: [\"The property '#/runs/0/tool/driver/name'"\
-        " of type object did not match the following type: string in schema "\
-        "https://raw.githubusercontent.com/schemastore/schemastore/master/src"\
-        "/schemas/json/sarif-2.1.0-rtm.5.json#\"]"
+      scanner = Salus::Scanners::RepoNotEmpty.new(repository: repo, config: {})
+      scanner.run
+      report.add_scan_report(scanner.report, required: false)
+      expect(report).to receive(:bugsnag_notify).with(
+        "Sarif::SarifReport::SarifInvalidFormatError Incorrect Sarif Output: [\"The property "\
+        "'#/runs/0/tool/driver/name' of type object did not match the following type: string "\
+        "in schema https://raw.githubusercontent.com/schemastore/schemastore/master/src"\
+        "/schemas/json/sarif-2.1.0-rtm.5.json#\"]\nBuild Info:{:url=>\"https://github.com\"}"
       )
+      report.to_sarif
     end
 
     it 'contains the right scanners' do

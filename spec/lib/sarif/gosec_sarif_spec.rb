@@ -7,6 +7,51 @@ describe Sarif::GosecSarif do
     let(:scanner) { Salus::Scanners::Gosec.new(repository: repo, config: {}) }
     before { scanner.run }
 
+    context 'scan report with duplicate vulnerabilities' do
+      let(:repo) { Salus::Repo.new('spec/fixtures/gosec/safe_goapp') }
+      it 'should not include duplicate result entries' do
+        scan_report = Salus::ScanReport.new(scanner_name: "Gosec")
+        f = File.read('spec/fixtures/gosec/duplicate_entries/report.json')
+        scan_report.log(f.to_s)
+        adapter = Sarif::GosecSarif.new(scan_report)
+        results = adapter.build_runs_object["results"]
+
+        expect(results.size).to eq(3)
+        unique_results = Set.new
+        results.each do |result|
+          expect(unique_results.include?(result)).to eq(false)
+          unique_results.add(result)
+        end
+      end
+
+      it 'should not include duplicate rules' do
+        scan_report = Salus::ScanReport.new(scanner_name: "Gosec")
+        f = File.read('spec/fixtures/gosec/duplicate_entries/report.json')
+        scan_report.log(f.to_s)
+        adapter = Sarif::GosecSarif.new(scan_report)
+        rules = adapter.build_runs_object["tool"][:driver]["rules"]
+        expect(rules.size).to eq(2)
+        unique_rules = Set.new
+        rules.each do |rule|
+          expect(unique_rules.include?(rule)).to eq(false)
+          unique_rules.add(rule)
+        end
+      end
+    end
+
+    describe '#sarif_level' do
+      context 'gosec severities' do
+        let(:repo) { Salus::Repo.new('spec/fixtures/gosec/safe_goapp') }
+        it 'are mapped to sarif levels' do
+          scan_report = Salus::ScanReport.new(scanner_name: "Gosec")
+          adapter = Sarif::GosecSarif.new(scan_report)
+          expect(adapter.sarif_level("MEDIUM")).to eq("error")
+          expect(adapter.sarif_level("HIGH")).to eq("error")
+          expect(adapter.sarif_level("LOW")).to eq("warning")
+        end
+      end
+    end
+
     context 'scan report with logged vulnerabilites' do
       let(:repo) { Salus::Repo.new('spec/fixtures/gosec/vulnerable_goapp') }
       it 'parses information correctly' do
