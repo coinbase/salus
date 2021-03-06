@@ -12,19 +12,21 @@ describe Sarif::BundleAuditSarif do
         issue = scanner.report.to_h[:info][:vulnerabilities][0]
 
         # should Parse and fill out hash
-        expected = "Name: actionpack\nVersion: 4.1.15\nDesciption: There is a strong parameters"\
-        " bypass vector in ActionPack.\n\nVersions Affected:  rails <= 6.0.3\nNot affected:    "\
-        "   rails < 4.0.0\nFixed Versions:     rails >= 5.2.4.3, rails >= 6.0.3.1\n\nImpact\n--"\
-        "----\nIn some cases user supplied information can be inadvertently leaked from\nStrong"\
-        " Parameters.  Specifically the return value of `each`, or `each_value`,\nor `each_pair`"\
-        " will return the underlying \"untrusted\" hash of data that was\nread from the"\
-        " parameters.  Applications that use this return value may be\ninadvertently use"\
-        " untrusted user input.\n\nImpacted code will look something like this:\n\n```\ndef"\
-        " update\n  # Attacker has included the parameter: `{ is_admin: true }`\n  User.update"\
-        "(clean_up_params)\nend\n\ndef clean_up_params\n   params.each { |k, v|  SomeModel.chec"\
-        "k(v) if k == :name }\nend\n```\n\nNote the mistaken use of `each` in the"\
-        " `clean_up_params` method in the above\nexample.\n\nWorkarounds\n-----------\nDo not "\
-        "use the return values of `each`, `each_value`, or `each_pair` in your\napplication.\n"
+        expected = "Package Name: actionpack\nType: UnpatchedGem\nVersion: 4.1.15\n Advisory"\
+        " Title: Possible Strong Parameters Bypass in ActionPack\nDesciption: There is a strong"\
+        " parameters bypass vector in ActionPack.\n\nVersions Affected:  rails <= 6.0.3\nNot "\
+        "affected:       rails < 4.0.0\nFixed Versions:     rails >= 5.2.4.3, rails >= 6.0.3.1"\
+        "\n\nImpact\n------\nIn some cases user supplied information can be inadvertently leaked"\
+        " from\nStrong Parameters.  Specifically the return value of `each`, or `each_value`,\nor"\
+        " `each_pair` will return the underlying \"untrusted\" hash of data that was\nread from "\
+        "the parameters.  Applications that use this return value may be\ninadvertently use "\
+        "untrusted user input.\n\nImpacted code will look something like this:\n\n```\ndef update"\
+        "\n  # Attacker has included the parameter: `{ is_admin: true }`\n  "\
+        "User.update(clean_up_params)\nend\n\ndef clean_up_params\n   params.each { |k, v|  "\
+        "SomeModel.check(v) if k == :name }\nend\n```\n\nNote the mistaken use of `each` in the"\
+        " `clean_up_params` method in the above\nexample.\n\nWorkarounds\n-----------\nDo not use"\
+        " the return values of `each`, `each_value`, or `each_pair` in your\napplication.\n\n"\
+        "Patched Versions: patched_versions\nUnaffected Versions: "
 
         expect(bundle_audit_sarif.parse_issue(issue)).to include(
           id: "CVE-2020-8164",
@@ -62,19 +64,21 @@ describe Sarif::BundleAuditSarif do
         result = JSON.parse(report.to_sarif)["runs"][0]["results"][0]
         rules = JSON.parse(report.to_sarif)["runs"][0]["tool"]["driver"]["rules"][0]
 
-        expected = "Name: actionpack\nVersion: 4.1.15\nDesciption: There is a strong parameters"\
-        " bypass vector in ActionPack.\n\nVersions Affected:  rails <= 6.0.3\nNot affected:    "\
-        "   rails < 4.0.0\nFixed Versions:     rails >= 5.2.4.3, rails >= 6.0.3.1\n\nImpact\n--"\
-        "----\nIn some cases user supplied information can be inadvertently leaked from\nStrong"\
-        " Parameters.  Specifically the return value of `each`, or `each_value`,\nor `each_pair`"\
-        " will return the underlying \"untrusted\" hash of data that was\nread from the"\
-        " parameters.  Applications that use this return value may be\ninadvertently use"\
-        " untrusted user input.\n\nImpacted code will look something like this:\n\n```\ndef"\
-        " update\n  # Attacker has included the parameter: `{ is_admin: true }`\n  User.update"\
-        "(clean_up_params)\nend\n\ndef clean_up_params\n   params.each { |k, v|  SomeModel.chec"\
-        "k(v) if k == :name }\nend\n```\n\nNote the mistaken use of `each` in the"\
-        " `clean_up_params` method in the above\nexample.\n\nWorkarounds\n-----------\nDo not "\
-        "use the return values of `each`, `each_value`, or `each_pair` in your\napplication.\n"
+        expected = "Package Name: actionpack\nType: UnpatchedGem\nVersion: 4.1.15\n Advisory"\
+        " Title: Possible Strong Parameters Bypass in ActionPack\nDesciption: There is a strong"\
+        " parameters bypass vector in ActionPack.\n\nVersions Affected:  rails <= 6.0.3\nNot "\
+        "affected:       rails < 4.0.0\nFixed Versions:     rails >= 5.2.4.3, rails >= 6.0.3.1"\
+        "\n\nImpact\n------\nIn some cases user supplied information can be inadvertently leaked"\
+        " from\nStrong Parameters.  Specifically the return value of `each`, or `each_value`,\nor"\
+        " `each_pair` will return the underlying \"untrusted\" hash of data that was\nread from "\
+        "the parameters.  Applications that use this return value may be\ninadvertently use "\
+        "untrusted user input.\n\nImpacted code will look something like this:\n\n```\ndef update"\
+        "\n  # Attacker has included the parameter: `{ is_admin: true }`\n  "\
+        "User.update(clean_up_params)\nend\n\ndef clean_up_params\n   params.each { |k, v|  "\
+        "SomeModel.check(v) if k == :name }\nend\n```\n\nNote the mistaken use of `each` in the"\
+        " `clean_up_params` method in the above\nexample.\n\nWorkarounds\n-----------\nDo not use"\
+        " the return values of `each`, `each_value`, or `each_pair` in your\napplication.\n\n"\
+        "Patched Versions: patched_versions\nUnaffected Versions: "
 
         # Check rule info
         expect(rules['id']).to eq('CVE-2020-8164')

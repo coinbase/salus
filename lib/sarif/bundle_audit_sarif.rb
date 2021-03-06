@@ -19,7 +19,9 @@ module Sarif
         level: issue[:cvss].to_i,
         details: "Package Name: #{issue[:name]}\nType: #{issue[:type]}\nVersion: "\
         "#{issue[:version]}\n Advisory Title: #{issue[:advisory_title]}\nDesciption: "\
-        "#{issue[:description]}\nPatched Versions: #{:patched_versions}\nUnaffected Versions: ",
+        "#{issue[:description]}\nPatched Versions: #{issue[:patched_versions]}"\
+        "\nUnaffected Versions: #{issue[:unaffected_versions]}\nCVSS: #{issue[:cvss]}"\
+        "\nOSVDB #{issue[:osdvb]}",
         uri: 'Gemfile.lock',
         help_url: issue[:url]
       }
@@ -27,7 +29,7 @@ module Sarif
 
     def build_invocations
       error = @scan_report.to_h[:errors]
-      if error
+      if !error.empty?
         {
           "executionSuccessful": @scan_report.passed?,
           "toolExecutionNotifications": [{
