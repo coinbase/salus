@@ -1,7 +1,12 @@
 require 'json'
 require 'json-schema'
 require_relative './base_sarif'
-require_relative './gosec_sarif'
+
+Dir.entries(File.expand_path('./', __dir__)).sort.each do |filename|
+  next unless /\_sarif.rb\z/.match?(filename) && !filename.eql?('base_sarif.rb')
+
+  require_relative filename
+end
 
 module Sarif
   # Class for generating sarif reports
