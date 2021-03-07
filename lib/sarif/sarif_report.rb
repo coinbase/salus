@@ -2,6 +2,7 @@ require 'json'
 require 'json-schema'
 require_relative './base_sarif'
 require_relative './gosec_sarif'
+require_relative './semgrep_sarif'
 
 module Sarif
   # Class for generating sarif reports
