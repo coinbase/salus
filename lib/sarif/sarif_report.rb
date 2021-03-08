@@ -15,8 +15,8 @@ module Sarif
 
     SARIF_VERSION = "2.1.0".freeze
 
-    SARIF_SCHEMA = "https://docs.oasis-open.org/sarif/sarif/v2.0/csprd01/schemas/"\
-    "sarif-schema.json".freeze
+    SARIF_SCHEMA = "https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/schemas/sarif-schema-"\
+    "2.1.0.json".freeze
 
     def initialize(scan_reports)
       @scan_reports = scan_reports
