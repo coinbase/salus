@@ -128,7 +128,6 @@ module Salus
       Sarif::SarifReport.new(@scan_reports).to_sarif
     rescue StandardError => e
       bugsnag_notify(e.class.to_s + " " + e.message + "\nBuild Info:" + @builds.to_s)
-      e
     end
 
     # Send the report to given URIs (which could be remove or local).
