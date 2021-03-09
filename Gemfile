@@ -29,7 +29,7 @@ end
 group :test do
   gem 'rspec', '~> 3.10'
   gem 'rspec_junit_formatter'
-  gem 'rubocop', '~> 0.93', require: false
+  gem 'rubocop', '~> 1.11', require: false
   gem 'simplecov', '~> 0.21.2'
   gem 'webmock', '~> 3.11'
 end
