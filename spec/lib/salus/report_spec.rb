@@ -178,6 +178,44 @@ describe Salus::Report do
       end
     end
 
+    context 'HTTP report URI given with request parameters' do
+      it 'should make a call to send the report for http URI' do
+        url = 'https://nerv.tk3/salus-report'
+        params = { 'sport' => 'soccer', 'players' => 11 }
+        directive = { 'uri' => url, 'format' => 'json', 'params' => params }
+        report = build_report(directive)
+
+        stub_request(:post, url)
+          .with(headers: { 'Content-Type' => 'application/json' }, query: params)
+          .to_return(status: 202)
+
+        expect { report.export_report }.not_to raise_error
+
+        assert_requested(
+          :post,
+          "https://nerv.tk3/salus-report?players=11&sport=soccer",
+          headers: { 'Content-Type' => 'application/json' },
+          body: report.to_json,
+          times: 1
+        )
+      end
+
+      it 'should have report in request param, if indicated by user' do
+        url = 'https://nerv.tk3/salus-report'
+        report = { 'contains_report' => true }
+        params = { 'sport' => 'soccer', 'players' => 11, 'report' => report }
+        directive = { 'uri' => url, 'format' => 'json', 'params' => params }
+        report = build_report(directive)
+
+        params = { 'sport' => 'soccer', 'players' => 11, 'report' => report.to_json }
+        stub_request(:post, url)
+          .with(headers: { 'Content-Type' => 'application/json' }, query: params)
+          .to_return(status: 202)
+
+        expect { report.export_report }.not_to raise_error
+      end
+    end
+
     context 'local file report URI given' do
       it 'should save to the given directory for a local file uri' do
         path = './spec/fixtures/report/salus_report.json'

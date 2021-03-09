@@ -17,7 +17,7 @@ module Salus
       'json' => 'application/json',
       'yaml' => 'text/x-yaml',
       'txt'  => 'text/plain',
-      'sarif' => 'application/sarif'
+      'sarif' => 'application/json'
     }.freeze
 
     SUMMARY_TABLE_HEADINGS = ['Scanner', 'Running Time', 'Required', 'Passed'].freeze
@@ -147,7 +147,7 @@ module Salus
 
         # Now send this string to its destination.
         if Salus::Config::REMOTE_URI_SCHEME_REGEX.match?(URI(uri).scheme)
-          send_report(uri, report_string, directive['format'])
+          send_report(uri, report_string, directive)
         else
           # must remove the file:// schema portion of the uri.
           uri_object = URI(uri)
@@ -200,12 +200,20 @@ module Salus
             "Cannot write file #{report_file_path} - #{e.class}: #{e.message}"
     end
 
-    def send_report(remote_uri, data, format)
+    def send_report(remote_uri, data, directive)
+      ## if params, then
+      params = directive['params'] || {}
       response = Faraday.post do |req|
         req.url remote_uri
-        req.headers['Content-Type'] = CONTENT_TYPE_FOR_FORMAT[format]
+        req.headers['Content-Type'] = CONTENT_TYPE_FOR_FORMAT[directive['format']]
         req.headers['X-Scanner'] = "salus"
-        req.body = data
+        if params.key?('report') && params.dig('report', 'contains_report')
+          params['report'] = data
+          req.params = params
+        else
+          req.params = params
+          req.body = data
+        end
       end
 
       unless response.success?
