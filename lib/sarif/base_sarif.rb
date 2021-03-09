@@ -1,5 +1,7 @@
 module Sarif
   class BaseSarif
+    include Sarif::SharedObjects
+
     DEFAULT_URI = "https://github.com/coinbase/salus".freeze
 
     SARIF_WARNINGS = {
@@ -14,6 +16,8 @@ module Sarif
       @rule_index = 0
       @logs = []
       @uri = DEFAULT_URI
+      @supported = false
+      @issues = Set.new
     end
 
     # Retrieve tool section for sarif report
@@ -83,21 +87,6 @@ module Sarif
       end
     end
 
-    # Retrieves invocation object for SARIF report
-    def build_invocations
-      {
-        "executionSuccessful": @scan_report.passed? || false,
-        "toolExecutionNotifications": [{
-          "descriptor": {
-            "id": "SAL001"
-          },
-          "message": {
-            "text": "SARIF reports are not available for this scanner"
-          }
-        }]
-      }
-    end
-
     # Returns the 'runs' object for the scanners report
     def build_runs_object
       results = []
@@ -115,7 +104,7 @@ module Sarif
         "tool" => build_tool(rules: rules),
         "conversion" => build_conversion,
         "results" => results,
-        "invocations" => [build_invocations]
+        "invocations" => [build_invocations(@scan_report, @supported)]
       }
     end
 

@@ -76,25 +76,5 @@ module Sarif
         }
       end
     end
-
-    def build_invocations
-      error = @scan_report.to_h.fetch(:info)[:stderr]
-      if error
-        {
-          "executionSuccessful": @scan_report.passed?,
-          "toolExecutionNotifications": [{
-            "descriptor": {
-              "id": ""
-            },
-            "level": "error",
-            "message": {
-              "text": "#{@scan_report.to_h.fetch(:errors).first[:message] || ''}, #{error}"
-            }
-          }]
-        }
-      else
-        { "executionSuccessful": @scan_report.passed? }
-      end
-    end
   end
 end
