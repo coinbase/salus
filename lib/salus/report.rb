@@ -208,11 +208,10 @@ module Salus
         req.headers['X-Scanner'] = "salus"
         if params.key?('report')
           params['report'] = data
-          req.params = params
         else
-          req.params = params
           req.body = data
         end
+        req.params = params
       end
 
       unless response.success?
