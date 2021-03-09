@@ -1,3 +1,4 @@
+require 'sarif/shared_objects'
 module Sarif
   class BaseSarif
     include Sarif::SharedObjects
@@ -16,7 +17,6 @@ module Sarif
       @rule_index = 0
       @logs = []
       @uri = DEFAULT_URI
-      @supported = false
       @issues = Set.new
     end
 
@@ -87,8 +87,8 @@ module Sarif
       end
     end
 
-    # Returns the 'runs' object for the scanners report
-    def build_runs_object
+    # Returns the 'runs' object for a supported/unsupported scanner's report
+    def build_runs_object(supported)
       results = []
       rules = []
       @logs.each do |issue|
@@ -104,7 +104,7 @@ module Sarif
         "tool" => build_tool(rules: rules),
         "conversion" => build_conversion,
         "results" => results,
-        "invocations" => [build_invocations(@scan_report, @supported)]
+        "invocations" => [build_invocations(@scan_report, supported)]
       }
     end
 

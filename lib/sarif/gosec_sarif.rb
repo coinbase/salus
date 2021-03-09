@@ -9,7 +9,6 @@ module Sarif
     def initialize(scan_report)
       super(scan_report)
       @uri = GOSEC_URI
-      @issues = Set.new
       @logs = parse_scan_report!(scan_report)
     end
 
