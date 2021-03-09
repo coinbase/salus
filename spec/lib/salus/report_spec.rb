@@ -203,7 +203,7 @@ describe Salus::Report do
       it 'should have report in request param, if indicated by user' do
         url = 'https://nerv.tk3/salus-report'
         report = { 'contains_report' => true }
-        params = { 'sport' => 'soccer', 'players' => 11, 'report' => report }
+        params = { 'sport' => 'soccer', 'players' => 11, 'report' => nil }
         directive = { 'uri' => url, 'format' => 'json', 'params' => params }
         report = build_report(directive)
 

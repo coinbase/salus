@@ -201,13 +201,12 @@ module Salus
     end
 
     def send_report(remote_uri, data, directive)
-      ## if params, then
       params = directive['params'] || {}
       response = Faraday.post do |req|
         req.url remote_uri
         req.headers['Content-Type'] = CONTENT_TYPE_FOR_FORMAT[directive['format']]
         req.headers['X-Scanner'] = "salus"
-        if params.key?('report') && params.dig('report', 'contains_report')
+        if params.key?('report')
           params['report'] = data
           req.params = params
         else
