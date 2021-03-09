@@ -51,6 +51,9 @@ custom_info: "PR-123"
 #
 # Each Hash must contain keys for `uri` and `format`.
 # URIs can point to either the local file system or remote HTTP destinations.
+# - Request paramters (optional) can be included for HTTP destinations with the `params` field
+#   - if the report parameter is included, the report paramater would contain the salus report
+#   - when `report` is not included in params, the salus report will be located in the body of the request sent
 # The available formats are `json`, `yaml`, `txt` and `sarif`.
 # `verbose` is an optional key and defaults to false.
 reports:
@@ -59,6 +62,19 @@ reports:
   - uri: https://salus-config.internal.net/salus-report
     format: json
     verbose: true
+  - uri: https://salus-config.internal2.net/salus-report
+    format: json
+    verbose: true
+    params:
+      repo: 'Random Repo'
+      user: 'John Doe' 
+  - uri: https://salus-config.internal2.net/salus-report
+    format: json
+    verbose: true
+    params:
+      repo: 'Random Repo'
+      user: 'John Doe' 
+      report: null
   - uri: file://tests/salus-report.sarif
     format: sarif
 
