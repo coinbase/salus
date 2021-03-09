@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby '2.7.2'
 
-gem 'activesupport', '~> 6.1.1'
+gem 'activesupport', '~> 6.1.3'
 gem 'bugsnag', '~> 6.19.0'
 # TODO: Lock `bundler` until:
 #  https://github.com/rubysec/bundler-audit/issues/235 and
