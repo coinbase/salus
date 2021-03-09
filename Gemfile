@@ -9,7 +9,7 @@ gem 'bugsnag', '~> 6.19.0'
 #  https://github.com/bundler/bundler/issues/7511 are resolved.
 gem 'bundler', '= 2.0.2'
 gem 'faraday', '~> 1.3'
-gem 'github-linguist', '~> 7.12.2'
+gem 'github-linguist', '~> 7.13.0'
 gem 'parser', '~> 3.0.0'
 gem 'rgl', '~> 0.5.7'
 gem 'safe_yaml', '~> 1.0'
