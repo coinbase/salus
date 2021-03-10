@@ -54,9 +54,9 @@ module Sarif
         converter = Object.const_get(adapter).new(scan_report)
       rescue NameError
         converter = BaseSarif.new(scan_report)
-        converter.build_runs_object
+        converter.build_runs_object(false)
       end
-      converter.build_runs_object
+      converter.build_runs_object(true)
     end
   end
 end
