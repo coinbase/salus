@@ -6,7 +6,6 @@ module Sarif
       super(scan_report)
       @uri = NPM_URI
       @logs = parse_scan_report!
-      @issues = Set.new
       @exceptions = Set.new(@scan_report.to_h.dig(:info, :exceptions))
       @results = []
     end
@@ -20,7 +19,7 @@ module Sarif
 
     def parse_issue(issue)
       id = issue[:id].to_s
-      return nil if @issues.include?(id) || @exceptions.include?(id)
+      return nil if @issues.include?(id)
 
       @issues.add(id)
       {
@@ -32,7 +31,8 @@ module Sarif
         " #{issue[:vulnerable_versions]} \nSeverity:#{issue[:severity]} \nPatched Versions:"\
         " #{issue[:patched_versions]}\nCWE: #{issue[:cwe]} ",
         uri: "package-lock.json",
-        help_url: issue[:url]
+        help_url: issue[:url],
+        suppressed: @exceptions.include?(id)
       }
     end
 
@@ -49,6 +49,16 @@ module Sarif
       else
         SARIF_WARNINGS[:note]
       end
+    end
+
+    def build_result(parsed_issue)
+      result = super(build_result(parsed_issue))
+      if parsed_issue[:suppressed]
+        result['suppressions'] = [{
+          'kind': 'inSource'
+        }]
+      end
+      result
     end
   end
 end
