@@ -52,7 +52,7 @@ module Sarif
     end
 
     def build_result(parsed_issue)
-      result = super(build_result(parsed_issue))
+      result = super(parsed_issue)
       if parsed_issue[:suppressed]
         result['suppressions'] = [{
           'kind': 'inSource'
