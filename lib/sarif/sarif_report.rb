@@ -1,8 +1,12 @@
 require 'json'
 require 'json-schema'
 require_relative './base_sarif'
-require_relative './gosec_sarif'
-require_relative './bundle_audit_sarif'
+
+Dir.entries(File.expand_path('./', __dir__)).sort.each do |filename|
+  next unless /\_sarif.rb\z/.match?(filename) && !filename.eql?('base_sarif.rb')
+
+  require_relative filename
+end
 
 module Sarif
   # Class for generating sarif reports
@@ -11,8 +15,8 @@ module Sarif
 
     SARIF_VERSION = "2.1.0".freeze
 
-    SARIF_SCHEMA = "https://docs.oasis-open.org/sarif/sarif/v2.0/csprd01/schemas/"\
-    "sarif-schema.json".freeze
+    SARIF_SCHEMA = "https://docs.oasis-open.org/sarif/sarif/v#{SARIF_VERSION}/csprd01/schemas/"\
+    "sarif-schema-#{SARIF_VERSION}".freeze
 
     def initialize(scan_reports)
       @scan_reports = scan_reports
@@ -50,9 +54,9 @@ module Sarif
         converter = Object.const_get(adapter).new(scan_report)
       rescue NameError
         converter = BaseSarif.new(scan_report)
-        converter.build_runs_object
+        converter.build_runs_object(false)
       end
-      converter.build_runs_object
+      converter.build_runs_object(true)
     end
   end
 end
