@@ -14,7 +14,7 @@ describe Sarif::GosecSarif do
         f = File.read('spec/fixtures/gosec/duplicate_entries/report.json')
         scan_report.log(f.to_s)
         adapter = Sarif::GosecSarif.new(scan_report)
-        results = adapter.build_runs_object["results"]
+        results = adapter.build_runs_object(true)["results"]
 
         expect(results.size).to eq(3)
         unique_results = Set.new
@@ -29,7 +29,7 @@ describe Sarif::GosecSarif do
         f = File.read('spec/fixtures/gosec/duplicate_entries/report.json')
         scan_report.log(f.to_s)
         adapter = Sarif::GosecSarif.new(scan_report)
-        rules = adapter.build_runs_object["tool"][:driver]["rules"]
+        rules = adapter.build_runs_object(true)["tool"][:driver]["rules"]
         expect(rules.size).to eq(2)
         unique_rules = Set.new
         rules.each do |rule|
