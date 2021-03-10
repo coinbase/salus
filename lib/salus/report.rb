@@ -200,17 +200,34 @@ module Salus
             "Cannot write file #{report_file_path} - #{e.class}: #{e.message}"
     end
 
+    def parse_request_params(directive, data)
+      return {} if directive['request_config'].nil?
+
+      url = File.join(Salus::DEFAULT_REPO_PATH, directive['request_config'])
+
+      if !File.file?(url)
+        bugsnag_notify('Invalid report_config file')
+        return {}
+      end
+
+      request_config = YAML.load_file(url)
+      report_param_name = request_config['salus_report_param_name']
+      params = request_config['additional_params'] || {}
+      if !report_param_name.nil?
+        params[report_param_name] = data
+        params['contains_report'] = true
+      end
+      params
+    end
+
     def send_report(remote_uri, data, directive)
-      params = directive['params'] || {}
+      params = parse_request_params(directive, data) || {}
       response = Faraday.post do |req|
         req.url remote_uri
         req.headers['Content-Type'] = CONTENT_TYPE_FOR_FORMAT[directive['format']]
         req.headers['X-Scanner'] = "salus"
-        if params.key?('report')
-          params['report'] = data
-        else
-          req.body = data
-        end
+        req.body = data if !params.key?('contains_report')
+        params.delete('contains_report')
         req.params = params
       end
 
