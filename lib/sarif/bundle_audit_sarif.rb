@@ -6,13 +6,12 @@ module Sarif
       super(scan_report)
       @logs = @scan_report.to_h.dig(:info, :vulnerabilities) || []
       @uri = BUNDLEAUDIT_URI
-      @urls = Set.new
     end
 
     def parse_issue(issue)
-      return nil if @urls.include?(issue[:url])
+      return nil if @issues.include?(issue[:url])
 
-      @urls.add(issue[:url])
+      @issues.add(issue[:url])
       {
         id: issue[:cve],
         name: issue[:advisory_title],
@@ -25,26 +24,6 @@ module Sarif
         uri: 'Gemfile.lock',
         help_url: issue[:url]
       }
-    end
-
-    def build_invocations
-      error = @scan_report.to_h[:errors]
-      if !error.empty?
-        {
-          "executionSuccessful": @scan_report.passed?,
-          "toolExecutionNotifications": [{
-            "descriptor": {
-              "id": ""
-            },
-            "level": SARIF_WARNINGS[:error],
-            "message": {
-              "text": "==== Salus Errors\n#{JSON.pretty_generate(error)}"
-            }
-          }]
-        }
-      else
-        { "executionSuccessful": @scan_report.passed? }
-      end
     end
 
     def sarif_level(severity)
