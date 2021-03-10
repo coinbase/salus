@@ -36,26 +36,6 @@ module Sarif
       }
     end
 
-    def build_invocations
-      error = @scan_report.to_h[:errors]
-      if !error.empty?
-        {
-          "executionSuccessful": @scan_report.passed?,
-          "toolExecutionNotifications": [{
-            "descriptor": {
-              "id": ""
-            },
-            "level": "error",
-            "message": {
-              "text": "==== Salus Errors\n#{JSON.pretty_generate(error)}"
-            }
-          }]
-        }
-      else
-        { "executionSuccessful": @issues.empty? || @scan_report.passed? }
-      end
-    end
-
     def sarif_level(severity)
       case severity
       when "LOW"
