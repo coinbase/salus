@@ -6,7 +6,6 @@ module Sarif
       super(scan_report)
       @uri = BANDIT_URI
       @logs = parse_scan_report!
-      @unique_issues = Set.new
     end
 
     def parse_scan_report!
@@ -16,11 +15,10 @@ module Sarif
     end
 
     def parse_issue(issue)
-      key = ""
-      key << issue["filename"] + issue["line_number"].to_s + issue['issue_text']
-      return nil if @unique_issues.include? key
+      key = issue["filename"] + ' ' + issue["line_number"].to_s + ' ' + issue['issue_text']
+      return nil if @issues.include? key
 
-      @unique_issues.add(key)
+      @issues.add(key)
       endline = issue['line_range'][issue['line_range'].size - 1]
       {
         id: issue['test_id'],
@@ -35,25 +33,6 @@ module Sarif
         help_url: issue['more_info'],
         code: issue['code']
       }
-    end
-
-    def build_invocations
-      if @logs.empty? && !@scan_report.passed?
-        {
-          "executionSuccessful": false,
-          "toolExecutionNotifications": [{
-            "descriptor": {
-              "id": ""
-            },
-            "level": "error",
-            "message": {
-              "text": @scan_report.to_h.fetch(:errors).first[:message]
-            }
-          }]
-        }
-      else
-        { "executionSuccessful": @scan_report.passed? }
-      end
     end
   end
 end
