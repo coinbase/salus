@@ -1,25 +1,33 @@
+require 'salus/bugsnag'
+
 module Sarif
   class GosecSarif < BaseSarif
+    include Salus::SalusBugsnag
+
     GOSEC_URI = 'https://github.com/securego/gosec'.freeze
 
     def initialize(scan_report)
       super(scan_report)
       @uri = GOSEC_URI
-      begin
-        json_obj = JSON.parse(scan_report.log(''))
-        issues = json_obj['Issues']
-        errors = json_obj['Golang errors']
-        parsed_errors = []
-        errors.each do |key|
-          key[1].each do |location|
-            location['uri'] = key[0]
-            parsed_errors << parse_error(location)
-          end
+      @logs = parse_scan_report!(scan_report)
+    end
+
+    def parse_scan_report!(scan_report)
+      json_obj = JSON.parse(scan_report.log(''))
+      issues = json_obj['Issues']
+      errors = json_obj['Golang errors']
+      parsed_errors = []
+      errors.each do |key|
+        key[1].each do |location|
+          location['uri'] = key[0]
+          parsed_errors << parse_error(location)
         end
-        @logs = issues.concat parsed_errors
-      rescue JSON::ParserError
-        @logs = []
       end
+      parsed_errors.compact!
+      issues.concat parsed_errors
+    rescue JSON::ParserError => e
+      bugsnag_notify(e.message)
+      []
     end
 
     def parse_error(error)
@@ -27,6 +35,11 @@ module Sarif
       column = error['column'].to_i
       line = 1 if line.zero?
       column = 1 if column.zero?
+
+      id = error['error'] + ' ' + error['uri'] + ' ' + line.to_s
+      return nil if @issues.include?(id)
+
+      @issues.add(id)
       {
         id: 'SAL0002',
         name: "Golang Error",
@@ -44,6 +57,10 @@ module Sarif
       if issue[:id] == 'SAL0002'
         issue
       else
+        id = issue['details'] + ' ' + issue['file'] + ' ' + issue['line']
+        return nil if @issues.include?(id)
+
+        @issues.add(id)
         {
           id: issue['rule_id'],
           name: "CWE-#{issue['cwe']['ID']}",
@@ -56,26 +73,6 @@ module Sarif
           help_url: issue['cwe']['URL'],
           code: issue['code']
         }
-      end
-    end
-
-    def build_invocations
-      error = @scan_report.to_h.fetch(:info)[:stderr]
-      if error
-        {
-          "executionSuccessful": @scan_report.passed?,
-          "toolExecutionNotifications": [{
-            "descriptor": {
-              "id": ""
-            },
-            "level": "error",
-            "message": {
-              "text": "#{@scan_report.to_h.fetch(:errors).first[:message] || ''}, #{error}"
-            }
-          }]
-        }
-      else
-        { "executionSuccessful": @scan_report.passed? }
       end
     end
   end

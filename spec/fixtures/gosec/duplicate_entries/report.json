@@ -1,0 +1,59 @@
+{
+	"Golang errors": {
+		"parser.go": [
+			{
+				"line": 12,
+				"column": 10,
+				"error": "could not import github.com/hashicorp/go-version (invalid package name: \"\")"
+      },
+      {
+				"line": 12,
+				"column": 10,
+				"error": "could not import github.com/hashicorp/go-version (invalid package name: \"\")"
+      }
+    ],
+    "parser2.go": [
+      {
+				"line": 12,
+				"column": 10,
+				"error": "could not import github.com/hashicorp/go-version (invalid package name: \"\")"
+      }
+		]
+	},
+	"Issues": [
+		{
+			"severity": "MEDIUM",
+			"confidence": "HIGH",
+			"cwe": {
+				"ID": "78",
+				"URL": "https://cwe.mitre.org/data/definitions/78.html"
+			},
+			"rule_id": "G204",
+			"details": "Subprocess launched with variable",
+			"file": "parser.go",
+			"code": "37: \tbuf := bytes.NewReader(b)\n38: \tcmd := exec.Command(path, \"--format\", \"json\", \"--type\", \"ast\")\n39: \tcmd.Stdin = buf\n",
+			"line": "38",
+			"column": "9"
+		},
+		{
+			"severity": "MEDIUM",
+			"confidence": "HIGH",
+			"cwe": {
+				"ID": "78",
+				"URL": "https://cwe.mitre.org/data/definitions/78.html"
+			},
+			"rule_id": "G204",
+			"details": "Subprocess launched with variable",
+			"file": "parser.go",
+			"code": "37: \tbuf := bytes.NewReader(b)\n38: \tcmd := exec.Command(path, \"--format\", \"json\", \"--type\", \"ast\")\n39: \tcmd.Stdin = buf\n",
+			"line": "38",
+			"column": "9"
+		}
+	],
+	"Stats": {
+		"files": 4,
+		"lines": 463,
+		"nosec": 0,
+		"found": 2
+	}
+}

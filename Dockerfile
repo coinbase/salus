@@ -31,7 +31,7 @@ WORKDIR /root
 ENV RUST_VERSION 1.46.0
 ENV RUST_TARBALL_FILE rust-${RUST_VERSION}-x86_64-unknown-linux-gnu.tar.gz
 ENV RUST_DOWNLOAD_URL https://static.rust-lang.org/dist/${RUST_TARBALL_FILE}
-ENV CARGO_AUDIT_VERSION 0.12.0
+ENV CARGO_AUDIT_VERSION 0.14.0
 
 # We'll download rust manually to ensure signing looks good
 COPY build/rust-key.gpg.asc build/rust-pgp-signature.asc ./
