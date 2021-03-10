@@ -35,10 +35,10 @@ describe Sarif::BaseSarif do
 
   describe 'sarif_report' do
     it 'returns' do
-      expect(base_sarif.build_runs_object).to include({ "tool" => base_sarif.build_tool,
+      expect(base_sarif.build_runs_object(false)).to include({ "tool" => base_sarif.build_tool,
         "conversion" => base_sarif.build_conversion,
         "results" => [],
-        "invocations" => [base_sarif.build_invocations] })
+        "invocations" => [base_sarif.build_invocations(scan_report, false)] })
     end
   end
 end

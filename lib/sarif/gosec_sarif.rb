@@ -9,7 +9,6 @@ module Sarif
     def initialize(scan_report)
       super(scan_report)
       @uri = GOSEC_URI
-      @issues = Set.new
       @logs = parse_scan_report!(scan_report)
     end
 
@@ -74,26 +73,6 @@ module Sarif
           help_url: issue['cwe']['URL'],
           code: issue['code']
         }
-      end
-    end
-
-    def build_invocations
-      error = @scan_report.to_h.fetch(:info)[:stderr]
-      if error
-        {
-          "executionSuccessful": @scan_report.passed?,
-          "toolExecutionNotifications": [{
-            "descriptor": {
-              "id": ""
-            },
-            "level": "error",
-            "message": {
-              "text": "#{@scan_report.to_h.fetch(:errors).first[:message] || ''}, #{error}"
-            }
-          }]
-        }
-      else
-        { "executionSuccessful": @scan_report.passed? }
       end
     end
   end
