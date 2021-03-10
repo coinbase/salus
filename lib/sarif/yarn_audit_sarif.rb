@@ -8,7 +8,6 @@ module Sarif
       super(scan_report)
       @uri = YARN_URI
       parse_scan_report!
-      @issues = Set.new
     end
 
     def parse_scan_report!
@@ -45,26 +44,6 @@ module Sarif
         uri: "yarn.lock",
         help_url: h['More info']
       }
-    end
-
-    def build_invocations
-      error = @scan_report.to_h[:errors]
-      if !error.empty?
-        {
-          "executionSuccessful": @scan_report.passed?,
-          "toolExecutionNotifications": [{
-            "descriptor": {
-              "id": ""
-            },
-            "level": "error",
-            "message": {
-              "text": "SALUS ERRORS:\n #{JSON.pretty_generate(error)}"
-            }
-          }]
-        }
-      else
-        { "executionSuccessful": @scan_report.passed? }
-      end
     end
 
     # fullDescription on a rule should not explain a single vulnerability
