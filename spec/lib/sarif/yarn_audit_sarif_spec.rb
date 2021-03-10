@@ -38,7 +38,7 @@ describe Sarif::YarnAuditSarif do
         expect(report_object['invocations'][0]['executionSuccessful']).to eq(false)
 
         message = report_object['invocations'][0]['toolExecutionNotifications'][0]['message']
-        expect(message['text']).to eq("==== Salus Errors:\n[\n  {\n    \"status\": 1,\n    "\
+        expect(message['text']).to eq("==== Salus Errors\n[\n  {\n    \"status\": 1,\n    "\
           "\"message\": \"error Received malformed response from registry for"\
           " \\\"classnames-repo-does-not-exist\\\". The registry may be down.\\n\"\n  }\n]")
       end
