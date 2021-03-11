@@ -11,38 +11,25 @@ module Sarif
     end
 
     def parse_scan_report!
-      @logs = @scan_report.to_h.fetch(:logs).split("\n\n")
-    rescue KeyError => e
+      @logs = JSON.parse(@scan_report.to_h[:info][:stdout] || '[]')
+    rescue JSON::ParserError => e
       bugsnag_notify(e.message)
       @logs = []
     end
 
     def parse_issue(issue)
-      parsed_issue = issue.split("\n")
-      index = 0
-      h = {}
-      parsed_issue.each do |item|
-        seperator = item.index(':')
-        next if !seperator
-
-        key = item[0, seperator].delete("\"")
-        h[key] = item[seperator + 1, item.size - 1].strip
-        index += 1
-      end
-      return nil if h.empty?
-
-      id = h['ID'] + ' ' + h['Package'] + ' ' + h['Dependency of']
+      id = issue['ID'].to_s + ' ' + issue['Package'] + ' ' + issue['Dependency of']
       return nil if @issues.include?(id)
 
       @issues.add(id)
       {
-        id: h['ID'],
-        name: h['Title'],
-        level: h['Severity'].upcase,
-        details: "Title: #{h['Title']}\nPackage: #{h['Package']}\nPatched in: #{h['Patched in']}"\
-        "\nDependency of:#{h['Dependency of']} \nSeverity: #{h['Severity']}",
+        id: issue['ID'].to_s,
+        name: issue['Title'],
+        level: issue['Severity'].upcase,
+        details: "Title: #{issue['Title']}\nPackage: #{issue['Package']}\nPatched in: #{issue['Patched in']}"\
+        "\nDependency of:#{issue['Dependency of']} \nSeverity: #{issue['Severity']}",
         uri: "yarn.lock",
-        help_url: h['More info']
+        help_url: issue['More info']
       }
     end
 

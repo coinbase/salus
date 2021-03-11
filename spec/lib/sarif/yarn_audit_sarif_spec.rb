@@ -9,7 +9,7 @@ describe Sarif::YarnAuditSarif do
     context 'scan report with logged vulnerabilites' do
       let(:repo) { Salus::Repo.new('spec/fixtures/yarn_audit/failure-2') }
       it 'parses information correctly' do
-        issue = scanner.report.to_h.fetch(:logs).split("\n\n")[0]
+        issue = JSON.parse(scanner.report.to_h[:info][:stdout])[0]
         yarn_sarif = Sarif::YarnAuditSarif.new(scanner.report)
 
         expect(yarn_sarif.parse_issue(issue)).to include(
@@ -18,8 +18,8 @@ describe Sarif::YarnAuditSarif do
           level: "LOW",
           details: "Title: Incorrect Handling of Non-Boolean Comparisons During Minification\n"\
           "Package: uglify-js\nPatched in: >= 2.4.24\nDependency of:uglify-js \nSeverity: low",
-          help_url: "https://www.npmjs.com/advisories/39",
-          uri: "yarn.lock"
+          uri: "yarn.lock",
+          help_url: "https://www.npmjs.com/advisories/39"
         )
       end
     end
@@ -78,38 +78,25 @@ describe Sarif::YarnAuditSarif do
     end
 
     context 'yarn.lock file with vulnerabilities having the same ID' do
-      let(:repo) { Salus::Repo.new('spec/fixtures/yarn_audit/failure-4') }
+      let(:repo) { Salus::Repo.new('spec/fixtures/yarn_audit/failure-2') }
       it 'should generate all identified vulnerabilities' do
-        scan_report = Salus::ScanReport.new("YarnAudit")
-        scan_report.log(
-          "Package: ini\nPatched in: >1.3.6\nDependency of: firebase\n"\
-          "More info: https://www.npmjs.com/advisories/1523\nSeverity: low"\
-          "\nTitle: Prototype Pollution\nID: 1589\n\n"\
-          "Package: ini\nPatched in: >1.3.6\nDependency of: react-scripts\n"\
-          "More info: https://www.npmjs.com/advisories/1523\nSeverity: low"\
-          "\nTitle: Prototype Pollution\nID: 1589\n\n"
-        )
-        scan_report.add_version('5.0')
-        report = Salus::Report.new(project_name: "Neon Genesis")
-        report.add_scan_report(scan_report, required: false)
-        result = JSON.parse(report.to_sarif)["runs"][0]["results"]
-        rules = JSON.parse(report.to_sarif)["runs"][0]["tool"]["driver"]["rules"]
-        expect(rules.size).to eq(1)
-        expect(result.size).to eq(2)
+        issue = JSON.parse(scanner.report.to_h[:info][:stdout])[0]
+        yarn_sarif = Sarif::YarnAuditSarif.new(scanner.report)
 
-        description1 = result[0]["message"]["text"]
-        description2 = result[1]["message"]["text"]
-        expect(description1).to eq("Title: Prototype Pollution\nPackage: ini\nPatched in: >1.3.6"\
-          "\nDependency of:firebase \nSeverity: low")
-        expect(description2).to eq("Title: Prototype Pollution\nPackage: ini\nPatched in: >1.3.6"\
-          "\nDependency of:react-scripts \nSeverity: low")
+        issue2 = issue.clone
+        issue2['Dependency of'] = 'random package'
+
+        expect(yarn_sarif.parse_issue(issue2).nil?).to eq(false)
+        expect(yarn_sarif.parse_issue(issue).nil?).to eq(false)
+        expect(yarn_sarif.parse_issue(issue).nil?).to eq(true)
       end
     end
   end
 
   describe '#sarif_level' do
     it 'maps severities to the right sarif level' do
-      adapter = Sarif::YarnAuditSarif.new([])
+      scan_report = Salus::ScanReport.new('yarnaudit')
+      adapter = Sarif::YarnAuditSarif.new(scan_report)
       expect(adapter.sarif_level("INFO")).to eq("note")
       expect(adapter.sarif_level("LOW")).to eq("note")
       expect(adapter.sarif_level("MODERATE")).to eq("warning")
