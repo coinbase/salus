@@ -182,42 +182,26 @@ describe Salus::Report do
       it 'should make a call to send the report for http URI' do
         url = 'https://nerv.tk3/salus-report'
         params = { 'salus_report_param_name' => 'report',
-          'additional_params' => {"foo" => "bar", "abc" => "def"} }
+          'additional_params' => { "foo" => "bar", "abc" => "def" } }
         directive = { 'uri' => url, 'format' => 'json',
                       'post' => params }
         report = build_report(directive)
-        stub_request(:post, "https://nerv.tk3/salus-report").
-          with(
-            body: JSON.pretty_generate(report.to_json),
-            headers: {
-           'Accept'=>'*/*',
-           'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-           'Content-Type'=>'application/json',
-           'User-Agent'=>'Faraday v1.3.0',
-           'X-Scanner'=>'salus'
-            }).to_return(status: 200, body: "", headers: {})
-        expect { report.export_report }.not_to raise_error
 
-        assert_requested(
-          :post,
-          "https://nerv.tk3/salus-report?players=11&sport=soccer",
-          headers: { 'Content-Type' => 'application/json' },
-          body: report.to_json,
-          times: 1
-        )
-      end
-
-      it 'should have report in request param, if indicated by user' do
-        url = 'https://nerv.tk3/salus-report'
-        report = { 'contains_report' => true }
-        params = { 'sport' => 'soccer', 'players' => 11, 'report' => nil }
-        directive = { 'uri' => url, 'format' => 'json', 'params' => params }
-        report = build_report(directive)
-
-        params = { 'sport' => 'soccer', 'players' => 11, 'report' => report.to_json }
-        stub_request(:post, url)
-          .with(headers: { 'Content-Type' => 'application/json' }, query: params)
-          .to_return(status: 202)
+        stub_request(:post, "https://nerv.tk3/salus-report").with(body: "{\n  \"foo\": \"bar\",\n"\
+          "  \"abc\": \"def\",\n  \"report\": {\n    \"version\": \"2.10.17\",\n    \"project_nam"\
+          "e\": \"eva00\",\n    \"passed\": false,\n    \"scans\": {\n      \"DerpScanner\": {\n "\
+          "       \"scanner_name\": \"DerpScanner\",\n        \"passed\": false,\n        \"warn"\
+          "\": {\n        },\n        \"info\": {\n          \"asdf\": \"qwerty\"\n        },\n "\
+          "       \"errors\": [\n\n        ]\n      }\n    },\n    \"errors\": [\n      {\n      "\
+          "  \"message\": \"derp\"\n      },\n      {\n        \"message\": \"derp\"\n      },\n "\
+          "     {\n        \"message\": \"derp\"\n      },\n      {\n        \"message\": \"derp"\
+          "\"\n      },\n      {\n        \"message\": \"derp\"\n      }\n    ],\n    \"custom_"\
+          "info\": \"test unit\"\n  }\n}",
+           headers: { 'Accept' => '*/*',
+        'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+        'Content-Type' => 'application/json',
+        'User-Agent' => 'Faraday v1.3.0',
+        'X-Scanner' => 'salus' }).to_return(status: 200, body: "", headers: {})
 
         expect { report.export_report }.not_to raise_error
       end

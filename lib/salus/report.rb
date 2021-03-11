@@ -155,33 +155,6 @@ module Salus
       end
     end
 
-    # Send the report to given URIs (which could be remove or local).
-    # def export_report
-    #   @report_uris.each do |directive|
-    #     # First create the string for the report.
-    #     uri = directive['uri']
-    #     verbose = directive['verbose'] || false
-    #     report_string = case directive['format']
-    #                     when 'txt' then to_s(verbose: verbose)
-    #                     when 'json' then to_json
-    #                     when 'yaml' then to_yaml
-    #                     when 'sarif' then to_sarif
-    #                     else
-    #                       raise ExportReportError, "unknown report format #{directive['format']}"
-    #                     end
-
-    #     # Now send this string to its destination.
-    #     if Salus::Config::REMOTE_URI_SCHEME_REGEX.match?(URI(uri).scheme)
-    #       send_report(uri, report_string, directive)
-    #     else
-    #       # must remove the file:// schema portion of the uri.
-    #       uri_object = URI(uri)
-    #       file_path = "#{uri_object.host}#{uri_object.path}"
-    #       write_report_to_file(file_path, report_string)
-    #     end
-    #   end
-    # end
-
     private
 
     def render_summary(sorted_scan_reports, use_colors:)
@@ -230,7 +203,7 @@ module Salus
         req.url remote_uri
         req.headers['Content-Type'] = CONTENT_TYPE_FOR_FORMAT[format]
         req.headers['X-Scanner'] = "salus"
-        req.body = JSON.pretty_generate(data)
+        req.body = data
       end
 
       unless response.success?
@@ -242,7 +215,7 @@ module Salus
     def report_body_hash(config, data)
       return data unless config&.key?('post')
 
-      body_hash = config['post']['additional_params'][0] || {}
+      body_hash = config['post']['additional_params'] || {}
       return body_hash unless config['post']['salus_report_param_name']
 
       body_hash[config['post']['salus_report_param_name']] = data
@@ -251,8 +224,10 @@ module Salus
 
     def report_body(config)
       return report_body_hash(config, to_s(verbose: verbose)).to_s if config['format'] == 'txt'
-      return report_body_hash(config, JSON.parse(to_json)) if config['format'] == 'json'
-      return report_body_hash(config, JSON.parse(to_sarif)) if config['format'] == 'sarif'
+
+      body = report_body_hash(config, JSON.parse(to_json)) if config['format'] == 'json'
+      body = report_body_hash(config, JSON.parse(to_sarif)) if config['format'] == 'sarif'
+      return JSON.pretty_generate(body) if config['format'] == 'json'
 
       return YAML.dump(report_body_hash(config, to_h)) if config['format'] == 'yaml'
 
