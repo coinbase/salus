@@ -56,6 +56,10 @@ custom_info: "PR-123"
 #   - when `report` is not included in params, the salus report will be located in the body of the request sent
 # The available formats are `json`, `yaml`, `txt` and `sarif`.
 # `verbose` is an optional key and defaults to false.
+# 
+# Each report hash can add post paramaters using the `post` key , 
+# - Salus reports can be sent as a report paramater by specifying the paramater name in `salus_report_param_name`
+# - additional post paramaters can be specified through the `additional_params` field
 reports:
   - uri: file://tests/salus-report.txt
     format: txt
@@ -65,16 +69,12 @@ reports:
   - uri: https://salus-config.internal2.net/salus-report
     format: json
     verbose: true
-    params:
-      repo: 'Random Repo'
-      user: 'John Doe' 
-  - uri: https://salus-config.internal2.net/salus-report
-    format: json
-    verbose: true
-    params:
-      repo: 'Random Repo'
-      user: 'John Doe' 
-      report: null
+    post:
+      salus_report_param_name: 'report'
+      additional_params:
+        repo: 'Random Repo'
+        user: 'John Doe' 
+        report: null
   - uri: file://tests/salus-report.sarif
     format: sarif
 
