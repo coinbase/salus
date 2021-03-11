@@ -63,7 +63,7 @@ module Sarif
       result = super(parsed_issue)
       if parsed_issue[:suppressed]
         result['suppressions'] = [{
-          'kind': 'inSource'
+          'kind': 'external'
         }]
       end
       result
