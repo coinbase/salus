@@ -18,8 +18,9 @@ module Sarif
     SARIF_SCHEMA = "https://docs.oasis-open.org/sarif/sarif/v#{SARIF_VERSION}/csprd01/schemas/"\
     "sarif-schema-#{SARIF_VERSION}".freeze
 
-    def initialize(scan_reports)
+    def initialize(scan_reports, config: {})
       @scan_reports = scan_reports
+      @config = config
     end
 
     # Builds Sarif Report. Raises an SarifInvalidFormatError if generated SARIF report is invalid
@@ -53,7 +54,7 @@ module Sarif
       begin
         converter = Object.const_get(adapter).new(scan_report)
       rescue NameError
-        converter = BaseSarif.new(scan_report)
+        converter = BaseSarif.new(scan_report, @config)
         converter.build_runs_object(false)
       end
       converter.build_runs_object(true)
