@@ -181,14 +181,21 @@ describe Salus::Report do
     context 'HTTP report URI given with request parameters' do
       it 'should make a call to send the report for http URI' do
         url = 'https://nerv.tk3/salus-report'
-        params = { 'sport' => 'soccer', 'players' => 11 }
-        directive = { 'uri' => url, 'format' => 'json', 'params' => params }
+        params = { 'salus_report_param_name' => 'report',
+          'additional_params' => {"foo" => "bar", "abc" => "def"} }
+        directive = { 'uri' => url, 'format' => 'json',
+                      'post' => params }
         report = build_report(directive)
-
-        stub_request(:post, url)
-          .with(headers: { 'Content-Type' => 'application/json' }, query: params)
-          .to_return(status: 202)
-
+        stub_request(:post, "https://nerv.tk3/salus-report").
+          with(
+            body: JSON.pretty_generate(report.to_json),
+            headers: {
+           'Accept'=>'*/*',
+           'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+           'Content-Type'=>'application/json',
+           'User-Agent'=>'Faraday v1.3.0',
+           'X-Scanner'=>'salus'
+            }).to_return(status: 200, body: "", headers: {})
         expect { report.export_report }.not_to raise_error
 
         assert_requested(

@@ -130,12 +130,12 @@ module Salus
       bugsnag_notify(e.class.to_s + " " + e.message + "\nBuild Info:" + @builds.to_s)
     end
 
-    # Send the report to given URIs (which could be remove or local).
     def export_report
       @report_uris.each do |directive|
         # First create the string for the report.
         uri = directive['uri']
         verbose = directive['verbose'] || false
+        # Now send this string to its destination.
         report_string = case directive['format']
                         when 'txt' then to_s(verbose: verbose)
                         when 'json' then to_json
@@ -144,10 +144,8 @@ module Salus
                         else
                           raise ExportReportError, "unknown report format #{directive['format']}"
                         end
-
-        # Now send this string to its destination.
         if Salus::Config::REMOTE_URI_SCHEME_REGEX.match?(URI(uri).scheme)
-          send_report(uri, report_string, directive)
+          send_report(uri, report_body(directive), directive['format'])
         else
           # must remove the file:// schema portion of the uri.
           uri_object = URI(uri)
@@ -156,6 +154,33 @@ module Salus
         end
       end
     end
+
+    # Send the report to given URIs (which could be remove or local).
+    # def export_report
+    #   @report_uris.each do |directive|
+    #     # First create the string for the report.
+    #     uri = directive['uri']
+    #     verbose = directive['verbose'] || false
+    #     report_string = case directive['format']
+    #                     when 'txt' then to_s(verbose: verbose)
+    #                     when 'json' then to_json
+    #                     when 'yaml' then to_yaml
+    #                     when 'sarif' then to_sarif
+    #                     else
+    #                       raise ExportReportError, "unknown report format #{directive['format']}"
+    #                     end
+
+    #     # Now send this string to its destination.
+    #     if Salus::Config::REMOTE_URI_SCHEME_REGEX.match?(URI(uri).scheme)
+    #       send_report(uri, report_string, directive)
+    #     else
+    #       # must remove the file:// schema portion of the uri.
+    #       uri_object = URI(uri)
+    #       file_path = "#{uri_object.host}#{uri_object.path}"
+    #       write_report_to_file(file_path, report_string)
+    #     end
+    #   end
+    # end
 
     private
 
@@ -200,41 +225,38 @@ module Salus
             "Cannot write file #{report_file_path} - #{e.class}: #{e.message}"
     end
 
-    def parse_request_params(directive, data)
-      return {} if directive['request_config'].nil?
-
-      url = File.join(Salus::DEFAULT_REPO_PATH, directive['request_config'])
-
-      if !File.file?(url)
-        bugsnag_notify('Invalid report_config file')
-        return {}
-      end
-
-      request_config = YAML.load_file(url)
-      report_param_name = request_config['salus_report_param_name']
-      params = request_config['additional_params'] || {}
-      if !report_param_name.nil?
-        params[report_param_name] = data
-        params['contains_report'] = true
-      end
-      params
-    end
-
-    def send_report(remote_uri, data, directive)
-      params = parse_request_params(directive, data) || {}
+    def send_report(remote_uri, data, format)
       response = Faraday.post do |req|
         req.url remote_uri
-        req.headers['Content-Type'] = CONTENT_TYPE_FOR_FORMAT[directive['format']]
+        req.headers['Content-Type'] = CONTENT_TYPE_FOR_FORMAT[format]
         req.headers['X-Scanner'] = "salus"
-        req.body = data if !params.key?('contains_report')
-        params.delete('contains_report')
-        req.params = params
+        req.body = JSON.pretty_generate(data)
       end
 
       unless response.success?
         raise ExportReportError,
               "POST of Salus report to #{remote_uri} had response status #{response.status}."
       end
+    end
+
+    def report_body_hash(config, data)
+      return data unless config&.key?('post')
+
+      body_hash = config['post']['additional_params'][0] || {}
+      return body_hash unless config['post']['salus_report_param_name']
+
+      body_hash[config['post']['salus_report_param_name']] = data
+      body_hash
+    end
+
+    def report_body(config)
+      return report_body_hash(config, to_s(verbose: verbose)).to_s if config['format'] == 'txt'
+      return report_body_hash(config, JSON.parse(to_json)) if config['format'] == 'json'
+      return report_body_hash(config, JSON.parse(to_sarif)) if config['format'] == 'sarif'
+
+      return YAML.dump(report_body_hash(config, to_h)) if config['format'] == 'yaml'
+
+      raise ExportReportError, "unknown report format #{directive['format']}"
     end
 
     def monotime
