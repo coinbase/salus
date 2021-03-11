@@ -58,15 +58,5 @@ module Sarif
       invocation[:executionSuccessful] = @results.empty? || @scan_report.passed?
       invocation
     end
-
-    def build_result(parsed_issue)
-      result = super(parsed_issue)
-      if parsed_issue[:suppressed]
-        result['suppressions'] = [{
-          'kind': 'external'
-        }]
-      end
-      result
-    end
   end
 end
