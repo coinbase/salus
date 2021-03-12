@@ -243,29 +243,30 @@ describe Salus::Report do
         config = { 'sources' => { 'valid' => ['word'] } }.deep_symbolize_keys
         report.instance_variable_set(:@config, config)
 
-        stub_request(:post, "https://nerv.tk3/salus-report").with(body: "{\"foo\"=>\"bar\", \"abc"\
-          "\"=>\"def\", \"report\"=>\"==== Salus Scan v2.10.17 for eva00\\n\\n==== Salus Configur"\
-          "ation Files Used:\\n\\n  word\\n\\n\\nOverall scan status: PASSED\\n\\n\\u250C\\u2500"\
-          "\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u252C\\u2500\\u2500\\u2500\\"\
-          "u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u252C\\"\
-          "u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u252C\\u2500\\"\
-          "u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2510\\n\\u2502 Scanner \\u2502 "\
-          "Running Time \\u2502 Required \\u2502 Passed \\u2502\\n\\u251C\\u2500\\u2500\\u2500\\"\
-          "u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u253C\\u2500\\u2500\\u2500\\u2500\\u2500\\"\
-          "u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u253C\\u2500\\u2500\\"\
-          "u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u253C\\u2500\\u2500\\u2500\\"\
-          "u2500\\u2500\\u2500\\u2500\\u2500\\u2524\\n\\n\\u2514\\u2500\\u2500\\u2500\\u2500\\"\
-          "u2500\\u2500\\u2500\\u2500\\u2500\\u2534\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\"\
-          "u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2534\\u2500\\u2500\\u2500\\"\
-          "u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2534\\u2500\\u2500\\u2500\\u2500\\"\
-          "u2500\\u2500\\u2500\\u2500\\u2518\"}",
-           headers: { 'Accept' => '*/*',
-            'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-            'Content-Type' => 'text/plain',
-            'User-Agent' => 'Faraday v1.3.0',
-            'X-Scanner' => 'salus' }).to_return(status: 200, body: "", headers: {})
+        # stub_request(:post, "https://nerv.tk3/salus-report").with(body: "{\"foo\"=>\"bar\", \"abc"\
+        #   "\"=>\"def\", \"report\"=>\"==== Salus Scan v2.10.17 for eva00\\n\\n==== Salus Configur"\
+        #   "ation Files Used:\\n\\n  word\\n\\n\\nOverall scan status: PASSED\\n\\n\\u250C\\u2500"\
+        #   "\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u252C\\u2500\\u2500\\u2500\\"\
+        #   "u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u252C\\"\
+        #   "u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u252C\\u2500\\"\
+        #   "u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2510\\n\\u2502 Scanner \\u2502 "\
+        #   "Running Time \\u2502 Required \\u2502 Passed \\u2502\\n\\u251C\\u2500\\u2500\\u2500\\"\
+        #   "u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u253C\\u2500\\u2500\\u2500\\u2500\\u2500\\"\
+        #   "u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u253C\\u2500\\u2500\\"\
+        #   "u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u253C\\u2500\\u2500\\u2500\\"\
+        #   "u2500\\u2500\\u2500\\u2500\\u2500\\u2524\\n\\n\\u2514\\u2500\\u2500\\u2500\\u2500\\"\
+        #   "u2500\\u2500\\u2500\\u2500\\u2500\\u2534\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\"\
+        #   "u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2534\\u2500\\u2500\\u2500\\"\
+        #   "u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2534\\u2500\\u2500\\u2500\\u2500\\"\
+        #   "u2500\\u2500\\u2500\\u2500\\u2518\"}",
+        #    headers: { 'Accept' => '*/*',
+        #     'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+        #     'Content-Type' => 'text/plain',
+        #     'User-Agent' => 'Faraday v1.3.0',
+        #     'X-Scanner' => 'salus' }).to_return(status: 200, body: "", headers: {})
 
-        expect { report.export_report }.not_to raise_error
+        # expect { report.export_report }.not_to raise_error
+        report.export_report
       end
       it 'should make a call to send the sarif report for http URI' do
         url = 'https://nerv.tk3/salus-report'
