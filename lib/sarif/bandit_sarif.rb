@@ -1,5 +1,7 @@
 module Sarif
   class BanditSarif < BaseSarif
+    include Salus::SalusBugsnag
+
     BANDIT_URI = 'https://github.com/PyCQA/bandit'.freeze
 
     def initialize(scan_report)
@@ -10,7 +12,8 @@ module Sarif
 
     def parse_scan_report!
       JSON.parse(@scan_report.log(''))['results']
-    rescue JSON::ParserError
+    rescue JSON::ParserError => e
+      bugsnag_notify(e.message)
       []
     end
 
