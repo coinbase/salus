@@ -227,7 +227,7 @@ module Salus
 
       body = report_body_hash(config, JSON.parse(to_json)) if config['format'] == 'json'
       body = report_body_hash(config, JSON.parse(to_sarif)) if config['format'] == 'sarif'
-      return JSON.pretty_generate(body) if config['format'] == 'json'
+      return JSON.pretty_generate(body) if %w[json sarif].include?(config['format'])
 
       return YAML.dump(report_body_hash(config, to_h)) if config['format'] == 'yaml'
 
