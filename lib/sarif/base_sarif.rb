@@ -11,7 +11,7 @@ module Sarif
       note: "note"
     }.freeze
 
-    def initialize(scan_report, config: {})
+    def initialize(scan_report, config = {})
       @scan_report = scan_report
       @mapped_rules = {} # map each rule to an index
       @rule_index = 0

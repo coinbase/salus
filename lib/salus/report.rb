@@ -124,7 +124,7 @@ module Salus
       JSON.pretty_generate(to_h)
     end
 
-    def to_sarif(config: {})
+    def to_sarif(config = {})
       Sarif::SarifReport.new(@scan_reports, config).to_sarif
     rescue StandardError => e
       bugsnag_notify(e.class.to_s + " " + e.message + "\nBuild Info:" + @builds.to_s)
@@ -140,7 +140,7 @@ module Salus
                         when 'txt' then to_s(verbose: verbose)
                         when 'json' then to_json
                         when 'yaml' then to_yaml
-                        when 'sarif' then to_sarif(directive['sarif_options'] || {})
+                        when 'sarif' then to_sarif(directive['sarif_options'])
                         else
                           raise ExportReportError, "unknown report format #{directive['format']}"
                         end
