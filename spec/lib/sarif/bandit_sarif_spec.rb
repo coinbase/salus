@@ -89,6 +89,7 @@ describe Sarif::BanditSarif do
       it 'should record 0 line of code scanned if no code' do
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
+        puts report.to_sarif
         result = JSON.parse(report.to_sarif)["runs"][0]["results"][0]
         rules = JSON.parse(report.to_sarif)["runs"][0]["tool"]["driver"]["rules"]
         # Check rule info
@@ -107,18 +108,6 @@ describe Sarif::BanditSarif do
         expected = "1 import cPickle\n2 import pickle\n3 import StringIO\n"
         snippet = result['locations'][0]['physicalLocation']['region']['snippet']['text'].to_s
         expect(snippet).to eq(expected)
-      end
-    end
-  end
-
-  describe '#sarif_level' do
-    context 'levels severities' do
-      it 'are mapped to sarif levels' do
-        scan_report = Salus::ScanReport.new('Bandit')
-        adapter = Sarif::BanditSarif.new(scan_report)
-        expect(adapter.sarif_level("MEDIUM")).to eq("error")
-        expect(adapter.sarif_level("HIGH")).to eq("error")
-        expect(adapter.sarif_level("LOW")).to eq("warning")
       end
     end
   end
