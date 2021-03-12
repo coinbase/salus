@@ -60,6 +60,11 @@ custom_info: "PR-123"
 # Each report hash can add post paramaters using the `post` key , 
 # - Salus reports can be sent as a report paramater by specifying the paramater name in `salus_report_param_name`
 # - additional post paramaters can be specified through the `additional_params` field
+#
+# Additional options are also available for sarif using the optional keyword: sarif_options
+# The available options for the sarif_options keyword are:
+# 1) `include_suppressed: true/false` -This option allows users to include/exclude suppressed/excluded results 
+#    in their sarif reports
 reports:
   - uri: file://tests/salus-report.txt
     format: txt
@@ -74,9 +79,12 @@ reports:
       additional_params:
         repo: 'Random Repo'
         user: 'John Doe' 
-        report: null
   - uri: file://tests/salus-report.sarif
     format: sarif
+  - uri: file://tests/salus-report.sarif
+    format: sarif
+    sarif_options:
+      include_suppressed: true
 
 # Hash with build info. Can contain arbitrary keys.
 builds:
