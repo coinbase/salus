@@ -232,14 +232,9 @@ describe Salus::Report do
         url = 'https://nerv.tk3/salus-report'
         params = { 'salus_report_param_name' => 'report',
           'additional_params' => { "foo" => "bar", "abc" => "def" } }
-        directive = { 'uri' => url, 'format' => 'yaml', 'post' => params, 'verbose': false }
-        build_report(directive)
-        directive['format'] = 'txt'
-        report = Salus::Report.new(
-          report_uris: [directive],
-          project_name: 'eva00',
-          custom_info: 'test unit'
-        )
+        directive = { 'uri' => url, 'format' => 'txt', 'post' => params, 'verbose': false }
+        report = build_report(directive)
+        report.instance_variable_set(:@scan_reports, [])
         config = { 'sources' => { 'valid' => ['word'] } }.deep_symbolize_keys
         report.instance_variable_set(:@config, config)
 
@@ -261,14 +256,9 @@ describe Salus::Report do
         url = 'https://nerv.tk3/salus-report'
         params = { 'salus_report_param_name' => 'report',
           'additional_params' => { "foo" => "bar", "abc" => "def" } }
-        directive = { 'uri' => url, 'format' => 'yaml', 'post' => params, 'verbose': false }
-        build_report(directive)
-        directive['format'] = 'sarif'
-        report = Salus::Report.new(
-          report_uris: [directive],
-          project_name: 'eva00',
-          custom_info: 'test unit'
-        )
+        directive = { 'uri' => url, 'format' => 'sarif', 'post' => params, 'verbose': false }
+        report = build_report(directive)
+        report.instance_variable_set(:@scan_reports, [])
 
         stub_request(:post, "https://nerv.tk3/salus-report").with(
           body: "{\n  \"foo\": \"bar\",\n  \"abc\": \"def\",\n  \"report\": {\n    \"version\": "\
