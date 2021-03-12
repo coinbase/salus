@@ -101,7 +101,7 @@ describe Sarif::BaseSarif do
         expect(runs_object['results'].empty?).to eq(true)
       end
 
-      it 'does contains suppressed object when includes_suppresd config is false' do
+      it 'does contains suppressed object when includes_suppresd config is true' do
         parsed_issue = {
           id: 'SAL0002',
           name: "Golang Error",
