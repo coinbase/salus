@@ -11,13 +11,14 @@ module Sarif
       note: "note"
     }.freeze
 
-    def initialize(scan_report)
+    def initialize(scan_report, config: {})
       @scan_report = scan_report
       @mapped_rules = {} # map each rule to an index
       @rule_index = 0
       @logs = []
       @uri = DEFAULT_URI
       @issues = Set.new
+      @config = config
     end
 
     # Retrieve tool section for sarif report
@@ -93,10 +94,19 @@ module Sarif
       @logs.each do |issue|
         parsed_issue = parse_issue(issue)
         next if !parsed_issue
+        next if parsed_issue[:suppressed] && @config['include_suppressed'] == false
 
         rule = build_rule(parsed_issue)
         rules << rule if rule
-        results << build_result(parsed_issue)
+        result = build_result(parsed_issue)
+
+        # Add suppresion object for suppressed results
+        if parsed_issue[:suppressed]
+          result['suppressions'] = [{
+            'kind': 'external'
+          }]
+        end
+        results << result
       end
 
       {
