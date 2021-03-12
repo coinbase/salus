@@ -25,25 +25,5 @@ module Sarif
         help_url: issue['advisory']['url']
       }
     end
-
-    def build_invocations
-      if @logs.empty? && !@scan_report.passed?
-        error = @scan_report.to_h.fetch(:info)[:stderr]
-        {
-          "executionSuccessful": false,
-          "toolExecutionNotifications": [{
-            "descriptor": {
-              "id": ""
-            },
-            "level": "error",
-            "message": {
-              "text": "#{@scan_report.to_h.fetch(:errors).first[:message] || ''}, #{error}"
-            }
-          }]
-        }
-      else
-        { "executionSuccessful": @scan_report.passed? }
-      end
-    end
   end
 end
