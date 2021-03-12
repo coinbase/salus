@@ -53,6 +53,10 @@ custom_info: "PR-123"
 # URIs can point to either the local file system or remote HTTP destinations.
 # The available formats are `json`, `yaml`, `txt` and `sarif`.
 # `verbose` is an optional key and defaults to false.
+# additional options are also available for sarif using the optional keyword: sarif_options
+# The available options for the sarif_options keyword are:
+# 1) `include_suppressed: true/false` -This option allows users to include/exclude suppressed/excluded results 
+#    in their sarif reports
 reports:
   - uri: file://tests/salus-report.txt
     format: txt
@@ -61,6 +65,10 @@ reports:
     verbose: true
   - uri: file://tests/salus-report.sarif
     format: sarif
+  - uri: file://tests/salus-report.sarif
+    format: sarif
+    sarif_options:
+      include_suppressed: true
 
 # Hash with build info. Can contain arbitrary keys.
 builds:
