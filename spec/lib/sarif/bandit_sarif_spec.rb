@@ -110,4 +110,16 @@ describe Sarif::BanditSarif do
       end
     end
   end
+
+  describe '#sarif_level' do
+    context 'levels severities' do
+      it 'are mapped to sarif levels' do
+        scan_report = Salus::ScanReport.new('Bandit')
+        adapter = Sarif::BanditSarif.new(scan_report)
+        expect(adapter.sarif_level("MEDIUM")).to eq("error")
+        expect(adapter.sarif_level("HIGH")).to eq("error")
+        expect(adapter.sarif_level("LOW")).to eq("warning")
+      end
+    end
+  end
 end
