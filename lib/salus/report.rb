@@ -223,6 +223,7 @@ module Salus
     end
 
     def report_body(config)
+      verbose = config['verbose']
       return report_body_hash(config, to_s(verbose: verbose)).to_s if config['format'] == 'txt'
 
       body = report_body_hash(config, JSON.parse(to_json)) if config['format'] == 'json'

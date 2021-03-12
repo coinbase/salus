@@ -179,7 +179,7 @@ describe Salus::Report do
     end
 
     context 'HTTP report URI given with request parameters' do
-      it 'should make a call to send the report for http URI' do
+      it 'should make a call to send the json report for http URI' do
         url = 'https://nerv.tk3/salus-report'
         params = { 'salus_report_param_name' => 'report',
           'additional_params' => { "foo" => "bar", "abc" => "def" } }
@@ -202,6 +202,94 @@ describe Salus::Report do
         'Content-Type' => 'application/json',
         'User-Agent' => 'Faraday v1.3.0',
         'X-Scanner' => 'salus' }).to_return(status: 200, body: "", headers: {})
+
+        expect { report.export_report }.not_to raise_error
+      end
+
+      it 'should make a call to send the yaml report for http URI' do
+        url = 'https://nerv.tk3/salus-report'
+        params = { 'salus_report_param_name' => 'report',
+          'additional_params' => { "foo" => "bar", "abc" => "def" } }
+        directive = { 'uri' => url, 'format' => 'yaml', 'post' => params }
+        report = build_report(directive)
+
+        stub_request(:post, "https://nerv.tk3/salus-report").with(body: "---\nfoo: bar\nabc: def\n"\
+          "report:\n  :version: 2.10.17\n  :project_name: eva00\n  :passed: false\n  :scans:\n    "\
+          "DerpScanner:\n      :scanner_name: DerpScanner\n      :passed: false\n      :warn: {}\n"\
+          "      :info:\n        :asdf: qwerty\n      :errors: []\n  :errors:\n  - :message: derp"\
+          "\n  - :message: derp\n  - :message: derp\n  - :message: derp\n  - :message: derp\n  "\
+          ":custom_info: test unit\n",
+           headers: { 'Accept' => '*/*',
+            'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+            'Content-Type' => 'text/x-yaml',
+            'User-Agent' => 'Faraday v1.3.0',
+            'X-Scanner' => 'salus' }).to_return(status: 200, body: "", headers: {})
+
+        expect { report.export_report }.not_to raise_error
+      end
+
+      it 'should make a call to send the txt report for http URI' do
+        url = 'https://nerv.tk3/salus-report'
+        params = { 'salus_report_param_name' => 'report',
+          'additional_params' => { "foo" => "bar", "abc" => "def" } }
+        directive = { 'uri' => url, 'format' => 'yaml', 'post' => params, 'verbose': false }
+        build_report(directive)
+        directive['format'] = 'txt'
+        report = Salus::Report.new(
+          report_uris: [directive],
+          project_name: 'eva00',
+          custom_info: 'test unit'
+        )
+        config = { 'sources' => { 'valid' => ['word'] } }.deep_symbolize_keys
+        report.instance_variable_set(:@config, config)
+
+        stub_request(:post, "https://nerv.tk3/salus-report").with(body: "{\"foo\"=>\"bar\", \"abc"\
+          "\"=>\"def\", \"report\"=>\"==== Salus Scan v2.10.17 for eva00\\n\\n==== Salus Configur"\
+          "ation Files Used:\\n\\n  word\\n\\n\\nOverall scan status: PASSED\\n\\n\\u250C\\u2500"\
+          "\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u252C\\u2500\\u2500\\u2500\\"\
+          "u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u252C\\"\
+          "u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u252C\\u2500\\"\
+          "u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2510\\n\\u2502 Scanner \\u2502 "\
+          "Running Time \\u2502 Required \\u2502 Passed \\u2502\\n\\u251C\\u2500\\u2500\\u2500\\"\
+          "u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u253C\\u2500\\u2500\\u2500\\u2500\\u2500\\"\
+          "u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u253C\\u2500\\u2500\\"\
+          "u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u253C\\u2500\\u2500\\u2500\\"\
+          "u2500\\u2500\\u2500\\u2500\\u2500\\u2524\\n\\n\\u2514\\u2500\\u2500\\u2500\\u2500\\"\
+          "u2500\\u2500\\u2500\\u2500\\u2500\\u2534\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\"\
+          "u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2534\\u2500\\u2500\\u2500\\"\
+          "u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2534\\u2500\\u2500\\u2500\\u2500\\"\
+          "u2500\\u2500\\u2500\\u2500\\u2518\"}",
+           headers: { 'Accept' => '*/*',
+            'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+            'Content-Type' => 'text/plain',
+            'User-Agent' => 'Faraday v1.3.0',
+            'X-Scanner' => 'salus' }).to_return(status: 200, body: "", headers: {})
+
+        expect { report.export_report }.not_to raise_error
+      end
+      it 'should make a call to send the sarif report for http URI' do
+        url = 'https://nerv.tk3/salus-report'
+        params = { 'salus_report_param_name' => 'report',
+          'additional_params' => { "foo" => "bar", "abc" => "def" } }
+        directive = { 'uri' => url, 'format' => 'yaml', 'post' => params, 'verbose': false }
+        build_report(directive)
+        directive['format'] = 'sarif'
+        report = Salus::Report.new(
+          report_uris: [directive],
+          project_name: 'eva00',
+          custom_info: 'test unit'
+        )
+
+        stub_request(:post, "https://nerv.tk3/salus-report").with(
+          body: "{\n  \"foo\": \"bar\",\n  \"abc\": \"def\",\n  \"report\": {\n    \"version\": "\
+          "\"2.1.0\",\n    \"$schema\": \"https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/"\
+          "schemas/sarif-schema-2.1.0\",\n    \"runs\": [\n\n    ]\n  }\n}",
+          headers: { 'Accept' => '*/*',
+            'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+            'Content-Type' => 'application/json',
+            'User-Agent' => 'Faraday v1.3.0',
+            'X-Scanner' => 'salus' }
+        ).to_return(status: 200, body: "", headers: {})
 
         expect { report.export_report }.not_to raise_error
       end
