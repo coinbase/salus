@@ -11,7 +11,7 @@ module Sarif
       note: "note"
     }.freeze
 
-    attr_accessor :config
+    attr_accessor :config # sarif_options
 
     def initialize(scan_report, config = {})
       @scan_report = scan_report
