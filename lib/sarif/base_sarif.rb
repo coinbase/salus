@@ -11,7 +11,9 @@ module Sarif
       note: "note"
     }.freeze
 
-    def initialize(scan_report, config: {})
+    attr_accessor :config # sarif_options
+
+    def initialize(scan_report, config = {})
       @scan_report = scan_report
       @mapped_rules = {} # map each rule to an index
       @rule_index = 0

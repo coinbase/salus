@@ -64,7 +64,7 @@ custom_info: "PR-123"
 # Additional options are also available for sarif using the optional keyword: sarif_options
 # The available options for the sarif_options keyword are:
 # 1) `include_suppressed: true/false` -This option allows users to include/exclude suppressed/excluded results 
-#    in their sarif reports
+#    in their sarif reports. Currently this is supported for NPM audit reports
 reports:
   - uri: file://tests/salus-report.txt
     format: txt
