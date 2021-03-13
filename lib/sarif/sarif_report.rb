@@ -53,6 +53,7 @@ module Sarif
       adapter = "Sarif::#{scan_report.scanner_name}Sarif"
       begin
         converter = Object.const_get(adapter).new(scan_report)
+        converter.config = @config
         converter.build_runs_object(true)
       rescue NameError
         converter = BaseSarif.new(scan_report, @config)
