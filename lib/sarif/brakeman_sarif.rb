@@ -11,18 +11,38 @@ module Sarif
     end
 
     def parse_scan_report!
-      JSON.parse(@scan_report.log(''))['warnings']
+      parsed_result = JSON.parse(@scan_report.log(''))
+      parsed_result['warnings'].concat(parsed_result['errors'])
     rescue JSON::ParserError => e
       bugsnag_notify(e.message)
       []
     end
 
-    def parse_issue(issue)
+    def parse_error(error)
+      id = error['error'] + ' ' + error['location']
+      return nil if @issues.include?(id)
+
+      @issues.add(id)
       {
-        id: issue['warning_code'],
+        id: 'SAL0002',
+        name: "Brakeman Error",
+        level: "HIGH",
+        details: error['error'],
+        uri: error['location'],
+        help_url: "https://github.com/coinbase/salus/blob/master/docs/salus_reports.md"
+      }
+    end
+
+    def parse_issue(issue)
+      return parse_error(issue) if issue.key?('error')
+
+      {
+        id: issue['warning_code'].to_s,
         name: "#{issue['check_name']}/#{issue['warning_type']}",
         level: issue['confidence'].upcase,
-        details: issue['message'],
+        details: "Warning Type: #{issue['warning_type']}\nWarning Code: #{issue['warning_code']}"\
+        "\nMessage: #{issue['message']}\nConfidence: #{issue['confidence']}\nCheck Name: "\
+        "#{issue['check_name']}\nFingerprint: #{issue['fingerprint']}",
         start_line: issue['line'].to_i,
         start_column: 1,
         uri: issue['file'],
