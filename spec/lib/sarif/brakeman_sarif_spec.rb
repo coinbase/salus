@@ -19,7 +19,7 @@ describe Sarif::BrakemanSarif do
           name: "Evaluation/Dangerous Eval",
           level: "HIGH",
           details: "Warning Type: Dangerous Eval\nWarning Code: 13\nMessage: User input in eval"\
-          "\nConfidence: High\nCheck Name: Evaluation Fingerprint: b16e1cd0d952433f80b0403b6a74"\
+          "\nConfidence: High\nCheck Name: Evaluation\nFingerprint: b16e1cd0d952433f80b0403b6a74"\
           "aab0e98792ea015cc1b1fa5c003cbe7d56eb",
           start_line: 3,
           start_column: 1,
@@ -146,8 +146,8 @@ describe Sarif::BrakemanSarif do
         expect(rules[0]['id']).to eq('13')
         expect(rules[0]['name']).to eq('Evaluation/Dangerous Eval')
         expect(rules[0]['fullDescription']['text']).to eq("Warning Type: Dangerous Eval\nWarning"\
-          " Code: 13\nMessage: User input in eval\nConfidence: High\nCheck Name: Evaluation "\
-          "Fingerprint: b16e1cd0d952433f80b0403b6a74aab0e98792ea015cc1b1fa5c003cbe7d56eb")
+          " Code: 13\nMessage: User input in eval\nConfidence: High\nCheck Name: Evaluation"\
+          "\nFingerprint: b16e1cd0d952433f80b0403b6a74aab0e98792ea015cc1b1fa5c003cbe7d56eb")
         expect(rules[0]['helpUri']).to eq('https://brakemanscanner.org/docs/warning_types'\
           '/dangerous_eval/')
 
