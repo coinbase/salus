@@ -25,7 +25,7 @@ module Sarif
 
       @issues.add(id)
       {
-        id: 'SAL0002',
+        id: SCANNER_ERROR,
         name: "Bandit Error",
         level: "HIGH",
         details: error['reason'],
