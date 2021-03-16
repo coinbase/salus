@@ -24,7 +24,7 @@ module Sarif
 
       @issues.add(id)
       {
-        id: 'SAL0002',
+        id: SCANNER_ERROR,
         name: "Brakeman Error",
         level: "HIGH",
         details: error['error'],

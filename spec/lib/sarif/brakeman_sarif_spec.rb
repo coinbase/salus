@@ -105,6 +105,7 @@ describe Sarif::BrakemanSarif do
       expect(brakeman_adapter.sarif_level('HIGH')).to eq('error')
       expect(brakeman_adapter.sarif_level('MEDIUM')).to eq('error')
       expect(brakeman_adapter.sarif_level('LOW')).to eq('warning')
+      expect(brakeman_adapter.sarif_level('WEAK')).to eq('note')
     end
   end
   describe '#sarif_report' do
