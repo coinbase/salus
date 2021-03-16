@@ -89,7 +89,6 @@ describe Sarif::BanditSarif do
       it 'should record 0 line of code scanned if no code' do
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
-        puts report.to_sarif
         result = JSON.parse(report.to_sarif)["runs"][0]["results"][0]
         rules = JSON.parse(report.to_sarif)["runs"][0]["tool"]["driver"]["rules"]
         # Check rule info
