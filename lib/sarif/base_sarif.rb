@@ -83,7 +83,7 @@ module Sarif
         }
         @mapped_rules[parsed_issue[:id]] = @rule_index
         @rule_index += 1
-        if rule[:id] == SARIF::SCANNER_ERROR
+        if rule[:id] == SCANNER_ERROR
           rule[:fullDescription][:text] = 'Golang errors generated at runtime'
         end
         rule
