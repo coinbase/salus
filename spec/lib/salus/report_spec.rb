@@ -178,6 +178,105 @@ describe Salus::Report do
       end
     end
 
+    context 'HTTP report URI given with request parameters' do
+      it 'should make a call to send the json report for http URI' do
+        url = 'https://nerv.tk3/salus-report'
+        params = { 'salus_report_param_name' => 'report',
+          'additional_params' => { "foo" => "bar", "abc" => "def" } }
+        directive = { 'uri' => url, 'format' => 'json',
+                      'post' => params }
+        report = build_report(directive)
+
+        stub_request(:post, "https://nerv.tk3/salus-report").with(body: "{\n  \"foo\": \"bar\",\n"\
+          "  \"abc\": \"def\",\n  \"report\": {\n    \"version\": \"2.10.18\",\n    \"project_nam"\
+          "e\": \"eva00\",\n    \"passed\": false,\n    \"scans\": {\n      \"DerpScanner\": {\n "\
+          "       \"scanner_name\": \"DerpScanner\",\n        \"passed\": false,\n        \"warn"\
+          "\": {\n        },\n        \"info\": {\n          \"asdf\": \"qwerty\"\n        },\n "\
+          "       \"errors\": [\n\n        ]\n      }\n    },\n    \"errors\": [\n      {\n      "\
+          "  \"message\": \"derp\"\n      },\n      {\n        \"message\": \"derp\"\n      },\n "\
+          "     {\n        \"message\": \"derp\"\n      },\n      {\n        \"message\": \"derp"\
+          "\"\n      },\n      {\n        \"message\": \"derp\"\n      }\n    ],\n    \"custom_"\
+          "info\": \"test unit\"\n  }\n}",
+           headers: { 'Accept' => '*/*',
+        'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+        'Content-Type' => 'application/json',
+        'User-Agent' => 'Faraday v1.3.0',
+        'X-Scanner' => 'salus' }).to_return(status: 200, body: "", headers: {})
+
+        expect { report.export_report }.not_to raise_error
+      end
+
+      it 'should make a call to send the yaml report for http URI' do
+        url = 'https://nerv.tk3/salus-report'
+        params = { 'salus_report_param_name' => 'report',
+          'additional_params' => { "foo" => "bar", "abc" => "def" } }
+        directive = { 'uri' => url, 'format' => 'yaml', 'post' => params }
+        report = build_report(directive)
+
+        stub_request(:post, "https://nerv.tk3/salus-report").with(body: "---\nfoo: bar\nabc: def\n"\
+          "report:\n  :version: 2.10.18\n  :project_name: eva00\n  :passed: false\n  :scans:\n    "\
+          "DerpScanner:\n      :scanner_name: DerpScanner\n      :passed: false\n      :warn: {}\n"\
+          "      :info:\n        :asdf: qwerty\n      :errors: []\n  :errors:\n  - :message: derp"\
+          "\n  - :message: derp\n  - :message: derp\n  - :message: derp\n  - :message: derp\n  "\
+          ":custom_info: test unit\n",
+           headers: { 'Accept' => '*/*',
+            'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+            'Content-Type' => 'text/x-yaml',
+            'User-Agent' => 'Faraday v1.3.0',
+            'X-Scanner' => 'salus' }).to_return(status: 200, body: "", headers: {})
+
+        expect { report.export_report }.not_to raise_error
+      end
+
+      it 'should make a call to send the txt report for http URI' do
+        url = 'https://nerv.tk3/salus-report'
+        params = { 'salus_report_param_name' => 'report',
+          'additional_params' => { "foo" => "bar", "abc" => "def" } }
+        directive = { 'uri' => url, 'format' => 'txt', 'post' => params, 'verbose': false }
+        report = build_report(directive)
+        report.instance_variable_set(:@scan_reports, [])
+        config = { 'sources' => { 'valid' => ['word'] } }.deep_symbolize_keys
+        report.instance_variable_set(:@config, config)
+
+        stub_request(:post, "https://nerv.tk3/salus-report").with(body: "{\"foo\"=>\"bar\", \"abc"\
+          "\"=>\"def\", \"report\"=>\"==== Salus Scan v2.10.18 for eva00\\n\\n==== Salus "\
+          "Configuration Files Used:\\n\\n  word\\n\\n\\n==== Salus Errors\\n\\n  [\\n    {\\n    "\
+          "  \\\"message\\\": \\\"derp\\\"\\n    },\\n    {\\n      \\\"message\\\": \\\"derp\\"\
+          "\"\\n    },\\n    {\\n      \\\"message\\\": \\\"derp\\\"\\n    },\\n    {\\n      "\
+          "\\\"message\\\": \\\"derp\\\"\\n    },\\n    {\\n      \\\"message\\\": \\\"derp\\\"\\n"\
+          "    }\\n  ]\\n\\n\\nOverall scan status: PASSED\\n\\n┌─────────┬──────────────┬────────"\
+          "──┬────────┐\\n│ Scanner │ Running Time │ Required │ Passed │\\n├─────────┼────────────"\
+          "──┼──────────┼────────┤\\n\\n└─────────┴──────────────┴──────────┴────────┘\"}",
+          headers: { 'Accept' => '*/*',
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Content-Type' => 'text/plain',
+          'User-Agent' => 'Faraday v1.3.0',
+          'X-Scanner' => 'salus' }).to_return(status: 200, body: "", headers: {})
+        expect { report.export_report }.not_to raise_error
+      end
+      it 'should make a call to send the sarif report for http URI' do
+        url = 'https://nerv.tk3/salus-report'
+        params = { 'salus_report_param_name' => 'report',
+          'additional_params' => { "foo" => "bar", "abc" => "def" } }
+        directive = { 'uri' => url, 'format' => 'sarif', 'post' => params, 'verbose': false }
+        report = build_report(directive)
+        report.instance_variable_set(:@scan_reports, [])
+
+        stub_request(:post, "https://nerv.tk3/salus-report").with(
+          body: "{\n  \"foo\": \"bar\",\n  \"abc\": \"def\",\n  \"report\": {\n    \"version\": "\
+          "\"2.1.0\",\n    \"$schema\": \"https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/"\
+          "schemas/sarif-schema-2.1.0\",\n    \"runs\": [\n\n    ]\n  }\n}",
+          headers: { 'Accept' => '*/*',
+            'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+            'Content-Type' => 'application/json',
+            'User-Agent' => 'Faraday v1.3.0',
+            'X-Scanner' => 'salus' }
+        ).to_return(status: 200, body: "", headers: {})
+
+        expect { report.export_report }.not_to raise_error
+      end
+    end
+
     context 'local file report URI given' do
       it 'should save to the given directory for a local file uri' do
         path = './spec/fixtures/report/salus_report.json'

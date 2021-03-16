@@ -51,18 +51,34 @@ custom_info: "PR-123"
 #
 # Each Hash must contain keys for `uri` and `format`.
 # URIs can point to either the local file system or remote HTTP destinations.
+# - Request paramters (optional) can be included for HTTP destinations with the `params` field
+#   - if the report parameter is included, the report paramater would contain the salus report
+#   - when `report` is not included in params, the salus report will be located in the body of the request sent
 # The available formats are `json`, `yaml`, `txt` and `sarif`.
 # `verbose` is an optional key and defaults to false.
-# additional options are also available for sarif using the optional keyword: sarif_options
+# 
+# Each report hash can add post paramaters using the `post` key , 
+# - Salus reports can be sent as a report paramater by specifying the paramater name in `salus_report_param_name`
+# - additional post paramaters can be specified through the `additional_params` field
+#
+# Additional options are also available for sarif using the optional keyword: sarif_options
 # The available options for the sarif_options keyword are:
 # 1) `include_suppressed: true/false` -This option allows users to include/exclude suppressed/excluded results 
-#    in their sarif reports
+#    in their sarif reports. Currently this is supported for NPM audit reports
 reports:
   - uri: file://tests/salus-report.txt
     format: txt
   - uri: https://salus-config.internal.net/salus-report
     format: json
     verbose: true
+  - uri: https://salus-config.internal2.net/salus-report
+    format: json
+    verbose: true
+    post:
+      salus_report_param_name: 'report'
+      additional_params:
+        repo: 'Random Repo'
+        user: 'John Doe' 
   - uri: file://tests/salus-report.sarif
     format: sarif
   - uri: file://tests/salus-report.sarif

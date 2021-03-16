@@ -18,7 +18,7 @@ module Sarif
     SARIF_SCHEMA = "https://docs.oasis-open.org/sarif/sarif/v#{SARIF_VERSION}/csprd01/schemas/"\
     "sarif-schema-#{SARIF_VERSION}".freeze
 
-    def initialize(scan_reports, config: {})
+    def initialize(scan_reports, config = {})
       @scan_reports = scan_reports
       @config = config
     end
@@ -53,6 +53,7 @@ module Sarif
       adapter = "Sarif::#{scan_report.scanner_name}Sarif"
       begin
         converter = Object.const_get(adapter).new(scan_report)
+        converter.config = @config
         converter.build_runs_object(true)
       rescue NameError
         converter = BaseSarif.new(scan_report, @config)
