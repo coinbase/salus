@@ -46,7 +46,7 @@ describe Sarif::BaseSarif do
     context 'results object' do
       it 'has suppressions objects for suppressed results' do
         parsed_issue = {
-          id: 'SAL0002',
+          id: 'SAL002',
           name: "Golang Error",
           level: "NOTE",
           details: 'error',
@@ -65,7 +65,7 @@ describe Sarif::BaseSarif do
 
       it 'does not contain suppressed object when suppressed key is not present' do
         parsed_issue = {
-          id: 'SAL0002',
+          id: 'SAL002',
           name: "Golang Error",
           level: "NOTE",
           details: 'error',
@@ -83,7 +83,7 @@ describe Sarif::BaseSarif do
 
       it 'does not contain suppressed object when includes_suppresd config is false' do
         parsed_issue = {
-          id: 'SAL0002',
+          id: 'SAL002',
           name: "Golang Error",
           level: "NOTE",
           details: 'error',
@@ -103,7 +103,7 @@ describe Sarif::BaseSarif do
 
       it 'does contains suppressed object when includes_suppresd config is true' do
         parsed_issue = {
-          id: 'SAL0002',
+          id: 'SAL002',
           name: "Golang Error",
           level: "NOTE",
           details: 'error',
