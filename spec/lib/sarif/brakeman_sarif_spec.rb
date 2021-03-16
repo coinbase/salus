@@ -33,7 +33,7 @@ describe Sarif::BrakemanSarif do
         brakeman_sarif = Sarif::BrakemanSarif.new(scanner.report)
         error = { 'error' => 'foo', 'location' => 'fooclass' }.stringify_keys
         parsed_error = brakeman_sarif.parse_issue(error)
-        expect(parsed_error[:id]).to eq('SAL0002')
+        expect(parsed_error[:id]).to eq('SAL002')
         expect(parsed_error[:name]).to eq('Brakeman Error')
         expect(parsed_error[:level]).to eq('HIGH')
         expect(parsed_error[:details]).to eq('foo')
