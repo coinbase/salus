@@ -83,7 +83,7 @@ module Sarif
         }
         @mapped_rules[parsed_issue[:id]] = @rule_index
         @rule_index += 1
-        rule[:fullDescription][:text] = "errors reported by scanner" if rule[:id] == 'SAL0002'
+        rule[:fullDescription][:text] = "errors reported by scanner" if rule[:id] == SCANNER_ERROR
         rule
       end
     end
