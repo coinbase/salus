@@ -114,7 +114,7 @@ describe Sarif::GosecSarif do
 
         expect(rules[0]['id']).to eq('SAL0002')
         expect(rules[0]['name']).to eq('Golang Error')
-        expect(rules[0]['fullDescription']['text']).to eq("Gosec Error generated at runtime")
+        expect(rules[0]['fullDescription']['text']).to eq("errors reported by scanner")
         expect(rules[0]['helpUri']).to eq('https://github.com/coinbase/salus/blob/master/docs/salus_reports.md')
 
         expect(result['ruleId']).to eq('SAL0002')
