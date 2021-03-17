@@ -1,0 +1,5 @@
+reports:
+  - uri: file://out.json
+    format: json
+  - uri: file://out.sarif
+    format: sarif

@@ -74,5 +74,30 @@ describe Salus::CLI do
         end
       end
     end
+
+    context 'With --filter_sarif' do
+      it 'Should ouput filtered vulnerabilities' do
+        Dir.chdir('spec/fixtures/gosec/multiple_vulns2') do
+          ENV['SALUS_CONFIGURATION'] = 'file:///salus.yaml'
+          Salus.scan(repo_path: '.', filter_sarif: 'filter.sarif')
+          diff_file = 'salus_sarif_diff.txt' # filtered results
+          sarif_file = 'out.sarif'  # full results
+          expect(File).to exist(diff_file)
+          expect(File).to exist(sarif_file)
+
+          data = File.read(sarif_file)
+          expect(data).to include("G401")
+          expect(data).to include("G501")
+          expect(data).to include("G101")
+          expect(data).to include("G104")
+
+          data = File.read(diff_file)
+          expect(data).to include("G401")
+          expect(data).to include("G501")
+          expect(data).not_to include("G101")
+          expect(data).not_to include("G104")
+        end
+      end
+    end
   end
 end

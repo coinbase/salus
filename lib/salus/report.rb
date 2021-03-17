@@ -22,9 +22,10 @@ module Salus
 
     SUMMARY_TABLE_HEADINGS = ['Scanner', 'Running Time', 'Required', 'Passed'].freeze
 
-    attr_reader :builds
+    attr_reader :builds, :sarif_report_path
 
-    def initialize(report_uris: [], builds: {}, project_name: nil, custom_info: nil, config: nil)
+    def initialize(report_uris: [], builds: {}, project_name: nil, custom_info: nil, config: nil,
+                   filter_sarif: nil)
       @report_uris = report_uris     # where we will send this report
       @builds = builds               # build hash, could have arbitrary keys
       @project_name = project_name   # the project_name we are scanning
@@ -33,6 +34,8 @@ module Salus
       @custom_info = custom_info     # some additional info to send
       @config = config               # the configuration for this run
       @running_time = nil            # overall running time for the scan; see #record
+      @filter_sarif = filter_sarif
+      @sarif_report_path = nil
     end
 
     def record
@@ -144,6 +147,7 @@ module Salus
                         else
                           raise ExportReportError, "unknown report format #{directive['format']}"
                         end
+
         if Salus::Config::REMOTE_URI_SCHEME_REGEX.match?(URI(uri).scheme)
           send_report(uri, report_body(directive), directive['format'])
         else
@@ -151,6 +155,7 @@ module Salus
           uri_object = URI(uri)
           file_path = "#{uri_object.host}#{uri_object.path}"
           write_report_to_file(file_path, report_string)
+          @sarif_report_path = file_path if directive['format'] == 'sarif'
         end
       end
     end
