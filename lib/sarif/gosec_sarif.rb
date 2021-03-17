@@ -41,7 +41,7 @@ module Sarif
 
       @issues.add(id)
       {
-        id: 'SAL0002',
+        id: SCANNER_ERROR,
         name: "Golang Error",
         level: "NOTE",
         details: error['error'],
@@ -54,7 +54,7 @@ module Sarif
     end
 
     def parse_issue(issue)
-      if issue[:id] == 'SAL0002'
+      if issue[:id] == SCANNER_ERROR
         issue
       else
         id = issue['details'] + ' ' + issue['file'] + ' ' + issue['line']
