@@ -55,15 +55,15 @@ module Sarif
           }
         ]
       }
-      if parsed_issue[:code]
-        result[:locations][0][:physicalLocation][:region] = {
+      location = result[:locations][0][:physicalLocation]
+      if !parsed_issue[:start_line].nil?
+        location[:region] = {
           "startLine": parsed_issue[:start_line].to_i,
-          "startColumn": parsed_issue[:start_column].to_i,
-          "snippet": {
-            "text": parsed_issue[:code]
-          }
+          "startColumn": parsed_issue[:start_column].to_i
         }
       end
+
+      location[:region][:snippet] = { "text": parsed_issue[:code] } if !parsed_issue[:code].nil?
       result
     end
 
