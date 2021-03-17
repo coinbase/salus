@@ -1,5 +1,9 @@
 module Sarif
   module SharedObjects
+    UNSUPPORTED_SCANNER = 'SAL001'.freeze # Scanner currently has no sarif adapters
+    SCANNER_ERROR = 'SAL002'.freeze # Errors logged in a scanners json report
+    SALUS_SCANNER_ERROR = 'SAL003'.freeze # Errors logged by scanner during invocation
+
     def build_invocations(scan_report, supported)
       if supported
         supported_scanner_invocation(scan_report)
@@ -14,7 +18,7 @@ module Sarif
         "executionSuccessful": scan_report.passed?,
         "toolExecutionNotifications": [{
           "descriptor": {
-            "id": "SAL001"
+            "id": UNSUPPORTED_SCANNER
           },
           "message": {
             "text": "SARIF reports are not available for this scanner"
@@ -30,7 +34,7 @@ module Sarif
           "executionSuccessful": scan_report.passed?,
           "toolExecutionNotifications": [{
             "descriptor": {
-              "id": "SAL003"
+              "id": SALUS_SCANNER_ERROR
             },
             "level": "error",
             "message": {

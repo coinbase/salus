@@ -11,13 +11,16 @@ module Sarif
       note: "note"
     }.freeze
 
-    def initialize(scan_report)
+    attr_accessor :config # sarif_options
+
+    def initialize(scan_report, config = {})
       @scan_report = scan_report
       @mapped_rules = {} # map each rule to an index
       @rule_index = 0
       @logs = []
       @uri = DEFAULT_URI
       @issues = Set.new
+      @config = config
     end
 
     # Retrieve tool section for sarif report
@@ -52,15 +55,15 @@ module Sarif
           }
         ]
       }
-      if parsed_issue[:code]
-        result[:locations][0][:physicalLocation][:region] = {
+      location = result[:locations][0][:physicalLocation]
+      if !parsed_issue[:start_line].nil?
+        location[:region] = {
           "startLine": parsed_issue[:start_line].to_i,
-          "startColumn": parsed_issue[:start_column].to_i,
-          "snippet": {
-            "text": parsed_issue[:code]
-          }
+          "startColumn": parsed_issue[:start_column].to_i
         }
       end
+
+      location[:region][:snippet] = { "text": parsed_issue[:code] } if !parsed_issue[:code].nil?
       result
     end
 
@@ -80,9 +83,7 @@ module Sarif
         }
         @mapped_rules[parsed_issue[:id]] = @rule_index
         @rule_index += 1
-        if rule[:id] == 'SAL0002'
-          rule[:fullDescription][:text] = 'Golang errors generated at runtime'
-        end
+        rule[:fullDescription][:text] = "errors reported by scanner" if rule[:id] == SCANNER_ERROR
         rule
       end
     end
@@ -94,10 +95,19 @@ module Sarif
       @logs.each do |issue|
         parsed_issue = parse_issue(issue)
         next if !parsed_issue
+        next if parsed_issue[:suppressed] && @config['include_suppressed'] == false
 
         rule = build_rule(parsed_issue)
         rules << rule if rule
-        results << build_result(parsed_issue)
+        result = build_result(parsed_issue)
+
+        # Add suppresion object for suppressed results
+        if parsed_issue[:suppressed]
+          result['suppressions'] = [{
+            'kind': 'external'
+          }]
+        end
+        results << result
       end
 
       {
