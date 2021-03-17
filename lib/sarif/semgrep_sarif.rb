@@ -35,7 +35,7 @@ module Sarif
       location = hit[:hit].split(":") # [file_name, line, code_preview]
       {
         id: id,
-        name: id,
+        name: "#{id} / #{hit[:msg]}",
         level: "HIGH",
         details: "Pattern: #{hit[:pattern]}\nMessage:#{hit[:msg]}\nForbidden:#{hit[:forbidden]}"\
         "\nRequired:#{hit[:required]}\nHit: #{hit[:hit]}",
@@ -43,7 +43,8 @@ module Sarif
         start_column: 1,
         uri: location[0],
         help_url: "https://semgrep.dev/docs/writing-rules/rule-syntax/",
-        code: location[2]
+        code: location[2],
+        rule: "Pattern: #{hit[:pattern]}\nMessage: #{hit[:msg]}"
       }
     end
 
@@ -63,26 +64,6 @@ module Sarif
       }
     end
 
-    def build_invocations
-      error = @scan_report.to_h[:errors]
-      if !error.empty?
-        {
-          "executionSuccessful": @scan_report.passed?,
-          "toolExecutionNotifications": [{
-            "descriptor": {
-              "id": ""
-            },
-            "level": SARIF_WARNINGS[:error],
-            "message": {
-              "text": "==== Salus Errors\n#{JSON.pretty_generate(error)}"
-            }
-          }]
-        }
-      else
-        { "executionSuccessful": @scan_report.passed? }
-      end
-    end
-
     def sarif_level(severity)
       result = super(severity)
       case severity
@@ -93,6 +74,13 @@ module Sarif
       else
         result
       end
+    end
+
+    # one hit should not define the description of a rule for all other hits
+    def build_rule(parsed_issue)
+      rule = super
+      rule[:fullDescription][:text] = parsed_issue[:rule] if parsed_issue.key?(:rule)
+      rule
     end
   end
 end

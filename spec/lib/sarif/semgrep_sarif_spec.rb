@@ -50,12 +50,8 @@ describe Sarif::SemgrepSarif do
         rules = sarif_report["runs"][0]["tool"]["driver"]["rules"]
         runs_obj = sarif_report["runs"][0]
         expect(rules[0]['id']).to eq("$X == $X")
-        expect(rules[0]['name']).to eq("$X == $X")
+        expect(rules[0]['name']).to eq("$X == $X / Useless equality test.")
         expect(runs_obj['invocations'][0]['executionSuccessful']).to eq(true)
-        expect(result['message']['text']).to eq("Pattern: $X == $X\nMessage:Useless equality test."\
-        "\nForbidden:false\nRequired:true\nHit: trivial.py:3:if 3 == 3:").or eq("Pattern: $X == $X"\
-          "\nMessage:Useless equality test.\nForbidden:false\nRequired:true\n"\
-          "Hit: vendor/trivial2.py:10:    if user.id == user.id:")
         expect(result['ruleId']).to eq("$X == $X")
         expect(result['ruleIndex']).to eq(0)
         expect(result['level']).to eq('error')
