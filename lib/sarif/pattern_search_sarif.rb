@@ -15,10 +15,14 @@ module Sarif
 
     def parse_issue(issue)
       url_info = issue[:hit].split(':')
+      id = issue[:regex] + ' ' + issue[:hit] #[filename, ]
+      return nil if @issues.include?(id)
+
+      @issues.add(id)
       {
         id: issue[:regex],
-        name: "Regex: issue[:regex]",
-        level: issue[:forbidden],
+        name: "Regex: #{issue[:regex]}",
+        level: "HIGH",
         details: "Regex: #{issue[:regex]}\nForbidden: #{issue[:forbidden]}\nMessage:#{issue[:msg]}"\
         "\nRequired: #{issue[:forbidden]}",
         start_line: url_info[1],
@@ -27,15 +31,6 @@ module Sarif
         help_url: PATTERN_SEARCH_URI,
         code: issue[:hit]
       }
-    end
-
-    def sarif_level(severity)
-      case severity
-      when true
-        SARIF_WARNINGS[:error]
-      else
-        SARIF_WARNINGS[:warning]
-      end
     end
   end
 end
