@@ -15,7 +15,7 @@ module Sarif
 
     def parse_issue(issue)
       url_info = issue[:hit].split(':')
-      id = issue[:regex] + ' ' + issue[:hit] #[filename, ]
+      id = issue[:regex] + ' ' + issue[:hit] # [filename, line, message]
       return nil if @issues.include?(id)
 
       @issues.add(id)
