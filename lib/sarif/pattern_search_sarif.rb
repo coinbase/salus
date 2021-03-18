@@ -24,7 +24,7 @@ module Sarif
         name: "Regex: #{issue[:regex]}",
         level: "HIGH",
         details: "Regex: #{issue[:regex]}\nForbidden: #{issue[:forbidden]}\nMessage:#{issue[:msg]}"\
-        "\nRequired: #{issue[:forbidden]}",
+        "\nRequired: #{issue[:required]}",
         start_line: url_info[1],
         start_column: 1,
         uri: url_info[0],

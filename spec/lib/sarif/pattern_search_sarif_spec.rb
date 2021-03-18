@@ -41,7 +41,7 @@ describe Sarif::PatternSearchSarif do
             ruleIndex: 0,
             level: "error",
             message: {
-              text: "Regex: Nerv\nForbidden: false\nMessage:important string\nRequired: false"
+              text: "Regex: Nerv\nForbidden: false\nMessage:important string\nRequired: true"
             },
             locations: [{
               physicalLocation: {
@@ -65,7 +65,7 @@ describe Sarif::PatternSearchSarif do
             id: "Nerv",
             name: "Regex: Nerv",
             fullDescription: {
-              text: "Regex: Nerv\nForbidden: false\nMessage:important string\nRequired: false"
+              text: "Regex: Nerv\nForbidden: false\nMessage:important string\nRequired: true"
             },
             helpUri: doc,
             help: {
