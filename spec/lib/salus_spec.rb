@@ -80,7 +80,7 @@ describe Salus::CLI do
         Dir.chdir('spec/fixtures/gosec/multiple_vulns2') do
           ENV['SALUS_CONFIGURATION'] = 'file:///salus.yaml'
           Salus.scan(repo_path: '.', filter_sarif: 'filter.sarif')
-          diff_file = 'salus_sarif_diff.txt' # filtered results
+          diff_file = 'salus_sarif_diff.json' # filtered results
           sarif_file = 'out.sarif'  # full results
           expect(File).to exist(diff_file)
           expect(File).to exist(sarif_file)

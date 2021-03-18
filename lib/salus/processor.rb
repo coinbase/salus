@@ -45,6 +45,7 @@ module Salus
         project_name: @config.project_name,
         custom_info: @config.custom_info,
         config: @config.to_h.merge(sources),
+        repo_path: repo_path,
         filter_sarif: filter_sarif
       )
     end

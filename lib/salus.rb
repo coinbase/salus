@@ -62,45 +62,9 @@ module Salus
         bugsnag_notify(e)
       end
 
-      # if config writes sarif and --filter_sarif used
-      if processor.report.sarif_report_path && !filter_sarif.empty?
-        curr_sarif_file = processor.report.sarif_report_path
-        filter_sarif_file = File.join(repo_path, filter_sarif)
-        sarif_diff = filter_sarif_results(curr_sarif_file, filter_sarif_file)
-        diff_file_txt = File.open(File.join(repo_path, 'salus_sarif_diff.txt'), 'w')
-        sarif_diff.each do |d|
-          diff_file_txt.write(JSON.pretty_generate(d) + "\n")
-        end
-        diff_file_txt.close
-      end
-
       heartbeat_thr&.kill
       # System exit with success or failure - useful for CI builds.
       system_exit(processor.passed? ? EXIT_SUCCESS : EXIT_FAILURE)
-    end
-
-    def filter_sarif_results(curr_sarif_file, filter_sarif_file)
-      curr_sarif_data, filter_sarif_data = [curr_sarif_file, filter_sarif_file].map do |f|
-        JSON.parse(File.read(f))
-      end
-      curr_sarif_results = get_sarif_results(curr_sarif_data)
-      filter_sarif_results = get_sarif_results(filter_sarif_data)
-      curr_sarif_results - filter_sarif_results
-    end
-
-    def get_sarif_results(sarif_data)
-      sarif_results = Set.new
-      sarif_data["runs"].each do |run|
-        scanner_name = run['tool']['driver']['name']
-        run["results"].each do |result|
-          # delete ruleIndex because the vulnerabilities of two scans may be
-          # same but ordered differently
-          result.delete('ruleIndex')
-          result['scanner_name'] = scanner_name
-          sarif_results.add(result)
-        end
-      end
-      sarif_results
     end
 
     private
