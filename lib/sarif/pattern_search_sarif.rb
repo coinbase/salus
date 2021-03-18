@@ -26,7 +26,7 @@ module Sarif
         details: "Regex: #{issue[:regex]}\nForbidden: #{issue[:forbidden]}\nMessage:#{issue[:msg]}"\
         "\nRequired: #{issue[:forbidden]}",
         start_line: url_info[1],
-        start_column: 0,
+        start_column: 1,
         uri: url_info[0],
         help_url: PATTERN_SEARCH_URI,
         code: issue[:hit]
