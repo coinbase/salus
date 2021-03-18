@@ -63,6 +63,7 @@ module Salus
       end
 
       heartbeat_thr&.kill
+
       # System exit with success or failure - useful for CI builds.
       system_exit(processor.passed? ? EXIT_SUCCESS : EXIT_FAILURE)
     end
