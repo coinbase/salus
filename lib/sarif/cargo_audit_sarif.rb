@@ -12,15 +12,13 @@ module Sarif
 
     def parse_scan_report!
       logs = @scan_report.log('')
-      if !logs.size.zero?
-        x = JSON.parse(@scan_report.log(''))
-        vulnerabilities = x['vulnerabilities']['list'] || []
-        unmaintained = x['warnings']['unmaintained'] || []
-        yanked = x['warnings']['yanked'] || []
-        vulnerabilities.concat(unmaintained, yanked)
-      else
-        []
-      end
+      return [] if logs.size.zero?
+
+      x = JSON.parse(logs)
+      vulnerabilities = x['vulnerabilities']['list'] || []
+      unmaintained = x['warnings']['unmaintained'] || []
+      yanked = x['warnings']['yanked'] || []
+      vulnerabilities.concat(unmaintained, yanked)
     rescue JSON::ParserError => e
       bugsnag_notify(e.message)
       []

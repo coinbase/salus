@@ -13,23 +13,21 @@ module Sarif
     end
 
     def parse_scan_report!(scan_report)
-      log = scan_report.log("")
-      if !log.size.zero?
-        json_obj = JSON.parse(log)
-        issues = json_obj['Issues']
-        errors = json_obj['Golang errors']
-        parsed_errors = []
-        errors.each do |key|
-          key[1].each do |location|
-            location['uri'] = key[0]
-            parsed_errors << parse_error(location)
-          end
+      logs = scan_report.log('')
+      return [] if logs.size.zero?
+
+      json_obj = JSON.parse(logs)
+      issues = json_obj['Issues']
+      errors = json_obj['Golang errors']
+      parsed_errors = []
+      errors.each do |key|
+        key[1].each do |location|
+          location['uri'] = key[0]
+          parsed_errors << parse_error(location)
         end
-        parsed_errors.compact!
-        issues.concat parsed_errors
-      else
-        []
       end
+      parsed_errors.compact!
+      issues.concat parsed_errors
     rescue JSON::ParserError => e
       bugsnag_notify(e.message)
       []
