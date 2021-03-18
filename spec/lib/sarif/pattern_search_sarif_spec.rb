@@ -50,7 +50,7 @@ describe Sarif::PatternSearchSarif do
                   uriBaseId: "%SRCROOT%"
                 }, region: {
                   startLine: 3,
-                  startColumn: 0,
+                  startColumn: 1,
                   snippet: {
                     text: "seal.txt:3:Nerv is tasked with taking over when the UN fails."
                   }
