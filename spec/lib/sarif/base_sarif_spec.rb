@@ -120,6 +120,46 @@ describe Sarif::BaseSarif do
         runs_object = adapter.build_runs_object(true)
         expect(runs_object['results'].empty?).to eq(false)
       end
+
+      it 'has a suppression object when scanner is not enforced and suppressions are included' do
+        parsed_issue = {
+          id: 'SAL002',
+          name: "Golang Error",
+          level: "NOTE",
+          details: 'error',
+          start_line: 1,
+          start_column: 1,
+          uri: '',
+          help_url: "https://github.com/coinbase/salus/blob/master/docs/salus_reports.md",
+          code: ""
+        }
+        adapter = Sarif::GosecSarif.new(scan_report)
+        adapter.instance_variable_set(:@logs, [parsed_issue])
+        adapter.instance_variable_set(:@config, { "include_suppressed": true }.stringify_keys)
+        adapter.instance_variable_set(:@required, false)
+        runs_object = adapter.build_runs_object(true)
+        expect(runs_object['results'].empty?).to eq(false)
+        expect(runs_object["invocations"][0][:executionSuccessful]).to eq(true)
+      end
+      it 'results are not included for non enforced scanners when include_suppressed is false' do
+        parsed_issue = {
+          id: 'SAL002',
+          name: "Golang Error",
+          level: "NOTE",
+          details: 'error',
+          start_line: 1,
+          start_column: 1,
+          uri: '',
+          help_url: "https://github.com/coinbase/salus/blob/master/docs/salus_reports.md",
+          code: ""
+        }
+        adapter = Sarif::GosecSarif.new(scan_report)
+        adapter.instance_variable_set(:@logs, [parsed_issue])
+        adapter.instance_variable_set(:@config, { "include_suppressed": false }.stringify_keys)
+        adapter.instance_variable_set(:@required, false)
+        runs_object = adapter.build_runs_object(true)
+        expect(runs_object['results'].empty?).to eq(true)
+      end
     end
   end
 end
