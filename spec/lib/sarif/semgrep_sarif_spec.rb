@@ -47,6 +47,27 @@ describe Sarif::SemgrepSarif do
 
         sarif_report = JSON.parse(report.to_sarif)
         result = sarif_report["runs"][0]["results"][0]
+        expect(result).to include({ "ruleId" => "$X == $X",
+          "ruleIndex" => 0,
+          "level" => "error", "message" => {
+            "text" => "Pattern: $X == $X\nMessage:Useless equality test.\nForbidden:false\n"\
+            "Required:true"
+          },
+          "locations" => [{
+            "physicalLocation" => {
+              "artifactLocation" => {
+                "uri" => "examples/trivial2.py",
+                "uriBaseId" => "%SRCROOT%"
+              },
+              "region" => {
+                "startLine" => 10,
+                "startColumn" => 1,
+                "snippet" => {
+                  "text" => "    if user.id == user.id"
+                }
+              }
+            }
+          }] })
         rules = sarif_report["runs"][0]["tool"]["driver"]["rules"]
         runs_obj = sarif_report["runs"][0]
         expect(rules[0]['id']).to eq("$X == $X")

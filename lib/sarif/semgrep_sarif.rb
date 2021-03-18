@@ -28,17 +28,17 @@ module Sarif
     end
 
     def parse_hit(hit)
-      id = hit[:pattern] || hit[:msg]
+      id = hit[:hit] || hit[:msg]
       return nil if @issues.include?(id)
 
       @issues.add(id)
       location = hit[:hit].split(":") # [file_name, line, code_preview]
       {
-        id: id,
-        name: "#{id} / #{hit[:msg]}",
+        id: hit[:pattern],
+        name: "#{hit[:pattern]} / #{hit[:msg]}",
         level: "HIGH",
         details: "Pattern: #{hit[:pattern]}\nMessage:#{hit[:msg]}\nForbidden:#{hit[:forbidden]}"\
-        "\nRequired:#{hit[:required]}\nHit: #{hit[:hit]}",
+        "\nRequired:#{hit[:required]}",
         start_line: location[1],
         start_column: 1,
         uri: location[0],
@@ -74,13 +74,6 @@ module Sarif
       else
         result
       end
-    end
-
-    # one hit should not define the description of a rule for all other hits
-    def build_rule(parsed_issue)
-      rule = super
-      rule[:fullDescription][:text] = parsed_issue[:rule] if parsed_issue.key?(:rule)
-      rule
     end
   end
 end
