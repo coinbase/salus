@@ -1,0 +1,244 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/schemas/sarif-schema-2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Gosec",
+          "version": "2.4.0",
+          "informationUri": "https://github.com/securego/gosec",
+          "rules": [
+            {
+              "id": "G101",
+              "name": "CWE-798",
+              "fullDescription": {
+                "text": "Potential hardcoded credentials \nSeverity: HIGH\nConfidence: LOW\nCWE: https://cwe.mitre.org/data/definitions/798.html"
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/798.html",
+              "help": {
+                "text": "More info: https://cwe.mitre.org/data/definitions/798.html",
+                "markdown": "[More info](https://cwe.mitre.org/data/definitions/798.html)."
+              }
+            },
+            {
+              "id": "G501",
+              "name": "CWE-327",
+              "fullDescription": {
+                "text": "Blocklisted import crypto/md5: weak cryptographic primitive \nSeverity: MEDIUM\nConfidence: HIGH\nCWE: https://cwe.mitre.org/data/definitions/327.html"
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/327.html",
+              "help": {
+                "text": "More info: https://cwe.mitre.org/data/definitions/327.html",
+                "markdown": "[More info](https://cwe.mitre.org/data/definitions/327.html)."
+              }
+            },
+            {
+              "id": "G401",
+              "name": "CWE-326",
+              "fullDescription": {
+                "text": "Use of weak cryptographic primitive \nSeverity: MEDIUM\nConfidence: HIGH\nCWE: https://cwe.mitre.org/data/definitions/326.html"
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/326.html",
+              "help": {
+                "text": "More info: https://cwe.mitre.org/data/definitions/326.html",
+                "markdown": "[More info](https://cwe.mitre.org/data/definitions/326.html)."
+              }
+            },
+            {
+              "id": "G104",
+              "name": "CWE-703",
+              "fullDescription": {
+                "text": "Errors unhandled. \nSeverity: LOW\nConfidence: HIGH\nCWE: https://cwe.mitre.org/data/definitions/703.html"
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/703.html",
+              "help": {
+                "text": "More info: https://cwe.mitre.org/data/definitions/703.html",
+                "markdown": "[More info](https://cwe.mitre.org/data/definitions/703.html)."
+              }
+            }
+          ]
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+        {
+          "ruleId": "G101",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Potential hardcoded credentials \nSeverity: HIGH\nConfidence: LOW\nCWE: https://cwe.mitre.org/data/definitions/798.html"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/spec/fixtures/gosec/multiple_vulns2/hello.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 11,
+                  "startColumn": 2,
+                  "snippet": {
+                    "text": "10: \n11: \tpassword := \"hhend77dyyydbh&^psNSSZ)JSM--_%\"\n12: \n"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "G104",
+          "ruleIndex": 3,
+          "level": "warning",
+          "message": {
+            "text": "Errors unhandled. \nSeverity: LOW\nConfidence: HIGH\nCWE: https://cwe.mitre.org/data/definitions/703.html"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/spec/fixtures/gosec/multiple_vulns2/hello.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 14,
+                  "startColumn": 2,
+                  "snippet": {
+                    "text": "13: \th := md5.New()\n14: \tio.WriteString(h, password)\n15: \tfmt.Printf(\"%x\", h.Sum(nil))\n"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": false
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "PatternSearch",
+          "version": "0.9.0",
+          "informationUri": "https://github.com/coinbase/salus",
+          "rules": [
+
+          ]
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "toolExecutionNotifications": [
+            {
+              "descriptor": {
+                "id": "SAL001"
+              },
+              "message": {
+                "text": "SARIF reports are not available for this scanner"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "RepoNotEmpty",
+          "version": "",
+          "informationUri": "https://github.com/coinbase/salus",
+          "rules": [
+
+          ]
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "toolExecutionNotifications": [
+            {
+              "descriptor": {
+                "id": "SAL001"
+              },
+              "message": {
+                "text": "SARIF reports are not available for this scanner"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Semgrep",
+          "version": "0.36.0",
+          "informationUri": "https://github.com/coinbase/salus",
+          "rules": [
+
+          ]
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "toolExecutionNotifications": [
+            {
+              "descriptor": {
+                "id": "SAL001"
+              },
+              "message": {
+                "text": "SARIF reports are not available for this scanner"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
