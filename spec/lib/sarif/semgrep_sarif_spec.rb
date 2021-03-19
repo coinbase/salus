@@ -28,7 +28,7 @@ describe Sarif::SemgrepSarif do
 
   describe '#to_sarif' do
     context 'generates a valid sarif report' do
-      it '' do
+      it 'contains vulnerabilities found in report' do
         repo = Salus::Repo.new("spec/fixtures/semgrep")
         config = {
           "matches" => [
@@ -77,6 +77,62 @@ describe Sarif::SemgrepSarif do
         expect(result['ruleIndex']).to eq(0)
         expect(result['level']).to eq('error')
         expect(result['locations'][0]['physicalLocation']['region']['startLine']).to eq(10)
+      end
+
+      it 'contains info about missing required vulnerabilities' do
+        config = {
+          "matches" => [
+            {
+              "pattern" => "1 == $X",
+              "language" => "python",
+              "message" => "Useless equality test.",
+              "required" => true
+            }
+          ]
+        }
+        repo = Salus::Repo.new("spec/fixtures/semgrep")
+        scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
+        scanner.run
+        # puts scanner.report.to_h
+        report = Salus::Report.new(project_name: "Neon Genesis")
+        report.add_scan_report(scanner.report, required: false)
+        sarif_report = JSON.parse(report.to_sarif)
+        result = sarif_report["runs"][0]["results"][1]
+        rules = sarif_report["runs"][0]["tool"]["driver"]["rules"]
+        expect(rules).to include(
+          {
+            "id" => "Required Pattern Not Found",
+            "name" => "Required Pattern Not Found",
+            "fullDescription" => {
+              "text" => "Required Pattern Not Found"
+            },
+            "helpUri" => "https://semgrep.dev/docs/writing-rules/rule-syntax/",
+            "help" => {
+              "text" => "More info: https://semgrep.dev/docs/writing-rules/rule-syntax/",
+              "markdown" => "[More info](https://semgrep.dev/docs/writing-rules/rule-syntax/)."
+            }
+          }
+        )
+        expect(result).to include(
+          {
+            "ruleId" => "Required Pattern Not Found",
+            "ruleIndex" => 1,
+            "level" => "error",
+            "message" => {
+              "text" => " pattern \"1 == $X\" was not found - Useless equality test."
+            },
+            "locations" => [
+              {
+                "physicalLocation" => {
+                  "artifactLocation" => {
+                    "uri" => "",
+                    "uriBaseId" => "%SRCROOT%"
+                  }
+                }
+              }
+            ]
+          }
+        )
       end
     end
   end

@@ -5,6 +5,7 @@ module Sarif
     include Salus::SalusBugsnag
 
     SEMGREP_URI = 'https://semgrep.dev/'.freeze
+    NOT_FOUND = "Required Pattern Not Found".freeze
 
     def initialize(scan_report)
       super(scan_report)
@@ -13,17 +14,60 @@ module Sarif
       @issues = Set.new
     end
 
+    def build_logs(log)
+      # add required pattern to report
+      logs = log.split('Required')
+      result = []
+      logs.each do |message|
+        if message.include? "pattern"
+          parsed = {
+            msg: message,
+            required: true
+          }
+          result << parsed
+        end
+      end
+      result
+    end
+
+    def build_rule(parsed_issue)
+      rule = super
+      return if rule.nil?
+
+      rule[:fullDescription][:text] = NOT_FOUND if rule[:id] == NOT_FOUND
+      rule
+    end
+
+    def parse_log(log)
+      id = log[:msg]
+      return nil if @issues.include?(id)
+
+      @issues.add(id)
+      {
+        id: NOT_FOUND,
+        name: NOT_FOUND,
+        level: "HIGH",
+        details: log[:msg],
+        help_url: "https://semgrep.dev/docs/writing-rules/rule-syntax/",
+        uri: ''
+      }
+    end
+
     def parse_scan_report!
-      hits = @scan_report.to_h.dig(:info, :hits)
-      warnings = @scan_report.to_h.dig(:warn, :semgrep_non_fatal) || []
-      hits.concat(warnings)
+      scan_hash = @scan_report.to_h
+      hits = scan_hash.dig(:info, :hits)
+      warnings = scan_hash.dig(:warn, :semgrep_non_fatal) || []
+      logs = build_logs(scan_hash.dig(:logs))
+      hits.concat(warnings, logs)
     end
 
     def parse_issue(issue)
       if issue.key?(:type)
         parse_warning(issue)
-      else
+      elsif issue.key?(:hit)
         parse_hit(issue)
+      else
+        parse_log(issue)
       end
     end
 
