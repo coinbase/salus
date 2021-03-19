@@ -112,7 +112,6 @@ module Sarif
       end
 
       invocation = build_invocations(@scan_report, supported)
-      invocation[:executionSuccessful] = true if @required == false
       {
         "tool" => build_tool(rules: rules),
         "conversion" => build_conversion,

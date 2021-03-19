@@ -139,7 +139,7 @@ describe Sarif::BaseSarif do
         adapter.instance_variable_set(:@required, false)
         runs_object = adapter.build_runs_object(true)
         expect(runs_object['results'].empty?).to eq(false)
-        expect(runs_object["invocations"][0][:executionSuccessful]).to eq(true)
+        expect(runs_object["invocations"][0][:executionSuccessful]).to eq(false)
       end
       it 'results are not included for non enforced scanners when include_suppressed is false' do
         parsed_issue = {
