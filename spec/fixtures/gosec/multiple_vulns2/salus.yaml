@@ -1,0 +1,7 @@
+reports:
+  - uri: file://out.json
+    format: json
+  - uri: file://out.sarif
+    format: sarif
+  - uri: file://salus_sarif_diff.json
+    format: sarif_diff
