@@ -11,7 +11,7 @@ module Sarif
       note: "note"
     }.freeze
 
-    attr_accessor :config # sarif_options
+    attr_accessor :config, :required # sarif_options
 
     def initialize(scan_report, config = {})
       @scan_report = scan_report
@@ -96,13 +96,14 @@ module Sarif
         parsed_issue = parse_issue(issue)
         next if !parsed_issue
         next if parsed_issue[:suppressed] && @config['include_suppressed'] == false
+        next if @required == false && @config['include_suppressed'] == false
 
         rule = build_rule(parsed_issue)
         rules << rule if rule
         result = build_result(parsed_issue)
 
         # Add suppresion object for suppressed results
-        if parsed_issue[:suppressed]
+        if parsed_issue[:suppressed] || @required == false
           result['suppressions'] = [{
             'kind': 'external'
           }]
@@ -110,11 +111,12 @@ module Sarif
         results << result
       end
 
+      invocation = build_invocations(@scan_report, supported)
       {
         "tool" => build_tool(rules: rules),
         "conversion" => build_conversion,
         "results" => results,
-        "invocations" => [build_invocations(@scan_report, supported)]
+        "invocations" => [invocation]
       }
     end
 

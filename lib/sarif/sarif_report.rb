@@ -33,7 +33,9 @@ module Sarif
         "runs" => []
       }
       # for each scanner report, run the appropriate converter
-      @scan_reports.each { |scan_report| sarif_report["runs"] << converter(scan_report[0]) }
+      @scan_reports.each do |scan_report|
+        sarif_report["runs"] << converter(scan_report[0], scan_report[1])
+      end
       report = JSON.pretty_generate(sarif_report)
       path = File.expand_path('schema/sarif-schema.json', __dir__)
       schema = JSON.parse(File.read(path))
@@ -49,14 +51,16 @@ module Sarif
     #
     # @params sarif_report [Salus::ScanReport]
     # @return
-    def converter(scan_report)
+    def converter(scan_report, required)
       adapter = "Sarif::#{scan_report.scanner_name}Sarif"
       begin
         converter = Object.const_get(adapter).new(scan_report)
         converter.config = @config
+        converter.required = required
         converter.build_runs_object(true)
       rescue NameError
         converter = BaseSarif.new(scan_report, @config)
+        converter.required = required
         converter.build_runs_object(false)
       end
     end
