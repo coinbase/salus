@@ -34,7 +34,7 @@ module Sarif
       @issues.add(id)
       location = hit[:hit].split(":") # [file_name, line, code_preview]
       {
-        id: hit[:pattern],
+        id: hit[:pattern] || hit[:msg] || hit[:hit],
         name: "#{hit[:pattern]} / #{hit[:msg]}",
         level: "HIGH",
         details: "Pattern: #{hit[:pattern]}\nMessage:#{hit[:msg]}\nForbidden:#{hit[:forbidden]}"\
