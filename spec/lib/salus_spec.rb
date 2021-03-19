@@ -81,21 +81,24 @@ describe Salus::CLI do
           ENV['SALUS_CONFIGURATION'] = 'file:///salus.yaml'
           Salus.scan(quiet: true, repo_path: '.', filter_sarif: 'filter.sarif')
           diff_file = 'salus_sarif_diff.json' # filtered results
-          sarif_file = 'out.sarif'  # full results
+          sarif_file = 'out.sarif' # full results
           expect(File).to exist(diff_file)
           expect(File).to exist(sarif_file)
 
-          data = File.read(sarif_file)
-          expect(data).to include("G401")
-          expect(data).to include("G501")
-          expect(data).to include("G101")
-          expect(data).to include("G104")
+          data = JSON.parse(File.read(sarif_file))
+          results = data['runs'][0]['results']
+          rule_ids = results.map { |r| r['ruleId'] }.sort
+          expect(rule_ids).to eq(%w[G101 G104 G401 G501])
 
-          data = File.read(diff_file)
-          expect(data).to include("G401")
-          expect(data).to include("G501")
-          expect(data).not_to include("G101")
-          expect(data).not_to include("G104")
+          # filtered result file should include both new rules and project build info
+          data = JSON.parse(File.read(diff_file))
+          rule_ids = data['filtered_results'].map { |r| r['ruleId'] }.sort
+          expect(rule_ids).to eq(%w[G401 G501])
+
+          builds = data['builds']
+          expect(builds['org']).to eq('my_org')
+          expect(builds['project']).to eq('my_repo')
+          expect(builds['url']).to eq('http://buildkite/builds/123456')
         end
       end
     end
