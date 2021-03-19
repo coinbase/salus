@@ -77,12 +77,14 @@ module Sarif
 
       @issues.add(id)
       location = hit[:hit].split(":") # [file_name, line, code_preview]
+      details = "Pattern: #{hit[:pattern]}\nMessage:#{hit[:msg]}\n"
+      details << "\nForbidden:#{hit[:forbidden]}" if hit[:forbidden]
+      details << "\nRequired:#{hit[:required]}" if hit[:required]
       {
         id: hit[:pattern] || hit[:msg] || hit[:hit],
         name: "#{hit[:pattern]} / #{hit[:msg]}",
         level: "HIGH",
-        details: "Pattern: #{hit[:pattern]}\nMessage:#{hit[:msg]}\nForbidden:#{hit[:forbidden]}"\
-        "\nRequired:#{hit[:required]}",
+        details: details,
         start_line: location[1],
         start_column: 1,
         uri: location[0],

@@ -43,15 +43,14 @@ describe Sarif::SemgrepSarif do
         scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
         scanner.run
         report = Salus::Report.new(project_name: "Neon Genesis")
-        report.add_scan_report(scanner.report, required: false)
+        report.add_scan_report(scanner.report, required: true)
 
         sarif_report = JSON.parse(report.to_sarif)
         result = sarif_report["runs"][0]["results"][0]
         expect(result).to include({ "ruleId" => "$X == $X",
           "ruleIndex" => 0,
           "level" => "error", "message" => {
-            "text" => "Pattern: $X == $X\nMessage:Useless equality test.\nForbidden:false\n"\
-            "Required:true"
+            "text" => "Pattern: $X == $X\nMessage:Useless equality test.\n\nRequired:true"
           },
           "locations" => [{
             "physicalLocation" => {
