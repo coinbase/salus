@@ -28,6 +28,7 @@ module Salus
       verbose: false,
       repo_path: DEFAULT_REPO_PATH,
       use_colors: true,
+      filter_sarif: "",
       heartbeat: true
     )
 
@@ -39,7 +40,8 @@ module Salus
       ### Configuration ###
       # Config option would be: --config="<uri x> <uri y> etc"
       configuration_directives = (ENV['SALUS_CONFIGURATION'] || config || '').split(URI_DELIMITER)
-      processor = Salus::Processor.new(configuration_directives, repo_path: repo_path)
+      processor = Salus::Processor.new(configuration_directives, repo_path: repo_path,
+                                       filter_sarif: filter_sarif)
 
       ### Scan Project ###
       # Scan project with Salus client.
