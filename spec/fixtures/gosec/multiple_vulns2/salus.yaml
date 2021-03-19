@@ -5,3 +5,14 @@ reports:
     format: sarif
   - uri: file://salus_sarif_diff.json
     format: sarif_diff
+
+
+builds:
+  url: "http://buildkite/builds/123456"
+  service_name: buildkite
+  salus_scheduled_workflow: "special_scheduled"
+  branch: "master"
+  commit: "1234abcd"
+  git_ssh_url: "github.com/my_repo_url"
+  org: "my_org"
+  project: "my_repo"

@@ -134,13 +134,16 @@ module Salus
     end
 
     def to_sarif_diff
+      diff_report = {}
       curr_sarif_data = JSON.parse(to_sarif)
       filter_sarif_file = File.join(@repo_path, @filter_sarif)
       filter_sarif_data = JSON.parse(File.read(filter_sarif_file))
       curr_sarif_results = get_sarif_results(curr_sarif_data)
       filter_sarif_results = get_sarif_results(filter_sarif_data)
       diff = (curr_sarif_results - filter_sarif_results).to_a
-      JSON.pretty_generate(diff)
+      diff_report['filtered_results'] = diff
+      diff_report['builds'] = to_h[:config][:builds]
+      JSON.pretty_generate(diff_report)
     end
 
     def get_sarif_results(sarif_data)
