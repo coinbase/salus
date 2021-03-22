@@ -141,6 +141,7 @@ module Salus
       curr_sarif_results = get_sarif_results(curr_sarif_data)
       filter_sarif_results = get_sarif_results(filter_sarif_data)
       diff = (curr_sarif_results - filter_sarif_results).to_a
+      diff_report['report_type'] = 'salus_sarif_diff'
       diff_report['filtered_results'] = diff
       diff_report['builds'] = to_h[:config][:builds]
       JSON.pretty_generate(diff_report)
