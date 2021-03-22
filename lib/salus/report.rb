@@ -24,7 +24,8 @@ module Salus
 
     attr_reader :builds
 
-    def initialize(report_uris: [], builds: {}, project_name: nil, custom_info: nil, config: nil)
+    def initialize(report_uris: [], builds: {}, project_name: nil, custom_info: nil, config: nil,
+                   repo_path: nil, filter_sarif: nil)
       @report_uris = report_uris     # where we will send this report
       @builds = builds               # build hash, could have arbitrary keys
       @project_name = project_name   # the project_name we are scanning
@@ -33,6 +34,8 @@ module Salus
       @custom_info = custom_info     # some additional info to send
       @config = config               # the configuration for this run
       @running_time = nil            # overall running time for the scan; see #record
+      @filter_sarif = filter_sarif   # Filter out results from this file
+      @repo_path = repo_path         # path to repo
     end
 
     def record
@@ -130,6 +133,34 @@ module Salus
       bugsnag_notify(e.class.to_s + " " + e.message + "\nBuild Info:" + @builds.to_s)
     end
 
+    def to_sarif_diff
+      diff_report = {}
+      curr_sarif_data = JSON.parse(to_sarif)
+      filter_sarif_file = File.join(@repo_path, @filter_sarif)
+      filter_sarif_data = JSON.parse(File.read(filter_sarif_file))
+      curr_sarif_results = get_sarif_results(curr_sarif_data)
+      filter_sarif_results = get_sarif_results(filter_sarif_data)
+      diff = (curr_sarif_results - filter_sarif_results).to_a
+      diff_report['filtered_results'] = diff
+      diff_report['builds'] = to_h[:config][:builds]
+      JSON.pretty_generate(diff_report)
+    end
+
+    def get_sarif_results(sarif_data)
+      sarif_results = Set.new
+      sarif_data["runs"].each do |run|
+        scanner_name = run['tool']['driver']['name']
+        run["results"].each do |result|
+          # delete ruleIndex because the vulnerabilities of two scans may be
+          # same but ordered differently
+          result.delete('ruleIndex')
+          result['scanner_name'] = scanner_name
+          sarif_results.add(result)
+        end
+      end
+      sarif_results
+    end
+
     def export_report
       @report_uris.each do |directive|
         # First create the string for the report.
@@ -141,6 +172,7 @@ module Salus
                         when 'json' then to_json
                         when 'yaml' then to_yaml
                         when 'sarif' then to_sarif(directive['sarif_options'] || {})
+                        when 'sarif_diff' then to_sarif_diff
                         else
                           raise ExportReportError, "unknown report format #{directive['format']}"
                         end
@@ -228,7 +260,8 @@ module Salus
 
       body = report_body_hash(config, JSON.parse(to_json)) if config['format'] == 'json'
       body = report_body_hash(config, JSON.parse(to_sarif)) if config['format'] == 'sarif'
-      return JSON.pretty_generate(body) if %w[json sarif].include?(config['format'])
+      body = report_body_hash(config, JSON.parse(to_sarif_diff)) if config['format'] == 'sarif_diff'
+      return JSON.pretty_generate(body) if %w[json sarif sarif_diff].include?(config['format'])
 
       return YAML.dump(report_body_hash(config, to_h)) if config['format'] == 'yaml'
 
