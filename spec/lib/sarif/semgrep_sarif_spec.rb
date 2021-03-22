@@ -47,10 +47,11 @@ describe Sarif::SemgrepSarif do
 
         sarif_report = JSON.parse(report.to_sarif)
         result = sarif_report["runs"][0]["results"][0]
-        expect(result).to include({ "ruleId" => "$X == $X",
+        expect(result).to include({ "ruleId" => "Required pattern found",
           "ruleIndex" => 0,
           "level" => "error", "message" => {
-            "text" => "Pattern: $X == $X\nMessage:Useless equality test.\n\nRequired:true"
+            "text" => "Pattern: $X == $X\nMessage:Useless equality test.\n\nRequired:true"\
+            "\nHit: examples/trivial2.py:10:    if user.id == user.id:"
           },
           "locations" => [{
             "physicalLocation" => {
@@ -69,10 +70,10 @@ describe Sarif::SemgrepSarif do
           }] })
         rules = sarif_report["runs"][0]["tool"]["driver"]["rules"]
         runs_obj = sarif_report["runs"][0]
-        expect(rules[0]['id']).to eq("$X == $X")
+        expect(rules[0]['id']).to eq("Required pattern found")
         expect(rules[0]['name']).to eq("$X == $X / Useless equality test.")
         expect(runs_obj['invocations'][0]['executionSuccessful']).to eq(true)
-        expect(result['ruleId']).to eq("$X == $X")
+        expect(result['ruleId']).to eq("Required pattern found")
         expect(result['ruleIndex']).to eq(0)
         expect(result['level']).to eq('error')
         expect(result['locations'][0]['physicalLocation']['region']['startLine']).to eq(10)
@@ -92,9 +93,9 @@ describe Sarif::SemgrepSarif do
         repo = Salus::Repo.new("spec/fixtures/semgrep")
         scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
         scanner.run
-        # puts scanner.report.to_h
+
         report = Salus::Report.new(project_name: "Neon Genesis")
-        report.add_scan_report(scanner.report, required: false)
+        report.add_scan_report(scanner.report, required: true)
         sarif_report = JSON.parse(report.to_sarif)
         result = sarif_report["runs"][0]["results"][1]
         rules = sarif_report["runs"][0]["tool"]["driver"]["rules"]
@@ -118,7 +119,7 @@ describe Sarif::SemgrepSarif do
             "ruleIndex" => 1,
             "level" => "error",
             "message" => {
-              "text" => " pattern \"1 == $X\" was not found - Useless equality test."
+              "text" => "Required pattern \"1 == $X\" was not found - Useless equality test."
             },
             "locations" => [
               {

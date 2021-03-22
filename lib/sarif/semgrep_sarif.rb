@@ -15,11 +15,11 @@ module Sarif
     end
 
     def build_logs(log)
-      # add required pattern to report
-      logs = log.split('Required')
+      # add required pattern not found to report
+      logs = log.split("\n\n")
       result = []
       logs.each do |message|
-        if message.include? "pattern"
+        if message.include? "Required pattern"
           parsed = {
             msg: message,
             required: true
@@ -81,10 +81,10 @@ module Sarif
       details << "\nForbidden:#{hit[:forbidden]}" if hit[:forbidden]
       details << "\nRequired:#{hit[:required]}" if hit[:required]
       {
-        id: hit[:pattern] || hit[:msg] || hit[:hit],
+        id: id(hit[:forbidden], hit[:required]),
         name: "#{hit[:pattern]} / #{hit[:msg]}",
         level: "HIGH",
-        details: details,
+        details: "#{details}\nHit: #{hit[:hit]}",
         start_line: location[1],
         start_column: 1,
         uri: location[0],
@@ -120,6 +120,12 @@ module Sarif
       else
         result
       end
+    end
+
+    def id(forbidden, required)
+      return 'Forbidden pattern found / Required pattern found' if forbidden & required
+      return 'Forbidden pattern found' if forbidden
+      return 'Required pattern found' if required
     end
   end
 end
