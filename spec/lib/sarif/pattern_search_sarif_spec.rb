@@ -31,13 +31,15 @@ describe Sarif::PatternSearchSarif do
 
         scanner = Salus::Scanners::PatternSearch.new(repository: repo, config: config)
         scanner.run
+        report = Salus::Report.new(project_name: "Neon Genesis")
+        report.add_scan_report(scanner.report, required: true)
         adapter = Sarif::PatternSearchSarif.new(scanner.report)
         report = adapter.build_runs_object(true)
         rules = report['tool'][:driver]['rules']
         results = report['results']
         expect(results).to include(
           {
-            ruleId: "Nerv",
+            ruleId: "Required pattern found",
             ruleIndex: 0,
             level: "error",
             message: {
@@ -62,16 +64,16 @@ describe Sarif::PatternSearchSarif do
         doc = "https://github.com/coinbase/salus/blob/master/docs/scanners/pattern_search.md"
         expect(rules).to include(
           {
-            id: "Nerv",
-            name: "Regex: Nerv",
             fullDescription: {
               text: "Regex: Nerv\nForbidden: false\nMessage:important string\nRequired: true"
             },
-            helpUri: doc,
             help: {
-              text: "More info: #{doc}",
-              markdown: "[More info](#{doc})."
-            }
+              markdown: "[More info](#{doc}).",
+              text: "More info: #{doc}"
+            },
+            helpUri: doc,
+            id: "Required pattern found",
+            name: "Regex: Nerv"
           }
         )
       end
