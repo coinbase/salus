@@ -315,5 +315,14 @@ describe Salus::Report do
         )
       end
     end
+
+    context 'x-scanner type' do
+      it 'should get the correct x-scanner based on format' do
+        report = Salus::Report.new
+        expect(report.x_scanner_type('json')).to eq('json')
+        expect(report.x_scanner_type('yaml')).to eq('yaml')
+        expect(report.x_scanner_type('sarif_diff')).to eq('salus_sarif_diff')
+      end
+    end
   end
 end
