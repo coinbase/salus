@@ -22,6 +22,7 @@ require "json"
 
 module Salus::Scanners
   class Semgrep < Base
+    # rubocop:disable Metrics/AbcSize
     def run
       global_exclude_flags = flag_list('--exclude', @config['exclude'])
 
@@ -173,6 +174,7 @@ module Salus::Scanners
         end
       end
     end
+    # rubocop:enable Metrics/AbcSize
 
     def should_run?
       true # we will always run this on the provided folder
