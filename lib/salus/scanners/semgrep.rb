@@ -32,6 +32,7 @@ module Salus::Scanners
       errors = []
       warnings = []
       all_hits = []
+      all_misses = []
       override_keys = %w[pattern language message]
 
       Dir.chdir(@repository.path_to_repo) do
@@ -85,6 +86,13 @@ module Salus::Scanners
               if match["required"]
                 failure_messages << "\nRequired #{user_message} was not found " \
                 "- #{match['message']}"
+                all_misses << {
+                  pattern: match['pattern'],
+                  config: match['config'],
+                  forbidden: match["forbidden"],
+                  required: match["required"],
+                  msg: match['message']
+                }
               end
             else
               hits.each do |hit|
@@ -110,6 +118,13 @@ module Salus::Scanners
             if match['required']
               failure_messages << "Required #{user_message} was not found " \
                 "- #{match['message']}"
+              all_misses << {
+                pattern: match['pattern'],
+                config: match['config'],
+                forbidden: match["forbidden"],
+                required: match["required"],
+                msg: match['message']
+              }
             end
             begin
               # parse the output
@@ -145,6 +160,7 @@ module Salus::Scanners
         end
 
         report_info(:hits, all_hits)
+        report_info(:misses, all_misses)
         errors.each { |error| report_error("Call to semgrep failed", error) }
         report_warn(:semgrep_non_fatal, warnings) unless warnings.empty?
         warning_messages.each { |message| log(message) }
