@@ -28,6 +28,8 @@ describe Salus::Scanners::PatternSearch do
           msg: '',
           hit: 'seal.txt:3:Nerv is tasked with taking over when the UN fails.'
         )
+
+        expect(info[:misses]).to be_empty
       end
 
       it 'should report matches with a message' do
@@ -64,6 +66,8 @@ describe Salus::Scanners::PatternSearch do
           msg: 'Shaken, not stirred.',
           hit: 'seal.txt:3:Nerv is tasked with taking over when the UN fails.'
         )
+
+        expect(info[:misses]).to be_empty
       end
     end
 
@@ -85,6 +89,7 @@ describe Salus::Scanners::PatternSearch do
           msg: '',
           hit: 'lance.txt:3:Nerv housed the lance.'
         )
+        expect(info[:misses]).to be_empty
 
         logs = scanner.report.to_h.fetch(:logs)
         failure_str = 'seal.txt:3:Nerv is tasked with taking over when the UN fails'
@@ -96,6 +101,7 @@ describe Salus::Scanners::PatternSearch do
           msg: '',
           hit: 'seal.txt:3:Nerv is tasked with taking over when the UN fails.'
         )
+        expect(info[:misses]).to be_empty
       end
     end
 
@@ -122,6 +128,7 @@ describe Salus::Scanners::PatternSearch do
           msg: 'important string',
           hit: 'lance.txt:3:Nerv housed the lance.'
         )
+        expect(info[:misses]).to be_empty
       end
 
       it 'should failed the scan if a required pattern is not found' do
@@ -140,6 +147,16 @@ describe Salus::Scanners::PatternSearch do
         failure_messages = scanner.report.to_h.fetch(:logs)
         expect(failure_messages)
           .to include('Required pattern "Tokyo3" was not found - current location')
+
+        info = scanner.report.to_h.fetch(:info)
+        expect(info[:hits]).to be_empty
+        expect(info[:misses].size).to eq(1)
+        expect(info[:misses]).to include(
+          regex: 'Tokyo3',
+          forbidden: false,
+          required: true,
+          msg: 'current location'
+        )
       end
     end
 
