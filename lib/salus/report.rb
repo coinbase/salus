@@ -17,7 +17,8 @@ module Salus
       'json' => 'application/json',
       'yaml' => 'text/x-yaml',
       'txt'  => 'text/plain',
-      'sarif' => 'application/json'
+      'sarif' => 'application/json',
+      'sarif_diff' => 'application/json'
     }.freeze
 
     SUMMARY_TABLE_HEADINGS = ['Scanner', 'Running Time', 'Required', 'Passed'].freeze
@@ -141,6 +142,7 @@ module Salus
       curr_sarif_results = get_sarif_results(curr_sarif_data)
       filter_sarif_results = get_sarif_results(filter_sarif_data)
       diff = (curr_sarif_results - filter_sarif_results).to_a
+      diff_report['report_type'] = 'salus_sarif_diff'
       diff_report['filtered_results'] = diff
       diff_report['builds'] = to_h[:config][:builds]
       JSON.pretty_generate(diff_report)
@@ -184,6 +186,14 @@ module Salus
           file_path = "#{uri_object.host}#{uri_object.path}"
           write_report_to_file(file_path, report_string)
         end
+      end
+    end
+
+    def x_scanner_type(format)
+      if format == 'sarif_diff'
+        "salus_sarif_diff"
+      else
+        "salus"
       end
     end
 
@@ -234,7 +244,7 @@ module Salus
       response = Faraday.post do |req|
         req.url remote_uri
         req.headers['Content-Type'] = CONTENT_TYPE_FOR_FORMAT[format]
-        req.headers['X-Scanner'] = "salus"
+        req.headers['X-Scanner'] = x_scanner_type(format)
         req.body = data
       end
 
