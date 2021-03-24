@@ -739,8 +739,6 @@ describe Salus::Scanners::Semgrep do
             }
           ]
         )
-
-        info = scanner.report.to_h.fetch(:info)
       end
     end
 
