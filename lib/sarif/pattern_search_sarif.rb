@@ -69,7 +69,7 @@ module Sarif
         name: "Required Pattern Not Found",
         level: "HIGH",
         details: message(miss, true),
-        help_url: "https://semgrep.dev/docs/writing-rules/rule-syntax/"
+        help_url: PATTERN_SEARCH_URI
       }
     end
 
