@@ -1,5 +1,4 @@
 require_relative '../../spec_helper.rb'
-require 'json'
 
 describe Sarif::PatternSearchSarif do
   context '#parse_issue' do
@@ -25,7 +24,8 @@ describe Sarif::PatternSearchSarif do
         repo = Salus::Repo.new('spec/fixtures/pattern_search')
         config = {
           'matches' => [
-            { 'regex' => 'Nerv', 'required' => true, 'message' => 'important string' }
+            { 'regex' => 'Nerv', 'forbidden' => true, 'message' => 'not important string' },
+            { 'regex' => 'Nerv Cell', 'required' => true, 'message' => 'important string' }
           ]
         }
 
@@ -33,47 +33,60 @@ describe Sarif::PatternSearchSarif do
         scanner.run
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: true)
+
         adapter = Sarif::PatternSearchSarif.new(scanner.report)
         report = adapter.build_runs_object(true)
         rules = report['tool'][:driver]['rules']
         results = report['results']
         expect(results).to include(
           {
-            ruleId: "Required pattern found",
-            ruleIndex: 0,
-            level: "error",
-            message: {
-              text: "Regex: Nerv\nForbidden: false\nMessage:important string\nRequired: true"
+            "ruleId": "Required Pattern Not Found",
+            "ruleIndex": 1,
+            "level": "error",
+            "message": {
+              "text": "important string.Pattern Nerv Cell is required but not found."
             },
-            locations: [{
-              physicalLocation: {
-                artifactLocation: {
-                  uri: "seal.txt",
-                  uriBaseId: "%SRCROOT%"
-                }, region: {
-                  startLine: 3,
-                  startColumn: 1,
-                  snippet: {
-                    text: "seal.txt:3:Nerv is tasked with taking over when the UN fails."
+            "locations": []
+          },
+          {
+            "ruleId": "Forbidden Pattern Found",
+            "ruleIndex": 0,
+            "level": "error",
+            "message": {
+              "text": "not important string. Pattern Nerv is forbidden."
+            },
+            "locations": [
+              {
+                "physicalLocation": {
+                  "artifactLocation": {
+                    "uri": "seal.txt",
+                    "uriBaseId": "%SRCROOT%"
+                  },
+                  "region": {
+                    "startLine": 3,
+                    "startColumn": 1,
+                    "snippet": {
+                      "text": "seal.txt:3:Nerv is tasked with taking over when the UN fails."
+                    }
                   }
                 }
               }
-            }]
+            ]
           }
         )
         doc = "https://github.com/coinbase/salus/blob/master/docs/scanners/pattern_search.md"
         expect(rules).to include(
           {
-            fullDescription: {
-              text: "Regex: Nerv\nForbidden: false\nMessage:important string\nRequired: true"
+            "id": "Forbidden Pattern Found",
+            "name": "Forbidden Pattern Found",
+            "fullDescription": {
+              "text": "not important string. Pattern Nerv is forbidden."
             },
-            help: {
-              markdown: "[More info](#{doc}).",
-              text: "More info: #{doc}"
-            },
-            helpUri: doc,
-            id: "Required pattern found",
-            name: "Regex: Nerv"
+            "helpUri": doc,
+            "help": {
+              "text": "More info: #{doc}",
+              "markdown": "[More info](#{doc})."
+            }
           }
         )
       end

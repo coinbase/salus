@@ -17,45 +17,66 @@ module Sarif
     def parse_scan_report!
       scan_hash = @scan_report.to_h
       hits = scan_hash.dig(:info, :hits)
-      logs = build_logs(scan_hash.dig(:logs))
-      hits.concat(logs)
+      misses = scan_hash.dig(:info, :misses)
+      hits.concat(misses)
     end
 
-    def build_logs(log)
-      return [] if log.nil?
-
-      logs = log.split("Required")
-      result = []
-      logs.each do |message|
-        if message.include? " pattern"
-          parsed = {
-            msg: message,
-            required: true
-          }
-          result << parsed
-        end
-      end
+    def build_result(parsed_issue)
+      result = super
+      uri = result[:locations][0][:physicalLocation][:artifactLocation][:uri]
+      result[:locations] = [] if uri.nil?
       result
     end
 
-    def parse_log(log)
-      id = log[:msg]
-      return nil if @issues.include?(id)
+    def build_rule(parsed_issue)
+      rule = super
+      return if rule.nil?
 
-      @issues.add(id)
+      rule[:fullDescription][:text] = NOT_FOUND if rule[:id] == NOT_FOUND
+      rule
+    end
+
+    def message(hit, miss)
+      pattern = hit[:regex]
+      msg = hit[:msg]
+      config = hit[:config]
+      if !miss
+        return "#{msg}. Pattern #{pattern} is forbidden." if !pattern.nil? && !msg.nil?
+        return "Pattern #{pattern} is forbidden" if !pattern.nil?
+        return "#{msg}. Pattern in #{config} is forbidden." if !config.nil? && !msg.nil?
+        return "Pattern in #{config} is forbidden." if !config.nil?
+
+        "Forbidden Pattern Found"
+      else
+        return "#{msg}.Pattern #{pattern} is required but not found." if !pattern.nil? && !msg.nil?
+        return "Pattern #{pattern} is required but not found." if !pattern.nil?
+        return "#{msg}. Pattern in #{config} is required but not found."\
+        if !config.nil? && !msg.nil?
+        return "Pattern in #{config} is required but not found." if !config.nil?
+
+        "Required Pattern Not Found"
+      end
+    end
+
+    def parse_miss(miss)
+      return nil if miss[:msg].nil?
+      return nil if miss[:msg].include?("Required")
+      return nil if @issues.include?(miss[:msg])
+
+      @issues.add(miss[:msg])
       {
-        id: NOT_FOUND,
-        name: NOT_FOUND,
+        id: "Required Pattern Not Found",
+        name: "Required Pattern Not Found",
         level: "HIGH",
-        details: log[:msg],
-        help_url: "https://semgrep.dev/docs/writing-rules/rule-syntax/",
-        uri: ''
+        details: message(miss, true),
+        help_url: "https://semgrep.dev/docs/writing-rules/rule-syntax/"
       }
     end
 
     def parse_issue(issue)
       return nil if issue.nil?
-      return parse_log(issue) if !issue.key?(:hit)
+      return parse_miss(issue) if !issue.key?(:hit)
+      return nil if !issue[:forbidden]
 
       url_info = issue[:hit].split(':')
       id = issue[:regex] + ' ' + issue[:hit] # [filename, line, message]
@@ -63,23 +84,16 @@ module Sarif
 
       @issues.add(id)
       {
-        id: id(issue[:forbidden], issue[:required]),
-        name: "Regex: #{issue[:regex]}",
+        id: "Forbidden Pattern Found",
+        name: "Forbidden Pattern Found",
         level: "HIGH",
-        details: "Regex: #{issue[:regex]}\nForbidden: #{issue[:forbidden]}\nMessage:#{issue[:msg]}"\
-        "\nRequired: #{issue[:required]}",
+        details: message(issue, false),
         start_line: url_info[1],
         start_column: 1,
         uri: url_info[0],
         help_url: PATTERN_SEARCH_URI,
         code: issue[:hit]
       }
-    end
-
-    def id(forbidden, required)
-      return 'Forbidden pattern found / Required pattern found' if forbidden & required
-      return 'Forbidden pattern found' if forbidden
-      return 'Required pattern found' if required
     end
   end
 end
