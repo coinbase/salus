@@ -14,22 +14,6 @@ module Sarif
       @issues = Set.new
     end
 
-    def build_logs(log)
-      # add required pattern not found to report
-      logs = log.split("\n\n")
-      result = []
-      logs.each do |message|
-        if message.include? "Required pattern"
-          parsed = {
-            msg: message,
-            required: true
-          }
-          result << parsed
-        end
-      end
-      result
-    end
-
     def build_rule(parsed_issue)
       rule = super
       return if rule.nil?
@@ -38,70 +22,85 @@ module Sarif
       rule
     end
 
-    def parse_log(log)
-      id = log[:msg]
-      return nil if @issues.include?(id)
-
-      @issues.add(id)
-      {
-        id: NOT_FOUND,
-        name: NOT_FOUND,
-        level: "HIGH",
-        details: log[:msg],
-        help_url: "https://semgrep.dev/docs/writing-rules/rule-syntax/",
-        uri: ''
-      }
+    def build_result(parsed_issue)
+      result = super
+      uri = result[:locations][0][:physicalLocation][:artifactLocation][:uri]
+      result[:locations] = [] if uri.nil?
+      result
     end
 
     def parse_scan_report!
       scan_hash = @scan_report.to_h
       hits = scan_hash.dig(:info, :hits)
       warnings = scan_hash.dig(:warn, :semgrep_non_fatal) || []
-      logs = build_logs(scan_hash.dig(:logs))
-      hits.concat(warnings, logs)
+      misses = scan_hash.dig(:info, :misses)
+      hits.concat(warnings, misses)
     end
 
     def parse_issue(issue)
-      if issue.key?(:type)
-        parse_warning(issue)
-      elsif issue.key?(:hit)
+      if issue.key?(:hit)
         parse_hit(issue)
+      elsif issue.key?(:type)
+        parse_warning(issue)
       else
-        parse_log(issue)
+        parse_miss(issue)
+      end
+    end
+
+    def message(hit, miss)
+      pattern = hit[:pattern]
+      msg = hit[:msg]
+      config = hit[:config]
+      if !miss
+        return "#{msg}. Pattern #{pattern} is forbidden." if !pattern.nil? && !msg.nil?
+        return "Pattern #{pattern} is forbidden" if !pattern.nil?
+        return "#{msg}. Pattern in #{config} is forbidden." if !config.nil? && !msg.nil?
+        return "Pattern in #{config} is forbidden." if !config.nil?
+
+        "Forbidden Pattern Found"
+      else
+        return "#{msg}.Pattern #{pattern} is required but not found." if !pattern.nil? && !msg.nil?
+        return "Pattern #{pattern} is required but not found." if !pattern.nil?
+        return "#{msg}. Pattern in #{config} is required but not found."\
+        if !config.nil? && !msg.nil?
+        return "Pattern in #{config} is required but not found." if !config.nil?
+
+        "Required Pattern Not Found"
       end
     end
 
     def parse_hit(hit)
-      id = hit[:hit] || hit[:msg]
-      return nil if @issues.include?(id)
+      return nil if !hit[:forbidden]
+      return nil if @issues.include?(hit[:msg])
 
-      @issues.add(id)
+      @issues.add(hit[:msg])
       location = hit[:hit].split(":") # [file_name, line, code_preview]
       details = "Pattern: #{hit[:pattern]}\nMessage:#{hit[:msg]}\n"
       details << "\nForbidden:#{hit[:forbidden]}" if hit[:forbidden]
       details << "\nRequired:#{hit[:required]}" if hit[:required]
+
       {
-        id: id(hit[:forbidden], hit[:required]),
-        name: "#{hit[:pattern]} / #{hit[:msg]}",
+        id: "Forbidden Pattern Found",
+        name: "#{hit[:pattern]} / #{hit[:msg]} Forbidden Pattern Found",
         level: "HIGH",
-        details: "#{details}\nHit: #{hit[:hit]}",
+        details: details,
         start_line: location[1],
         start_column: 1,
         uri: location[0],
-        help_url: "https://semgrep.dev/docs/writing-rules/rule-syntax/",
+        help_url: "https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md",
         code: location[2],
         rule: "Pattern: #{hit[:pattern]}\nMessage: #{hit[:msg]}"
       }
     end
 
     def parse_warning(warning)
-      return nil if @issues.include?(warning[:type])
+      return nil if @issues.include?(warning[:message])
 
-      @issues.add(warning[:type])
+      @issues.add(warning[:message])
       {
         id: warning[:type],
         name: warning[:type],
-        level: warning[:level],
+        level: "HIGH",
         details: warning[:message],
         start_line: warning[:spans][0][:start]["line"],
         start_column: warning[:spans][0][:start]["col"],
@@ -110,22 +109,19 @@ module Sarif
       }
     end
 
-    def sarif_level(severity)
-      result = super(severity)
-      case severity
-      when "warning"
-        SARIF_WARNINGS[:warning]
-      when "warn"
-        SARIF_WARNINGS[:warning]
-      else
-        result
-      end
-    end
+    def parse_miss(miss)
+      return nil if miss[:msg].nil?
+      return nil if miss[:msg].include?("Required")
+      return nil if @issues.include?(miss[:msg])
 
-    def id(forbidden, required)
-      return 'Forbidden pattern found / Required pattern found' if forbidden & required
-      return 'Forbidden pattern found' if forbidden
-      return 'Required pattern found' if required
+      @issues.add(miss[:msg])
+      {
+        id: "Required Pattern Not Found",
+        name: "Required Pattern Not Found",
+        level: "HIGH",
+        details: message(miss, true),
+        help_url: "https://semgrep.dev/docs/writing-rules/rule-syntax/"
+      }
     end
   end
 end
