@@ -19,6 +19,8 @@
             "msg": "",
             "hit": "README.md:1:# placeholder"
           }
+        ],
+        "misses": [
         ]
       },
       "errors": [

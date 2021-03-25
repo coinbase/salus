@@ -17,7 +17,8 @@ module Salus
       'json' => 'application/json',
       'yaml' => 'text/x-yaml',
       'txt'  => 'text/plain',
-      'sarif' => 'application/json'
+      'sarif' => 'application/json',
+      'sarif_diff' => 'application/json'
     }.freeze
 
     SUMMARY_TABLE_HEADINGS = ['Scanner', 'Running Time', 'Required', 'Passed'].freeze
@@ -188,6 +189,14 @@ module Salus
       end
     end
 
+    def x_scanner_type(format)
+      if format == 'sarif_diff'
+        "salus_sarif_diff"
+      else
+        "salus"
+      end
+    end
+
     private
 
     def render_summary(sorted_scan_reports, use_colors:)
@@ -235,7 +244,7 @@ module Salus
       response = Faraday.post do |req|
         req.url remote_uri
         req.headers['Content-Type'] = CONTENT_TYPE_FOR_FORMAT[format]
-        req.headers['X-Scanner'] = "salus"
+        req.headers['X-Scanner'] = x_scanner_type(format)
         req.body = data
       end
 
