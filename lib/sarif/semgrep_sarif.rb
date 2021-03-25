@@ -75,15 +75,12 @@ module Sarif
 
       @issues.add(hit[:msg])
       location = hit[:hit].split(":") # [file_name, line, code_preview]
-      details = "Pattern: #{hit[:pattern]}\nMessage:#{hit[:msg]}\n"
-      details << "\nForbidden:#{hit[:forbidden]}" if hit[:forbidden]
-      details << "\nRequired:#{hit[:required]}" if hit[:required]
 
       {
         id: "Forbidden Pattern Found",
         name: "#{hit[:pattern]} / #{hit[:msg]} Forbidden Pattern Found",
         level: "HIGH",
-        details: details,
+        details: message(hit, false),
         start_line: location[1],
         start_column: 1,
         uri: location[0],
@@ -91,6 +88,8 @@ module Sarif
         code: location[2],
         rule: "Pattern: #{hit[:pattern]}\nMessage: #{hit[:msg]}"
       }
+    rescue StandardError => e
+      puts e.message
     end
 
     def parse_warning(warning)

@@ -28,7 +28,7 @@ describe Sarif::SemgrepSarif do
           "ruleIndex": 0,
           "level": "error",
           "message": {
-            "text": "Pattern: $X == $X\nMessage:Useless equality test.\n\nForbidden:true"
+            "text": "Useless equality test.. Pattern $X == $X is forbidden."
           },
           "locations": [
             {
