@@ -12,8 +12,8 @@ module Sarif
       return nil if @issues.include?(issue[:url])
 
       @issues.add(issue[:url])
-      {
-        id: issue[:cve],
+      result = {
+        id: issue[:cve] || issue[:osvdb].to_s,
         name: issue[:advisory_title],
         level: issue[:cvss].to_i,
         details: "Package Name: #{issue[:name]}\nType: #{issue[:type]}\nVersion: "\
@@ -24,6 +24,9 @@ module Sarif
         uri: 'Gemfile.lock',
         help_url: issue[:url]
       }
+      result[:details] = issue[:source] if issue[:type] == "InsecureSource"
+      result[:id] = issue[:type] if result[:id].empty?
+      result
     end
 
     def sarif_level(severity)
