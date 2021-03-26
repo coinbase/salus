@@ -11,7 +11,10 @@ module Sarif
     end
 
     def parse_scan_report!
-      parsed_result = JSON.parse(@scan_report.log(''))
+      logs = @scan_report.log('')
+      return [] if logs.size.zero?
+
+      parsed_result = JSON.parse(logs)
       parsed_result['warnings'].concat(parsed_result['errors'])
     rescue JSON::ParserError => e
       bugsnag_notify(e.message)
