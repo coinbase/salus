@@ -24,7 +24,9 @@ module Sarif
         uri: 'Gemfile.lock',
         help_url: issue[:url]
       }
-      result[:details] = issue[:source] if issue[:type] == "InsecureSource"
+      if issue[:type] == "InsecureSource"
+        result[:details] = "Type: #{issue[:type]}\nSource: #{issue[:source]}"
+      end
       result[:id] = issue[:type] if result[:id].empty?
       result
     end

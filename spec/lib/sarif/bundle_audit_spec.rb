@@ -7,6 +7,27 @@ describe Sarif::BundleAuditSarif do
 
     context 'scan report with logged vulnerabilities' do
       let(:repo) { Salus::Repo.new('spec/fixtures/bundle_audit/cves_found') }
+
+      it 'updates ids accordingly' do
+        bundle_audit_sarif = Sarif::BundleAuditSarif.new(scanner.report)
+        issue = { "type": "InsecureSource",
+          "source": "http://rubygems.org/" }
+
+        parsed_issue = bundle_audit_sarif.parse_issue(issue)
+        expect(parsed_issue[:id]).to eq("InsecureSource")
+        expect(parsed_issue[:details]).to eq("Type: InsecureSource\nSource: http://rubygems.org/")
+
+        issue = { "type": "UnpatchedGem",
+        "url": '1' }
+        parsed_issue = bundle_audit_sarif.parse_issue(issue)
+        expect(parsed_issue[:id]).to eq("UnpatchedGem")
+
+        issue = { "osvdb": "osvd value",
+          "url": '3' }
+        parsed_issue = bundle_audit_sarif.parse_issue(issue)
+        expect(parsed_issue[:id]).to eq("osvd value")
+      end
+
       it 'parses information correctly' do
         bundle_audit_sarif = Sarif::BundleAuditSarif.new(scanner.report)
         issue = scanner.report.to_h[:info][:vulnerabilities][0]
