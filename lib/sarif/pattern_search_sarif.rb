@@ -39,20 +39,17 @@ module Sarif
     def message(hit, miss)
       pattern = hit[:regex]
       msg = hit[:msg]
-      config = hit[:config]
+
       if !miss
         return "#{msg}. Pattern #{pattern} is forbidden." if !pattern.nil? && !msg.nil?
         return "Pattern #{pattern} is forbidden" if !pattern.nil?
-        return "#{msg}. Pattern in #{config} is forbidden." if !config.nil? && !msg.nil?
-        return "Pattern in #{config} is forbidden." if !config.nil?
+        return "#{msg}. is forbidden." if !msg.nil?
 
         "Forbidden Pattern Found"
       else
         return "#{msg}.Pattern #{pattern} is required but not found." if !pattern.nil? && !msg.nil?
         return "Pattern #{pattern} is required but not found." if !pattern.nil?
-        return "#{msg}. Pattern in #{config} is required but not found."\
-        if !config.nil? && !msg.nil?
-        return "Pattern in #{config} is required but not found." if !config.nil?
+        return "#{msg}. is required but not found." if !msg.nil?
 
         "Required Pattern Not Found"
       end
@@ -76,6 +73,7 @@ module Sarif
     def parse_issue(issue)
       return nil if issue.nil?
       return parse_miss(issue) if !issue.key?(:hit)
+      return nil if issue[:required]
       return nil if !issue[:forbidden]
 
       url_info = issue[:hit].split(':')
