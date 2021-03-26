@@ -40,15 +40,6 @@ describe Sarif::PatternSearchSarif do
         results = report['results']
         expect(results).to include(
           {
-            "ruleId": "Required Pattern Not Found",
-            "ruleIndex": 1,
-            "level": "error",
-            "message": {
-              "text": "important string.Pattern Nerv Cell is required but not found."
-            },
-            "locations": []
-          },
-          {
             "ruleId": "Forbidden Pattern Found",
             "ruleIndex": 0,
             "level": "error",
@@ -59,14 +50,14 @@ describe Sarif::PatternSearchSarif do
               {
                 "physicalLocation": {
                   "artifactLocation": {
-                    "uri": "seal.txt",
+                    "uri": "lance.txt",
                     "uriBaseId": "%SRCROOT%"
                   },
                   "region": {
                     "startLine": 3,
                     "startColumn": 1,
                     "snippet": {
-                      "text": "seal.txt:3:Nerv is tasked with taking over when the UN fails."
+                      "text": "lance.txt:3:Nerv housed the lance."
                     }
                   }
                 }

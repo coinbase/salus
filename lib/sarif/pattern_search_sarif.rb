@@ -47,7 +47,7 @@ module Sarif
 
         "Forbidden Pattern Found"
       else
-        return "#{msg}.Pattern #{pattern} is required but not found." if !pattern.nil? && !msg.nil?
+        return "#{msg}. Pattern #{pattern} is required but not found." if !pattern.nil? && !msg.nil?
         return "Pattern #{pattern} is required but not found." if !pattern.nil?
         return "#{msg}. is required but not found." if !msg.nil?
 
