@@ -41,15 +41,15 @@ module Sarif
       msg = hit[:msg]
 
       if !miss
-        return "#{msg}. Pattern #{pattern} is forbidden." if !pattern.nil? && !msg.nil?
-        return "Pattern #{pattern} is forbidden" if !pattern.nil?
-        return "#{msg}. is forbidden." if !msg.nil?
+        return "#{msg}. Pattern #{pattern} is forbidden." if pattern != "" && msg != ""
+        return "Pattern #{pattern} is forbidden" if !pattern != ""
+        return "#{msg}. is forbidden." if !msg != ""
 
         "Forbidden Pattern Found"
       else
-        return "#{msg}. Pattern #{pattern} is required but not found." if !pattern.nil? && !msg.nil?
-        return "Pattern #{pattern} is required but not found." if !pattern.nil?
-        return "#{msg}. is required but not found." if !msg.nil?
+        return "#{msg}. Pattern #{pattern} is required but not found." if pattern != "" && msg != ""
+        return "Pattern #{pattern} is required but not found." if pattern != ""
+        return "#{msg}. is required but not found." if msg != ""
 
         "Required Pattern Not Found"
       end
