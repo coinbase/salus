@@ -15,12 +15,14 @@ describe Sarif::BundleAuditSarif do
 
         parsed_issue = bundle_audit_sarif.parse_issue(issue)
         expect(parsed_issue[:id]).to eq("InsecureSource")
+        expect(parsed_issue[:name]).to eq("InsecureSource http://rubygems.org/")
         expect(parsed_issue[:details]).to eq("Type: InsecureSource\nSource: http://rubygems.org/")
 
         issue = { "type": "UnpatchedGem",
-        "url": '1' }
+                  "cve": "CVE1234",
+                  "url": '1' }
         parsed_issue = bundle_audit_sarif.parse_issue(issue)
-        expect(parsed_issue[:id]).to eq("UnpatchedGem")
+        expect(parsed_issue[:id]).to eq("CVE1234")
 
         issue = { "osvdb": "osvd value",
           "url": '3' }
@@ -47,7 +49,8 @@ describe Sarif::BundleAuditSarif do
         "SomeModel.check(v) if k == :name }\nend\n```\n\nNote the mistaken use of `each` in the"\
         " `clean_up_params` method in the above\nexample.\n\nWorkarounds\n-----------\nDo not use"\
         " the return values of `each`, `each_value`, or `each_pair` in your\napplication.\n\n"\
-        "Patched Versions: [\"~> 5.2.4.3\", \">= 6.0.3.1\"]\nUnaffected Versions: [\"< 4.0.0\"]\n"\
+        "Patched Versions: [\"~> 5.2.4, >= 5.2.4.3\", \">= 6.0.3.1\"]\nUnaffected Versions: "\
+        "[\"< 4.0.0\"]\n"\
         "CVSS: \nOSVDB "
 
         expect(bundle_audit_sarif.parse_issue(issue)).to include(
@@ -100,7 +103,8 @@ describe Sarif::BundleAuditSarif do
         "SomeModel.check(v) if k == :name }\nend\n```\n\nNote the mistaken use of `each` in the"\
         " `clean_up_params` method in the above\nexample.\n\nWorkarounds\n-----------\nDo not use"\
         " the return values of `each`, `each_value`, or `each_pair` in your\napplication.\n\n"\
-        "Patched Versions: [\"~> 5.2.4.3\", \">= 6.0.3.1\"]\nUnaffected Versions: [\"< 4.0.0\"]\n"\
+        "Patched Versions: [\"~> 5.2.4, >= 5.2.4.3\", \">= 6.0.3.1\"]\nUnaffected Versions: "\
+        "[\"< 4.0.0\"]\n"\
         "CVSS: \nOSVDB "
 
         # Check rule info
