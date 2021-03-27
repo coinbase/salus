@@ -9,9 +9,6 @@ module Sarif
     end
 
     def parse_issue(issue)
-      return nil if @issues.include?(issue[:url])
-
-      @issues.add(issue[:url])
       result = {
         id: issue[:cve] || issue[:osvdb].to_s,
         name: issue[:advisory_title],
@@ -24,10 +21,13 @@ module Sarif
         uri: 'Gemfile.lock',
         help_url: issue[:url]
       }
+
       if issue[:type] == "InsecureSource"
+        result[:id] = issue[:type]
+        result[:name] = issue[:type] + ' ' + issue[:source]
         result[:details] = "Type: #{issue[:type]}\nSource: #{issue[:source]}"
       end
-      result[:id] = issue[:type] if result[:id].empty?
+
       result
     end
 
