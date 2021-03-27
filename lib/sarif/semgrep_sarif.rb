@@ -6,6 +6,8 @@ module Sarif
 
     SEMGREP_URI = 'https://semgrep.dev/'.freeze
     NOT_FOUND = "Required Pattern Not Found".freeze
+    SEMGREP_URI = "https://github.com/coinbase/salus/blob/master/docs/scanners/"\
+                     "semgrep.md".freeze
 
     def initialize(scan_report)
       super(scan_report)
@@ -52,17 +54,17 @@ module Sarif
       msg = hit[:msg]
       config = hit[:config]
       if !miss
-        return "#{msg}. Pattern #{pattern} is forbidden." if !pattern.nil? && !msg.nil?
+        return "#{msg}. Pattern #{pattern} is forbidden." if !pattern.nil? && msg != ""
         return "Pattern #{pattern} is forbidden" if !pattern.nil?
-        return "#{msg}. Pattern in #{config} is forbidden." if !config.nil? && !msg.nil?
+        return "#{msg}. Pattern in #{config} is forbidden." if !config.nil? && msg != ""
         return "Pattern in #{config} is forbidden." if !config.nil?
 
         "Forbidden Pattern Found"
       else
-        return "#{msg}.Pattern #{pattern} is required but not found." if !pattern.nil? && !msg.nil?
+        return "#{msg}. Pattern #{pattern} is required but not found." if !pattern.nil? && msg != ""
         return "Pattern #{pattern} is required but not found." if !pattern.nil?
         return "#{msg}. Pattern in #{config} is required but not found."\
-        if !config.nil? && !msg.nil?
+        if !config.nil? && msg != ""
         return "Pattern in #{config} is required but not found." if !config.nil?
 
         "Required Pattern Not Found"
@@ -71,9 +73,7 @@ module Sarif
 
     def parse_hit(hit)
       return nil if !hit[:forbidden]
-      return nil if @issues.include?(hit[:msg])
 
-      @issues.add(hit[:msg])
       location = hit[:hit].split(":") # [file_name, line, code_preview]
 
       {
@@ -84,12 +84,12 @@ module Sarif
         start_line: location[1],
         start_column: 1,
         uri: location[0],
-        help_url: "https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md",
+        help_url: SEMGREP_URI,
         code: location[2],
         rule: "Pattern: #{hit[:pattern]}\nMessage: #{hit[:msg]}"
       }
     rescue StandardError => e
-      puts e.message
+      bugsnag_notify(e.message)
     end
 
     def parse_warning(warning)
@@ -104,22 +104,17 @@ module Sarif
         start_line: warning[:spans][0][:start]["line"],
         start_column: warning[:spans][0][:start]["col"],
         uri: warning[:spans][0][:file],
-        help_url: "https://semgrep.dev/docs/writing-rules/rule-syntax/"
+        help_url: SEMGREP_URI
       }
     end
 
     def parse_miss(miss)
-      return nil if miss[:msg].nil?
-      return nil if miss[:msg].include?("Required")
-      return nil if @issues.include?(miss[:msg])
-
-      @issues.add(miss[:msg])
       {
         id: "Required Pattern Not Found",
         name: "Required Pattern Not Found",
         level: "HIGH",
         details: message(miss, true),
-        help_url: "https://semgrep.dev/docs/writing-rules/rule-syntax/"
+        help_url: SEMGREP_URI
       }
     end
   end

@@ -70,6 +70,7 @@ describe Sarif::SemgrepSarif do
         sarif_report = JSON.parse(report.to_sarif)
         result = sarif_report["runs"][0]["results"][1]
         rules = sarif_report["runs"][0]["tool"]["driver"]["rules"]
+        semgrep_doc_url = 'https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md'
         expect(rules).to include(
           {
             "id" => "Required Pattern Not Found",
@@ -77,10 +78,10 @@ describe Sarif::SemgrepSarif do
             "fullDescription" => {
               "text" => "Required Pattern Not Found"
             },
-            "helpUri" => "https://semgrep.dev/docs/writing-rules/rule-syntax/",
+            "helpUri" => semgrep_doc_url,
             "help" => {
-              "text" => "More info: https://semgrep.dev/docs/writing-rules/rule-syntax/",
-              "markdown" => "[More info](https://semgrep.dev/docs/writing-rules/rule-syntax/)."
+              "text" => "More info: #{semgrep_doc_url}",
+              "markdown" => "[More info](#{semgrep_doc_url})."
             }
           }
         )
@@ -90,7 +91,7 @@ describe Sarif::SemgrepSarif do
             "ruleIndex" => 1,
             "level" => "error",
             "message" => {
-              "text" => "Useless equality test..Pattern 1 == $X is required but not found."
+              "text" => "Useless equality test.. Pattern 1 == $X is required but not found."
             },
             "locations" => []
           }
