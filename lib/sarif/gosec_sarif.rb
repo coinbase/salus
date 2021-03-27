@@ -13,7 +13,10 @@ module Sarif
     end
 
     def parse_scan_report!(scan_report)
-      json_obj = JSON.parse(scan_report.log(''))
+      logs = scan_report.log('')
+      return [] if logs.size.zero?
+
+      json_obj = JSON.parse(logs)
       issues = json_obj['Issues']
       errors = json_obj['Golang errors']
       parsed_errors = []
