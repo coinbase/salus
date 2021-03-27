@@ -11,9 +11,11 @@ module Salus
     # repo root for a configuration file with this default name
     DEFAULT_CONFIG_SOURCE = "file:///salus.yaml".freeze
 
-    def initialize(configuration_sources = [], repo_path: DEFAULT_REPO_PATH, filter_sarif: "")
+    def initialize(configuration_sources = [], repo_path: DEFAULT_REPO_PATH,
+      filter_sarif: "", list_only: false)
       @repo_path = repo_path
       @filter_sarif = filter_sarif
+      @list_only = list_only
 
       # Add default file path to the configs if empty.
       configuration_sources << DEFAULT_CONFIG_SOURCE if configuration_sources.empty?
@@ -66,7 +68,7 @@ module Salus
 
     def scan_project
       repo = Repo.new(@repo_path)
-
+      matched_scanners = []
       # Record overall running time of the scan
       @report.record do
         # If we're running tests, re-raise any exceptions raised by a scanner
@@ -79,6 +81,9 @@ module Salus
           scanner = scanner_class.new(repository: repo, config: config)
           next unless @config.scanner_active?(scanner_name) && scanner.should_run?
 
+          matched_scanners << scanner_name
+          next if @list_only
+
           required = @config.enforced_scanners.include?(scanner_name)
 
           scanner.run!(
@@ -88,6 +93,7 @@ module Salus
             reraise: reraise_exceptions
           )
         end
+        matched_scanners
       end
     end
 

@@ -29,7 +29,8 @@ module Salus
       repo_path: DEFAULT_REPO_PATH,
       use_colors: true,
       filter_sarif: "",
-      heartbeat: true
+      heartbeat: true,
+      list_only: false
     )
 
       ### Heartbeat ###
@@ -41,16 +42,19 @@ module Salus
       # Config option would be: --config="<uri x> <uri y> etc"
       configuration_directives = (ENV['SALUS_CONFIGURATION'] || config || '').split(URI_DELIMITER)
       processor = Salus::Processor.new(configuration_directives, repo_path: repo_path,
-                                       filter_sarif: filter_sarif)
+                                       filter_sarif: filter_sarif, list_only: list_only)
 
       ### Scan Project ###
       # Scan project with Salus client.
-      processor.scan_project
+      matched_scanners = processor.scan_project
 
-      ### Reporting ###
-      # Print report to stdout.
-      puts processor.string_report(verbose: verbose, use_colors: use_colors) unless quiet
-
+      if list_only
+        puts matched_scanners.join(', ') if list_only
+      else
+        ### Reporting ###
+        # Print report to stdout.
+        puts processor.string_report(verbose: verbose, use_colors: use_colors) unless quiet
+      end
       # Try to send Salus reports to remote server or local files.
       begin
         processor.export_report

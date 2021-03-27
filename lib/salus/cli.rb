@@ -31,6 +31,11 @@ module Salus
                  desc: 'Path to sarif file. Filters out results from the sarif file.',
                  type: :string,
                  default: ''
+    class_option :list_scanners,
+                 aliases: ['-l'],
+                 desc: 'List scanners that will run',
+                 type: :boolean,
+                 default: false
 
     desc 'scan', 'Scan the source code of a repository.'
     def scan
@@ -40,7 +45,8 @@ module Salus
         verbose: options[:verbose],
         repo_path: options[:repo_path],
         use_colors: !options[:no_colors],
-        filter_sarif: options[:filter_sarif]
+        filter_sarif: options[:filter_sarif],
+        list_only: options[:list_scanners]
       )
     end
   end
