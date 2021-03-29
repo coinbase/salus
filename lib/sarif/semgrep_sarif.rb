@@ -4,7 +4,6 @@ module Sarif
   class SemgrepSarif < BaseSarif
     include Salus::SalusBugsnag
 
-    SEMGREP_URI = 'https://semgrep.dev/'.freeze
     NOT_FOUND = "Required Pattern Not Found".freeze
     SEMGREP_URI = "https://github.com/coinbase/salus/blob/master/docs/scanners/"\
                      "semgrep.md".freeze
