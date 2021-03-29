@@ -70,7 +70,7 @@ describe Sarif::SemgrepSarif do
         sarif_report = JSON.parse(report.to_sarif)
         result = sarif_report["runs"][0]["results"][1]
         rules = sarif_report["runs"][0]["tool"]["driver"]["rules"]
-        semgrep_doc_url = 'https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md'
+        semgrep_doc_url = Sarif::SemgrepSarif::SEMGREP_URI
         expect(rules).to include(
           {
             "id" => "Required Pattern Not Found",
