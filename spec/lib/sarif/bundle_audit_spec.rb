@@ -7,6 +7,29 @@ describe Sarif::BundleAuditSarif do
 
     context 'scan report with logged vulnerabilities' do
       let(:repo) { Salus::Repo.new('spec/fixtures/bundle_audit/cves_found') }
+
+      it 'updates ids accordingly' do
+        bundle_audit_sarif = Sarif::BundleAuditSarif.new(scanner.report)
+        issue = { "type": "InsecureSource",
+          "source": "http://rubygems.org/" }
+
+        parsed_issue = bundle_audit_sarif.parse_issue(issue)
+        expect(parsed_issue[:id]).to eq("InsecureSource")
+        expect(parsed_issue[:name]).to eq("InsecureSource http://rubygems.org/")
+        expect(parsed_issue[:details]).to eq("Type: InsecureSource\nSource: http://rubygems.org/")
+
+        issue = { "type": "UnpatchedGem",
+                  "cve": "CVE1234",
+                  "url": '1' }
+        parsed_issue = bundle_audit_sarif.parse_issue(issue)
+        expect(parsed_issue[:id]).to eq("CVE1234")
+
+        issue = { "osvdb": "osvd value",
+          "url": '3' }
+        parsed_issue = bundle_audit_sarif.parse_issue(issue)
+        expect(parsed_issue[:id]).to eq("osvd value")
+      end
+
       it 'parses information correctly' do
         bundle_audit_sarif = Sarif::BundleAuditSarif.new(scanner.report)
         issue = scanner.report.to_h[:info][:vulnerabilities][0]
@@ -26,7 +49,8 @@ describe Sarif::BundleAuditSarif do
         "SomeModel.check(v) if k == :name }\nend\n```\n\nNote the mistaken use of `each` in the"\
         " `clean_up_params` method in the above\nexample.\n\nWorkarounds\n-----------\nDo not use"\
         " the return values of `each`, `each_value`, or `each_pair` in your\napplication.\n\n"\
-        "Patched Versions: [\"~> 5.2.4.3\", \">= 6.0.3.1\"]\nUnaffected Versions: [\"< 4.0.0\"]\n"\
+        "Patched Versions: [\"~> 5.2.4, >= 5.2.4.3\", \">= 6.0.3.1\"]\nUnaffected Versions: "\
+        "[\"< 4.0.0\"]\n"\
         "CVSS: \nOSVDB "
 
         expect(bundle_audit_sarif.parse_issue(issue)).to include(
@@ -79,7 +103,8 @@ describe Sarif::BundleAuditSarif do
         "SomeModel.check(v) if k == :name }\nend\n```\n\nNote the mistaken use of `each` in the"\
         " `clean_up_params` method in the above\nexample.\n\nWorkarounds\n-----------\nDo not use"\
         " the return values of `each`, `each_value`, or `each_pair` in your\napplication.\n\n"\
-        "Patched Versions: [\"~> 5.2.4.3\", \">= 6.0.3.1\"]\nUnaffected Versions: [\"< 4.0.0\"]\n"\
+        "Patched Versions: [\"~> 5.2.4, >= 5.2.4.3\", \">= 6.0.3.1\"]\nUnaffected Versions: "\
+        "[\"< 4.0.0\"]\n"\
         "CVSS: \nOSVDB "
 
         # Check rule info
