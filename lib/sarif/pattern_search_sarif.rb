@@ -56,12 +56,12 @@ module Sarif
     end
 
     def parse_miss(miss)
-       {
+      {
         id: "Required Pattern Not Found",
-        name: "Required Pattern Not Found",
-        level: "HIGH",
-        details: message(miss, true),
-        help_url: PATTERN_SEARCH_URI
+       name: "Required Pattern Not Found",
+       level: "HIGH",
+       details: message(miss, true),
+       help_url: PATTERN_SEARCH_URI
       }
     end
 
@@ -72,7 +72,6 @@ module Sarif
       return nil if !issue[:forbidden]
 
       url_info = issue[:hit].split(':')
-      id = issue[:regex] + ' ' + issue[:hit] # [filename, line, message]
 
       {
         id: "Forbidden Pattern Found",
