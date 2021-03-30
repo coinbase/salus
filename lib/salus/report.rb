@@ -269,7 +269,9 @@ module Salus
       return report_body_hash(config, to_s(verbose: verbose)).to_s if config['format'] == 'txt'
 
       body = report_body_hash(config, JSON.parse(to_json)) if config['format'] == 'json'
-      body = report_body_hash(config, JSON.parse(to_sarif)) if config['format'] == 'sarif'
+      if config['format'] == 'sarif'
+        body = report_body_hash(config, JSON.parse(to_sarif(config['sarif_options'] || {})))
+      end
       body = report_body_hash(config, JSON.parse(to_sarif_diff)) if config['format'] == 'sarif_diff'
       return JSON.pretty_generate(body) if %w[json sarif sarif_diff].include?(config['format'])
 

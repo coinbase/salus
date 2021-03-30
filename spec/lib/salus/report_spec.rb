@@ -258,7 +258,9 @@ describe Salus::Report do
         url = 'https://nerv.tk3/salus-report'
         params = { 'salus_report_param_name' => 'report',
           'additional_params' => { "foo" => "bar", "abc" => "def" } }
-        directive = { 'uri' => url, 'format' => 'sarif', 'post' => params, 'verbose': false }
+        options = { 'foo' => 'bar' }
+        directive = { 'uri' => url, 'format' => 'sarif', 'post' => params,
+                      'verbose': false, 'sarif_options' => options }
         report = build_report(directive)
         report.instance_variable_set(:@scan_reports, [])
 
@@ -273,6 +275,7 @@ describe Salus::Report do
             'X-Scanner' => 'salus' }
         ).to_return(status: 200, body: "", headers: {})
 
+        expect(report).to receive(:to_sarif).with(options).and_call_original.twice
         expect { report.export_report }.not_to raise_error
       end
     end
