@@ -32,12 +32,11 @@ describe Salus::Processor do
         stub_request(:get, http_config_uri).to_return(status: 200, body: config_file)
         expect(Salus::Config).to receive(:new)
           .once
-          .with([file_config_file, http_config_file])
+          .with([file_config_file, http_config_file], [])
           .and_call_original
 
         Dir.chdir('spec/fixtures/processor/explicit_config') do
           processor = Salus::Processor.new([file_config_uri, http_config_uri])
-
           reported_config = processor.report.to_h[:config]
           expect(reported_config[:sources][:valid]).to include(file_config_uri, http_config_uri)
           expect(reported_config[:active_scanners]).to include(
@@ -76,7 +75,7 @@ describe Salus::Processor do
 
     context 'implicitly look for file' do
       it 'should load the default config from the salus.yaml and add to report' do
-        expect(Salus::Config).to receive(:new).once.with([config_file]).and_call_original
+        expect(Salus::Config).to receive(:new).once.with([config_file], []).and_call_original
         Dir.chdir('spec/fixtures/processor') do
           processor = Salus::Processor.new
 

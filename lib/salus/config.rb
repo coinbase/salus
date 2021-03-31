@@ -42,12 +42,15 @@ module Salus
     REMOTE_URI_SCHEME_REGEX = /\Ahttps?\z/.freeze
     REPORT_FORMATS = %w[txt json yaml sarif].freeze
 
-    def initialize(configuration_files = [])
+    def initialize(configuration_files = [], ignore_ids = [])
       # Merge default and custom configuration files.
       # The later files in the array take superiority by overwriting configuration already
       # defined in the earlier files in the array (DEFAULT_CONFIG is the first such file/object).
       final_config = DEFAULT_CONFIG.dup
-      configuration_files.each { |file| final_config.deep_merge!(YAML.safe_load(file)) }
+      configuration_files.each do |file|
+        filtered_data = filter_ignored_ids(YAML.safe_load(file), ignore_ids)
+        final_config.deep_merge!(filtered_data)
+      end
 
       # Check if any of the values are actually pointing to envars.
       final_config = fetch_envars(final_config)
@@ -86,6 +89,21 @@ module Salus
     end
 
     private
+
+    def filter_ignored_ids(config_data, ignore_ids)
+      ignore_ids.each do |ignore_id| # Ex. reports:uri_1
+        info = ignore_id.split(':')
+        key = info[0] # "reports" in "reports:uri_1"
+        id = info[1]  # "uri_1" in "reports:uri_1"
+        if config_data[key]&.is_a?(Array)
+          config_data[key].each do |data|
+            config_data[key].delete(data) if data.is_a?(Hash) && data["id"] == id
+          end
+        end
+      end
+
+      config_data
+    end
 
     def apply_node_audit_patch!
       # To allow for backwards compatability and easy switching between node package managers,
