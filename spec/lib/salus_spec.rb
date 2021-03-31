@@ -105,5 +105,31 @@ describe Salus::CLI do
         end
       end
     end
+
+    context 'With --ignore_config_id' do
+      it 'Should filter out report ids' do
+        Dir.chdir('spec/fixtures/config') do
+          # These salus configs write json, sarif, and txt
+
+          ENV['SALUS_CONFIGURATION'] = 'file:///multiple_reports.yaml'
+          Salus.scan(quiet: true, repo_path: '.')
+          expect(File).to exist('out.sarif')
+          expect(File).to exist('out.json')
+          expect(File).to exist('out.txt')
+
+          ENV['SALUS_CONFIGURATION'] = 'file:///multiple_reports2.yaml'
+          Salus.scan(quiet: true, repo_path: '.', ignore_config_id: 'reports:txt')
+          expect(File).to exist('out2.sarif')
+          expect(File).to exist('out2.json')
+          expect(File).not_to exist('out2.txt')
+
+          ENV['SALUS_CONFIGURATION'] = 'file:///multiple_reports3.yaml'
+          Salus.scan(quiet: true, repo_path: '.', ignore_config_id: 'reports:txt,reports:json')
+          expect(File).to exist('out3.sarif')
+          expect(File).not_to exist('out3.json')
+          expect(File).not_to exist('out3.txt')
+        end
+      end
+    end
   end
 end

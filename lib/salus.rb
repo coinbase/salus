@@ -29,6 +29,7 @@ module Salus
       repo_path: DEFAULT_REPO_PATH,
       use_colors: true,
       filter_sarif: "",
+      ignore_config_id: "",
       heartbeat: true
     )
 
@@ -41,7 +42,8 @@ module Salus
       # Config option would be: --config="<uri x> <uri y> etc"
       configuration_directives = (ENV['SALUS_CONFIGURATION'] || config || '').split(URI_DELIMITER)
       processor = Salus::Processor.new(configuration_directives, repo_path: repo_path,
-                                       filter_sarif: filter_sarif)
+                                       filter_sarif: filter_sarif,
+                                       ignore_config_id: ignore_config_id)
 
       ### Scan Project ###
       # Scan project with Salus client.

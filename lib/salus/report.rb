@@ -26,7 +26,7 @@ module Salus
     attr_reader :builds
 
     def initialize(report_uris: [], builds: {}, project_name: nil, custom_info: nil, config: nil,
-                   repo_path: nil, filter_sarif: nil)
+                   repo_path: nil, filter_sarif: nil, ignore_config_id: nil)
       @report_uris = report_uris     # where we will send this report
       @builds = builds               # build hash, could have arbitrary keys
       @project_name = project_name   # the project_name we are scanning
@@ -37,6 +37,7 @@ module Salus
       @running_time = nil            # overall running time for the scan; see #record
       @filter_sarif = filter_sarif   # Filter out results from this file
       @repo_path = repo_path         # path to repo
+      @ignore_config_id = ignore_config_id # ignore id in salus config
     end
 
     def record
@@ -109,6 +110,10 @@ module Salus
       end
 
       output += indent(wrapify(stringified_config, indented_wrap))
+
+      if @ignore_config_id != "" && !@ignore_config_id.nil?
+        output += "\n  IDs ignored in salus config:\n\t#{@ignore_config_id}"
+      end
 
       if !@errors.empty?
         stringified_errors = JSON.pretty_generate(@errors)
