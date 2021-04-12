@@ -46,6 +46,7 @@ describe Salus::Config do
         expect(config.valid_name?(nil)).to be_truthy
         expect(config.valid_name?('ab-cd-def')).to be_truthy
         expect(config.valid_name?('ab-cd-def_g_AB')).to be_truthy
+        expect(config.valid_name?('AB:CD:EF')).to be_truthy
       end
     end
 
