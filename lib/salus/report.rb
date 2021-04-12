@@ -189,6 +189,11 @@ module Salus
           # must remove the file:// schema portion of the uri.
           uri_object = URI(uri)
           file_path = "#{uri_object.host}#{uri_object.path}"
+          if !safe_local_report_path?(file_path)
+            bad_path_msg = "Local report uri #{file_path} should be relative to repo path and " \
+                           "cannot have invalid chars"
+            raise StandardError, bad_path_msg
+          end
           write_report_to_file(file_path, report_string)
         end
       end
@@ -200,6 +205,21 @@ module Salus
       else
         "salus"
       end
+    end
+
+    def safe_local_report_path?(path)
+      return true if @repo_path.nil?
+
+      path = Pathname.new(File.expand_path(path)).cleanpath.to_s
+      rpath = File.expand_path(@repo_path)
+
+      if !path.start_with?(rpath + "/") || path.include?("/.")
+        # the 2nd condition covers like abcd/.hidden_file or abcd/..filename
+        # which cleanpath does not do anything about
+        return false
+      end
+
+      true
     end
 
     private

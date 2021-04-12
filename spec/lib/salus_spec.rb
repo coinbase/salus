@@ -75,6 +75,47 @@ describe Salus::CLI do
       end
     end
 
+    context 'local_uri paths' do
+      it 'should not write local report bad file path' do
+        Dir.chdir('spec/fixtures/repo2') do
+          # report path is outside repo dir
+          ENV['SALUS_CONFIGURATION'] = 'file://salus.yaml'
+          expect do
+            Salus.scan(repo_path: '.', quiet: true)
+          end.to raise_error(StandardError)
+          expect(File).not_to exist('../out1.json')
+
+          # report path is ..out1.json
+          ENV['SALUS_CONFIGURATION'] = 'file:///salus4.yaml'
+          expect do
+            Salus.scan(repo_path: '.', quiet: true)
+          end.to raise_error(StandardError)
+          expect(File).not_to exist('..out1.json')
+
+          # report path is .out1.json
+          ENV['SALUS_CONFIGURATION'] = 'file:///salus4.yaml'
+          expect do
+            Salus.scan(repo_path: '.', quiet: true)
+          end.to raise_error(StandardError)
+          expect(File).not_to exist('.out1.json')
+        end
+      end
+
+      it 'should write to local report if good file path' do
+        Dir.chdir('spec/fixtures/repo2') do
+          ENV['SALUS_CONFIGURATION'] = 'file:///salus2.yaml'
+          Salus.scan(repo_path: '.', quiet: true)
+          expect(File).to exist('out1.json')
+          remove_file('out1.json')
+
+          ENV['SALUS_CONFIGURATION'] = 'file:///salus3.yaml'
+          Salus.scan(repo_path: '.', quiet: true)
+          expect(File).to exist('out1.json')
+          remove_file('out1.json')
+        end
+      end
+    end
+
     context 'With --filter_sarif' do
       it 'Should ouput filtered vulnerabilities' do
         Dir.chdir('spec/fixtures/gosec/multiple_vulns2') do
