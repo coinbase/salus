@@ -75,6 +75,7 @@ module Salus
 
     def valid_name?(name)
       return true if name.nil?
+
       name.count("^[A-Za-z0-9-_]").zero?
     end
 
