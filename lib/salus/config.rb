@@ -64,8 +64,19 @@ module Salus
       @report_uris       = final_config['reports'] || []
       @builds            = final_config['builds'] || {}
 
+      if !valid_name?(@project_name)
+        bad_name_msg = "project name #{@project_name} can only contain alphanumeric chars or _/-/:"
+        raise StandardError, bad_name_msg
+      end
+
       apply_default_scanner_config!
       apply_node_audit_patch!
+    end
+
+    def valid_name?(name)
+      return true if name.nil?
+
+      name.count("^[A-Za-z0-9-_:]").zero?
     end
 
     def scanner_active?(scanner_class)
