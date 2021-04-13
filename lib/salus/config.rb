@@ -65,7 +65,7 @@ module Salus
       @builds            = final_config['builds'] || {}
 
       if !valid_name?(@project_name)
-        bad_name_msg = "project name #{@project_name} can only contain spaces or ;"
+        bad_name_msg = "project name #{@project_name} cannot contain spaces or ;"
         raise StandardError, bad_name_msg
       end
 
