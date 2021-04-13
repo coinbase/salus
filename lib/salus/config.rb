@@ -65,7 +65,7 @@ module Salus
       @builds            = final_config['builds'] || {}
 
       if !valid_name?(@project_name)
-        bad_name_msg = "project name #{@project_name} can only contain alphanumeric chars or _/-/:"
+        bad_name_msg = "project name #{@project_name} can only contain spaces or ;"
         raise StandardError, bad_name_msg
       end
 
@@ -76,7 +76,7 @@ module Salus
     def valid_name?(name)
       return true if name.nil?
 
-      name.count("^[A-Za-z0-9-_:]").zero?
+      name.count("[\s;]").zero?
     end
 
     def scanner_active?(scanner_class)
