@@ -84,11 +84,11 @@ module Salus::Scanners
 
     # Report SARIF output from the scanner.
     def report_runs(runs)
-      # If the results object had findings (workaround for https://github.com/zricethezav/gitleaks/pull/530)
-      if runs.any? { |run| !run['results'].nil? && !run['results'].empty? }
-        @report.fail
+      # If the results object had findings
+      if runs.any? { |run| !run['results'].empty? }
+        report_failure
       else
-        @report.pass
+        report_success
       end
 
       all_hits = []

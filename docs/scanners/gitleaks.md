@@ -10,7 +10,7 @@ For more information on Gitleaks configuration, see the docs [here](https://gith
 
 ```yaml
   scanner_configs:
-    Bandit:
+    Gitleaks:
       config-path: "./gitleaks.conf"
       repo-config-path: "./gitleaks.conf"
       threads: 1

@@ -94,12 +94,14 @@ RUN go get github.com/svent/sift@${SIFT_VERSION}
 
 
 ### gitleaks
-ENV GITLEAKS_VERSION v7.2.2
+ENV GITLEAKS_VERSION v7.4.1
 ENV GITLEAKS_DOWNLOAD_URL https://github.com/zricethezav/gitleaks/releases/download/${GITLEAKS_VERSION}/gitleaks-linux-amd64
+ENV GITLEAKS_DOWNLOAD_SHA256 648a40e86f9740486586ff396cd41781f032d78d4176aeebd61cd6db09adae70
 
-RUN curl -fsSL "$GITLEAKS_DOWNLOAD_URL" -o /usr/local/bin/gitleaks \
+RUN curl -fsSL "$GITLEAKS_DOWNLOAD_URL" -o gitleaks \
+  && echo "$GITLEAKS_DOWNLOAD_SHA256 gitleaks" | sha256sum -c - \
+  && mv gitleaks /usr/local/bin/gitleaks \
   && chmod +x /usr/local/bin/gitleaks
-
 
 ### semgrep
 # https://semgrep.dev
