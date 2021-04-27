@@ -128,7 +128,7 @@ describe Salus::CLI do
           expect(File).to exist(sarif_file)
 
           data = JSON.parse(File.read(sarif_file))
-          results = data['runs'][0]['results']
+          results = data['runs'][1]['results']
           rule_ids = results.map { |r| r['ruleId'] }.sort
           expect(rule_ids).to eq(%w[G101 G104 G401 G501])
 

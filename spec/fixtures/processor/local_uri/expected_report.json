@@ -5,7 +5,7 @@
   "scans": {
     "Gitleaks": {
       "scanner_name": "Gitleaks",
-      "version": "7.2.1",
+      "version": "7.4.1",
       "passed": true,
       "running_time": 0.00,
       "warn": {
