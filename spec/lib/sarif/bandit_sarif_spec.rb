@@ -66,7 +66,6 @@ describe Sarif::BanditSarif do
 
         report_object = JSON.parse(report.to_sarif)['runs'][0]
         expect(report_object['invocations'][0]['executionSuccessful']).to eq(false)
-
         message = report_object['invocations'][0]['toolExecutionNotifications'][0]['message']
         expect(message['text']).to include('0 lines of code were scanned')
       end
@@ -80,6 +79,20 @@ describe Sarif::BanditSarif do
         report.add_scan_report(scanner.report, required: false)
         report_object = JSON.parse(report.to_sarif)['runs'][0]
 
+        expect(report_object['invocations'][0]['executionSuccessful']).to eq(true)
+      end
+    end
+
+    context 'python project with empty report containing whitespace' do
+      let(:repo) { Salus::Repo.new("#{py_dir}/python_project_no_vulns") }
+      it 'should handle empty reports with whitespace' do
+        report = Salus::Report.new(project_name: "Neon Genesis")
+        # Override the report.log() to return "\n"
+        report.class.send(:define_method, :log, -> { "\n" })
+        expect_any_instance_of(Sarif::BanditSarif).not_to receive(:bugsnag_notify)
+
+        report.add_scan_report(scanner.report, required: false)
+        report_object = JSON.parse(report.to_sarif)['runs'][0]
         expect(report_object['invocations'][0]['executionSuccessful']).to eq(true)
       end
     end
