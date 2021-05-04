@@ -12,7 +12,7 @@ module Sarif
 
     def parse_scan_report!
       logs = @scan_report.log('')
-      return [] if logs.size.zero?
+      return [] if logs.strip.empty?
 
       parsed_result = JSON.parse(logs)
       parsed_result['results'].concat(parsed_result['errors'])
