@@ -57,7 +57,7 @@ module Salus
       # Check if any of the values are actually pointing to envars.
       final_config = fetch_envars(final_config)
 
-      Salus::PluginManager.load_plugins()
+      Salus::PluginManager.load_plugins
 
       # Apply any config filters the user has defined
       final_config = apply_config_filters(final_config)
