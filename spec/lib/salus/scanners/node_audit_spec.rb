@@ -53,9 +53,9 @@ describe Salus::Scanners::NodeAudit do
           expect(info.key?(:stdout)).to eq(true)
           if klass_str == 'NPMAudit'
             expect(info).to include(
-              prod_advisories: %w[39 48 722],
+              prod_advisories: %w[39 48 722 1666],
               dev_advisories: [],
-              unexcepted_prod_advisories: %w[39 48 722],
+              unexcepted_prod_advisories: %w[39 48 722 1666],
               exceptions: [],
               prod_exceptions: [],
               dev_exceptions: [],
@@ -63,7 +63,7 @@ describe Salus::Scanners::NodeAudit do
             )
           else # YarnAudit
             expect(info).to include(
-              vulnerabilities: [39, 48, 722],
+              vulnerabilities: [39, 48, 722, 1666],
               ignored_cves: []
             )
           end
