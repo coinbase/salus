@@ -6,6 +6,7 @@ require 'salus/repo'
 require 'salus/scanners'
 require 'salus/config'
 require 'salus/processor'
+require 'salus/plugin_manager'
 require 'sarif/sarif_report'
 
 module Salus
