@@ -40,8 +40,8 @@ describe Salus::Scanners::YarnAudit do
       scanner.run
 
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
-      vulns = JSON.parse(scanner.report.to_h[:info][:stdout])
-      expect(vulns.size).to eq(5)
+      vulns = JSON.parse(scanner.report.to_h[:info][:stdout]).sort { |a, b| a["ID"] <=> b["ID"] }
+      expect(vulns.size).to eq(6)
       vuln0 = { "Package" => "uglify-js",
                 "Patched in" => ">= 2.4.24",
                 "Dependency of" => "uglify-js",
@@ -77,12 +77,20 @@ describe Salus::Scanners::YarnAudit do
                 "Severity" => "low",
                 "Title" => "Prototype Pollution",
                 "ID" => 1523 }
+      vuln5 = { "Dependency of" => "lodash",
+                "ID" => 1673,
+                "More info" => "https://www.npmjs.com/advisories/1673",
+                "Package" => "lodash",
+                "Patched in" => ">=4.17.21",
+                "Severity" => "high",
+                "Title" => "Command Injection" }
 
       expect(vulns[0]).to eq(vuln0)
       expect(vulns[1]).to eq(vuln1)
       expect(vulns[2]).to eq(vuln2)
       expect(vulns[3]).to eq(vuln3)
       expect(vulns[4]).to eq(vuln4)
+      expect(vulns[5]).to eq(vuln5)
     end
 
     it 'should fail with error if there are errors' do
