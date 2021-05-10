@@ -177,10 +177,10 @@ describe Salus::CLI do
     context 'With plugins' do
       it 'Should update config based on plugin' do
         Dir.chdir('spec/fixtures/blank_repository2') do
-          plugin_dir = "../../../lib/salus/plugins"
-          FileUtils.cp('test_plugins/my_filter.rb', plugin_dir + '/my_filter.rb')
-          FileUtils.cp('test_plugins/my_filter2.rb', plugin_dir + '/my_filter2.rb')
+          plugin_dir = File.join(__dir__, '../fixtures/blank_repository2/test_plugins')
           ENV['SALUS_CONFIGURATION'] = 'file:///salus.yaml'
+          expect(Salus::PluginManager).to receive(:plugin_dir).and_return(plugin_dir)
+            .at_least(:once)
           Salus.scan(quiet: true, repo_path: '.')
           expect(File).to exist('out.json')
 
@@ -191,10 +191,6 @@ describe Salus::CLI do
                               "service_name" => "circle_CI",
                               "url" => "my_url" }
           expect(builds).to eq(expected_builds)
-
-          # remove filters from lib/salus/plugins
-          File.delete(plugin_dir + '/my_filter.rb')
-          File.delete(plugin_dir + '/my_filter2.rb')
         end
       end
     end
