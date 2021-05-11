@@ -42,6 +42,8 @@ module Salus
     REMOTE_URI_SCHEME_REGEX = /\Ahttps?\z/.freeze
     REPORT_FORMATS = %w[txt json yaml sarif].freeze
 
+    @@filters = []
+
     def initialize(configuration_files = [], ignore_ids = [])
       # Merge default and custom configuration files.
       # The later files in the array take superiority by overwriting configuration already
@@ -54,6 +56,9 @@ module Salus
 
       # Check if any of the values are actually pointing to envars.
       final_config = fetch_envars(final_config)
+
+      # Apply any config filters the user has defined
+      final_config = apply_config_filters(final_config)
 
       # Parse and store configuration.
       @active_scanners   = all_none_some(SCANNERS.keys, final_config['active_scanners'])
@@ -71,6 +76,17 @@ module Salus
 
       apply_default_scanner_config!
       apply_node_audit_patch!
+    end
+
+    def apply_config_filters(config_hash)
+      @@filters.each do |filter|
+        config_hash = filter.filter_config(config_hash) if filter.respond_to?(:filter_config)
+      end
+      config_hash
+    end
+
+    def self.register_filter(filter)
+      @@filters << filter
     end
 
     def valid_name?(name)

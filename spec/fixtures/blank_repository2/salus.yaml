@@ -1,0 +1,7 @@
+builds:
+  url: my_url
+  service_name: circle_CI
+
+reports:
+  - uri: file://out.json
+    format: json

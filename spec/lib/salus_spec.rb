@@ -1,3 +1,4 @@
+require 'fileutils'
 require_relative '../spec_helper.rb'
 
 describe Salus::CLI do
@@ -169,6 +170,27 @@ describe Salus::CLI do
           expect(File).to exist('out3.sarif')
           expect(File).not_to exist('out3.json')
           expect(File).not_to exist('out3.txt')
+        end
+      end
+    end
+
+    context 'With plugins' do
+      it 'Should update config based on plugin' do
+        Dir.chdir('spec/fixtures/blank_repository2') do
+          plugin_dir = File.join(__dir__, '../fixtures/blank_repository2/test_plugins')
+          ENV['SALUS_CONFIGURATION'] = 'file:///salus.yaml'
+          expect(Salus::PluginManager).to receive(:plugin_dir).and_return(plugin_dir)
+            .at_least(:once)
+          Salus.scan(quiet: true, repo_path: '.')
+          expect(File).to exist('out.json')
+
+          json_content = JSON.parse(File.read('out.json'))
+          builds = json_content['config']['builds']
+          expected_builds = { "abc" => "xyz",
+                              "abcd" => "xyzw",
+                              "service_name" => "circle_CI",
+                              "url" => "my_url" }
+          expect(builds).to eq(expected_builds)
         end
       end
     end

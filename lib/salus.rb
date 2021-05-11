@@ -6,6 +6,7 @@ require 'salus/repo'
 require 'salus/scanners'
 require 'salus/config'
 require 'salus/processor'
+require 'salus/plugin_manager'
 require 'sarif/sarif_report'
 
 module Salus
@@ -41,6 +42,7 @@ module Salus
       ### Configuration ###
       # Config option would be: --config="<uri x> <uri y> etc"
       configuration_directives = (ENV['SALUS_CONFIGURATION'] || config || '').split(URI_DELIMITER)
+      Salus::PluginManager.load_plugins
       processor = Salus::Processor.new(configuration_directives, repo_path: repo_path,
                                        filter_sarif: filter_sarif,
                                        ignore_config_id: ignore_config_id)
