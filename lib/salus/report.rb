@@ -25,6 +25,8 @@ module Salus
 
     attr_reader :builds
 
+    @@filters = []
+
     def initialize(report_uris: [], builds: {}, project_name: nil, custom_info: nil, config: nil,
                    repo_path: nil, filter_sarif: nil, ignore_config_id: nil)
       @report_uris = report_uris     # where we will send this report
@@ -38,6 +40,17 @@ module Salus
       @filter_sarif = filter_sarif   # Filter out results from this file
       @repo_path = repo_path         # path to repo
       @ignore_config_id = ignore_config_id # ignore id in salus config
+    end
+
+    def apply_report_hash_filters(report_hash)
+      @@filters.each do |filter|
+        report_hash = filter.filter_config(report_hash) if filter.respond_to?(:filter_config)
+      end
+      report_hash
+    end
+
+    def self.register_filter(filter)
+      @@filters << filter
     end
 
     def record
@@ -62,7 +75,7 @@ module Salus
     def to_h
       scans = @scan_reports.map { |report, _required| [report.scanner_name, report.to_h] }.to_h
 
-      {
+      report_hash = {
         version: VERSION,
         project_name: @project_name,
         passed: passed?,
@@ -72,6 +85,8 @@ module Salus
         custom_info: @custom_info,
         config: @config
       }.compact
+
+      apply_report_hash_filters(report_hash)
     end
 
     # Generates the text report.
