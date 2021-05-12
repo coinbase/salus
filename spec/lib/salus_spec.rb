@@ -189,7 +189,8 @@ describe Salus::CLI do
           expected_builds = { "abc" => "xyz",
                               "abcd" => "xyzw",
                               "service_name" => "circle_CI",
-                              "url" => "my_url" }
+                              "url" => "my_url",
+                              "mykey" => "myval" }
           expect(builds).to eq(expected_builds)
         end
       end
