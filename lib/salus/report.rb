@@ -44,7 +44,9 @@ module Salus
 
     def apply_report_hash_filters(report_hash)
       @@filters.each do |filter|
-        report_hash = filter.filter_report_hash(report_hash) if filter.respond_to?(:filter_report_hash)
+        if filter.respond_to?(:filter_report_hash)
+          report_hash = filter.filter_report_hash(report_hash)
+        end
       end
       report_hash
     end
