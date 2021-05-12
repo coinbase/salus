@@ -99,8 +99,6 @@ describe Sarif::BundleAuditSarif do
 
           # Check result info
           expect(result['ruleId']).to eq('CVE-2021-22885')
-          expect(result['ruleIndex']).to eq(0)
-          expect(result['level']).to eq("note")
         else
           # Check rule info
           expect(rules['id']).to eq('CVE-2020-8164')
@@ -113,10 +111,10 @@ describe Sarif::BundleAuditSarif do
 
           # Check result info
           expect(result['ruleId']).to eq('CVE-2020-8164')
-          expect(result['ruleIndex']).to eq(0)
-          expect(result['level']).to eq("note")
         end
 
+        expect(result['ruleIndex']).to eq(0)
+        expect(result['level']).to eq("note")
         expect(result['message']['text']).to include(expected)
       end
     end
