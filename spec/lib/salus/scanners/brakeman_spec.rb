@@ -296,4 +296,13 @@ describe Salus::Scanners::Brakeman do
       end
     end
   end
+
+  describe '#supported_languages' do
+    context 'should return supported languages' do
+      it 'should return ruby' do
+        langs = Salus::Scanners::Brakeman.supported_languages
+        expect(langs).to eq(['ruby'])
+      end
+    end
+  end
 end
