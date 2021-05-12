@@ -42,6 +42,10 @@ module Salus::Scanners
       Gem.loaded_specs['bundler-audit'].version.to_s
     end
 
+    def self.supported_languages
+      ['ruby']
+    end
+
     private
 
     def serialize_vuln(vuln)

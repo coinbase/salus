@@ -328,4 +328,13 @@ describe Salus::Scanners::Gosec do
       end
     end
   end
+
+  describe '#supported_languages' do
+    context 'should return supported languages' do
+      it 'should return go' do
+        langs = Salus::Scanners::Gosec.supported_languages
+        expect(langs).to eq(['go'])
+      end
+    end
+  end
 end
