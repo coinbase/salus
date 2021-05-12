@@ -60,6 +60,10 @@ module Salus::Scanners
       shell_return.stdout&.split('\n')&.dig(0)&.split&.dig(1)
     end
 
+    def self.supported_languages
+      ['go']
+    end
+
     # flag options taken from https://github.com/securego/gosec/blob/2.0.0/cmd/gosec/main.go
     def config_options
       lmh_regex = /\Alow|medium|high\z/i
