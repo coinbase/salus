@@ -35,16 +35,30 @@ describe Sarif::BundleAuditSarif do
         issue = scanner.report.to_h[:info][:vulnerabilities][0]
 
         expected_details = bundle_audit_sarif.parse_issue(issue)[:details]
-        details = 'Advisory Title: Possible Information Disclosure / Unintended Method Execution'
-        expect(expected_details).to include(details)
 
-        expect(bundle_audit_sarif.parse_issue(issue)).to include(
-          id: "CVE-2021-22885",
-          name: "Possible Information Disclosure / Unintended Method Execution in Action Pack",
-          level: 0,
-          help_url: "https://groups.google.com/g/rubyonrails-security/c/NiQl-48cXYI",
-          uri: "Gemfile.lock"
-        )
+        if expected_details.include?('CVE-2021-22885')
+          details = 'Advisory Title: Possible Information Disclosure / Unintended Method Execution'
+          expect(expected_details).to include(details)
+
+          expect(bundle_audit_sarif.parse_issue(issue)).to include(
+            id: "CVE-2021-22885",
+            name: "Possible Information Disclosure / Unintended Method Execution in Action Pack",
+            level: 0,
+            help_url: "https://groups.google.com/g/rubyonrails-security/c/NiQl-48cXYI",
+            uri: "Gemfile.lock"
+          )
+        else
+          details = 'Advisory Title: Possible Strong Parameters Bypass in ActionPack'
+          expect(expected_details).to include(details)
+
+          expect(bundle_audit_sarif.parse_issue(issue)).to include(
+            id: "CVE-2020-8164",
+            name: "Possible Strong Parameters Bypass in ActionPack",
+            level: 0,
+            help_url: "https://groups.google.com/forum/#!topic/rubyonrails-security/f6ioe4sdpbY",
+            uri: "Gemfile.lock"
+          )
+        end
       end
     end
   end
@@ -72,20 +86,37 @@ describe Sarif::BundleAuditSarif do
         report.add_scan_report(scanner.report, required: false)
         result = JSON.parse(report.to_sarif)["runs"][0]["results"][0]
         rules = JSON.parse(report.to_sarif)["runs"][0]["tool"]["driver"]["rules"][0]
-        expected = 'Advisory Title: Possible Information Disclosure / Unintended'
 
-        # Check rule info
-        expect(rules['id']).to eq('CVE-2021-22885')
-        rule_name = 'Possible Information Disclosure / Unintended Method Execution in Action Pack'
-        expect(rules['name']).to eq(rule_name)
-        rule_uri = 'https://groups.google.com/g/rubyonrails-security/c/NiQl-48cXYI'
-        expect(rules['helpUri']).to eq(rule_uri)
-        expect(rules['fullDescription']['text']).to include(expected)
+        if rules['id'] == 'CVE-2021-22885'
+          # Check rule info
+          expect(rules['id']).to eq('CVE-2021-22885')
+          rule_name = 'Possible Information Disclosure / Unintended Method Execution in Action Pack'
+          expect(rules['name']).to eq(rule_name)
+          rule_uri = 'https://groups.google.com/g/rubyonrails-security/c/NiQl-48cXYI'
+          expect(rules['helpUri']).to eq(rule_uri)
+          expected = 'Advisory Title: Possible Information Disclosure / Unintended'
+          expect(rules['fullDescription']['text']).to include(expected)
 
-        # Check result info
-        expect(result['ruleId']).to eq('CVE-2021-22885')
-        expect(result['ruleIndex']).to eq(0)
-        expect(result['level']).to eq("note")
+          # Check result info
+          expect(result['ruleId']).to eq('CVE-2021-22885')
+          expect(result['ruleIndex']).to eq(0)
+          expect(result['level']).to eq("note")
+        else
+          # Check rule info
+          expect(rules['id']).to eq('CVE-2020-8164')
+          rule_name = 'Possible Strong Parameters Bypass in ActionPack'
+          expect(rules['name']).to eq(rule_name)
+          rule_uri = 'https://groups.google.com/forum/#!topic/rubyonrails-security/f6ioe4sdpbY'
+          expect(rules['helpUri']).to eq(rule_uri)
+          expect(rules['fullDescription']['text']).to include(expected)
+
+          # Check result info
+          expect(result['ruleId']).to eq('CVE-2020-8164')
+          expect(result['ruleIndex']).to eq(0)
+          expect(result['level']).to eq("note")
+          expected = 'Advisory Title: Possible Strong Parameters Bypass in ActionPack'
+        end
+
         expect(result['message']['text']).to include(expected)
       end
     end
