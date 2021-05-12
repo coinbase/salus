@@ -190,7 +190,7 @@ describe Salus::CLI do
                               "abcd" => "xyzw",
                               "service_name" => "circle_CI",
                               "url" => "my_url",
-                              "mykey"=>"myval"}
+                              "mykey" => "myval" }
           expect(builds).to eq(expected_builds)
         end
       end
