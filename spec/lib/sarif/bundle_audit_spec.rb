@@ -108,13 +108,13 @@ describe Sarif::BundleAuditSarif do
           expect(rules['name']).to eq(rule_name)
           rule_uri = 'https://groups.google.com/forum/#!topic/rubyonrails-security/f6ioe4sdpbY'
           expect(rules['helpUri']).to eq(rule_uri)
+          expected = 'Advisory Title: Possible Strong Parameters Bypass in ActionPack'
           expect(rules['fullDescription']['text']).to include(expected)
 
           # Check result info
           expect(result['ruleId']).to eq('CVE-2020-8164')
           expect(result['ruleIndex']).to eq(0)
           expect(result['level']).to eq("note")
-          expected = 'Advisory Title: Possible Strong Parameters Bypass in ActionPack'
         end
 
         expect(result['message']['text']).to include(expected)
