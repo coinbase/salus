@@ -10,7 +10,7 @@ require 'salus/plugin_manager'
 require 'sarif/sarif_report'
 
 module Salus
-  VERSION = '2.11.7'.freeze
+  VERSION = '2.11.8'.freeze
   DEFAULT_REPO_PATH = './repo'.freeze # This is inside the docker container at /home/repo.
 
   SafeYAML::OPTIONS[:default_mode] = :safe
