@@ -189,7 +189,7 @@ describe Salus::Processor do
       let(:remote_uri_one) { 'https://nerv.tk3/foo-salus-report' }
       let(:remote_uri_two) { 'https://nerv.tk3/salus-repor' }
 
-      it 'should send the report to the remote URI' do
+      it 'should still send the 2nd report to the remote URI' do
         stub_request(:post, remote_uri_one)
           .with(headers: { 'Content-Type' => 'application/json' })
           .and_raise(StandardError.new("error"))
