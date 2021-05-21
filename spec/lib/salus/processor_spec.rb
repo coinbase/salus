@@ -182,7 +182,7 @@ describe Salus::Processor do
       end
     end
 
-   context 'multiple URIs' do
+    context 'multiple URIs' do
       let(:expected_report) do
         File.read('spec/fixtures/processor/remote_uri/expected_report.json').strip
       end
