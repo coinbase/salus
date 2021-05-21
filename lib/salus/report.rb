@@ -214,17 +214,15 @@ module Salus
       end
     end
 
-
     def export_report
       @report_uris.each do |directive|
-        begin
-          publish_report(directive)
-        rescue StandardError => e
-          raise e if ENV['RUNNING_SALUS_TESTS']
-          puts "Could not send Salus report: (#{e.class}: #{e.message})"
-          e = "Could not send Salus report. Exception: #{e}, Build info: #{processor.report.builds}"
-          bugsnag_notify(e)
-        end
+        publish_report(directive)
+      rescue StandardError => e
+        raise e if ENV['RUNNING_SALUS_TESTS']
+
+        puts "Could not send Salus report: (#{e.class}: #{e.message})"
+        e = "Could not send Salus report. Exception: #{e}, Build info: #{processor.report.builds}"
+        bugsnag_notify(e)
       end
     end
 
