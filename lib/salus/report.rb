@@ -185,34 +185,44 @@ module Salus
       sarif_results
     end
 
+    def publish_report(directive)
+      # First create the string for the report.
+      uri = directive['uri']
+      verbose = directive['verbose'] || false
+      # Now send this string to its destination.
+      report_string = case directive['format']
+                      when 'txt' then to_s(verbose: verbose)
+                      when 'json' then to_json
+                      when 'yaml' then to_yaml
+                      when 'sarif' then to_sarif(directive['sarif_options'] || {})
+                      when 'sarif_diff' then to_sarif_diff
+                      else
+                        raise ExportReportError, "unknown report format #{directive['format']}"
+                      end
+      if Salus::Config::REMOTE_URI_SCHEME_REGEX.match?(URI(uri).scheme)
+        send_report(uri, report_body(directive), directive['format'])
+      else
+        # must remove the file:// schema portion of the uri.
+        uri_object = URI(uri)
+        file_path = "#{uri_object.host}#{uri_object.path}"
+        if !safe_local_report_path?(file_path)
+          bad_path_msg = "Local report uri #{file_path} should be relative to repo path and " \
+                         "cannot have invalid chars"
+          raise StandardError, bad_path_msg
+        end
+        write_report_to_file(file_path, report_string)
+      end
+    end
+
     def export_report
       @report_uris.each do |directive|
-        # First create the string for the report.
-        uri = directive['uri']
-        verbose = directive['verbose'] || false
-        # Now send this string to its destination.
-        report_string = case directive['format']
-                        when 'txt' then to_s(verbose: verbose)
-                        when 'json' then to_json
-                        when 'yaml' then to_yaml
-                        when 'sarif' then to_sarif(directive['sarif_options'] || {})
-                        when 'sarif_diff' then to_sarif_diff
-                        else
-                          raise ExportReportError, "unknown report format #{directive['format']}"
-                        end
-        if Salus::Config::REMOTE_URI_SCHEME_REGEX.match?(URI(uri).scheme)
-          send_report(uri, report_body(directive), directive['format'])
-        else
-          # must remove the file:// schema portion of the uri.
-          uri_object = URI(uri)
-          file_path = "#{uri_object.host}#{uri_object.path}"
-          if !safe_local_report_path?(file_path)
-            bad_path_msg = "Local report uri #{file_path} should be relative to repo path and " \
-                           "cannot have invalid chars"
-            raise StandardError, bad_path_msg
-          end
-          write_report_to_file(file_path, report_string)
-        end
+        publish_report(directive)
+      rescue StandardError => e
+        raise e if ENV['RUNNING_SALUS_TESTS']
+
+        puts "Could not send Salus report: (#{e.class}: #{e.message})"
+        e = "Could not send Salus report. Exception: #{e}, Build info: #{builds}"
+        bugsnag_notify(e)
       end
     end
 

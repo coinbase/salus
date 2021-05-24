@@ -1,0 +1,159 @@
+{
+  "version": "2.11.8",
+  "passed": true,
+  "running_time": 0.0,
+  "scans": {
+    "PatternSearch": {
+      "scanner_name": "PatternSearch",
+      "version": "0.9.0",
+      "passed": true,
+      "running_time": 0.0,
+      "warn": {
+      },
+      "info": {
+        "hits": [
+
+        ],
+        "misses": [
+
+        ]
+      },
+      "errors": [
+
+      ]
+    },
+    "RepoNotEmpty": {
+      "scanner_name": "RepoNotEmpty",
+      "version": "",
+      "passed": true,
+      "running_time": 0.0,
+      "warn": {
+      },
+      "info": {
+      },
+      "errors": [
+
+      ]
+    },
+    "Semgrep": {
+      "scanner_name": "Semgrep",
+      "version": "0.36.0",
+      "passed": true,
+      "running_time": 0.0,
+      "warn": {
+      },
+      "info": {
+        "hits": [
+
+        ],
+        "misses": [
+
+        ]
+      },
+      "errors": [
+
+      ]
+    }
+  },
+  "errors": [
+
+  ],
+  "config": {
+    "active_scanners": [
+      "Bandit",
+      "Brakeman",
+      "BundleAudit",
+      "CargoAudit",
+      "Gosec",
+      "NPMAudit",
+      "PatternSearch",
+      "RepoNotEmpty",
+      "ReportGoDep",
+      "ReportNodeModules",
+      "ReportPythonModules",
+      "ReportRubyGems",
+      "ReportRustCrates",
+      "Semgrep",
+      "YarnAudit"
+    ],
+    "enforced_scanners": [
+      "Brakeman",
+      "BundleAudit",
+      "CargoAudit",
+      "Gosec",
+      "NPMAudit",
+      "PatternSearch",
+      "RepoNotEmpty",
+      "Semgrep",
+      "YarnAudit"
+    ],
+    "scanner_configs": {
+      "Bandit": {
+        "pass_on_raise": false
+      },
+      "Brakeman": {
+        "pass_on_raise": false
+      },
+      "BundleAudit": {
+        "pass_on_raise": false
+      },
+      "CargoAudit": {
+        "pass_on_raise": false
+      },
+      "Gosec": {
+        "pass_on_raise": false
+      },
+      "NPMAudit": {
+        "pass_on_raise": false
+      },
+      "PatternSearch": {
+        "pass_on_raise": false
+      },
+      "RepoNotEmpty": {
+        "pass_on_raise": false
+      },
+      "ReportGoDep": {
+        "pass_on_raise": false
+      },
+      "ReportNodeModules": {
+        "pass_on_raise": false
+      },
+      "ReportPythonModules": {
+        "pass_on_raise": false
+      },
+      "ReportRubyGems": {
+        "pass_on_raise": false
+      },
+      "ReportRustCrates": {
+        "pass_on_raise": false
+      },
+      "Semgrep": {
+        "pass_on_raise": false
+      },
+      "YarnAudit": {
+        "pass_on_raise": false
+      },
+      "NodeAudit": {
+        "pass_on_raise": false
+      }
+    },
+    "report_uris": [
+      {
+        "uri": "https://nerv.tk3/salus-report",
+        "format": "json"
+      }
+    ],
+    "builds": {
+      "url": "http://example.com/builds/123",
+      "service_name": "buildkite"
+    },
+    "sources": {
+      "configured": [
+        "file:///salus.yaml"
+      ],
+      "valid": [
+        "file:///salus.yaml"
+      ]
+    }
+  }
+}

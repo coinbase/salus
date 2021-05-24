@@ -56,15 +56,7 @@ module Salus
       puts processor.string_report(verbose: verbose, use_colors: use_colors) unless quiet
 
       # Try to send Salus reports to remote server or local files.
-      begin
-        processor.export_report
-      rescue StandardError => e
-        raise e if ENV['RUNNING_SALUS_TESTS']
-
-        puts "Could not send Salus report: (#{e.class}: #{e.message})"
-        e = "Could not send Salus report. Exception: #{e}, Build info: #{processor.report.builds}"
-        bugsnag_notify(e)
-      end
+      processor.export_report
 
       heartbeat_thr&.kill
 
