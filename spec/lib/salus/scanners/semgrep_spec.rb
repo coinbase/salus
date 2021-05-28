@@ -790,4 +790,13 @@ describe Salus::Scanners::Semgrep do
       end
     end
   end
+
+  describe '#supported_languages' do
+    context 'should return supported languages' do
+      it 'should return expected langs' do
+        langs = Salus::Scanners::Semgrep.supported_languages
+        expect(langs).to eq(['*'])
+      end
+    end
+  end
 end
