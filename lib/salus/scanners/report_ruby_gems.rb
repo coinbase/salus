@@ -22,6 +22,10 @@ module Salus::Scanners
       @repository.gemfile_present? || @repository.gemfile_lock_present?
     end
 
+    def self.supported_languages
+      ['ruby']
+    end
+
     private
 
     def record_dependencies_from_gemfile_lock

@@ -284,5 +284,9 @@ module Salus::Scanners
         error_to_string(err)
       end&.join("\n")
     end
+
+    def self.supported_languages
+      ['*']
+    end
   end
 end

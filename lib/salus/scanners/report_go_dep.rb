@@ -29,6 +29,10 @@ module Salus::Scanners
       @repository.dep_lock_present?
     end
 
+    def self.supported_languages
+      ['go']
+    end
+
     private
 
     def record_dep_package(name:, reference:, version_tag:)
