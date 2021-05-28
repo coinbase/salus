@@ -16,7 +16,7 @@ module Salus::Scanners
       @gosec_stdout = ''   # ...      stdout ...
       @gosec_json = {}     # combined json result on all runs
       run_from_dirs = @config['run_from_dirs'].sort
-      @config.delete('run_from_dirs')
+      run_from_dirs_val = @config.delete('run_from_dirs')
       run_from_dirs.each do |dir|
         if dir.start_with?("/") || dir.start_with?("./") || dir.include?("..")
           msg = "run_from_dirs values should be relative paths to subdirs in the repo " \
@@ -36,6 +36,7 @@ module Salus::Scanners
       # success only if none of the runs set @gosec_failed = true
       return report_success if @gosec_failed == false
 
+      @config['run_from_dirs'] = run_from_dirs_val
       log(JSON.pretty_generate(@gosec_json)) if !@gosec_json.empty?
       report_stderr(@gosec_stderr) if !@gosec_stderr.empty?
       report_stdout(@gosec_stdout) if !@gosec_stdout.empty?
