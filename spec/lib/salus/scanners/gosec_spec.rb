@@ -82,6 +82,10 @@ describe Salus::Scanners::Gosec do
       let(:repo) { 'spec/fixtures/gosec/multi_goapps' }
 
       it 'should report failures in both sub-projects' do
+        # test case shows gosec only runs from the specified subdirs in salus.yaml
+        # there are 3 identical subdirs in the repo: app1, app2, app3, all with vulns
+        # salus.yaml says run_from_dirs = [app1, app2]
+        # so result vulns are reported for app1 and app2 only, not app3
         config_file = "#{repo}/salus.yaml"
         configs = Salus::Config.new([File.read(config_file)]).scanner_configs['Gosec']
         scanner = Salus::Scanners::Gosec.new(repository: Salus::Repo.new(repo), config: configs)

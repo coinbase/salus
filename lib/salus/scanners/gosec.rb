@@ -7,12 +7,14 @@ require 'json'
 module Salus::Scanners
   class Gosec < Base
     def run
+      # 'run_from_dirs' specifies a list of subdirs to run salus from
+      # if not specified, then run_from_dir will mimic the original gosec 'run' behavior
       return run_from_dir if @config['run_from_dirs'].nil?
 
       @gosec_failed = false
-      @gosec_stderr = ''
-      @gosec_stdout = ''
-      @gosec_json = {}
+      @gosec_stderr = ''   # combined stderr on all runs (one for each configured subdir)
+      @gosec_stdout = ''   # ...      stdout ...
+      @gosec_json = {}     # combined json result on all runs
       run_from_dirs = @config['run_from_dirs'].sort
       @config.delete('run_from_dirs')
       run_from_dirs.each do |dir|
@@ -30,6 +32,8 @@ module Salus::Scanners
         end
       end
 
+      # gosec runs from multiple dirs
+      # success only if none of the runs set @gosec_failed = true
       return report_success if @gosec_failed == false
 
       log(JSON.pretty_generate(@gosec_json)) if !@gosec_json.empty?
@@ -109,6 +113,7 @@ module Salus::Scanners
           @gosec_json['Stats']['lines'] += lines_scanned
           @gosec_json['Stats']['nosec'] += num_nosec
           @gosec_json['Stats']['found'] += num_found
+          # add dir name to golang error keys
           golang_errors = golang_errors.map { |ek, ev| [dir + '/' + ek, ev] }.to_h
           @gosec_json['Golang errors'].merge!(golang_errors)
         end
