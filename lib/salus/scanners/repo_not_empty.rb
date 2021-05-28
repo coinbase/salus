@@ -23,6 +23,10 @@ module Salus::Scanners
       true
     end
 
+    def self.supported_languages
+      ['*']
+    end
+
     private
 
     def directory_empty?

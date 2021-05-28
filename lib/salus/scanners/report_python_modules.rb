@@ -27,5 +27,9 @@ module Salus::Scanners
     def should_run?
       @repository.requirements_txt_present?
     end
+
+    def self.supported_languages
+      ['python']
+    end
   end
 end

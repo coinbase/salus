@@ -486,9 +486,9 @@ describe Salus::Scanners::PatternSearch do
 
   describe '#supported_languages' do
     context 'should return supported languages' do
-      it 'should return empty' do
+      it 'should return expected langs' do
         langs = Salus::Scanners::PatternSearch.supported_languages
-        expect(langs).to eq([])
+        expect(langs).to eq(['*'])
       end
     end
   end

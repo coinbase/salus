@@ -73,4 +73,13 @@ describe Salus::Scanners::ReportGoDep do
       end
     end
   end
+
+  describe '#supported_languages' do
+    context 'should return supported languages' do
+      it 'should return expected langs' do
+        langs = Salus::Scanners::ReportGoDep.supported_languages
+        expect(langs).to eq(['go'])
+      end
+    end
+  end
 end
