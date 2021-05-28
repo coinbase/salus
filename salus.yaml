@@ -9,3 +9,4 @@ scanner_configs:
       - spec/fixtures/gosec/vulnerable_goapp
       - spec/fixtures/gosec/multifolder_goapp
       - spec/fixtures/gosec/recursive_vulnerable_goapp
+      - spec/fixtures/gosec/multi_goapps

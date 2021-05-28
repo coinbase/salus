@@ -1,6 +1,5 @@
 scanner_configs:
   Gosec:
-    no-fail: true
     run_from_dirs:
       - app1
       - app2
