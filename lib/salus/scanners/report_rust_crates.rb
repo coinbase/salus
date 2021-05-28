@@ -26,6 +26,10 @@ module Salus::Scanners
       end
     end
 
+    def self.supported_languages
+      ['rust']
+    end
+
     private
 
     def with_lock_file
