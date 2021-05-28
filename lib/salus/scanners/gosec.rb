@@ -37,8 +37,8 @@ module Salus::Scanners
       return report_success if @gosec_failed == false
 
       log(JSON.pretty_generate(@gosec_json)) if !@gosec_json.empty?
-      report_stderr(@gosec_stderr) if @gosec_stderr.empty?
-      report_stdout(@gosec_stdout) if @gosec_stdout.empty?
+      report_stderr(@gosec_stderr) if !@gosec_stderr.empty?
+      report_stdout(@gosec_stdout) if !@gosec_stdout.empty?
       report_failure
     end
 
