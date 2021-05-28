@@ -29,4 +29,7 @@ The [Gosec Scanner](https://github.com/securego/gosec) is a static analysis tool
         - tests
         - temp
         - vendor
+      run_from_dirs:                     # run gosec from the specified subdirs only
+        - subdir1                        # for now, any other gosec config will apply to all subdir runs
+        - subdir2
 ```

@@ -77,6 +77,36 @@ describe Salus::Scanners::Gosec do
     end
   end
 
+  describe '#run from multiple subdirs' do
+    context 'go project with multiple sub-projects' do
+      let(:repo) { 'spec/fixtures/gosec/multi_goapps' }
+
+      it 'should report failures in both sub-projects' do
+        # test case shows gosec only runs from the specified subdirs in salus.yaml
+        # there are 3 identical subdirs in the repo: app1, app2, app3, all with vulns
+        # salus.yaml says run_from_dirs = [app1, app2]
+        # so result vulns are reported for app1 and app2 only, not app3
+        config_file = "#{repo}/salus.yaml"
+        configs = Salus::Config.new([File.read(config_file)]).scanner_configs['Gosec']
+        scanner = Salus::Scanners::Gosec.new(repository: Salus::Repo.new(repo), config: configs)
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(false)
+
+        logs = JSON.parse(scanner.report.to_h[:logs])
+        issues_arr = logs['Issues']
+        golang_errs = logs['Golang errors']
+
+        expect(issues_arr.size).to eq(6)
+        expect(issues_arr.to_s).to include('/multi_goapps/app1/hello.go')
+        expect(issues_arr.to_s).to include('/multi_goapps/app2/hello.go')
+        expect(golang_errs.size).to eq(2)
+        expect(golang_errs.to_s).to include('/multi_goapps/app1/hello.go')
+        expect(golang_errs.to_s).to include('/multi_goapps/app2/hello.go')
+      end
+    end
+  end
+
   describe '#should_run?' do
     let(:scanner) { Salus::Scanners::Gosec.new(repository: repo, config: {}) }
 

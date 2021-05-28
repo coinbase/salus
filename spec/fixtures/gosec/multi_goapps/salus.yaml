@@ -1,0 +1,5 @@
+scanner_configs:
+  Gosec:
+    run_from_dirs:
+      - app1
+      - app2
