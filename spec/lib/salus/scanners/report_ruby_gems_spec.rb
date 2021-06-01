@@ -42,7 +42,7 @@ describe Salus::Scanners::ReportRubyGems do
             type: 'gem',
             name: 'master_lock',
             version: '>= 0',
-            source: 'git@github.com:coinbase/master_lock.git (at master)'
+            source: 'git@github.com:coinbase/master_lock.git'
           }
         ]
       )
@@ -64,20 +64,20 @@ describe Salus::Scanners::ReportRubyGems do
           type: 'gem',
           name: 'actioncable',
           version: '5.1.2',
-          source: match(%r{rubygems repository https:\/\/rubygems.org\/})
+          source: "rubygems repository https://rubygems.org/ or installed locally"
         },
         {
           dependency_file: 'Gemfile.lock',
           type: 'gem',
           name: 'kibana_url',
           version: '1.0.1',
-          source: match(%r{rubygems repository https:\/\/rubygems.org\/})
+          source: "rubygems repository https://rubygems.org/ or installed locally"
         },
         dependency_file: 'Gemfile.lock',
         type: 'gem',
         name: 'master_lock',
         version: '0.9.1',
-        source: 'git@github.com:coinbase/master_lock.git (at master@9dfd28d)'
+        source: 'git@github.com:coinbase/master_lock.git'
       ]
 
       expect(info[:dependencies]).to include(*expected)
