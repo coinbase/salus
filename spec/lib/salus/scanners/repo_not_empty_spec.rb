@@ -42,4 +42,13 @@ describe Salus::Scanners::RepoNotEmpty do
       end
     end
   end
+
+  describe '#supported_languages' do
+    context 'should return supported languages' do
+      it 'should return expected langs' do
+        langs = Salus::Scanners::RepoNotEmpty.supported_languages
+        expect(langs).to eq(['*'])
+      end
+    end
+  end
 end

@@ -68,6 +68,10 @@ module Salus::Scanners
       shell_return.stdout&.split("\n")&.dig(0)&.split&.dig(1)
     end
 
+    def self.supported_languages
+      ['python']
+    end
+
     # Taken from https://pypi.org/project/bandit/#usage
     def config_options
       string_to_flag_map = {

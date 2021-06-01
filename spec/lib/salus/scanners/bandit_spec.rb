@@ -467,4 +467,13 @@ describe Salus::Scanners::Bandit do
       end
     end
   end
+
+  describe '#supported_languages' do
+    context 'should return supported languages' do
+      it 'should return python' do
+        langs = Salus::Scanners::Bandit.supported_languages
+        expect(langs).to eq(['python'])
+      end
+    end
+  end
 end

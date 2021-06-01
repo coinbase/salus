@@ -104,6 +104,20 @@ describe Sarif::GosecSarif do
       end
     end
 
+    context 'go project with empty report containing whitespace' do
+      let(:repo) { Salus::Repo.new('spec/fixtures/gosec/safe_goapp') }
+      it 'should handle empty reports with whitespace' do
+        report = Salus::Report.new(project_name: "Neon Genesis")
+        # Override the report.log() to return "\n"
+        report.class.send(:define_method, :log, -> { "\n" })
+        expect_any_instance_of(Sarif::GosecSarif).not_to receive(:bugsnag_notify)
+
+        report.add_scan_report(scanner.report, required: false)
+        report_object = JSON.parse(report.to_sarif)['runs'][0]
+        expect(report_object['invocations'][0]['executionSuccessful']).to eq(true)
+      end
+    end
+
     context 'go project with errors' do
       let(:repo) { Salus::Repo.new('spec/fixtures/gosec/malformed_goapp') }
       it 'should parse golang errors' do

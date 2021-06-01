@@ -11,9 +11,11 @@ module Salus
     # repo root for a configuration file with this default name
     DEFAULT_CONFIG_SOURCE = "file:///salus.yaml".freeze
 
-    def initialize(configuration_sources = [], repo_path: DEFAULT_REPO_PATH, filter_sarif: "")
+    def initialize(configuration_sources = [], repo_path: DEFAULT_REPO_PATH, filter_sarif: "",
+                   ignore_config_id: "")
       @repo_path = repo_path
       @filter_sarif = filter_sarif
+      ignore_ids = ignore_config_id.split(',').map(&:strip)
 
       # Add default file path to the configs if empty.
       configuration_sources << DEFAULT_CONFIG_SOURCE if configuration_sources.empty?
@@ -29,8 +31,7 @@ module Salus
         end
       end
 
-      @config = Salus::Config.new(source_data)
-
+      @config = Salus::Config.new(source_data, ignore_ids)
       report_uris = interpolate_local_report_uris(@config.report_uris)
       sources = {
         sources: {
@@ -46,7 +47,8 @@ module Salus
         custom_info: @config.custom_info,
         config: @config.to_h.merge(sources),
         repo_path: repo_path,
-        filter_sarif: filter_sarif
+        filter_sarif: filter_sarif,
+        ignore_config_id: ignore_config_id
       )
     end
 

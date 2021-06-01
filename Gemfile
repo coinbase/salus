@@ -4,12 +4,9 @@ ruby '2.7.2'
 
 gem 'activesupport', '~> 6.1.3'
 gem 'bugsnag', '~> 6.19.0'
-# TODO: Lock `bundler` until:
-#  https://github.com/rubysec/bundler-audit/issues/235 and
-#  https://github.com/bundler/bundler/issues/7511 are resolved.
-gem 'bundler', '= 2.0.2'
+gem 'bundler', '= 2.2.19'
 gem 'faraday', '~> 1.3'
-gem 'github-linguist', '~> 7.12.2'
+gem 'github-linguist', '~> 7.13.0'
 gem 'parser', '~> 3.0.0'
 gem 'rgl', '~> 0.5.7'
 gem 'safe_yaml', '~> 1.0'

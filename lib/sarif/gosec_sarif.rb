@@ -14,7 +14,7 @@ module Sarif
 
     def parse_scan_report!(scan_report)
       logs = scan_report.log('')
-      return [] if logs.size.zero?
+      return [] if logs.strip.empty?
 
       json_obj = JSON.parse(logs)
       issues = json_obj['Issues']

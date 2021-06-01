@@ -32,12 +32,11 @@ describe Salus::Processor do
         stub_request(:get, http_config_uri).to_return(status: 200, body: config_file)
         expect(Salus::Config).to receive(:new)
           .once
-          .with([file_config_file, http_config_file])
+          .with([file_config_file, http_config_file], [])
           .and_call_original
 
         Dir.chdir('spec/fixtures/processor/explicit_config') do
           processor = Salus::Processor.new([file_config_uri, http_config_uri])
-
           reported_config = processor.report.to_h[:config]
           expect(reported_config[:sources][:valid]).to include(file_config_uri, http_config_uri)
           expect(reported_config[:active_scanners]).to include(
@@ -76,7 +75,7 @@ describe Salus::Processor do
 
     context 'implicitly look for file' do
       it 'should load the default config from the salus.yaml and add to report' do
-        expect(Salus::Config).to receive(:new).once.with([config_file]).and_call_original
+        expect(Salus::Config).to receive(:new).once.with([config_file], []).and_call_original
         Dir.chdir('spec/fixtures/processor') do
           processor = Salus::Processor.new
 
@@ -180,6 +179,30 @@ describe Salus::Processor do
 
         # remove report file that was generated from Salus execution
         remove_file(local_uri)
+      end
+    end
+
+    context 'multiple URIs' do
+      let(:expected_report) do
+        File.read('spec/fixtures/processor/remote_uri/expected_report.json').strip
+      end
+      let(:remote_uri_one) { 'https://nerv.tk3/foo-salus-report' }
+      let(:remote_uri_two) { 'https://nerv.tk3/salus-report' }
+
+      it 'should still send the 2nd report to the remote URI' do
+        stub_request(:post, remote_uri_one)
+          .with(headers: { 'Content-Type' => 'application/json' })
+          .and_raise(StandardError.new("error"))
+
+        stub_request(:post, remote_uri_two)
+          .with(headers: { 'Content-Type' => 'application/json' })
+          .to_return(status: 202)
+
+        expect_any_instance_of(Salus::Report).to receive(:send_report).twice
+
+        processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/multiple_endpoints')
+        processor.scan_project
+        processor.export_report
       end
     end
   end

@@ -139,6 +139,10 @@ module Salus::Scanners
       shell_return.stdout&.split&.dig(1)
     end
 
+    def self.supported_languages
+      ['*']
+    end
+
     private
 
     def extension_flag(flag, file_extensions)
