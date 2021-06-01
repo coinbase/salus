@@ -1,3 +1,4 @@
+require 'fileutils'
 require_relative '../spec_helper.rb'
 
 describe Salus::CLI do
@@ -75,6 +76,47 @@ describe Salus::CLI do
       end
     end
 
+    context 'local_uri paths' do
+      it 'should not write local report bad file path' do
+        Dir.chdir('spec/fixtures/repo2') do
+          # report path is outside repo dir
+          ENV['SALUS_CONFIGURATION'] = 'file://salus.yaml'
+          expect do
+            Salus.scan(repo_path: '.', quiet: true)
+          end.to raise_error(StandardError)
+          expect(File).not_to exist('../out1.json')
+
+          # report path is ..out1.json
+          ENV['SALUS_CONFIGURATION'] = 'file:///salus4.yaml'
+          expect do
+            Salus.scan(repo_path: '.', quiet: true)
+          end.to raise_error(StandardError)
+          expect(File).not_to exist('..out1.json')
+
+          # report path is .out1.json
+          ENV['SALUS_CONFIGURATION'] = 'file:///salus4.yaml'
+          expect do
+            Salus.scan(repo_path: '.', quiet: true)
+          end.to raise_error(StandardError)
+          expect(File).not_to exist('.out1.json')
+        end
+      end
+
+      it 'should write to local report if good file path' do
+        Dir.chdir('spec/fixtures/repo2') do
+          ENV['SALUS_CONFIGURATION'] = 'file:///salus2.yaml'
+          Salus.scan(repo_path: '.', quiet: true)
+          expect(File).to exist('out1.json')
+          remove_file('out1.json')
+
+          ENV['SALUS_CONFIGURATION'] = 'file:///salus3.yaml'
+          Salus.scan(repo_path: '.', quiet: true)
+          expect(File).to exist('out1.json')
+          remove_file('out1.json')
+        end
+      end
+    end
+
     context 'With --filter_sarif' do
       it 'Should ouput filtered vulnerabilities' do
         Dir.chdir('spec/fixtures/gosec/multiple_vulns2') do
@@ -102,6 +144,54 @@ describe Salus::CLI do
           expect(builds['org']).to eq('my_org')
           expect(builds['project']).to eq('my_repo')
           expect(builds['url']).to eq('http://buildkite/builds/123456')
+        end
+      end
+    end
+
+    context 'With --ignore_config_id' do
+      it 'Should filter out report ids' do
+        Dir.chdir('spec/fixtures/config') do
+          # These salus configs write json, sarif, and txt
+
+          ENV['SALUS_CONFIGURATION'] = 'file:///multiple_reports.yaml'
+          Salus.scan(quiet: true, repo_path: '.')
+          expect(File).to exist('out.sarif')
+          expect(File).to exist('out.json')
+          expect(File).to exist('out.txt')
+
+          ENV['SALUS_CONFIGURATION'] = 'file:///multiple_reports2.yaml'
+          Salus.scan(quiet: true, repo_path: '.', ignore_config_id: 'reports:txt')
+          expect(File).to exist('out2.sarif')
+          expect(File).to exist('out2.json')
+          expect(File).not_to exist('out2.txt')
+
+          ENV['SALUS_CONFIGURATION'] = 'file:///multiple_reports3.yaml'
+          Salus.scan(quiet: true, repo_path: '.', ignore_config_id: 'reports:txt,reports:json')
+          expect(File).to exist('out3.sarif')
+          expect(File).not_to exist('out3.json')
+          expect(File).not_to exist('out3.txt')
+        end
+      end
+    end
+
+    context 'With plugins' do
+      it 'Should update config based on plugin' do
+        Dir.chdir('spec/fixtures/blank_repository2') do
+          plugin_dir = File.join(__dir__, '../fixtures/blank_repository2/test_plugins')
+          ENV['SALUS_CONFIGURATION'] = 'file:///salus.yaml'
+          expect(Salus::PluginManager).to receive(:plugin_dir).and_return(plugin_dir)
+            .at_least(:once)
+          Salus.scan(quiet: true, repo_path: '.')
+          expect(File).to exist('out.json')
+
+          json_content = JSON.parse(File.read('out.json'))
+          builds = json_content['config']['builds']
+          expected_builds = { "abc" => "xyz",
+                              "abcd" => "xyzw",
+                              "service_name" => "circle_CI",
+                              "url" => "my_url",
+                              "mykey" => "myval" }
+          expect(builds).to eq(expected_builds)
         end
       end
     end

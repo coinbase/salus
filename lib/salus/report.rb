@@ -25,8 +25,10 @@ module Salus
 
     attr_reader :builds
 
+    @@filters = []
+
     def initialize(report_uris: [], builds: {}, project_name: nil, custom_info: nil, config: nil,
-                   repo_path: nil, filter_sarif: nil)
+                   repo_path: nil, filter_sarif: nil, ignore_config_id: nil)
       @report_uris = report_uris     # where we will send this report
       @builds = builds               # build hash, could have arbitrary keys
       @project_name = project_name   # the project_name we are scanning
@@ -37,6 +39,20 @@ module Salus
       @running_time = nil            # overall running time for the scan; see #record
       @filter_sarif = filter_sarif   # Filter out results from this file
       @repo_path = repo_path         # path to repo
+      @ignore_config_id = ignore_config_id # ignore id in salus config
+    end
+
+    def apply_report_hash_filters(report_hash)
+      @@filters.each do |filter|
+        if filter.respond_to?(:filter_report_hash)
+          report_hash = filter.filter_report_hash(report_hash)
+        end
+      end
+      report_hash
+    end
+
+    def self.register_filter(filter)
+      @@filters << filter
     end
 
     def record
@@ -61,7 +77,7 @@ module Salus
     def to_h
       scans = @scan_reports.map { |report, _required| [report.scanner_name, report.to_h] }.to_h
 
-      {
+      report_hash = {
         version: VERSION,
         project_name: @project_name,
         passed: passed?,
@@ -71,6 +87,8 @@ module Salus
         custom_info: @custom_info,
         config: @config
       }.compact
+
+      apply_report_hash_filters(report_hash)
     end
 
     # Generates the text report.
@@ -109,6 +127,10 @@ module Salus
       end
 
       output += indent(wrapify(stringified_config, indented_wrap))
+
+      if @ignore_config_id != "" && !@ignore_config_id.nil?
+        output += "\n  IDs ignored in salus config:\n\t#{@ignore_config_id}"
+      end
 
       if !@errors.empty?
         stringified_errors = JSON.pretty_generate(@errors)
@@ -163,29 +185,44 @@ module Salus
       sarif_results
     end
 
+    def publish_report(directive)
+      # First create the string for the report.
+      uri = directive['uri']
+      verbose = directive['verbose'] || false
+      # Now send this string to its destination.
+      report_string = case directive['format']
+                      when 'txt' then to_s(verbose: verbose)
+                      when 'json' then to_json
+                      when 'yaml' then to_yaml
+                      when 'sarif' then to_sarif(directive['sarif_options'] || {})
+                      when 'sarif_diff' then to_sarif_diff
+                      else
+                        raise ExportReportError, "unknown report format #{directive['format']}"
+                      end
+      if Salus::Config::REMOTE_URI_SCHEME_REGEX.match?(URI(uri).scheme)
+        send_report(uri, report_body(directive), directive['format'])
+      else
+        # must remove the file:// schema portion of the uri.
+        uri_object = URI(uri)
+        file_path = "#{uri_object.host}#{uri_object.path}"
+        if !safe_local_report_path?(file_path)
+          bad_path_msg = "Local report uri #{file_path} should be relative to repo path and " \
+                         "cannot have invalid chars"
+          raise StandardError, bad_path_msg
+        end
+        write_report_to_file(file_path, report_string)
+      end
+    end
+
     def export_report
       @report_uris.each do |directive|
-        # First create the string for the report.
-        uri = directive['uri']
-        verbose = directive['verbose'] || false
-        # Now send this string to its destination.
-        report_string = case directive['format']
-                        when 'txt' then to_s(verbose: verbose)
-                        when 'json' then to_json
-                        when 'yaml' then to_yaml
-                        when 'sarif' then to_sarif(directive['sarif_options'] || {})
-                        when 'sarif_diff' then to_sarif_diff
-                        else
-                          raise ExportReportError, "unknown report format #{directive['format']}"
-                        end
-        if Salus::Config::REMOTE_URI_SCHEME_REGEX.match?(URI(uri).scheme)
-          send_report(uri, report_body(directive), directive['format'])
-        else
-          # must remove the file:// schema portion of the uri.
-          uri_object = URI(uri)
-          file_path = "#{uri_object.host}#{uri_object.path}"
-          write_report_to_file(file_path, report_string)
-        end
+        publish_report(directive)
+      rescue StandardError => e
+        raise e if ENV['RUNNING_SALUS_TESTS']
+
+        puts "Could not send Salus report: (#{e.class}: #{e.message})"
+        e = "Could not send Salus report. Exception: #{e}, Build info: #{builds}"
+        bugsnag_notify(e)
       end
     end
 
@@ -195,6 +232,21 @@ module Salus
       else
         "salus"
       end
+    end
+
+    def safe_local_report_path?(path)
+      return true if @repo_path.nil?
+
+      path = Pathname.new(File.expand_path(path)).cleanpath.to_s
+      rpath = File.expand_path(@repo_path)
+
+      if !path.start_with?(rpath + "/") || path.include?("/.")
+        # the 2nd condition covers like abcd/.hidden_file or abcd/..filename
+        # which cleanpath does not do anything about
+        return false
+      end
+
+      true
     end
 
     private
@@ -269,7 +321,9 @@ module Salus
       return report_body_hash(config, to_s(verbose: verbose)).to_s if config['format'] == 'txt'
 
       body = report_body_hash(config, JSON.parse(to_json)) if config['format'] == 'json'
-      body = report_body_hash(config, JSON.parse(to_sarif)) if config['format'] == 'sarif'
+      if config['format'] == 'sarif'
+        body = report_body_hash(config, JSON.parse(to_sarif(config['sarif_options'] || {})))
+      end
       body = report_body_hash(config, JSON.parse(to_sarif_diff)) if config['format'] == 'sarif_diff'
       return JSON.pretty_generate(body) if %w[json sarif sarif_diff].include?(config['format'])
 

@@ -58,6 +58,10 @@ module Salus::Scanners
       shell_return.stdout&.strip
     end
 
+    def self.supported_languages
+      ['javascript']
+    end
+
     private
 
     def parse_output(lines)

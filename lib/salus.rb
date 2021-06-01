@@ -6,10 +6,11 @@ require 'salus/repo'
 require 'salus/scanners'
 require 'salus/config'
 require 'salus/processor'
+require 'salus/plugin_manager'
 require 'sarif/sarif_report'
 
 module Salus
-  VERSION = '2.10.19'.freeze
+  VERSION = '2.11.10'.freeze
   DEFAULT_REPO_PATH = './repo'.freeze # This is inside the docker container at /home/repo.
 
   SafeYAML::OPTIONS[:default_mode] = :safe
@@ -29,6 +30,7 @@ module Salus
       repo_path: DEFAULT_REPO_PATH,
       use_colors: true,
       filter_sarif: "",
+      ignore_config_id: "",
       heartbeat: true
     )
 
@@ -40,8 +42,10 @@ module Salus
       ### Configuration ###
       # Config option would be: --config="<uri x> <uri y> etc"
       configuration_directives = (ENV['SALUS_CONFIGURATION'] || config || '').split(URI_DELIMITER)
+      Salus::PluginManager.load_plugins
       processor = Salus::Processor.new(configuration_directives, repo_path: repo_path,
-                                       filter_sarif: filter_sarif)
+                                       filter_sarif: filter_sarif,
+                                       ignore_config_id: ignore_config_id)
 
       ### Scan Project ###
       # Scan project with Salus client.
@@ -52,15 +56,7 @@ module Salus
       puts processor.string_report(verbose: verbose, use_colors: use_colors) unless quiet
 
       # Try to send Salus reports to remote server or local files.
-      begin
-        processor.export_report
-      rescue StandardError => e
-        raise e if ENV['RUNNING_SALUS_TESTS']
-
-        puts "Could not send Salus report: (#{e.class}: #{e.message})"
-        e = "Could not send Salus report. Exception: #{e}, Build info: #{processor.report.builds}"
-        bugsnag_notify(e)
-      end
+      processor.export_report
 
       heartbeat_thr&.kill
 
