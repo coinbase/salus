@@ -14,7 +14,7 @@ describe Sarif::GosecSarif do
         f = File.read('spec/fixtures/gosec/duplicate_entries/report.json')
         scan_report.log(f.to_s)
         adapter = Sarif::GosecSarif.new(scan_report)
-        results = adapter.build_runs_object["results"]
+        results = adapter.build_runs_object(true)["results"]
 
         expect(results.size).to eq(3)
         unique_results = Set.new
@@ -29,7 +29,7 @@ describe Sarif::GosecSarif do
         f = File.read('spec/fixtures/gosec/duplicate_entries/report.json')
         scan_report.log(f.to_s)
         adapter = Sarif::GosecSarif.new(scan_report)
-        rules = adapter.build_runs_object["tool"][:driver]["rules"]
+        rules = adapter.build_runs_object(true)["tool"][:driver]["rules"]
         expect(rules.size).to eq(2)
         unique_rules = Set.new
         rules.each do |rule|
@@ -104,6 +104,20 @@ describe Sarif::GosecSarif do
       end
     end
 
+    context 'go project with empty report containing whitespace' do
+      let(:repo) { Salus::Repo.new('spec/fixtures/gosec/safe_goapp') }
+      it 'should handle empty reports with whitespace' do
+        report = Salus::Report.new(project_name: "Neon Genesis")
+        # Override the report.log() to return "\n"
+        report.class.send(:define_method, :log, -> { "\n" })
+        expect_any_instance_of(Sarif::GosecSarif).not_to receive(:bugsnag_notify)
+
+        report.add_scan_report(scanner.report, required: false)
+        report_object = JSON.parse(report.to_sarif)['runs'][0]
+        expect(report_object['invocations'][0]['executionSuccessful']).to eq(true)
+      end
+    end
+
     context 'go project with errors' do
       let(:repo) { Salus::Repo.new('spec/fixtures/gosec/malformed_goapp') }
       it 'should parse golang errors' do
@@ -112,12 +126,12 @@ describe Sarif::GosecSarif do
         result = JSON.parse(report.to_sarif)["runs"][0]["results"][0]
         rules = JSON.parse(report.to_sarif)["runs"][0]["tool"]["driver"]["rules"]
 
-        expect(rules[0]['id']).to eq('SAL0002')
+        expect(rules[0]['id']).to eq('SAL002')
         expect(rules[0]['name']).to eq('Golang Error')
-        expect(rules[0]['fullDescription']['text']).to eq("Golang errors generated at runtime")
+        expect(rules[0]['fullDescription']['text']).to eq("errors reported by scanner")
         expect(rules[0]['helpUri']).to eq('https://github.com/coinbase/salus/blob/master/docs/salus_reports.md')
 
-        expect(result['ruleId']).to eq('SAL0002')
+        expect(result['ruleId']).to eq('SAL002')
         expect(result['ruleIndex']).to eq(0)
         expect(result['message']['text']).to eq('Pintl not declared by package fmt')
         expect(result['level']).to eq('note')

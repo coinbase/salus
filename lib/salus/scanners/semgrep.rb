@@ -22,6 +22,7 @@ require "json"
 
 module Salus::Scanners
   class Semgrep < Base
+    # rubocop:disable Metrics/AbcSize
     def run
       global_exclude_flags = flag_list('--exclude', @config['exclude'])
 
@@ -32,6 +33,7 @@ module Salus::Scanners
       errors = []
       warnings = []
       all_hits = []
+      all_misses = []
       override_keys = %w[pattern language message]
 
       Dir.chdir(@repository.path_to_repo) do
@@ -85,6 +87,13 @@ module Salus::Scanners
               if match["required"]
                 failure_messages << "\nRequired #{user_message} was not found " \
                 "- #{match['message']}"
+                all_misses << {
+                  pattern: match['pattern'],
+                  config: match['config'],
+                  forbidden: match["forbidden"],
+                  required: match["required"],
+                  msg: match['message']
+                }
               end
             else
               hits.each do |hit|
@@ -110,6 +119,13 @@ module Salus::Scanners
             if match['required']
               failure_messages << "Required #{user_message} was not found " \
                 "- #{match['message']}"
+              all_misses << {
+                pattern: match['pattern'],
+                config: match['config'],
+                forbidden: match["forbidden"],
+                required: match["required"],
+                msg: match['message']
+              }
             end
             begin
               # parse the output
@@ -145,6 +161,7 @@ module Salus::Scanners
         end
 
         report_info(:hits, all_hits)
+        report_info(:misses, all_misses)
         errors.each { |error| report_error("Call to semgrep failed", error) }
         report_warn(:semgrep_non_fatal, warnings) unless warnings.empty?
         warning_messages.each { |message| log(message) }
@@ -157,6 +174,7 @@ module Salus::Scanners
         end
       end
     end
+    # rubocop:enable Metrics/AbcSize
 
     def should_run?
       true # we will always run this on the provided folder
@@ -265,6 +283,10 @@ module Salus::Scanners
       list_of_errors&.map do |err|
         error_to_string(err)
       end&.join("\n")
+    end
+
+    def self.supported_languages
+      ['*']
     end
   end
 end

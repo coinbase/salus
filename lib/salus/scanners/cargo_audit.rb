@@ -65,6 +65,10 @@ module Salus::Scanners
       shell_return.stdout&.split&.dig(1)
     end
 
+    def self.supported_languages
+      ['rust']
+    end
+
     protected
 
     def has_vulnerabilities?(json_string)

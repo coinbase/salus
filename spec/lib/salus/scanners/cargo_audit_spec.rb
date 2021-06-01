@@ -24,7 +24,7 @@ class ProcessStatusDouble
   end
 
   def success?
-    @exitstatus == 0
+    @exitstatus.zero?
   end
 end
 
@@ -164,6 +164,15 @@ describe Salus::Scanners::CargoAudit do
         repo = Salus::Repo.new("dir")
         scanner = Salus::Scanners::CargoAudit.new(repository: repo, config: {})
         expect(scanner.version).to be_a_valid_version
+      end
+    end
+  end
+
+  describe '#supported_languages' do
+    context 'should return supported languages' do
+      it 'should return rust' do
+        langs = Salus::Scanners::CargoAudit.supported_languages
+        expect(langs).to eq(['rust'])
       end
     end
   end

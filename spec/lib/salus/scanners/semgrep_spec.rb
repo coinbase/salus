@@ -47,6 +47,8 @@ describe Salus::Scanners::Semgrep do
           msg: "",
           hit: "vendor/trivial2.py:10:    if user.id == user.id:"
         )
+
+        expect(info[:misses]).to be_empty
       end
 
       context "external config" do
@@ -113,6 +115,8 @@ describe Salus::Scanners::Semgrep do
             msg: "user.id == user.id is always true\n\trule_id: semgrep-eqeq-test",
             hit: "vendor/trivial2.py:10:    if user.id == user.id:"
           )
+
+          expect(info[:misses]).to be_empty
         end
 
         it "should report forbidden matches" do
@@ -158,6 +162,8 @@ describe Salus::Scanners::Semgrep do
             msg: "user.id == user.id is always true\n\trule_id: semgrep-eqeq-test",
             hit: "vendor/trivial2.py:10:    if user.id == user.id:"
           )
+
+          expect(info[:misses]).to be_empty
         end
 
         it "should report required matches" do
@@ -203,6 +209,8 @@ describe Salus::Scanners::Semgrep do
             msg: "user.id == user.id is always true\n\trule_id: semgrep-eqeq-test",
             hit: "vendor/trivial2.py:10:    if user.id == user.id:"
           )
+
+          expect(info[:misses]).to be_empty
         end
 
         it "should report required matches" do
@@ -223,6 +231,17 @@ describe Salus::Scanners::Semgrep do
           failure_messages = scanner.report.to_h.fetch(:logs)
           expect(failure_messages).to include(
             'Required patterns in config "semgrep-config-required.yml" was not found - '
+          )
+
+          info = scanner.report.to_h.fetch(:info)
+          expect(info[:hits]).to be_empty
+          expect(info[:misses].size).to eq(1)
+          expect(info[:misses][0]).to eq(
+            config: "semgrep-config-required.yml",
+            pattern: nil,
+            forbidden: false,
+            required: true,
+            msg: ""
           )
         end
       end
@@ -273,6 +292,8 @@ describe Salus::Scanners::Semgrep do
           msg: "Useless equality test.",
           hit: "vendor/trivial2.py:10:    if user.id == user.id:"
         )
+
+        expect(info[:misses]).to be_empty
       end
     end
 
@@ -321,6 +342,8 @@ describe Salus::Scanners::Semgrep do
           msg: "",
           hit: "vendor/trivial2.py:10:    if user.id == user.id:"
         )
+
+        expect(info[:misses]).to be_empty
       end
     end
 
@@ -371,6 +394,8 @@ describe Salus::Scanners::Semgrep do
           msg: "Useless equality test.",
           hit: "vendor/trivial2.py:10:    if user.id == user.id:"
         )
+
+        expect(info[:misses]).to be_empty
       end
 
       it "should failed the scan if a required pattern is not found" do
@@ -394,6 +419,17 @@ describe Salus::Scanners::Semgrep do
         failure_messages = scanner.report.to_h.fetch(:logs)
         expect(failure_messages).to include(
           'Required pattern "$X == 42" was not found - Should be 42'
+        )
+
+        info = scanner.report.to_h.fetch(:info)
+        expect(info[:hits]).to be_empty
+        expect(info[:misses].size).to eq(1)
+        expect(info[:misses][0]).to eq(
+          config: nil,
+          pattern: "$X == 42",
+          forbidden: false,
+          required: true,
+          msg: "Should be 42"
         )
       end
     end
@@ -623,6 +659,10 @@ describe Salus::Scanners::Semgrep do
         expect(errors[0][:stderr]).to include("Pattern could not be parsed as a Python " \
                                               "semgrep pattern (error)\n\tCLI Input:1-1")
         expect(errors[0][:message]).to eq("Call to semgrep failed")
+
+        info = scanner.report.to_h.fetch(:info)
+        expect(info[:misses]).to be_empty
+        expect(info[:hits]).to be_empty
       end
     end
 
@@ -649,6 +689,10 @@ describe Salus::Scanners::Semgrep do
           /Could not parse unparsable_py\.py as python \(warn\)\n\t.+?unparsable_py\.py:3-3/
         )
         expect(errors[0][:message]).to eq("Call to semgrep failed")
+
+        info = scanner.report.to_h.fetch(:info)
+        expect(info[:misses]).to be_empty
+        expect(info[:hits]).to be_empty
       end
     end
 
@@ -721,6 +765,10 @@ describe Salus::Scanners::Semgrep do
           /Could not parse unparsable_js\.js as js \(warn\)\n\t.+?unparsable_js\.js:3-3/
         )
         expect(errors[0][:message]).to eq("Call to semgrep failed")
+
+        info = scanner.report.to_h.fetch(:info)
+        expect(info[:misses]).to be_empty
+        expect(info[:hits]).to be_empty
       end
     end
   end
@@ -739,6 +787,15 @@ describe Salus::Scanners::Semgrep do
         repo = Salus::Repo.new("dir")
         scanner = Salus::Scanners::Semgrep.new(repository: repo, config: {})
         expect(scanner.version).to be_a_valid_version
+      end
+    end
+  end
+
+  describe '#supported_languages' do
+    context 'should return supported languages' do
+      it 'should return expected langs' do
+        langs = Salus::Scanners::Semgrep.supported_languages
+        expect(langs).to eq(['*'])
       end
     end
   end

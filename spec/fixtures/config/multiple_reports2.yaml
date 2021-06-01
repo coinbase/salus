@@ -1,0 +1,10 @@
+reports:
+  - uri: file://out2.json
+    format: json
+    id: json
+  - uri: file://out2.sarif
+    format: sarif
+    id: sarif
+  - uri: file://out2.txt
+    format: txt
+    id: txt

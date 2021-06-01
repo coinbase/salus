@@ -46,6 +46,10 @@ module Salus::Scanners
       Gem.loaded_specs["brakeman"].version.to_s
     end
 
+    def self.supported_languages
+      ['ruby']
+    end
+
     # Taken from https://brakemanscanner.org/docs/options/
     def config_options
       flag_with_two_dashes = { type: :flag, prefix: '--' }

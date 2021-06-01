@@ -26,6 +26,7 @@ module Salus::Scanners
       failure_messages = []
       errors = []
       all_hits = []
+      all_misses = []
 
       Dir.chdir(@repository.path_to_repo) do
         @config['matches']&.each do |match|
@@ -96,6 +97,12 @@ module Salus::Scanners
               if match['required']
                 failure_messages << "Required pattern \"#{match['regex']}\" was not found " \
                   "- #{match['message']}"
+                all_misses << {
+                  regex: match['regex'],
+                  forbidden: match['forbidden'],
+                  required: match['required'],
+                  msg: match['message']
+                }
               end
             else
               errors << { status: shell_return.status, stderr: shell_return.stderr }
@@ -111,6 +118,7 @@ module Salus::Scanners
       end
 
       report_info(:hits, all_hits)
+      report_info(:misses, all_misses)
       errors.each { |error| report_error('Call to sift failed', error) }
 
       if failure_messages.empty?
@@ -129,6 +137,10 @@ module Salus::Scanners
       shell_return = run_shell('sift --version')
       # stdout looks like "sift 0.9.0 (linux/amd64)\nCopyright (C) 2014-2016 ..."
       shell_return.stdout&.split&.dig(1)
+    end
+
+    def self.supported_languages
+      ['*']
     end
 
     private

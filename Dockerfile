@@ -59,7 +59,7 @@ RUN pip install wheel \
 # ruby gems
 COPY Gemfile Gemfile.lock /home/
 RUN cd /home \
-  && gem install bundler -v'2.0.2' \
+  && gem install bundler -v '2.2.19' \
   && gem update --system \
   && bundle install --deployment --no-cache --clean --with scanners \
   && bundle exec bundle audit update
@@ -67,14 +67,14 @@ RUN cd /home \
 
 ### Golang
 # required for sift and gosec
-ENV GOLANG_VERSION 1.13.7
+ENV GOLANG_VERSION 1.15.11
 ENV GOLANG_TARBALL_FILE go$GOLANG_VERSION.linux-amd64.tar.gz
 ENV GOLANG_DOWNLOAD_URL https://golang.org/dl/${GOLANG_TARBALL_FILE}
-ENV GOLANG_DOWNLOAD_SHA256 b3dd4bd781a0271b33168e627f7f43886b4c5d1c794a4015abf34e99c6526ca3
-ENV GOSEC_VERSION 2.4.0
+ENV GOLANG_DOWNLOAD_SHA256 8825b72d74b14e82b54ba3697813772eb94add3abf70f021b6bdebe193ed01ec
+ENV GOSEC_VERSION 2.7.0
 ENV GOSEC_TARBALL_FILE gosec_${GOSEC_VERSION}_linux_amd64.tar.gz
 ENV GOSEC_DOWNLOAD_URL https://github.com/securego/gosec/releases/download/v${GOSEC_VERSION}/${GOSEC_TARBALL_FILE}
-ENV GOSEC_DOWNLOAD_SHA256 3bb01d20a74342251854a429c3fa82a7b642eb6a467926407fda3c1364531c9d
+ENV GOSEC_DOWNLOAD_SHA256 164dfcadd7bceee0e439649523d7d70dbe86b812a8db0b80e9f5b9f1464b3954
 ENV GO111MODULE on
 
 RUN curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz \
@@ -172,7 +172,7 @@ COPY lib /home/lib
 COPY salus-default.yaml /home/
 
 # install salus dependencies
-RUN gem install bundler -v'2.0.2' \
+RUN gem install bundler -v'2.2.19' \
   && bundle config --local path vendor/bundle \
   && bundle config --local without development:test
 

@@ -27,6 +27,14 @@ module Salus
                  desc: 'Do not colorize output.',
                  type: :boolean,
                  default: false
+    class_option :filter_sarif,
+                 desc: 'Path to sarif file. Filters out results from the sarif file.',
+                 type: :string,
+                 default: ''
+    class_option :ignore_config_id,
+                 desc: 'Ignore id in salus config.',
+                 type: :string,
+                 default: ''
 
     desc 'scan', 'Scan the source code of a repository.'
     def scan
@@ -35,7 +43,9 @@ module Salus
         quiet: options[:quiet],
         verbose: options[:verbose],
         repo_path: options[:repo_path],
-        use_colors: !options[:no_colors]
+        use_colors: !options[:no_colors],
+        filter_sarif: options[:filter_sarif],
+        ignore_config_id: options[:ignore_config_id]
       )
     end
   end

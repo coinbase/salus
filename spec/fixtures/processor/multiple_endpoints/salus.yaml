@@ -1,0 +1,9 @@
+---
+reports:
+  - uri: https://nerv.tk3/salus-report
+    format: json
+  - uri: https://nerv.tk3/foo-salus-report
+    format: json
+builds:
+  url: http://example.com/builds/123
+  service_name: buildkite

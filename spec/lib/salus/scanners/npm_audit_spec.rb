@@ -28,4 +28,13 @@ describe Salus::Scanners::NPMAudit do
       end
     end
   end
+
+  describe '#supported_languages' do
+    context 'should return supported languages' do
+      it 'should return javascript' do
+        langs = Salus::Scanners::NPMAudit.supported_languages
+        expect(langs).to eq(['javascript'])
+      end
+    end
+  end
 end

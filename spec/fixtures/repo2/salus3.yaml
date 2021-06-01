@@ -1,0 +1,3 @@
+reports:
+  - uri: file:///out1.json
+    format: json

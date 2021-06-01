@@ -33,6 +33,24 @@ describe Salus::Config do
       end
     end
 
+    context 'project names' do
+      it 'should not accept project names with invalid chars' do
+        config = Salus::Config.new
+        expect(config.valid_name?("abcd def")).to be_falsey
+        expect(config.valid_name?("hello;world")).to be_falsey
+      end
+
+      it 'should accept project names with valid chars' do
+        config = Salus::Config.new
+        expect(config.valid_name?('')).to be_truthy
+        expect(config.valid_name?(nil)).to be_truthy
+        expect(config.valid_name?('ab-cd-def')).to be_truthy
+        expect(config.valid_name?('ab-cd-def_g_AB')).to be_truthy
+        expect(config.valid_name?('AB:CD:EF')).to be_truthy
+        expect(config.valid_name?('abcd:ef:gh/123abc:def')).to be_truthy
+      end
+    end
+
     context 'files given as source' do
       it 'should use the YAML files as config with ordered priority' do
         config = Salus::Config.new([config_file_1])

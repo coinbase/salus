@@ -9,12 +9,14 @@ module Sarif
     def initialize(scan_report)
       super(scan_report)
       @uri = GOSEC_URI
-      @issues = Set.new
       @logs = parse_scan_report!(scan_report)
     end
 
     def parse_scan_report!(scan_report)
-      json_obj = JSON.parse(scan_report.log(''))
+      logs = scan_report.log('')
+      return [] if logs.strip.empty?
+
+      json_obj = JSON.parse(logs)
       issues = json_obj['Issues']
       errors = json_obj['Golang errors']
       parsed_errors = []
@@ -42,7 +44,7 @@ module Sarif
 
       @issues.add(id)
       {
-        id: 'SAL0002',
+        id: SCANNER_ERROR,
         name: "Golang Error",
         level: "NOTE",
         details: error['error'],
@@ -55,7 +57,7 @@ module Sarif
     end
 
     def parse_issue(issue)
-      if issue[:id] == 'SAL0002'
+      if issue[:id] == SCANNER_ERROR
         issue
       else
         id = issue['details'] + ' ' + issue['file'] + ' ' + issue['line']
@@ -74,26 +76,6 @@ module Sarif
           help_url: issue['cwe']['URL'],
           code: issue['code']
         }
-      end
-    end
-
-    def build_invocations
-      error = @scan_report.to_h.fetch(:info)[:stderr]
-      if error
-        {
-          "executionSuccessful": @scan_report.passed?,
-          "toolExecutionNotifications": [{
-            "descriptor": {
-              "id": ""
-            },
-            "level": "error",
-            "message": {
-              "text": "#{@scan_report.to_h.fetch(:errors).first[:message] || ''}, #{error}"
-            }
-          }]
-        }
-      else
-        { "executionSuccessful": @scan_report.passed? }
       end
     end
   end
