@@ -42,13 +42,19 @@ module Salus
       @ignore_config_id = ignore_config_id # ignore id in salus config
     end
 
-    def apply_report_hash_filters(report_hash)
+    def apply_filters(data, method)
       @@filters.each do |filter|
-        if filter.respond_to?(:filter_report_hash)
-          report_hash = filter.filter_report_hash(report_hash)
-        end
+        data = filter.send(method, data) if filter.respond_to?(method)
       end
-      report_hash
+      data
+    end
+
+    def apply_report_hash_filters(report_hash)
+      apply_filters(report_hash, :filter_report_hash)
+    end
+
+    def apply_report_sarif_filters(sarif_json)
+      apply_filters(sarif_json, :filter_report_sarif)
     end
 
     def self.register_filter(filter)
@@ -151,7 +157,8 @@ module Salus
     end
 
     def to_sarif(config = {})
-      Sarif::SarifReport.new(@scan_reports, config).to_sarif
+      sarif_json = Sarif::SarifReport.new(@scan_reports, config).to_sarif
+      apply_report_sarif_filters(sarif_json)
     rescue StandardError => e
       bugsnag_notify(e.class.to_s + " " + e.message + "\nBuild Info:" + @builds.to_s)
     end
