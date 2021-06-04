@@ -44,9 +44,7 @@ module Sarif
       path = File.expand_path('schema/sarif-schema.json', __dir__)
       schema = JSON.parse(File.read(path))
 
-      if JSON::Validator.validate(schema, sarif_string)
-        return sarif_string
-      end
+      return sarif_string if JSON::Validator.validate(schema, sarif_string)
 
       errors = JSON::Validator.fully_validate(schema, sarif_string)
       raise SarifInvalidFormatError, "Incorrect Sarif Output: #{errors}"
