@@ -46,6 +46,7 @@ module Sarif
 
       if JSON::Validator.validate(schema, sarif_string)
         return sarif_string
+      end
 
       errors = JSON::Validator.fully_validate(schema, sarif_string)
       raise SarifInvalidFormatError, "Incorrect Sarif Output: #{errors}"
