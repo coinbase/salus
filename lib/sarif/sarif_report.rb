@@ -37,7 +37,7 @@ module Sarif
         sarif_report["runs"] << converter(scan_report[0], scan_report[1])
       end
       report = JSON.pretty_generate(sarif_report)
-      validate_sarif(report)
+      Sarif::SarifReport.validate_sarif(report)
     end
 
     def self.validate_sarif(sarif_string)
@@ -45,11 +45,10 @@ module Sarif
       schema = JSON.parse(File.read(path))
 
       if JSON::Validator.validate(schema, sarif_string)
-        sarif_string
-      else
-        errors = JSON::Validator.fully_validate(schema, sarif_string)
-        raise SarifInvalidFormatError, "Incorrect Sarif Output: #{errors}"
-      end
+        return sarif_string
+
+      errors = JSON::Validator.fully_validate(schema, sarif_string)
+      raise SarifInvalidFormatError, "Incorrect Sarif Output: #{errors}"
     end
 
     # Converts a ScanReport to a sarif report for the given scanner
