@@ -50,7 +50,7 @@ describe Salus::Report do
 
     it 'should apply filters for to_h' do
       report = Salus::Report.new
-      allow(report).to receive(:apply_report_hash_filters).and_wrap_original do |method, arg|
+      allow(report).to receive(:apply_report_hash_filters).and_wrap_original do |_method, arg|
         arg[:version]
       end
       expect(report).to receive(:apply_report_hash_filters)
@@ -59,14 +59,14 @@ describe Salus::Report do
 
     it 'should apply filters for to_sarif' do
       report = Salus::Report.new
-      allow(report).to receive(:apply_report_sarif_filters).and_wrap_original do |method, arg|
+      allow(report).to receive(:apply_report_sarif_filters).and_wrap_original do |_method, arg|
         sarif = JSON.parse(arg)
         sarif["$schema"] = "foo"
         sarif.to_json
       end
       expect(report).to receive(:apply_report_sarif_filters)
       sarif = report.to_sarif
-      expect(report.to_sarif).to eq('{"version":"2.1.0","$schema":"foo","runs":[]}')
+      expect(sarif).to eq('{"version":"2.1.0","$schema":"foo","runs":[]}')
     end
 
     it 'does not include project_name/custom_info/config if not given' do

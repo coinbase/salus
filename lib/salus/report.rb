@@ -158,7 +158,9 @@ module Salus
 
     def to_sarif(config = {})
       sarif_json = Sarif::SarifReport.new(@scan_reports, config).to_sarif
-      apply_report_sarif_filters(sarif_json)
+      # We will validate to ensure the applied filter
+      # doesn't produce any invalid SARIF
+      Sarif::SarifReport.validate_sarif(apply_report_sarif_filters(sarif_json))
     rescue StandardError => e
       bugsnag_notify(e.class.to_s + " " + e.message + "\nBuild Info:" + @builds.to_s)
     end
