@@ -16,11 +16,15 @@ describe Sarif::NPMAuditSarif do
           id: "39",
           name: "Incorrect Handling of Non-Boolean Comparisons During Minification",
           level: "LOW",
-          details: "Package:uglify-js \nDescription:Versions of `uglify-js` prior to 2.4.24 are"\
+          details: "Versions of `uglify-js` prior to 2.4.24 are"\
           " affected by a vulnerability which may cause crafted JavaScript to have altered"\
-          " functionality after minification.\n\n \nRecommendation: Upgrade UglifyJS to version"\
-          " >= 2.4.24.\nVulnerable Versions: <= 2.4.23 \nSeverity:low \nPatched Versions:"\
-          " >= 2.4.24\nCWE: CWE-95 ",
+          " functionality after minification.\n\n",
+          messageStrings: {"package": {"text": "uglify-js"},
+                           "severity": {"text": "low"},
+                           "patched_versions": {"text": ">= 2.4.24"},
+                           "cwe": {"text": "CWE-95"},
+                           "recommendation": {"text": "Upgrade UglifyJS to version >= 2.4.24."},
+                           "vulnerable_versions": {"text": "<= 2.4.23"}},
           help_url: "https://npmjs.com/advisories/39",
           uri: "package-lock.json"
         )
@@ -92,11 +96,9 @@ describe Sarif::NPMAuditSarif do
         expect(rules[0]['id']).to eq('39')
         expect(rules[0]['name']).to eq("Incorrect Handling of Non-Boolean Comparisons During"\
           " Minification")
-        expected = "Package:uglify-js \nDescription:Versions of `uglify-js` prior to 2.4.24 are"\
+        expected = "Versions of `uglify-js` prior to 2.4.24 are"\
         " affected by a vulnerability which may cause crafted JavaScript to have altered"\
-        " functionality after minification.\n\n \nRecommendation: Upgrade UglifyJS to version"\
-        " >= 2.4.24.\nVulnerable Versions: <= 2.4.23 \nSeverity:low \nPatched Versions: >= 2.4.24"\
-        "\nCWE: CWE-95 "
+        " functionality after minification.\n\n"
         expect(rules[0]['fullDescription']['text']).to eq(expected)
         expect(rules[0]['helpUri']).to eq("https://npmjs.com/advisories/39")
 

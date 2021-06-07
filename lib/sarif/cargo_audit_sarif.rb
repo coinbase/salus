@@ -50,9 +50,12 @@ module Sarif
         id: advisory['id'],
         name: advisory['title'],
         level: "HIGH",
-        details: "Package: #{advisory['package']}\nTitle: #{advisory['title']}\nDescription: "\
-        "#{advisory['description']}\nPatched: #{issue.dig('versions', 'patched')}"\
-        "\nUnaffected: #{issue.dig('versions', 'unaffected')}\nCVSS: #{advisory['cvss']}",
+        details: "#{issue['description']}",
+        messageStrings: {"package": {"text":"#{issue['package']}"},
+                         "title": {"text":"#{issue['title']}"},
+                         "severity": {"text":"#{issue['cvss']}"},
+                         "patched_versions": {"text":"#{issue.dig('versions','patched')}"},
+                         "unaffected_versions": {"text":"#{issue.dig('versions','unaffected')}"}},
         uri: 'Cargo.lock',
         help_url: issue['advisory']['url']
       }

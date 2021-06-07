@@ -17,8 +17,9 @@ describe Sarif::BanditSarif do
           id: "B403",
           name: "blacklist",
           level: "LOW",
-          details: "Consider possible security implications associated with cPickle module. "\
-          "\nissue_confidence: LOW\nissue_severity: LOW",
+          details: "Consider possible security implications associated with cPickle module.",
+          messageStrings: {"confidence": {"text": "LOW"},
+                           "severity": {"text": "LOW"}},
           start_line: 1,
           start_column: 1,
           help_url: "https://bandit.readthedocs.io/en/latest/blacklists/blacklist_imports.html"\

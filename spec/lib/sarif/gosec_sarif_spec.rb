@@ -65,8 +65,10 @@ describe Sarif::GosecSarif do
           id: "G101",
           name: "CWE-798",
           level: "HIGH",
-          details: "Potential hardcoded credentials \nSeverity: HIGH\nConfidence: LOW\nCWE: "\
-          "https://cwe.mitre.org/data/definitions/798.html",
+          details: "Potential hardcoded credentials",
+          messageStrings: {"severity": {"text": "HIGH"},
+                           "confidence": {"text": "LOW"},
+                           "cwe": {"text": "https://cwe.mitre.org/data/definitions/798.html"}},
           start_line: 8,
           start_column: 2,
           help_url: "https://cwe.mitre.org/data/definitions/798.html",
@@ -150,8 +152,7 @@ describe Sarif::GosecSarif do
         # Check rule info
         expect(rules[0]['id']).to eq('G101')
         expect(rules[0]['name']).to eq('CWE-798')
-        expect(rules[0]['fullDescription']['text']).to eq("Potential hardcoded credentials "\
-          "\nSeverity: HIGH\nConfidence: LOW\nCWE: https://cwe.mitre.org/data/definitions/798.html")
+        expect(rules[0]['fullDescription']['text']).to eq("Potential hardcoded credentials")
         expect(rules[0]['helpUri']).to eq('https://cwe.mitre.org/data/definitions/798.html')
 
         # Check result info

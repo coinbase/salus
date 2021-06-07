@@ -27,10 +27,13 @@ module Sarif
         id: id,
         name: issue[:title],
         level: issue[:severity].upcase,
-        details: "Package:#{issue[:module_name]} \nDescription:#{issue[:overview]}"\
-        " \nRecommendation: #{issue[:recommendation]}\nVulnerable Versions:"\
-        " #{issue[:vulnerable_versions]} \nSeverity:#{issue[:severity]} \nPatched Versions:"\
-        " #{issue[:patched_versions]}\nCWE: #{issue[:cwe]} ",
+        details: "#{issue[:overview]}",
+        messageStrings: {"package": {"text":"#{issue[:module_name]}"},
+                         "severity": {"text":"#{issue[:severity]}"},
+                         "patched_versions": {"text":"#{issue[:patched_versions]}"},
+                         "cwe": {"text":"#{issue[:cwe]}"},
+                         "recommendation": {"text":"#{issue[:recommendation]}"},
+                         "vulnerable_versions": {"text":"#{issue[:vulnerable_versions]}"}},
         uri: "package-lock.json",
         help_url: issue[:url],
         suppressed: @exceptions.include?(id)
