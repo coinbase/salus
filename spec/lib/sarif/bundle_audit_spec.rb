@@ -1,4 +1,4 @@
-require_relative '../../spec_helper.rb'
+require_relative '../../spec_helper'
 
 describe Sarif::BundleAuditSarif do
   describe '#parse_issue' do

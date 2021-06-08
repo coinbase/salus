@@ -1,4 +1,4 @@
-require_relative '../../spec_helper.rb'
+require_relative '../../spec_helper'
 require 'json'
 
 describe Sarif::YarnAuditSarif do
@@ -17,10 +17,10 @@ describe Sarif::YarnAuditSarif do
           name: "Incorrect Handling of Non-Boolean Comparisons During Minification",
           level: "LOW",
           details: "Incorrect Handling of Non-Boolean Comparisons During Minification",
-          messageStrings: {"package": {"text": "uglify-js"},
-                           "severity": {"text": "low"},
-                           "patched_versions": {"text": ">= 2.4.24"},
-                           "dependency_of": {"text": "uglify-js"}},
+          messageStrings: { "package": { "text": "uglify-js" },
+                           "severity": { "text": "low" },
+                           "patched_versions": { "text": ">= 2.4.24" },
+                           "dependency_of": { "text": "uglify-js" } },
           uri: "yarn.lock",
           help_url: "https://www.npmjs.com/advisories/39"
         )

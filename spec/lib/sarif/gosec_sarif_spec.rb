@@ -1,4 +1,4 @@
-require_relative '../../spec_helper.rb'
+require_relative '../../spec_helper'
 require 'json'
 require 'json-schema'
 
@@ -66,9 +66,9 @@ describe Sarif::GosecSarif do
           name: "CWE-798",
           level: "HIGH",
           details: "Potential hardcoded credentials",
-          messageStrings: {"severity": {"text": "HIGH"},
-                           "confidence": {"text": "LOW"},
-                           "cwe": {"text": "https://cwe.mitre.org/data/definitions/798.html"}},
+          messageStrings: { "severity": { "text": "HIGH" },
+                           "confidence": { "text": "LOW" },
+                           "cwe": { "text": "https://cwe.mitre.org/data/definitions/798.html" } },
           start_line: 8,
           start_column: 2,
           help_url: "https://cwe.mitre.org/data/definitions/798.html",

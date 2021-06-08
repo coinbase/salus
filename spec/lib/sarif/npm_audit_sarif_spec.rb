@@ -1,4 +1,4 @@
-require_relative '../../spec_helper.rb'
+require_relative '../../spec_helper'
 require 'json'
 
 describe Sarif::NPMAuditSarif do
@@ -19,12 +19,12 @@ describe Sarif::NPMAuditSarif do
           details: "Versions of `uglify-js` prior to 2.4.24 are"\
           " affected by a vulnerability which may cause crafted JavaScript to have altered"\
           " functionality after minification.\n\n",
-          messageStrings: {"package": {"text": "uglify-js"},
-                           "severity": {"text": "low"},
-                           "patched_versions": {"text": ">= 2.4.24"},
-                           "cwe": {"text": "CWE-95"},
-                           "recommendation": {"text": "Upgrade UglifyJS to version >= 2.4.24."},
-                           "vulnerable_versions": {"text": "<= 2.4.23"}},
+          messageStrings: { "package": { "text": "uglify-js" },
+                           "severity": { "text": "low" },
+                           "patched_versions": { "text": ">= 2.4.24" },
+                           "cwe": { "text": "CWE-95" },
+                           "recommendation": { "text": "Upgrade UglifyJS to version >= 2.4.24." },
+                           "vulnerable_versions": { "text": "<= 2.4.23" } },
           help_url: "https://npmjs.com/advisories/39",
           uri: "package-lock.json"
         )
