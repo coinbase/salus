@@ -1,4 +1,4 @@
-require_relative '../../spec_helper'
+require_relative '../../spec_helper.rb'
 
 describe Sarif::BundleAuditSarif do
   describe '#parse_issue' do
@@ -37,8 +37,8 @@ describe Sarif::BundleAuditSarif do
         expected_details = bundle_audit_sarif.parse_issue(issue)[:details]
 
         if expected_details.include?('CVE-2021-22885')
-          details = 'Advisory Title: Possible Information Disclosure / Unintended Method Execution'
-          expect(expected_details).to include(details)
+          snippet = 'There is a possible information disclosure / unintended method execution'
+          expect(expected_details).to include(snippet)
 
           expect(bundle_audit_sarif.parse_issue(issue)).to include(
             id: "CVE-2021-22885",
@@ -94,7 +94,7 @@ describe Sarif::BundleAuditSarif do
           expect(rules['name']).to eq(rule_name)
           rule_uri = 'https://groups.google.com/g/rubyonrails-security/c/NiQl-48cXYI'
           expect(rules['helpUri']).to eq(rule_uri)
-          expected = 'Advisory Title: Possible Information Disclosure / Unintended'
+          expected = 'There is a possible information disclosure / unintended method execution'
           expect(rules['fullDescription']['text']).to include(expected)
 
           # Check result info
@@ -106,7 +106,7 @@ describe Sarif::BundleAuditSarif do
           expect(rules['name']).to eq(rule_name)
           rule_uri = 'https://groups.google.com/forum/#!topic/rubyonrails-security/f6ioe4sdpbY'
           expect(rules['helpUri']).to eq(rule_uri)
-          expected = 'Advisory Title: Possible Strong Parameters Bypass in ActionPack'
+          expected = 'There is a possible information disclosure / unintended method execution'
           expect(rules['fullDescription']['text']).to include(expected)
 
           # Check result info
