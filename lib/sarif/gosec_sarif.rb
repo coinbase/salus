@@ -68,7 +68,8 @@ module Sarif
           id: issue['rule_id'],
           name: "CWE-#{issue['cwe']['ID']}",
           level: issue['severity'],
-          details: (issue['details']).to_s,
+          details: "#{issue['details']} \nSeverity: #{issue['severity']}\nConfidence:"\
+          " #{issue['confidence']}\nCWE: #{issue['cwe']['URL']}",
           messageStrings: { "severity": { "text": (issue['severity']).to_s },
                            "confidence": { "text": (issue['confidence']).to_s },
                            "cwe": { "text": (issue['cwe']['URL']).to_s } },

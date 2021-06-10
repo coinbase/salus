@@ -32,13 +32,14 @@ describe Sarif::BundleAuditSarif do
 
       it 'parses information correctly' do
         bundle_audit_sarif = Sarif::BundleAuditSarif.new(scanner.report)
-        issue = scanner.report.to_h[:info][:vulnerabilities][0]
+        issue = scanner.report.to_h[:info][:vulnerabilities]
+        issue = issue.detect { |i| i[:cve] == 'CVE-2021-22885' }
 
         expected_details = bundle_audit_sarif.parse_issue(issue)[:details]
 
         if expected_details.include?('CVE-2021-22885')
-          snippet = 'There is a possible information disclosure / unintended method execution'
-          expect(expected_details).to include(snippet)
+          details = 'There is a possible information disclosure / unintended method'
+          expect(expected_details).to include(details)
 
           expect(bundle_audit_sarif.parse_issue(issue)).to include(
             id: "CVE-2021-22885",
@@ -48,7 +49,7 @@ describe Sarif::BundleAuditSarif do
             uri: "Gemfile.lock"
           )
         else
-          details = 'Advisory Title: Possible Strong Parameters Bypass in ActionPack'
+          details = 'There is a possible DoS vulnerability in the Token Authentication logic in'
           expect(expected_details).to include(details)
 
           expect(bundle_audit_sarif.parse_issue(issue)).to include(
@@ -84,36 +85,44 @@ describe Sarif::BundleAuditSarif do
       it 'should return valid sarif report' do
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
-        result = JSON.parse(report.to_sarif)["runs"][0]["results"][0]
-        rules = JSON.parse(report.to_sarif)["runs"][0]["tool"]["driver"]["rules"][0]
 
-        if rules['id'] == 'CVE-2021-22885'
+        results = JSON.parse(report.to_sarif)["runs"][0]["results"]
+        result = results.detect { |r| r["ruleId"] == 'CVE-2021-22885' }
+
+        rules = JSON.parse(report.to_sarif)["runs"][0]["tool"]["driver"]["rules"]
+        rule = rules.detect { |r| r["id"] == "CVE-2021-22885" }
+
+        if rule['id'] == 'CVE-2021-22885'
           # Check rule info
-          expect(rules['id']).to eq('CVE-2021-22885')
+          expect(rule['id']).to eq('CVE-2021-22885')
           rule_name = 'Possible Information Disclosure / Unintended Method Execution in Action Pack'
-          expect(rules['name']).to eq(rule_name)
+          expect(rule['name']).to eq(rule_name)
           rule_uri = 'https://groups.google.com/g/rubyonrails-security/c/NiQl-48cXYI'
-          expect(rules['helpUri']).to eq(rule_uri)
-          expected = 'There is a possible information disclosure / unintended method execution'
-          expect(rules['fullDescription']['text']).to include(expected)
+          expect(rule['helpUri']).to eq(rule_uri)
+          expected = 'There is a possible information disclosure / unintended method'
+          expect(rule['fullDescription']['text']).to include(expected)
 
           # Check result info
           expect(result['ruleId']).to eq('CVE-2021-22885')
         else
           # Check rule info
-          expect(rules['id']).to eq('CVE-2020-8164')
+
+          rule = rules.detect { |r| r["id"] == "CVE-2020-8164" }
+          result = results.detect { |r| r["ruleId"] == 'CVE-2020-8164' }
+
+          expect(rule['id']).to eq('CVE-2020-8164')
           rule_name = 'Possible Strong Parameters Bypass in ActionPack'
-          expect(rules['name']).to eq(rule_name)
+          expect(rule['name']).to eq(rule_name)
           rule_uri = 'https://groups.google.com/forum/#!topic/rubyonrails-security/f6ioe4sdpbY'
-          expect(rules['helpUri']).to eq(rule_uri)
-          expected = 'There is a possible information disclosure / unintended method execution'
-          expect(rules['fullDescription']['text']).to include(expected)
+          expect(rule['helpUri']).to eq(rule_uri)
+          expected = 'Advisory Title: Possible Strong Parameters Bypass in ActionPack'
+          expect(rule['fullDescription']['text']).to include(expected)
 
           # Check result info
           expect(result['ruleId']).to eq('CVE-2020-8164')
         end
 
-        expect(result['ruleIndex']).to eq(0)
+        expect(result['ruleIndex']).to eq(3)
         expect(result['level']).to eq("note")
         expect(result['message']['text']).to include(expected)
       end
