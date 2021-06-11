@@ -73,6 +73,7 @@ describe Sarif::PatternSearchSarif do
             "fullDescription": {
               "text": "not important string. Pattern Nerv is forbidden."
             },
+            "messageStrings": {},
             "helpUri": doc,
             "help": {
               "text": "More info: #{doc}",

@@ -78,6 +78,7 @@ describe Sarif::SemgrepSarif do
             "fullDescription" => {
               "text" => "Required Pattern Not Found"
             },
+            "messageStrings" => {},
             "helpUri" => semgrep_doc_url,
             "help" => {
               "text" => "More info: #{semgrep_doc_url}",
