@@ -48,5 +48,9 @@ module Salus
         ignore_config_id: options[:ignore_config_id]
       )
     end
+
+    def self.exit_on_failure?
+      true
+    end
   end
 end
