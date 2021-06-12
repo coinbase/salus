@@ -6,10 +6,4 @@ describe Salus::CLI do
       expect(error.status).to eq(1)
     end
   end
-
-  it 'returns zero on success' do
-    Salus::CLI.start([])
-  rescue SystemExit => e
-    expect(e.status).to eq 0 # exited with failure status
-  end
 end
