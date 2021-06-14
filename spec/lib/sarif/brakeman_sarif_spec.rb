@@ -1,4 +1,4 @@
-require_relative '../../spec_helper.rb'
+require_relative '../../spec_helper'
 require 'json'
 
 describe Sarif::BrakemanSarif do
@@ -18,9 +18,13 @@ describe Sarif::BrakemanSarif do
           id: "13",
           name: "Evaluation/Dangerous Eval",
           level: "HIGH",
-          details: "Warning Type: Dangerous Eval\nWarning Code: 13\nMessage: User input in eval"\
-          "\nConfidence: High\nCheck Name: Evaluation\nFingerprint: b16e1cd0d952433f80b0403b6a74"\
-          "aab0e98792ea015cc1b1fa5c003cbe7d56eb",
+          details: "User input in eval",
+          messageStrings: { "confidence": { "text": "High" },
+                           "title": { "text": "Evaluation" },
+                           "type": { "text": "Dangerous Eval" },
+                           "warning_code": { "text": "13" },
+                           "fingerprint": { "text": "b16e1cd0d9524"\
+                           "33f80b0403b6a74aab0e98792ea015cc1b1fa5c003cbe7d56eb" } },
           start_line: 3,
           start_column: 1,
           help_url: "https://brakemanscanner.org/docs/warning_types/dangerous_eval/",
@@ -160,9 +164,7 @@ describe Sarif::BrakemanSarif do
         # Check rule info
         expect(rules[0]['id']).to eq('13')
         expect(rules[0]['name']).to eq('Evaluation/Dangerous Eval')
-        expect(rules[0]['fullDescription']['text']).to eq("Warning Type: Dangerous Eval\nWarning"\
-          " Code: 13\nMessage: User input in eval\nConfidence: High\nCheck Name: Evaluation"\
-          "\nFingerprint: b16e1cd0d952433f80b0403b6a74aab0e98792ea015cc1b1fa5c003cbe7d56eb")
+        expect(rules[0]['fullDescription']['text']).to eq("User input in eval")
         expect(rules[0]['helpUri']).to eq('https://brakemanscanner.org/docs/warning_types'\
           '/dangerous_eval/')
 

@@ -1,4 +1,4 @@
-require_relative '../../spec_helper.rb'
+require_relative '../../spec_helper'
 require 'json'
 
 describe Sarif::CargoAuditSarif do
@@ -19,8 +19,7 @@ describe Sarif::CargoAuditSarif do
           name: "MultiDecoder::read() drops uninitialized memory of arbitrary type on panic in"\
           " client code",
           level: "HIGH",
-          details: "Package: libflate\nTitle: MultiDecoder::read() drops uninitialized memory of"\
-          " arbitrary type on panic in client code\nDescription: Affected versions of libflate"\
+          details: "Affected versions of libflate"\
           " have set a field of an internal structure with a generic type to an uninitialized "\
           "value in `MultiDecoder::read()` and reverted it to the original value after the "\
           "function completed. However, execution of `MultiDecoder::read()` could be interrupted"\
@@ -29,8 +28,13 @@ describe Sarif::CargoAuditSarif do
           "equivalent to a use-after-free vulnerability and could allow an attacker to gain "\
           "arbitrary code execution.\n\nThe flaw was corrected by aborting immediately instead of"\
           " unwinding the stack in case of panic within `MultiDecoder::read()`. The issue was "\
-          "discovered and fixed by Shnatsel.\nPatched: [\">=0.1.25\"]\nUnaffected: [\"<0.1.14\"]"\
-          "\nCVSS: ",
+          "discovered and fixed by Shnatsel.",
+          messageStrings: { "package": { "text": "libflate" },
+                          "title": { "text": "MultiDecoder::read() drops uninitialized memory of"\
+                          " arbitrary type on panic in client code" },
+                          "severity": { "text": "" },
+                          "patched_versions": { "text": "[\">=0.1.25\"]" },
+                          "unaffected_versions": { "text": "[\"<0.1.14\"]" } },
           help_url: "https://github.com/sile/libflate/issues/35",
           uri: "Cargo.lock"
         )
@@ -91,18 +95,16 @@ describe Sarif::CargoAuditSarif do
         expect(rules[0]['id']).to eq("RUSTSEC-2019-0010")
         expect(rules[0]['name']).to eq("MultiDecoder::read() drops uninitialized memory of"\
           " arbitrary type on panic in client code")
-        expect(rules[0]['fullDescription']['text']).to eq("Package: libflate\nTitle: MultiDecoder"\
-          "::read() drops uninitialized memory of arbitrary type on panic in client code\nDescript"\
-          "ion: Affected versions of libflate have set a field of an internal structure with a "\
-          "generic type to an uninitialized value in `MultiDecoder::read()` and reverted it"\
-          " to the original value after the function completed. However, execution of "\
-          "`MultiDecoder::read()` could be interrupted by a panic in caller-supplied `Read` "\
-          "implementation. This would cause `drop()` to be called on uninitialized memory of a "\
-          "generic type implementing `Read`.\n\nThis is equivalent to a use-after-free vulnerabili"\
-          "ty and could allow an attacker to gain arbitrary code execution.\n\nThe flaw was "\
-          "corrected by aborting immediately instead of unwinding the stack in case of "\
-          "panic within `MultiDecoder::read()`. The issue was discovered and fixed by "\
-          "Shnatsel.\nPatched: [\">=0.1.25\"]\nUnaffected: [\"<0.1.14\"]\nCVSS: ")
+        expect(rules[0]['fullDescription']['text']).to eq("Affected versions of libflate"\
+        " have set a field of an internal structure with a generic type to an uninitialized "\
+        "value in `MultiDecoder::read()` and reverted it to the original value after the "\
+        "function completed. However, execution of `MultiDecoder::read()` could be interrupted"\
+        " by a panic in caller-supplied `Read` implementation. This would cause `drop()` to be"\
+        " called on uninitialized memory of a generic type implementing `Read`.\n\nThis is "\
+        "equivalent to a use-after-free vulnerability and could allow an attacker to gain "\
+        "arbitrary code execution.\n\nThe flaw was corrected by aborting immediately instead of"\
+        " unwinding the stack in case of panic within `MultiDecoder::read()`. The issue was "\
+        "discovered and fixed by Shnatsel.")
         expect(rules[0]['helpUri']).to eq("https://github.com/sile/libflate/issues/35")
 
         # Check result info

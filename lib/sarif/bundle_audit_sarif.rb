@@ -13,11 +13,15 @@ module Sarif
         id: issue[:cve] || issue[:osvdb].to_s,
         name: issue[:advisory_title],
         level: issue[:cvss].to_i,
-        details: "Package Name: #{issue[:name]}\nType: #{issue[:type]}\nVersion: "\
-        "#{issue[:version]}\n Advisory Title: #{issue[:advisory_title]}\nDesciption: "\
-        "#{issue[:description]}\nPatched Versions: #{issue[:patched_versions]}"\
-        "\nUnaffected Versions: #{issue[:unaffected_versions]}\nCVSS: #{issue[:cvss]}"\
-        "\nOSVDB #{issue[:osdvb]}",
+        details: (issue[:description]).to_s,
+        messageStrings: { "package_name": { "text": (issue[:name]).to_s },
+                         "severity": { "text": (issue[:cvss]).to_s },
+                         "patched_versions": { "text": (issue[:patched_versions]).to_s },
+                         "unaffected_versions": { "text": (issue[:unaffected_versions]).to_s },
+                         "title": { "text": (issue[:advisory_title]).to_s },
+                         "osvdb": { "text": (issue[:osdvb]).to_s },
+                         "type": { "text": (issue[:type]).to_s },
+                         "version": { "text": (issue[:version]).to_s } },
         uri: 'Gemfile.lock',
         help_url: issue[:url]
       }

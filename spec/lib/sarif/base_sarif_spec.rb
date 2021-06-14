@@ -1,4 +1,4 @@
-require_relative '../../spec_helper.rb'
+require_relative '../../spec_helper'
 require 'json-schema'
 
 describe Sarif::BaseSarif do
