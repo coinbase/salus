@@ -85,12 +85,13 @@ describe Sarif::BundleAuditSarif do
       it 'should return valid sarif report' do
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
+        cve = 'CVE-2021-22885'
 
         results = JSON.parse(report.to_sarif)["runs"][0]["results"]
-        result = results.detect { |r| r["ruleId"] == 'CVE-2021-22885' }
+        result = results.detect { |r| r["ruleId"] == cve }
 
         rules = JSON.parse(report.to_sarif)["runs"][0]["tool"]["driver"]["rules"]
-        rule = rules.detect { |r| r["id"] == "CVE-2021-22885" }
+        rule = rules.detect { |r| r["id"] == cve }
 
         if rule['id'] == 'CVE-2021-22885'
           # Check rule info
