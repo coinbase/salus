@@ -24,7 +24,8 @@ describe Sarif::BrakemanSarif do
                            "type": { "text": "Dangerous Eval" },
                            "warning_code": { "text": "13" },
                            "fingerprint": { "text": "b16e1cd0d9524"\
-                           "33f80b0403b6a74aab0e98792ea015cc1b1fa5c003cbe7d56eb" } },
+                           "33f80b0403b6a74aab0e98792ea015cc1b1fa5c003cbe7d56eb" },
+                           "nativeScannerSeverity": { "text": "High" } },
           start_line: 3,
           start_column: 1,
           help_url: "https://brakemanscanner.org/docs/warning_types/dangerous_eval/",

@@ -18,8 +18,9 @@ describe Sarif::BanditSarif do
           name: "blacklist",
           level: "LOW",
           details: "Consider possible security implications associated with cPickle module.",
-          messageStrings: { "confidence": { "text": "LOW" },
-                           "severity": { "text": "LOW" } },
+          messageStrings: { "confidence": { "text": "HIGH" },
+                           "severity": { "text": "LOW" },
+                           "nativeScannerSeverity": { "text": "LOW" } },
           start_line: 1,
           start_column: 1,
           help_url: "https://bandit.readthedocs.io/en/latest/blacklists/blacklist_imports.html"\

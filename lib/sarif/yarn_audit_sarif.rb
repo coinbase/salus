@@ -30,7 +30,8 @@ module Sarif
         messageStrings: { "package": { "text": (issue['Package']).to_s },
                          "severity": { "text": (issue['Severity']).to_s },
                          "patched_versions": { "text": (issue['Patched in']).to_s },
-                         "dependency_of": { "text": (issue['Dependency of']).to_s } },
+                         "dependency_of": { "text": (issue['Dependency of']).to_s },
+                         "nativeScannerSeverity": { "text": (issue['Severity']).to_s } },
         uri: "yarn.lock",
         help_url: issue['More info']
       }

@@ -20,7 +20,8 @@ describe Sarif::YarnAuditSarif do
           messageStrings: { "package": { "text": "uglify-js" },
                            "severity": { "text": "low" },
                            "patched_versions": { "text": ">= 2.4.24" },
-                           "dependency_of": { "text": "uglify-js" } },
+                           "dependency_of": { "text": "uglify-js" },
+                           "nativeScannerSeverity": { "text": "low" } },
           uri: "yarn.lock",
           help_url: "https://www.npmjs.com/advisories/39"
         )

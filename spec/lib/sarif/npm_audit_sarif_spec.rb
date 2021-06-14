@@ -24,7 +24,8 @@ describe Sarif::NPMAuditSarif do
                            "patched_versions": { "text": ">= 2.4.24" },
                            "cwe": { "text": "CWE-95" },
                            "recommendation": { "text": "Upgrade UglifyJS to version >= 2.4.24." },
-                           "vulnerable_versions": { "text": "<= 2.4.23" } },
+                           "vulnerable_versions": { "text": "<= 2.4.23" },
+                           "nativeScannerSeverity": { "text": "low" } },
           help_url: "https://npmjs.com/advisories/39",
           uri: "package-lock.json"
         )

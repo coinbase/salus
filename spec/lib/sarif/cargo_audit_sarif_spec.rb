@@ -34,6 +34,7 @@ describe Sarif::CargoAuditSarif do
                           " arbitrary type on panic in client code" },
                           "severity": { "text": "" },
                           "patched_versions": { "text": "[\">=0.1.25\"]" },
+                          "nativeScannerSeverity": { "text": "" },
                           "unaffected_versions": { "text": "[\"<0.1.14\"]" } },
           help_url: "https://github.com/sile/libflate/issues/35",
           uri: "Cargo.lock"

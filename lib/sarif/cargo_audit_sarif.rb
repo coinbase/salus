@@ -55,6 +55,7 @@ module Sarif
                          "title": { "text": (advisory['title']).to_s },
                          "severity": { "text": (advisory['cvss']).to_s },
                          "patched_versions": { "text": issue.dig('versions', 'patched').to_s },
+                         "nativeScannerSeverity": { "text": (advisory['cvss']).to_s },
                          "unaffected_versions": { "text": issue.dig('versions',
                                                                     'unaffected').to_s } },
         uri: 'Cargo.lock',

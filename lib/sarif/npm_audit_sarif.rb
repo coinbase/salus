@@ -33,7 +33,8 @@ module Sarif
                          "patched_versions": { "text": (issue[:patched_versions]).to_s },
                          "cwe": { "text": (issue[:cwe]).to_s },
                          "recommendation": { "text": (issue[:recommendation]).to_s },
-                         "vulnerable_versions": { "text": (issue[:vulnerable_versions]).to_s } },
+                         "vulnerable_versions": { "text": (issue[:vulnerable_versions]).to_s },
+                         "nativeScannerSeverity": { "text": (issue[:severity]).to_s } },
         uri: "package-lock.json",
         help_url: issue[:url],
         suppressed: @exceptions.include?(id)

@@ -21,7 +21,8 @@ module Sarif
                          "title": { "text": (issue[:advisory_title]).to_s },
                          "osvdb": { "text": (issue[:osdvb]).to_s },
                          "type": { "text": (issue[:type]).to_s },
-                         "version": { "text": (issue[:version]).to_s } },
+                         "version": { "text": (issue[:version]).to_s },
+                         "nativeScannerSeverity": { "text": (issue[:cvss]).to_s } },
         uri: 'Gemfile.lock',
         help_url: issue[:url]
       }
