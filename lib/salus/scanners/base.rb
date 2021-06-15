@@ -3,6 +3,7 @@ require 'salus/scan_report'
 require 'salus/shell_result'
 require 'salus/bugsnag'
 require 'shellwords'
+require 'salus/plugin_manager'
 
 module Salus::Scanners
   # Super class for all scanner objects.
@@ -101,6 +102,7 @@ module Salus::Scanners
     def run_shell(command, env: {}, stdin_data: '')
       # If we're passed a string, convert it to an array before passing to capture3
       command = command.split unless command.is_a?(Array)
+      Salus::PluginManager.send_event(:salus_scanner_base, :run_shell, command)
       Salus::ShellResult.new(*Open3.capture3(env, *command, stdin_data: stdin_data))
     end
 

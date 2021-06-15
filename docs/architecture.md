@@ -15,3 +15,20 @@ The source code being scanned is volumed into the container and Salus expects to
   - [`Salus::Repo`](../lib/salus/repo.rb): representation of the repository being scanned.
   - [`Salus::Report`](../lib/salus/report.rb): object that collects data about scans and compiles a report.
   - [`Salus::Scanners::<name>`](../lib/salus/scanners): scanner objects that can determine if a scanner should run, runs the scanner and collect the results.
+
+## Plugins
+
+Filters
+
+Salus::PluginManager.apply_filter(:salus_config, :filter_config, config_hash)
+Salus::PluginManager.apply_filter(:salus_report, :filter_report_hash, report_hash)
+
+Events
+
+Salus::PluginManager.send_event(:cli, :startup, ARGV)
+Salus::PluginManager.send_event(:cli, :scan, options)
+Salus::PluginManager.send_event(:salus, :scan, method(__method__).parameters)
+Salus::PluginManager.send_event(:salus_processor, :skip_scanner, scanner_name)
+Salus::PluginManager.send_event(:salus_processor, :run_scanner, scanner_name)
+Salus::PluginManager.send_event(:salus_processor, :scanners_ran, scanners_ran)
+Salus::PluginManager.send_event(:salus_scanner_base, :run_shell, command)

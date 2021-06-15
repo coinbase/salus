@@ -42,8 +42,6 @@ module Salus
     REMOTE_URI_SCHEME_REGEX = /\Ahttps?\z/.freeze
     REPORT_FORMATS = %w[txt json yaml sarif].freeze
 
-    @@filters = []
-
     def initialize(configuration_files = [], ignore_ids = [])
       # Merge default and custom configuration files.
       # The later files in the array take superiority by overwriting configuration already
@@ -78,15 +76,14 @@ module Salus
       apply_node_audit_patch!
     end
 
+    # Syntatical sugar to apply salus config filters
     def apply_config_filters(config_hash)
-      @@filters.each do |filter|
-        config_hash = filter.filter_config(config_hash) if filter.respond_to?(:filter_config)
-      end
-      config_hash
+      Salus::PluginManager.apply_filter(:salus_config, :filter_config, config_hash)
     end
 
+    # Syntatical sugar register salus_config filters
     def self.register_filter(filter)
-      @@filters << filter
+      Salus::PluginManager.register_filter(:salus_config, filter)
     end
 
     def valid_name?(name)

@@ -1,5 +1,6 @@
 require 'uri'
 require 'salus/report'
+require 'salus/plugin_manager'
 
 module Salus
   class Processor
@@ -74,12 +75,17 @@ module Salus
         # If we're running tests, re-raise any exceptions raised by a scanner
         # (vs. just catching them and recording them in a real run)
         reraise_exceptions = ENV.key?('RUNNING_SALUS_TESTS')
-
+        scanners_ran = []
         Config::SCANNERS.each do |scanner_name, scanner_class|
           config = @config.scanner_configs.fetch(scanner_name, {})
 
           scanner = scanner_class.new(repository: repo, config: config)
-          next unless @config.scanner_active?(scanner_name) && scanner.should_run?
+          unless @config.scanner_active?(scanner_name) && scanner.should_run?
+            Salus::PluginManager.send_event(:salus_processor, :skip_scanner, scanner_name)
+            next
+          end
+          scanners_ran << scanner_name
+          Salus::PluginManager.send_event(:salus_processor, :run_scanner, scanner_name)
 
           required = @config.enforced_scanners.include?(scanner_name)
 
@@ -90,6 +96,7 @@ module Salus
             reraise: reraise_exceptions
           )
         end
+        Salus::PluginManager.send_event(:salus_processor, :scanners_ran, scanners_ran)
       end
     end
 
