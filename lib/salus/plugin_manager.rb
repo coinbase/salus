@@ -2,10 +2,9 @@ module Salus
   class PluginManager
     PLUGIN_DIRECTORY = 'plugins'.freeze
     class << self
-  
       # Salus::Config.register_filter(Filter::MyCustomConfig)
       # Salus::PluginManager.register_filter()
-      
+
       # Our hashmap of filters
       @@filters = {}
       @@listners = {}
@@ -15,25 +14,21 @@ module Salus
         @@filters[filter_family] << filter
       end
 
-      def register_listener(filter_family, listener)
+      def register_listener(filter_family, _listener)
         @@listners[filter_family] ||= []
         @@listners[filter_family] << listners
       end
 
-      def apply_filter(filter_family, filter_method, data)
+      def apply_filter(filter_family, _filter_method, data)
         @@filters[filter_family]&.each do |f|
-          if f.respond_to?(filter)
-            data = f.send(filter, data)
-          end
+          data = f.send(filter, data) if f.respond_to?(filter)
         end
         data
       end
 
       def send_event(filter_family, event_name, data)
         @@listners[filter_family]&.each do |f|
-          if f.respond_to?(event_name)
-            f.send(event_name, data)
-          end
+          f.send(event_name, data) if f.respond_to?(event_name)
         end
       end
 
