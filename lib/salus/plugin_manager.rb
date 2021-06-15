@@ -19,9 +19,9 @@ module Salus
         @@listners[filter_family] << listener
       end
 
-      def apply_filter(filter_family, _filter_method, data)
+      def apply_filter(filter_family, filter_method, data)
         @@filters[filter_family]&.each do |f|
-          data = f.send(_filter_method, data) if f.respond_to?(_filter_method)
+          data = f.send(filter_method, data) if f.respond_to?(filter_method)
         end
         data
       end
@@ -37,8 +37,12 @@ module Salus
         File.join(project_dir, PLUGIN_DIRECTORY)
       end
 
+      @@loaded = false
       def load_plugins
-        return if !Dir.exist?(plugin_dir)
+        # We only need to load once
+        return if !Dir.exist?(plugin_dir) || @@loaded
+
+        @@loaded = true
 
         Dir.entries(plugin_dir).sort.each do |filename| # load like how scanners are loaded
           next if ['.', '..'].include?(filename) # don't include FS pointers
