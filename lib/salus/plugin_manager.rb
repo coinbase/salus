@@ -14,14 +14,14 @@ module Salus
         @@filters[filter_family] << filter
       end
 
-      def register_listener(filter_family, _listener)
+      def register_listener(filter_family, listener)
         @@listners[filter_family] ||= []
-        @@listners[filter_family] << listners
+        @@listners[filter_family] << listener
       end
 
       def apply_filter(filter_family, _filter_method, data)
         @@filters[filter_family]&.each do |f|
-          data = f.send(filter, data) if f.respond_to?(filter)
+          data = f.send(_filter_method, data) if f.respond_to?(_filter_method)
         end
         data
       end
