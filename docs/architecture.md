@@ -16,19 +16,68 @@ The source code being scanned is volumed into the container and Salus expects to
   - [`Salus::Report`](../lib/salus/report.rb): object that collects data about scans and compiles a report.
   - [`Salus::Scanners::<name>`](../lib/salus/scanners): scanner objects that can determine if a scanner should run, runs the scanner and collect the results.
 
-## Plugins
+# Plugins
 
-Filters
+To simplify extension Salus supports light weight plugin architecture.  We use the mediator pattern for filters and the observer pattern for events.
 
-Salus::PluginManager.apply_filter(:salus_config, :filter_config, config_hash)
-Salus::PluginManager.apply_filter(:salus_report, :filter_report_hash, report_hash)
+## Filters
 
-Events
+Filters enable the plugin to modify data.  Each filter belongs to a filter group.
 
-Salus::PluginManager.send_event(:cli, :startup, ARGV)
-Salus::PluginManager.send_event(:cli, :scan, options)
-Salus::PluginManager.send_event(:salus, :scan, method(__method__).parameters)
-Salus::PluginManager.send_event(:salus_processor, :skip_scanner, scanner_name)
-Salus::PluginManager.send_event(:salus_processor, :run_scanner, scanner_name)
-Salus::PluginManager.send_event(:salus_processor, :scanners_ran, scanners_ran)
-Salus::PluginManager.send_event(:salus_scanner_base, :run_shell, command)
+`Group :salus_config Supported Methods :filter_config`
+
+- filter_config is used to override the loaded configuration after the cascade has been applied
+
+`Group :salus_report, Supported Methods :filter_report_hash`
+
+- filter_report_hash allows mutating the report hash values.  Use this filter if you want to customize any data being written to a report
+```
+# Example
+
+class MyFilter
+  def filter_report_hash(report_hash)
+  	# Add some hash mutation here
+  	return report_hash
+  end
+end
+
+filter = MyFiler.new
+Salus::PluginManager.register_filter(:salus_report, filter) 
+
+
+
+```
+
+
+## Events
+
+Events are published, plugins can register listeners for events.  Like filters, events are namedspaced to grups
+`Group :cli, Event :startup`
+
+- cli startup is called when bin/salus calls out the Salus::CLI.start(ARGV) to begin the cli.  ARGV is passed as the data to this event
+
+`Group :cli, Event :scan`
+`Salus::PluginManager.send_event(:cli, :scan, options)`
+
+- cli csan is called once the cli begins the scan,  The CLI options are passed as the data to the event
+
+`Group :salus, Event :scan`
+
+- salus scan. This event will be called with the Salus scan has begun.  The data playload will be the params passed to the Salus.scan method
+
+`Group :salus_processor, Event: skip_scanner`
+
+- salus_processor skip_scanner will be called if the scanner is determined to be non-active or not relevant for the codebase. The data playoad is the scanner name string.
+
+`Group :salus_processor, Event: run_scanner`
+
+- salus_processor run_scanner is called immediately before running the scanner.  Only scanners that have been determined relevant for the codebase will trigger this event.  The data playoad is the scanner name string.
+
+`Group :salus_processor, Event: scanners_ran `
+
+- salus_procesor scanners_ran will be invoked after all scanners have ran.  The data playload will be an array of scanner names
+
+`Group :salus_scanner_base, :run_shell`
+
+- salus_scanner_base run_shell is called when a scanner executes a shell command to run a native scanner.  The data payload will be the array of arguments.
+
