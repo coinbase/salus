@@ -77,7 +77,7 @@ Events are published, plugins can register listeners for events.  Like filters, 
 
 - salus_procesor scanners_ran will be invoked after all scanners have ran.  The data playload will be an array of scanner names
 
-`Group :salus_scanner_base, :run_shell`
+`Group :salus_scanner_base, Event :run_shell`
 
 - salus_scanner_base run_shell is called when a scanner executes a shell command to run a native scanner.  The data payload will be the array of arguments.
 
