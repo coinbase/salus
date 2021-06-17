@@ -93,10 +93,10 @@ module Salus::Scanners
         # Record the error so that the Salus report captures the issue.
         @report.error(error_data)
         salus_report.error(error_data)
-   
+
         raise if reraise
       ensure
-        Salus::PluginManager.send_event(:scan_executed, { salus_report: @salus_report, scan_report:@report })
+        Salus::PluginManager.send_event(:scan_executed, { salus_report: @salus_report, scan_report: @report })
       end
     end
 
