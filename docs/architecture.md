@@ -75,7 +75,7 @@ Events are published, plugins can register listeners for events.
 
 `Event: scanners_ran `
 
-- scanners_ran will be invoked after all scanners have ran.  The data playload will be an array of scanner names
+- scanners_ran will be invoked after all scanners have ran.  The data playload will be an array of scanners ran and a second parameter for the SalusReport object
 
 `Event :run_shell`
 
