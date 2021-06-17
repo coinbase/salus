@@ -7,16 +7,15 @@ module Salus
 
       # Our hashmap of filters
       @@filters = {}
-      @@listners = {}
+      @@listners = []
 
       def register_filter(filter_family, filter)
         @@filters[filter_family] ||= []
         @@filters[filter_family] << filter
       end
 
-      def register_listener(filter_family, listener)
-        @@listners[filter_family] ||= []
-        @@listners[filter_family] << listener
+      def register_listener(listener)
+        @@listners << listener
       end
 
       def apply_filter(filter_family, filter_method, data)
@@ -26,9 +25,9 @@ module Salus
         data
       end
 
-      def send_event(filter_family, event_name, data)
-        @@listners[filter_family]&.each do |f|
-          f.send(event_name, data) if f.respond_to?(event_name)
+      def send_event(event_name, data)
+        @@listners.each do |l|
+          l.send(event_name, data) if l.respond_to?(event_name)
         end
       end
 

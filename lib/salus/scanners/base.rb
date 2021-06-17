@@ -93,8 +93,10 @@ module Salus::Scanners
         # Record the error so that the Salus report captures the issue.
         @report.error(error_data)
         salus_report.error(error_data)
-
+   
         raise if reraise
+      ensure
+        Salus::PluginManager.send_event(:scan_executed, { salus_report: @salus_report, scan_report:@report })
       end
     end
 
@@ -102,7 +104,7 @@ module Salus::Scanners
     def run_shell(command, env: {}, stdin_data: '')
       # If we're passed a string, convert it to an array before passing to capture3
       command = command.split unless command.is_a?(Array)
-      Salus::PluginManager.send_event(:salus_scanner_base, :run_shell, command)
+      Salus::PluginManager.send_event(:run_shell, command)
       Salus::ShellResult.new(*Open3.capture3(env, *command, stdin_data: stdin_data))
     end
 

@@ -7,6 +7,6 @@ require 'salus'
 require 'salus/plugin_manager'
 
 Salus::PluginManager.load_plugins
-Salus::PluginManager.send_event(:cli, :startup, ARGV)
+Salus::PluginManager.send_event(:cli_startup, ARGV)
 
 Salus::CLI.start(ARGV)

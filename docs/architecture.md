@@ -51,33 +51,33 @@ Salus::PluginManager.register_filter(:salus_report, filter)
 
 ## Events
 
-Events are published, plugins can register listeners for events.  Like filters, events are namedspaced to grups
-`Group :cli, Event :startup`
+Events are published, plugins can register listeners for events.
+`Event :cli_startup`
 
-- cli startup is called when bin/salus calls out the Salus::CLI.start(ARGV) to begin the cli.  ARGV is passed as the data to this event
+- cli_startup is called when bin/salus calls out the Salus::CLI.start(ARGV) to begin the cli.  ARGV is passed as the data to this event
 
-`Group :cli, Event :scan`
-`Salus::PluginManager.send_event(:cli, :scan, options)`
+`Event :cli_scan`
+`Salus::PluginManager.send_event(:cli_scan, options)`
 
-- cli csan is called once the cli begins the scan,  The CLI options are passed as the data to the event
+- cli_csan is called once the cli begins the scan,  The CLI options are passed as the data to the event
 
-`Group :salus, Event :scan`
+`Event :salus_scan`
 
 - salus scan. This event will be called with the Salus scan has begun.  The data playload will be the params passed to the Salus.scan method
 
-`Group :salus_processor, Event: skip_scanner`
+`Event: skip_scanner`
 
-- salus_processor skip_scanner will be called if the scanner is determined to be non-active or not relevant for the codebase. The data playoad is the scanner name string.
+- skip_scanner will be called if the scanner is determined to be non-active or not relevant for the codebase. The data playoad is the scanner name string.
 
-`Group :salus_processor, Event: run_scanner`
+`Event: run_scanner`
 
-- salus_processor run_scanner is called immediately before running the scanner.  Only scanners that have been determined relevant for the codebase will trigger this event.  The data playoad is the scanner name string.
+- run_scanner is called immediately before running the scanner.  Only scanners that have been determined relevant for the codebase will trigger this event.  The data playoad is the scanner name string.
 
-`Group :salus_processor, Event: scanners_ran `
+`Event: scanners_ran `
 
-- salus_procesor scanners_ran will be invoked after all scanners have ran.  The data playload will be an array of scanner names
+- scanners_ran will be invoked after all scanners have ran.  The data playload will be an array of scanner names
 
-`Group :salus_scanner_base, Event :run_shell`
+`Event :run_shell`
 
-- salus_scanner_base run_shell is called when a scanner executes a shell command to run a native scanner.  The data payload will be the array of arguments.
+- run_shell is called when a scanner executes a shell command to run a native scanner.  The data payload will be the array of arguments.
 

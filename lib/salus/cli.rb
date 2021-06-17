@@ -39,7 +39,7 @@ module Salus
 
     desc 'scan', 'Scan the source code of a repository.'
     def scan
-      Salus::PluginManager.send_event(:cli, :scan, options)
+      Salus::PluginManager.send_event(:cli_scan, options)
 
       Salus.scan(
         config: options[:config],

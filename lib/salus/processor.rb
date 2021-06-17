@@ -81,11 +81,11 @@ module Salus
 
           scanner = scanner_class.new(repository: repo, config: config)
           unless @config.scanner_active?(scanner_name) && scanner.should_run?
-            Salus::PluginManager.send_event(:salus_processor, :skip_scanner, scanner_name)
+            Salus::PluginManager.send_event(:skip_scanner, scanner_name)
             next
           end
           scanners_ran << scanner_name
-          Salus::PluginManager.send_event(:salus_processor, :run_scanner, scanner_name)
+          Salus::PluginManager.send_event(:run_scanner, scanner_name)
 
           required = @config.enforced_scanners.include?(scanner_name)
 
@@ -96,7 +96,7 @@ module Salus
             reraise: reraise_exceptions
           )
         end
-        Salus::PluginManager.send_event(:salus_processor, :scanners_ran, scanners_ran)
+        Salus::PluginManager.send_event(:scanners_ran, scanners_ran, @report)
       end
     end
 

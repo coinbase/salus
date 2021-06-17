@@ -31,9 +31,9 @@ describe Salus::PluginManager do
     end
 
     it 'sends the event' do
-      Salus::PluginManager.register_listener('testing', listener)
+      Salus::PluginManager.register_listener(listener)
       expect(listener).to receive(:myevent).with('foo')
-      Salus::PluginManager.send_event('testing', 'myevent', "foo")
+      Salus::PluginManager.send_event('myevent', "foo")
     end
   end
 end

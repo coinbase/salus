@@ -34,7 +34,7 @@ module Salus
       heartbeat: true
     )
 
-      Salus::PluginManager.send_event(:salus, :scan, method(__method__).parameters)
+      Salus::PluginManager.send_event(:salus_scan, method(__method__).parameters)
 
       ### Heartbeat ###
       if !quiet && heartbeat
