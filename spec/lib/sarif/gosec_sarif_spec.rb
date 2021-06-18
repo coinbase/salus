@@ -1,4 +1,4 @@
-require_relative '../../spec_helper.rb'
+require_relative '../../spec_helper'
 require 'json'
 require 'json-schema'
 
@@ -67,6 +67,9 @@ describe Sarif::GosecSarif do
           level: "HIGH",
           details: "Potential hardcoded credentials \nSeverity: HIGH\nConfidence: LOW\nCWE: "\
           "https://cwe.mitre.org/data/definitions/798.html",
+          messageStrings: { "severity": { "text": "HIGH" },
+                           "confidence": { "text": "LOW" },
+                           "cwe": { "text": "https://cwe.mitre.org/data/definitions/798.html" } },
           start_line: 8,
           start_column: 2,
           help_url: "https://cwe.mitre.org/data/definitions/798.html",
@@ -151,7 +154,7 @@ describe Sarif::GosecSarif do
         expect(rules[0]['id']).to eq('G101')
         expect(rules[0]['name']).to eq('CWE-798')
         expect(rules[0]['fullDescription']['text']).to eq("Potential hardcoded credentials "\
-          "\nSeverity: HIGH\nConfidence: LOW\nCWE: https://cwe.mitre.org/data/definitions/798.html")
+        "\nSeverity: HIGH\nConfidence: LOW\nCWE: https://cwe.mitre.org/data/definitions/798.html")
         expect(rules[0]['helpUri']).to eq('https://cwe.mitre.org/data/definitions/798.html')
 
         # Check result info

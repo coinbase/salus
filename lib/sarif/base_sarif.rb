@@ -75,6 +75,7 @@ module Sarif
           "fullDescription": {
             "text": parsed_issue[:details]
           },
+          "messageStrings": parsed_issue[:messageStrings] || {},
           "helpUri": parsed_issue[:help_url] || '',
           "help": {
             "text": "More info: #{parsed_issue[:help_url]}",
