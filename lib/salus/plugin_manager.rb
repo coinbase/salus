@@ -36,7 +36,7 @@ module Salus
         File.join(project_dir, PLUGIN_DIRECTORY)
       end
 
-      @@loaded = Set.new()
+      @@loaded = Set.new
       def load_plugins
         # We only need to load once
         return if !Dir.exist?(plugin_dir) || @@loaded.include?(plugin_dir)

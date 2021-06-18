@@ -96,7 +96,8 @@ module Salus::Scanners
 
         raise if reraise
       ensure
-        Salus::PluginManager.send_event(:scan_executed, { salus_report: @salus_report, scan_report: @report })
+        Salus::PluginManager.send_event(:scan_executed, { salus_report: @salus_report,
+                                                          scan_report: @report })
       end
     end
 
