@@ -20,14 +20,14 @@ module Salus
 
       def apply_filter(filter_family, filter_method, data)
         @@filters[filter_family]&.each do |f|
-          data = f.send(filter_method, data) if f.respond_to?(filter_method)
+          data = f.__send__(filter_method, data) if f.respond_to?(filter_method)
         end
         data
       end
 
-      def send_event(event_name, data)
+      def send_event(event_name, *data)
         @@listners.each do |l|
-          l.send(event_name, data) if l.respond_to?(event_name)
+          l.__send__(event_name, *data) if l.respond_to?(event_name)
         end
       end
 
@@ -36,12 +36,12 @@ module Salus
         File.join(project_dir, PLUGIN_DIRECTORY)
       end
 
-      @@loaded = false
+      @@loaded = Set.new()
       def load_plugins
         # We only need to load once
-        return if !Dir.exist?(plugin_dir) || @@loaded
+        return if !Dir.exist?(plugin_dir) || @@loaded.include?(plugin_dir)
 
-        @@loaded = true
+        @@loaded.add(plugin_dir)
 
         Dir.entries(plugin_dir).sort.each do |filename| # load like how scanners are loaded
           next if ['.', '..'].include?(filename) # don't include FS pointers

@@ -138,6 +138,7 @@ describe Salus::CLI do
           expect(data['report_type']).to eq('salus_sarif_diff')
 
           rule_ids = data['filtered_results'].map { |r| r['ruleId'] }.sort
+
           expect(rule_ids).to eq(%w[G401 G501])
 
           builds = data['builds']
@@ -188,7 +189,6 @@ describe Salus::CLI do
           ENV['SALUS_CONFIGURATION'] = 'file:///salus.yaml'
           expect(Salus::PluginManager).to receive(:plugin_dir).and_return(plugin_dir)
             .at_least(:once)
-          Salus::PluginManager.load_plugins
           Salus.scan(quiet: true, repo_path: '.')
           expect(File).to exist('out.json')
 

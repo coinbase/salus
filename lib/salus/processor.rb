@@ -84,7 +84,7 @@ module Salus
             Salus::PluginManager.send_event(:skip_scanner, scanner_name)
             next
           end
-          scanners_ran << scanner_name
+          scanners_ran << scanner
           Salus::PluginManager.send_event(:run_scanner, scanner_name)
 
           required = @config.enforced_scanners.include?(scanner_name)

@@ -33,6 +33,7 @@ module Salus
       ignore_config_id: "",
       heartbeat: true
     )
+      Salus::PluginManager.load_plugins
 
       Salus::PluginManager.send_event(:salus_scan, method(__method__).parameters)
 
