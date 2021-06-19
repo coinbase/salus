@@ -3,7 +3,7 @@ require 'json-schema'
 require_relative './base_sarif'
 
 Dir.entries(File.expand_path('./', __dir__)).sort.each do |filename|
-  next unless /\_sarif.rb\z/.match?(filename) && !filename.eql?('base_sarif.rb')
+  next unless /_sarif.rb\z/.match?(filename) && !filename.eql?('base_sarif.rb')
 
   require_relative filename
 end

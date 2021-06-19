@@ -26,9 +26,11 @@ module Sarif
         id: issue['ID'].to_s,
         name: issue['Title'],
         level: issue['Severity'].upcase,
-        details: "Title: #{issue['Title']}\nPackage: #{issue['Package']}\nPatched in: "\
-        "#{issue['Patched in']}\nDependency of:#{issue['Dependency of']} \nSeverity: "\
-        "#{issue['Severity']}",
+        details: (issue['Title']).to_s,
+        messageStrings: { "package": { "text": (issue['Package']).to_s },
+                         "severity": { "text": (issue['Severity']).to_s },
+                         "patched_versions": { "text": (issue['Patched in']).to_s },
+                         "dependency_of": { "text": (issue['Dependency of']).to_s } },
         uri: "yarn.lock",
         help_url: issue['More info']
       }

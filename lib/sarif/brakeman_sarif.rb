@@ -43,9 +43,12 @@ module Sarif
         id: issue['warning_code'].to_s,
         name: "#{issue['check_name']}/#{issue['warning_type']}",
         level: issue['confidence'].upcase,
-        details: "Warning Type: #{issue['warning_type']}\nWarning Code: #{issue['warning_code']}"\
-        "\nMessage: #{issue['message']}\nConfidence: #{issue['confidence']}\nCheck Name: "\
-        "#{issue['check_name']}\nFingerprint: #{issue['fingerprint']}",
+        details: (issue['message']).to_s,
+        messageStrings: { "confidence": { "text": (issue['confidence']).to_s },
+                         "title": { "text": (issue['check_name']).to_s },
+                         "type": { "text": (issue['warning_type']).to_s },
+                         "warning_code": { "text": (issue['warning_code']).to_s },
+                         "fingerprint": { "text": (issue['fingerprint']).to_s } },
         start_line: issue['line'].to_i,
         start_column: 1,
         uri: issue['file'],
