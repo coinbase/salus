@@ -70,6 +70,9 @@ module Sarif
           level: issue['severity'],
           details: "#{issue['details']} \nSeverity: #{issue['severity']}\nConfidence:"\
           " #{issue['confidence']}\nCWE: #{issue['cwe']['URL']}",
+          messageStrings: { "severity": { "text": (issue['severity']).to_s },
+                           "confidence": { "text": (issue['confidence']).to_s },
+                           "cwe": { "text": (issue['cwe']['URL']).to_s } },
           start_line: issue['line'].to_i,
           start_column: issue['column'].to_i,
           uri: issue['file'],
