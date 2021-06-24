@@ -43,6 +43,9 @@ module Salus
     # Syntatical sugar to apply report hash filters
     def apply_report_hash_filters(report_hash)
       Salus::PluginManager.apply_filter(:salus_report, :filter_report_hash, report_hash)
+
+    def apply_report_sarif_filters(sarif_json)
+      Salus::PluginManager.apply_filter(:salus_report, :filter_report_sarif, sarif_jso)
     end
 
     # Syntatical sugar register salus_report filters
@@ -146,7 +149,10 @@ module Salus
     end
 
     def to_sarif(config = {})
-      Sarif::SarifReport.new(@scan_reports, config).to_sarif
+      sarif_json = Sarif::SarifReport.new(@scan_reports, config).to_sarif
+      # We will validate to ensure the applied filter
+      # doesn't produce any invalid SARIF
+      Sarif::SarifReport.validate_sarif(apply_report_sarif_filters(sarif_json))
     rescue StandardError => e
       bugsnag_notify(e.class.to_s + " " + e.message + "\nBuild Info:" + @builds.to_s)
     end
