@@ -26,7 +26,7 @@ jobs:
       report_uri:
         description: Defines where to send Salus reports
         type: string
-        default: "file://../salus-report.json"
+        default: "salus-report.json"
       report_format:
         description: Defines the format of the report (json, yaml, txt)
         type: string
@@ -68,7 +68,7 @@ jobs:
                 pr_number: $CIRCLE_PR_NUMBER
 
               reports:
-                - uri: << parameters.report_uri >> 
+                - uri: "file://<< parameters.report_uri >>"
                   format: << parameters.report_format >>
                   verbose: << parameters.report_verbosity >>" | tee salus-configuration.yaml 
 
@@ -91,7 +91,7 @@ jobs:
             BUNDLE_GEMFILE: /home/Gemfile
           working_directory: /home
       - store_artifacts:
-          path: /home/salus-report.json
+          path: "/home/repo/<<parameters.report_uri>>"
 
 examples:
   blocking_scan:
