@@ -33,6 +33,9 @@ module Salus
       ignore_config_id: "",
       heartbeat: true
     )
+      Salus::PluginManager.load_plugins
+
+      Salus::PluginManager.send_event(:salus_scan, method(__method__).parameters)
 
       ### Heartbeat ###
       if !quiet && heartbeat
@@ -42,7 +45,7 @@ module Salus
       ### Configuration ###
       # Config option would be: --config="<uri x> <uri y> etc"
       configuration_directives = (ENV['SALUS_CONFIGURATION'] || config || '').split(URI_DELIMITER)
-      Salus::PluginManager.load_plugins
+
       processor = Salus::Processor.new(configuration_directives, repo_path: repo_path,
                                        filter_sarif: filter_sarif,
                                        ignore_config_id: ignore_config_id)

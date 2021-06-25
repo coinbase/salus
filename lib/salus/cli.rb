@@ -1,4 +1,5 @@
 require 'thor'
+require 'salus/plugin_manager'
 
 module Salus
   class CLI < Thor
@@ -38,6 +39,8 @@ module Salus
 
     desc 'scan', 'Scan the source code of a repository.'
     def scan
+      Salus::PluginManager.send_event(:cli_scan, options)
+
       Salus.scan(
         config: options[:config],
         quiet: options[:quiet],

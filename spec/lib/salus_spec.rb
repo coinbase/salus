@@ -138,6 +138,7 @@ describe Salus::CLI do
           expect(data['report_type']).to eq('salus_sarif_diff')
 
           rule_ids = data['filtered_results'].map { |r| r['ruleId'] }.sort
+
           expect(rule_ids).to eq(%w[G401 G501])
 
           builds = data['builds']
@@ -175,6 +176,13 @@ describe Salus::CLI do
     end
 
     context 'With plugins' do
+      it 'should send scan event' do
+        Dir.chdir('spec/fixtures/blank_repository2') do
+          expect(Salus::PluginManager).to receive(:send_event).at_least(:once)
+          Salus.scan(quiet: true, repo_path: '.')
+        end
+      end
+
       it 'Should update config based on plugin' do
         Dir.chdir('spec/fixtures/blank_repository2') do
           plugin_dir = File.join(__dir__, '../fixtures/blank_repository2/test_plugins')

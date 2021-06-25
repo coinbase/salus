@@ -4,5 +4,9 @@ lib = File.expand_path('../lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 require 'salus'
+require 'salus/plugin_manager'
+
+Salus::PluginManager.load_plugins
+Salus::PluginManager.send_event(:cli_startup, ARGV)
 
 Salus::CLI.start(ARGV)

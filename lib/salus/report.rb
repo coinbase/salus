@@ -25,8 +25,6 @@ module Salus
 
     attr_reader :builds
 
-    @@filters = []
-
     def initialize(report_uris: [], builds: {}, project_name: nil, custom_info: nil, config: nil,
                    repo_path: nil, filter_sarif: nil, ignore_config_id: nil)
       @report_uris = report_uris     # where we will send this report
@@ -42,23 +40,18 @@ module Salus
       @ignore_config_id = ignore_config_id # ignore id in salus config
     end
 
-    def apply_filters(data, method)
-      @@filters.each do |filter|
-        data = filter.send(method, data) if filter.respond_to?(method)
-      end
-      data
-    end
-
+    # Syntatical sugar to apply report hash filters
     def apply_report_hash_filters(report_hash)
-      apply_filters(report_hash, :filter_report_hash)
+      Salus::PluginManager.apply_filter(:salus_report, :filter_report_hash, report_hash)
     end
 
     def apply_report_sarif_filters(sarif_json)
-      apply_filters(sarif_json, :filter_report_sarif)
+      Salus::PluginManager.apply_filter(:salus_report, :filter_report_sarif, sarif_json)
     end
 
+    # Syntatical sugar register salus_report filters
     def self.register_filter(filter)
-      @@filters << filter
+      Salus::PluginManager.register_filter(:salus_report, filter)
     end
 
     def record
@@ -173,6 +166,7 @@ module Salus
       curr_sarif_results = get_sarif_results(curr_sarif_data)
       filter_sarif_results = get_sarif_results(filter_sarif_data)
       diff = (curr_sarif_results - filter_sarif_results).to_a
+
       diff_report['report_type'] = 'salus_sarif_diff'
       diff_report['filtered_results'] = diff
       diff_report['builds'] = to_h[:config][:builds]
