@@ -43,9 +43,10 @@ module Salus
     # Syntatical sugar to apply report hash filters
     def apply_report_hash_filters(report_hash)
       Salus::PluginManager.apply_filter(:salus_report, :filter_report_hash, report_hash)
+    end
 
     def apply_report_sarif_filters(sarif_json)
-      Salus::PluginManager.apply_filter(:salus_report, :filter_report_sarif, sarif_jso)
+      Salus::PluginManager.apply_filter(:salus_report, :filter_report_sarif, sarif_json)
     end
 
     # Syntatical sugar register salus_report filters
