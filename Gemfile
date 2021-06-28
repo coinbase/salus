@@ -15,7 +15,7 @@ gem 'toml', '~> 0.2.0'
 
 group :scanners do
   gem 'brakeman', '4.10.0'
-  gem 'bundler-audit', '~> 0.7.0'
+  gem 'bundler-audit', '~> 0.8.0'
 end
 
 group :test, :development do
