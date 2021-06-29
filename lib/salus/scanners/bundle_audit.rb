@@ -50,12 +50,12 @@ module Salus::Scanners
 
     def serialize_vuln(vuln)
       case vuln
-      when Bundler::Audit::Scanner::InsecureSource
+      when Bundler::Audit::Results::InsecureSource
         {
           type: 'InsecureSource',
           source: vuln.source
         }
-      when Bundler::Audit::Scanner::UnpatchedGem
+      when Bundler::Audit::Results::UnpatchedGem
         {
           type: 'UnpatchedGem',
           name: vuln.gem.name,
