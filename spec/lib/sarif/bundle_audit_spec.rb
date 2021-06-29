@@ -104,7 +104,6 @@ describe Sarif::BundleAuditSarif do
 
         # Check result info
         expect(result['ruleId']).to eq(cve)
-        expect(result['ruleIndex']).to eq(0)
         expect(result['level']).to eq("note")
         expect(result['message']['text']).to include(expected)
       end
