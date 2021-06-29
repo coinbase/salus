@@ -93,37 +93,18 @@ describe Sarif::BundleAuditSarif do
         rules = JSON.parse(report.to_sarif)["runs"][0]["tool"]["driver"]["rules"]
         rule = rules.detect { |r| r["id"] == cve }
 
-        if rule['id'] == 'CVE-2021-22885'
-          # Check rule info
-          expect(rule['id']).to eq('CVE-2021-22885')
-          rule_name = 'Possible Information Disclosure / Unintended Method Execution in Action Pack'
-          expect(rule['name']).to eq(rule_name)
-          rule_uri = 'https://groups.google.com/g/rubyonrails-security/c/NiQl-48cXYI'
-          expect(rule['helpUri']).to eq(rule_uri)
-          expected = 'There is a possible information disclosure / unintended method'
-          expect(rule['fullDescription']['text']).to include(expected)
+        # Check rule info
+        expect(rule['id']).to eq(cve)
+        rule_name = 'Possible Information Disclosure / Unintended Method Execution in Action Pack'
+        expect(rule['name']).to eq(rule_name)
+        rule_uri = 'https://groups.google.com/g/rubyonrails-security/c/NiQl-48cXYI'
+        expect(rule['helpUri']).to eq(rule_uri)
+        expected = 'There is a possible information disclosure / unintended method'
+        expect(rule['fullDescription']['text']).to include(expected)
 
-          # Check result info
-          expect(result['ruleId']).to eq('CVE-2021-22885')
-        else
-          # Check rule info
-
-          rule = rules.detect { |r| r["id"] == "CVE-2020-8164" }
-          result = results.detect { |r| r["ruleId"] == 'CVE-2020-8164' }
-
-          expect(rule['id']).to eq('CVE-2020-8164')
-          rule_name = 'Possible Strong Parameters Bypass in ActionPack'
-          expect(rule['name']).to eq(rule_name)
-          rule_uri = 'https://groups.google.com/forum/#!topic/rubyonrails-security/f6ioe4sdpbY'
-          expect(rule['helpUri']).to eq(rule_uri)
-          expected = 'Advisory Title: Possible Strong Parameters Bypass in ActionPack'
-          expect(rule['fullDescription']['text']).to include(expected)
-
-          # Check result info
-          expect(result['ruleId']).to eq('CVE-2020-8164')
-        end
-
-        expect(result['ruleIndex']).to eq(3)
+        # Check result info
+        expect(result['ruleId']).to eq(cve)
+        expect(result['ruleIndex']).to eq(0)
         expect(result['level']).to eq("note")
         expect(result['message']['text']).to include(expected)
       end
