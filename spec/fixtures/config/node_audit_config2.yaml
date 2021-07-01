@@ -1,0 +1,10 @@
+scanner_configs:
+  NodeAudit:
+    foo: bar  
+    exceptions:
+      - advisory_id: '33'
+        changed_by: appsec team
+        notes: barfoo
+    exclude_groups:
+    - dependencies
+    - optionalDependencies

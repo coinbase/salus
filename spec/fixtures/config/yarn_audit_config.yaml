@@ -1,0 +1,8 @@
+scanner_configs:
+  YarnAudit:
+    exceptions:
+      - advisory_id: '23'
+        changed_by: me
+        notes: baz
+    exclude_groups:
+    - devDependencies
