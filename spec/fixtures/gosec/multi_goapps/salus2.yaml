@@ -1,0 +1,4 @@
+scanner_configs:
+  Gosec:
+    run_from_dirs:
+      - "*/"
