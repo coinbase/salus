@@ -16,10 +16,11 @@ module Salus::Scanners
       @gosec_stderr = ''   # combined stderr on all runs (one for each configured subdir)
       @gosec_stdout = ''   # ...      stdout ...
       @gosec_json = {}     # combined json result on all runs
+      # default run_from_dirs to all subidrs (but not nested subdirs)
       run_from_dirs = @config['run_from_dirs'] || ["*/"]
 
       Dir.chdir(@repository.path_to_repo) do
-        run_from_dirs = select_dirs_from_glob(@config['run_from_dirs'])
+        run_from_dirs = select_dirs_from_glob(run_from_dirs)
 
         if @config['do_not_run_from_dirs']
           do_not_run_from_dirs = select_dirs_from_glob(@config['do_not_run_from_dirs'])
