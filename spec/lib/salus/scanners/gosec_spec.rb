@@ -100,9 +100,57 @@ describe Salus::Scanners::Gosec do
         expect(issues_arr.size).to eq(6)
         expect(issues_arr.to_s).to include('/multi_goapps/app1/hello.go')
         expect(issues_arr.to_s).to include('/multi_goapps/app2/hello.go')
+        expect(issues_arr.to_s).to_not include('/multi_goapps/app3/hello.go')
         expect(golang_errs.size).to eq(2)
         expect(golang_errs.to_s).to include('/multi_goapps/app1/hello.go')
         expect(golang_errs.to_s).to include('/multi_goapps/app2/hello.go')
+        expect(golang_errs.to_s).to_not include('/multi_goapps/app3/hello.go')
+      end
+
+      it 'should report failures in subdirs specified with glob' do
+        # this salus config says run_from_dirs "*/"
+        config_file = "#{repo}/salus2.yaml"
+        configs = Salus::Config.new([File.read(config_file)]).scanner_configs['Gosec']
+        scanner = Salus::Scanners::Gosec.new(repository: Salus::Repo.new(repo), config: configs)
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(false)
+
+        logs = JSON.parse(scanner.report.to_h[:logs])
+        issues_arr = logs['Issues']
+        golang_errs = logs['Golang errors']
+
+        expect(issues_arr.size).to eq(9)
+        expect(issues_arr.to_s).to include('/multi_goapps/app1/hello.go')
+        expect(issues_arr.to_s).to include('/multi_goapps/app2/hello.go')
+        expect(issues_arr.to_s).to include('/multi_goapps/app3/hello.go')
+        expect(golang_errs.size).to eq(3)
+        expect(golang_errs.to_s).to include('/multi_goapps/app1/hello.go')
+        expect(golang_errs.to_s).to include('/multi_goapps/app2/hello.go')
+        expect(golang_errs.to_s).to include('/multi_goapps/app3/hello.go')
+      end
+
+      it 'should report not failures in excluded subdirs' do
+        # this salus config says run_from_dirs "*/", do_not_run_from_dirs app1, app2
+        config_file = "#{repo}/salus3.yaml"
+        configs = Salus::Config.new([File.read(config_file)]).scanner_configs['Gosec']
+        scanner = Salus::Scanners::Gosec.new(repository: Salus::Repo.new(repo), config: configs)
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(false)
+
+        logs = JSON.parse(scanner.report.to_h[:logs])
+        issues_arr = logs['Issues']
+        golang_errs = logs['Golang errors']
+
+        expect(issues_arr.size).to eq(3)
+        expect(issues_arr.to_s).to_not include('/multi_goapps/app1/hello.go')
+        expect(issues_arr.to_s).to_not include('/multi_goapps/app2/hello.go')
+        expect(issues_arr.to_s).to include('/multi_goapps/app3/hello.go')
+        expect(golang_errs.size).to eq(1)
+        expect(golang_errs.to_s).to_not include('/multi_goapps/app1/hello.go')
+        expect(golang_errs.to_s).to_not include('/multi_goapps/app2/hello.go')
+        expect(golang_errs.to_s).to include('/multi_goapps/app3/hello.go')
       end
     end
   end

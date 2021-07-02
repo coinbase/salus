@@ -1,5 +1,6 @@
 require 'salus/scanners/base'
 require 'json'
+require 'pathname'
 
 # Gosec scanner check Go for insecure coding patterns.
 # https://github.com/securego/gosec
@@ -9,25 +10,43 @@ module Salus::Scanners
     def run
       # 'run_from_dirs' specifies a list of subdirs to run salus from
       # if not specified, then run_from_dir will mimic the original gosec 'run' behavior
-      return run_from_dir if @config['run_from_dirs'].nil?
+      return run_from_dir if @config['run_from_dirs'].nil? && @config['do_not_run_from_dirs'].nil?
 
       @gosec_failed = false
       @gosec_stderr = ''   # combined stderr on all runs (one for each configured subdir)
       @gosec_stdout = ''   # ...      stdout ...
       @gosec_json = {}     # combined json result on all runs
-      run_from_dirs = @config['run_from_dirs'].sort
+      run_from_dirs = @config['run_from_dirs'] || ["*/"]
+
+      Dir.chdir(@repository.path_to_repo) do
+        run_from_dirs = select_dirs_from_glob(@config['run_from_dirs'])
+
+        if @config['do_not_run_from_dirs']
+          do_not_run_from_dirs = select_dirs_from_glob(@config['do_not_run_from_dirs'])
+          run_from_dirs -= do_not_run_from_dirs
+        end
+      end
+
+      if run_from_dirs.empty?
+        e_msg = 'run_from_dirs/do_not_run_from_dirs configured, but result run_from_dirs is empty'
+        report_error(e_msg, status: 1)
+        report_stderr(e_msg)
+        return report_failure
+      end
+
       run_from_dirs_val = @config.delete('run_from_dirs')
-      run_from_dirs.each do |dir|
-        if dir.start_with?("/") || dir.start_with?("./") || dir.include?("..")
-          msg = "run_from_dirs values should be relative paths to subdirs in the repo " \
-                "and cannot start with ./"
+      run_from_dirs.sort.each do |dir|
+        repo_path = Pathname.new(File.expand_path(@repository.path_to_repo)).cleanpath.to_s
+        if !dir.to_s.start_with?(repo_path + '/')
+          msg = "run_from_dirs/do_not_run_from_dirs values should be glob paths relative to " \
+                "the repo dir's top level"
           report_stderr(msg)
-          report_error(
-            msg,
-            status: 1
-          )
+          report_error(msg, status: 1)
           return report_failure
         else
+          # dir looks like /home/repo/dir_name
+          # update it to dir_name for consistency
+          dir = dir.to_s[repo_path.size + 1..-1]
           run_from_dir(dir)
         end
       end
@@ -115,7 +134,7 @@ module Salus::Scanners
           @gosec_json['Stats']['nosec'] += num_nosec
           @gosec_json['Stats']['found'] += num_found
           # add dir name to golang error keys
-          golang_errors = golang_errors.map { |ek, ev| [dir + '/' + ek, ev] }.to_h
+          golang_errors = golang_errors
           @gosec_json['Golang errors'].merge!(golang_errors)
         end
       elsif lines_scanned.zero?
@@ -204,6 +223,18 @@ module Salus::Scanners
 
     def go_file?
       !Dir.glob("#{@repository.path_to_repo}/**/*.go").first.nil?
+    end
+
+    private
+
+    # input: files - an array of glob patterns
+    # return directories in the glob
+    def select_dirs_from_glob(files)
+      files.map do |d|
+        Dir.glob(d).select { |gb| File.directory?(gb) }.map do |d2|
+          Pathname.new(File.expand_path(d2)).cleanpath
+        end
+      end.flatten.uniq
     end
   end
 end
