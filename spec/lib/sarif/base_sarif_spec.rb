@@ -16,7 +16,10 @@ describe Sarif::BaseSarif do
           "name" => "Unsupported_Scanner",
           "version" => "1.1.1",
           "rules" => [],
-          "informationUri" => "https://github.com/coinbase/salus"
+          "informationUri" => "https://github.com/coinbase/salus",
+          "properties" => {
+            "salusEnforced": nil
+          }
         } })
     end
   end

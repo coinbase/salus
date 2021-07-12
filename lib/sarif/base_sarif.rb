@@ -30,7 +30,10 @@ module Sarif
           "name" => @scan_report.scanner_name,
           "version" => @scan_report.version,
           "informationUri" => @uri,
-          "rules" => rules
+          "rules" => rules,
+          "properties" => {
+            "salusEnforced": @required
+          }
         }
       }
     end
