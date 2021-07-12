@@ -32,7 +32,7 @@ module Sarif
           "informationUri" => @uri,
           "rules" => rules,
           "properties" => {
-            "salusEnforced": @required
+            "salusEnforced": @required || false
           }
         }
       }
