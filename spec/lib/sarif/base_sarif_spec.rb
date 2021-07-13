@@ -164,7 +164,7 @@ describe Sarif::BaseSarif do
         runs_object = adapter.build_runs_object(true)
         expect(runs_object['tool'][:driver]['properties'][:salusEnforced]).to eq(false)
       end
-  
+
       it 'has salusEnforced true when supported scanner is enforced' do
         parsed_issue = {
           id: 'SAL002',
