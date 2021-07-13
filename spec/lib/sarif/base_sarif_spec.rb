@@ -144,7 +144,7 @@ describe Sarif::BaseSarif do
         expect(runs_object['results'].empty?).to eq(false)
         expect(runs_object["invocations"][0][:executionSuccessful]).to eq(false)
       end
-      binding.pry
+
       it 'has salusEnforced false when supported scanner is not enforced' do
         parsed_issue = {
           id: 'SAL002',
@@ -163,7 +163,6 @@ describe Sarif::BaseSarif do
         adapter.instance_variable_set(:@required, false)
         runs_object = adapter.build_runs_object(true)
         expect(runs_object['tool'][:driver]['properties'][:salusEnforced]).to eq(false)
-        binding.pry
       end
   
       it 'has salusEnforced true when supported scanner is enforced' do
