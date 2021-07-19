@@ -38,5 +38,5 @@ The following Bandt config options are currently NOT supported.
 --msg-template MSG_TEMPLATE   # unsupported because it only works with --format custom
 --verbose  # output extra information like excluded and included
 --debug  # turn on debug mode (used for debugging Bandit code)
---quiet  # only show output in the case of error
+--quiet  # only show output in the case of errors
 ```
