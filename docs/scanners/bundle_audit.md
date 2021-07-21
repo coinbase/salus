@@ -15,3 +15,14 @@ scanner_configs:
       - CVE-2018-3760
       - CVE-XXXX-YYYY
 ```
+
+By default, BundleAudit pulls advisory info from [ruby-advisory-db](https://github.com/rubysec/ruby-advisory-db).
+BundleAudit also supports scanning against a local advisory DB.  The config below will scan against the local DB in addition to ruby-advisory-db.
+The `$local_db_dir` should follow the same format as the ruby-advisory-db.
+This means that at the top-level, there should be a `gems` dir, each sub-directory inside `gems` should have the same name as an actual gem,
+and each gem directory should contain the advisory yml's.
+```yaml
+scanner_configs:
+  BundleAudit:
+    local_db: $local_db_dir
+```
