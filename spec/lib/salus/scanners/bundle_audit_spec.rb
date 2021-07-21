@@ -84,6 +84,28 @@ describe Salus::Scanners::BundleAudit do
         expect(info[:ignored_cves]).to eq(%w[CVE-2012-3464 CVE-2015-3227 CVE-2020-8165])
       end
     end
+
+    context 'with local db' do
+      it 'should report vulns from both local db and ruby advisory db' do
+        dir = 'spec/fixtures/bundle_audit/local_db'
+        repo = Salus::Repo.new(dir)
+        scanner = Salus::Scanners::BundleAudit.new(
+          repository: repo,
+          config: { 'local_db' => dir + '/good_local_db' }
+        )
+
+        scanner.run
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+        vulns = info[:vulnerabilities]
+        cves = vulns.map { |v| v[:cve] }
+        # vul found in ruby-advisory-db
+        expect(cves).to include('CVE-2020-7663')
+        # vul found in local db
+        expect(cves).to include('ABCD-2021-001')
+      end
+    end
   end
 
   describe '#should_run?' do
@@ -120,6 +142,16 @@ describe Salus::Scanners::BundleAudit do
         langs = Salus::Scanners::BundleAudit.supported_languages
         expect(langs).to eq(['ruby'])
       end
+    end
+  end
+
+  describe '#valid_local_db?' do
+    it 'should detect valid/invalid local dbs' do
+      dir_path = 'spec/fixtures/bundle_audit/local_db'
+      repo = Salus::Repo.new(dir_path)
+      scanner = Salus::Scanners::BundleAudit.new(repository: repo, config: {})
+      expect(scanner.valid_local_db?(dir_path + '/good_local_db')).to eq(true)
+      expect(scanner.valid_local_db?(dir_path + '/bad_local_db')).to eq(false)
     end
   end
 end
