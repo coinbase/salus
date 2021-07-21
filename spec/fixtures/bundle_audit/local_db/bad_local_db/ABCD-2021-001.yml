@@ -1,0 +1,15 @@
+---
+gem: mimemagic
+cve: ABCD-2021-001.yml
+osvdb:
+url:
+title: Version Yanked
+date: 2021-01-01
+
+description: |
+  Version yanked.
+
+cvss_v2: 10.0
+
+patched_versions:
+- ">= 0.3.7"
