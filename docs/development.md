@@ -13,6 +13,7 @@ bundle install
 
 ### Install other system dependencies
 # for NPM, install per https://www.npmjs.com/get-npm
+# for Yarn, install per https://classic.yarnpkg.com/en/docs/install/#mac-stable
 # for Go reporting, install Go per https://golang.org/doc/install#install
 # for PatternSearch, install sift per https://sift-tool.org/download
 # for Semgrep, install semgrep per https://github.com/returntocorp/semgrep#getting-started
