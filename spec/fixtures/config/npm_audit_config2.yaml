@@ -1,0 +1,9 @@
+scanner_configs:
+  NPMAudit:
+    exceptions:
+      - advisory_id: '12'
+        changed_by: appsec team
+        notes: barfoo
+    exclude_groups:
+    - dependencies
+    - optionalDependencies

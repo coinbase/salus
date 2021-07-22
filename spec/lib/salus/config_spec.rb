@@ -140,6 +140,32 @@ describe Salus::Config do
       expect(config.scanner_configs['NPMAudit']).to include(expected_config)
       expect(config.scanner_configs['YarnAudit']).to include(expected_config)
     end
+
+    it 'should merge arrays in all NodeAudit related configuration' do
+      yarn_audit_config = File.read('spec/fixtures/config/yarn_audit_config.yaml')
+      npm_audit_config = File.read('spec/fixtures/config/npm_audit_config2.yaml')
+      node_audit_config = File.read('spec/fixtures/config/node_audit_config2.yaml')
+      config = Salus::Config.new([yarn_audit_config, npm_audit_config, node_audit_config])
+
+      expected_exceptions = [
+        { 'advisory_id' => '12', 'changed_by' => 'appsec team', 'notes' => 'barfoo' },
+        { 'advisory_id' => '23', 'changed_by' => 'me', 'notes' => 'baz' },
+        { 'advisory_id' => '33', 'changed_by' => 'appsec team', 'notes' => 'barfoo' }
+      ]
+      expected_ex_groups = %w[dependencies devDependencies optionalDependencies]
+
+      %w[NodeAudit NPMAudit YarnAudit].each do |scanner|
+        # from NodeAudit config
+        expect(config.scanner_configs[scanner]['foo']).to eq('bar')
+        # from all 3 configs combined
+        expect(config.scanner_configs[scanner]['exclude_groups'].sort).to eq(expected_ex_groups)
+        # from all 3 configs combined
+        expect(config.scanner_configs[scanner]['exceptions'].size).to eq(3)
+        expected_exceptions.each do |ex|
+          expect(config.scanner_configs[scanner]['exceptions']).to include(ex)
+        end
+      end
+    end
   end
 
   describe '#scanner_active?' do
