@@ -81,22 +81,22 @@ module Salus::Scanners
       begin
         @report.record do
           Timeout.timeout(max_lifespan / 1000.to_f) { run }
-          rescue Timeout::Error => e
-            timeout_error_data = {
-              message: "Scanner #{name} timed out during execution",
-              error_class: ScannerTimeoutError,
-              backtrace: e.backtrace.take(5)
-            }
-            @report.error(timeout_error_data)
-            salus_report.error(timeout_error_data)
-
-            # Propagate this error if desired
-            raise ScannerTimeoutError, timeout_error_data.message if reraise
         end
 
         if @report.errors.any?
           pass_on_raise ? @report.pass : @report.fail
         end
+      rescue Timeout::Error => e
+        timeout_error_data = {
+          message: "Scanner #{name} timed out during execution",
+          error_class: ScannerTimeoutError,
+          backtrace: e.backtrace.take(5)
+        }
+        @report.error(timeout_error_data)
+        salus_report.error(timeout_error_data)
+
+        # Propagate this error if desired
+        raise ScannerTimeoutError, timeout_error_data.message if reraise
       rescue StandardError => e
         error_data = {
           message: "Unhandled exception running #{name}: #{e.class}: #{e}",
