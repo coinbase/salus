@@ -10,6 +10,7 @@ module Salus::Scanners
   class Base
     class UnhandledExitStatusError < StandardError; end
     class InvalidScannerInvocationError < StandardError; end
+    class ConfigFormatError < StandardError; end
 
     include Salus::SalusBugsnag
 
@@ -460,6 +461,17 @@ module Salus::Scanners
                  end
         options + option
       end
+    end
+
+
+    def max_lifespan
+      max_lifespan_config_param = @config['max-lifespan']
+      # If a developer mistakenly defines this parameter 
+      # as a non-integer value, let it be known
+      unless max_lifespan_config_param.is_a? Integer
+        raise ConfigFormatError.new "'max-lifespan' parameter should be an integer"
+      end
+      max_lifespan_config_param
     end
   end
 end

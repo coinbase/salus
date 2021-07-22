@@ -36,6 +36,7 @@ module Salus
 
     DEFAULT_SCANNER_CONFIG = {
       'pass_on_raise' => false # strong default - if a scanner raises, it counts as failure.
+      'max-lifespan' => 0 # If a max lifespan isn't explicitly provided, the scanner can run indefinitely
     }.freeze
 
     LOCAL_FILE_SCHEME_REGEX = /\Afile\z/.freeze # like file://foobar
