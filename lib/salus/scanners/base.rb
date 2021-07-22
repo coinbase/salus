@@ -81,7 +81,7 @@ module Salus::Scanners
       begin
         @report.record do
           begin
-            Timeout.timeout(max_lifespan) { run }
+            Timeout.timeout(max_lifespan / 1000.to_f) { run }
           rescue Timeout::Error => timeout_e
             timeout_error_data = {
               message: "Scanner #{name} timed out during execution",

@@ -35,6 +35,20 @@ scanner_configs:
       Slack channel: #security
 ```
 
+#### Maximum Lifespan
+
+At times, scanners may perform scans for unacceptable lengths of time. To limit this behavior, you can define `max-lifespan` with the number of milliseconds you wish the scan to last before it times out.  
+
+Example with `YarnAudit` configuration:
+
+```yaml
+scanner_configs:
+  YarnAudit:
+    max-lifespan: 60000
+```
+
+This will limit YarnAudit scans to 1 minute (60,000 milliseconds) in execution time.
+
 ## Reading/setting up custom configs for your scanner
 
 For setting up custom configurations for your scanner, you can optionally use the helper method ```build_options```.

@@ -30,7 +30,7 @@ describe Salus::Scanners::Base do
       )
     end
 
-    it 'should catch excepetions and fail the build if pass_on_raise false' do
+    it 'should catch exceptions and fail the build if pass_on_raise false' do
       expect do
         scanner.run!(
           salus_report: salus_report,
@@ -43,7 +43,7 @@ describe Salus::Scanners::Base do
       expect(salus_report.passed?).to eq(false)
     end
 
-    it 'should catch excepetions and fail the build if pass_on_raise false' do
+    it 'should catch exceptions and fail the build if pass_on_raise false' do
       expect do
         scanner.run!(
           salus_report: salus_report,
