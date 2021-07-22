@@ -80,20 +80,18 @@ module Salus::Scanners
 
       begin
         @report.record do
-          begin
-            Timeout.timeout(max_lifespan / 1000.to_f) { run }
-          rescue Timeout::Error => timeout_e
+          Timeout.timeout(max_lifespan / 1000.to_f) { run }
+          rescue Timeout::Error => e
             timeout_error_data = {
               message: "Scanner #{name} timed out during execution",
               error_class: ScannerTimeoutError,
-              backtrace: timeout_e.backtrace.take(5)
+              backtrace: e.backtrace.take(5)
             }
             @report.error(timeout_error_data)
             salus_report.error(timeout_error_data)
 
             # Propagate this error if desired
-            raise ScannerTimeoutError.new if reraise
-          end
+            raise ScannerTimeoutError, timeout_error_data.message if reraise
         end
 
         if @report.errors.any?
@@ -480,14 +478,14 @@ module Salus::Scanners
       end
     end
 
-
     def max_lifespan
       max_lifespan_config_param = @config['max-lifespan']
-      # If a developer mistakenly defines this parameter 
+      # If a developer mistakenly defines this parameter
       # as a non-integer value, let it be known
       unless max_lifespan_config_param.is_a? Integer
-        raise ConfigFormatError.new "'max-lifespan' parameter should be an integer"
+        raise ConfigFormatError, "'max-lifespan' parameter should be an integer"
       end
+
       max_lifespan_config_param
     end
   end
