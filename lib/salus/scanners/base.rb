@@ -4,6 +4,7 @@ require 'salus/shell_result'
 require 'salus/bugsnag'
 require 'shellwords'
 require 'salus/plugin_manager'
+require 'timeout'
 
 module Salus::Scanners
   # Super class for all scanner objects.
@@ -11,6 +12,7 @@ module Salus::Scanners
     class UnhandledExitStatusError < StandardError; end
     class InvalidScannerInvocationError < StandardError; end
     class ConfigFormatError < StandardError; end
+    class ScannerTimeoutError < StandardError; end
 
     include Salus::SalusBugsnag
 
@@ -77,7 +79,22 @@ module Salus::Scanners
       salus_report.add_scan_report(@report, required: required)
 
       begin
-        @report.record { run }
+        @report.record do
+          begin
+            Timeout.timeout(max_lifespan) { run }
+          rescue Timeout::Error => timeout_e
+            timeout_error_data = {
+              message: "Scanner #{name} timed out during execution",
+              error_class: ScannerTimeoutError,
+              backtrace: timeout_e.backtrace.take(5)
+            }
+            @report.error(timeout_error_data)
+            salus_report.error(timeout_error_data)
+
+            # Propagate this error if desired
+            raise ScannerTimeoutError.new if reraise
+          end
+        end
 
         if @report.errors.any?
           pass_on_raise ? @report.pass : @report.fail
