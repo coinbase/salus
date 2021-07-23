@@ -6,7 +6,7 @@ describe Salus::Scanners::Base do
 
   describe 'run!' do
     let(:salus_report) { Salus::Report.new }
-    let(:scanner) { Salus::Scanners::BundleAudit.new(repository: repository, config: {}) }
+    let(:scanner) { Salus::Scanners::BundleAudit.new(repository: repository, config: { 'max-lifespan' => 0 }) }
     before do
       allow(scanner).to receive(:run).and_raise(RuntimeError, 'bundle audit failed')
     end
