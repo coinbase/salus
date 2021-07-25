@@ -73,7 +73,7 @@ describe Salus::Config do
         expect(config.active_scanners).to eq(Set.new(Salus::Config::SCANNERS.keys))
         expect(config.enforced_scanners).to eq(Set.new(%w[BundleAudit Brakeman]))
 
-        config = Salus::Config.new(['false', config_file_1], ['CVE-AAAA-BBBB'])
+        config = Salus::Config.new(['false', config_file_1], ['ABCD'])
         expect(config.active_scanners).to eq(Set.new(Salus::Config::SCANNERS.keys))
         expect(config.enforced_scanners).to eq(Set.new(%w[BundleAudit Brakeman]))
       end

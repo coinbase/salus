@@ -50,9 +50,11 @@ module Salus
       # defined in the earlier files in the array (DEFAULT_CONFIG is the first such file/object).
       final_config = DEFAULT_CONFIG.dup
       configuration_files.each do |file|
-        filtered_data = filter_ignored_ids(YAML.safe_load(file), ignore_ids)
-        if !filtered_data.is_a?(Hash)
-          msg = "filtered_data #{filtered_data.inspect} is not a hash"
+        file_content = YAML.safe_load(file)
+        if file_content.is_a?(Hash)
+          filtered_data = filter_ignored_ids(file_content, ignore_ids)
+        else
+          msg = "file_content #{file_content.inspect} is not a hash"
           bugsnag_notify(msg)
           filtered_data = {}
         end
