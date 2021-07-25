@@ -52,6 +52,16 @@ describe Salus::Processor do
         end
       end
 
+      it 'fetch_config_file should return nil if file content is not hash' do
+        stub_request(:get, http_config_uri).to_return(status: 200, body: "{'A': 'B'}")
+        result = Salus::Processor.new.fetch_config_file(http_config_uri, '/home/repo')
+        expect(result).to eq("{'A': 'B'}")
+
+        stub_request(:get, http_config_uri).to_return(status: 200, body: "false")
+        result = Salus::Processor.new.fetch_config_file(http_config_uri, '/home/repo')
+        expect(result).to be_nil
+      end
+
       it 'should not use config files when they do not exist' do
         expect(Salus::Config).to receive(:new).once.and_call_original
         Dir.chdir('spec/fixtures/processor/repo') do

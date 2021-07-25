@@ -63,6 +63,22 @@ describe Salus::Config do
       end
     end
 
+    context 'bad files given as source' do
+      it 'should ignore bad files' do
+        config = Salus::Config.new([config_file_1, 'false'])
+        expect(config.active_scanners).to eq(Set.new(Salus::Config::SCANNERS.keys))
+        expect(config.enforced_scanners).to eq(Set.new(%w[BundleAudit Brakeman]))
+
+        config = Salus::Config.new(['false', config_file_1])
+        expect(config.active_scanners).to eq(Set.new(Salus::Config::SCANNERS.keys))
+        expect(config.enforced_scanners).to eq(Set.new(%w[BundleAudit Brakeman]))
+
+        config = Salus::Config.new(['false', config_file_1], ['CVE-AAAA-BBBB'])
+        expect(config.active_scanners).to eq(Set.new(Salus::Config::SCANNERS.keys))
+        expect(config.enforced_scanners).to eq(Set.new(%w[BundleAudit Brakeman]))
+      end
+    end
+
     context 'files point to envars that need to be interpolated' do
       it 'should replace references to envars with the envar values' do
         allow(ENV).to receive(:[]).and_call_original # allow calls in general
