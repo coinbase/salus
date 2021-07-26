@@ -1,4 +1,3 @@
-
 module Cyclonedx
   class ReportPythonModulesCyclonedx < BaseCyclonedx
     def initialize(scan_report)

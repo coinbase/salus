@@ -1,4 +1,3 @@
-
 module Cyclonedx
   class ReportRustCratesCyclonedx < BaseCyclonedx
     def initialize(scan_report)
