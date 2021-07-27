@@ -24,18 +24,9 @@ module Cyclonedx
     # Returns the 'components' object for a supported/unsupported scanner's report
     def build_components_object
       components = []
-      @scan_report.info[:dependencies].each do |dependency|
-        component = {
-          "bom-ref": "",
-          "type": DEFAULT_COMPONENT_TYPE,
-          "group": "",
-          "name": dependency[:name],
-          "version": "",
-          "purl": ""
-        }
-
-        # TODO: Add specific component parsing for individual scanners
-        components << component
+      info = @scan_report.to_h.fetch(:info)
+      info[:dependencies].each do |dependency|
+        components << parse_dependency(dependency)
       end
       components
     end
