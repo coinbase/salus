@@ -1,5 +1,5 @@
 module Cyclonedx
-  class ReportPythonModulesCyclonedx < BaseCyclonedx
+  class ReportPythonModules < Base
     def initialize(scan_report)
       super(scan_report)
     end

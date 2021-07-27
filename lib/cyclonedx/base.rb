@@ -1,5 +1,5 @@
 module Cyclonedx
-  class BaseCyclonedx
+  class Base
     DEFAULT_COMPONENT_TYPE = "application".freeze
 
     def initialize(scan_report, config = {})

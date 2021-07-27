@@ -1,5 +1,5 @@
 module Cyclonedx
-  class ReportRustCratesCyclonedx < BaseCyclonedx
+  class ReportRustCrates < Base
     def initialize(scan_report)
       super(scan_report)
     end

@@ -1,5 +1,5 @@
 module Cyclonedx
-  class ReportRubyGemsCyclonedx < BaseCyclonedx
+  class ReportRubyGems < Base
     def initialize(scan_report)
       super(scan_report)
     end

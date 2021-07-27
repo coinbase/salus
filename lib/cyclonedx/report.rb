@@ -1,4 +1,5 @@
 require 'securerandom'
+require_relative './base'
 
 Dir.entries(File.expand_path('./', __dir__)).sort.each do |filename|
   next unless /_cyclonedx.rb\z/.match?(filename) && !filename.eql?('base_cyclonedx.rb')
@@ -7,7 +8,7 @@ Dir.entries(File.expand_path('./', __dir__)).sort.each do |filename|
 end
 
 module Cyclonedx
-  class CyclonedxReport
+  class Report
     def initialize(scan_reports, config = {})
       @scan_reports = scan_reports
       @config = config
@@ -38,12 +39,12 @@ module Cyclonedx
 
     # Converts a ScanReport to a cyclonedx report for the given scanner
     def converter(scan_report)
-      adapter = "Cyclonedx::#{scan_report.scanner_name}Cyclonedx"
+      adapter = "Cyclonedx::#{scan_report.scanner_name}"
       begin
         converter = Object.const_get(adapter).new(scan_report)
         converter.config = @config
       rescue NameError
-        converter = BaseCyclonedx.new(scan_report, @config)
+        converter = Cyclonedx::Base.new(scan_report, @config)
       end
       converter.build_components_object
     end
