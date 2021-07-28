@@ -48,6 +48,9 @@ module Salus::Scanners
           ex_paths = match['exclude_filepaths'] || @config['exclude_filepaths']
           exclude_filepath_pattern = filepath_pattern(ex_paths)
 
+          # Setting default block size in kilobytes to 256KB
+          match['blocksize'] ||= '256K'
+          
           command_array = [
             "sift",
             "-n",
@@ -60,7 +63,9 @@ module Salus::Scanners
             ".",
             *(match_exclude_directory_flags || global_exclude_directory_flags),
             *(match_exclude_extension_flags || global_exclude_extension_flags),
-            *(match_include_extension_flags || global_include_extension_flags)
+            *(match_include_extension_flags || global_include_extension_flags),
+            "--blocksize",
+            match['blocksize']
           ].compact
 
           shell_return = run_shell(command_array)
