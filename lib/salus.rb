@@ -11,7 +11,7 @@ require 'sarif/sarif_report'
 require 'cyclonedx/report'
 
 module Salus
-  VERSION = '2.11.12'.freeze
+  VERSION = '2.11.13'.freeze
   DEFAULT_REPO_PATH = './repo'.freeze # This is inside the docker container at /home/repo.
 
   SafeYAML::OPTIONS[:default_mode] = :safe

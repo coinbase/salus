@@ -6,6 +6,8 @@ module Salus
   class Processor
     class InvalidConfigSourceError < StandardError; end
 
+    include Salus::SalusBugsnag
+
     attr_reader :config, :report
 
     # If configuration sources are not provided, we'll automatically scan the
@@ -56,15 +58,24 @@ module Salus
     def fetch_config_file(source_uri, repo_path)
       uri = URI(source_uri)
 
-      case uri.scheme
-      when Salus::Config::LOCAL_FILE_SCHEME_REGEX
-        location = "#{repo_path}/#{uri.host}#{uri.path}"
-        File.read(location) if Dir[location].any?
-      when Salus::Config::REMOTE_URI_SCHEME_REGEX
-        Faraday.get(source_uri).body
-      else
-        raise InvalidConfigSourceError, 'Unknown config file source.'
+      content = case uri.scheme
+                when Salus::Config::LOCAL_FILE_SCHEME_REGEX
+                  location = "#{repo_path}/#{uri.host}#{uri.path}"
+                  File.read(location) if Dir[location].any?
+                when Salus::Config::REMOTE_URI_SCHEME_REGEX
+                  Faraday.get(source_uri).body
+                else
+                  raise InvalidConfigSourceError, 'Unknown config file source.'
+                end
+
+      if !content.nil? && !YAML.safe_load(content).is_a?(Hash)
+        msg = "config source #{source_uri} content cannot be parsed as Hash. "\
+              "Content: #{content.inspect}"
+        bugsnag_notify(msg)
+        content = nil
       end
+
+      content
     end
 
     def scan_project
