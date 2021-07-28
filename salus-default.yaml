@@ -29,3 +29,6 @@ enforced_scanners:
   - PatternSearch
   - Semgrep
   - CargoAudit
+
+# What scanners should be excluded from running. "all" or "none" are acceptable as well
+exclude_scanners: none

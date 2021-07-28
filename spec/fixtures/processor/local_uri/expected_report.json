@@ -87,6 +87,7 @@
       "Semgrep",
       "YarnAudit"
     ],
+    "exclude_scanners": [],
     "scanner_configs": {
       "Bandit": {
         "pass_on_raise": false

@@ -80,7 +80,10 @@ module Salus
           config = @config.scanner_configs.fetch(scanner_name, {})
 
           scanner = scanner_class.new(repository: repo, config: config)
-          unless @config.scanner_active?(scanner_name) && scanner.should_run?
+          should_run_scanner = @config.scanner_active?(scanner_name) &&
+            scanner.should_run? &&
+            !@config.scanner_excluded?(scanner_name)
+          unless should_run_scanner
             Salus::PluginManager.send_event(:skip_scanner, scanner_name)
             next
           end
