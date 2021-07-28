@@ -80,23 +80,25 @@ module Salus::Scanners
 
       begin
         @report.record do
-          Timeout.timeout(max_lifespan / 1000.to_f) { run }
+          Timeout.timeout(max_lifespan) { run }
         end
 
         if @report.errors.any?
           pass_on_raise ? @report.pass : @report.fail
         end
-      rescue Timeout::Error => e
+      rescue Timeout::Error
+        error_message = "Scanner #{name} timed out during execution"
         timeout_error_data = {
-          message: "Scanner #{name} timed out during execution",
+          message: error_message,
           error_class: ScannerTimeoutError,
-          backtrace: e.backtrace.take(5)
+          backtrace: []
         }
         @report.error(timeout_error_data)
         salus_report.error(timeout_error_data)
+        bugsnag_notify(error_message)
 
         # Propagate this error if desired
-        raise ScannerTimeoutError, timeout_error_data.message if reraise
+        raise ScannerTimeoutError, timeout_error_data.message if reraise && !pass_on_raise
       rescue StandardError => e
         error_data = {
           message: "Unhandled exception running #{name}: #{e.class}: #{e}",
@@ -479,11 +481,11 @@ module Salus::Scanners
     end
 
     def max_lifespan
-      max_lifespan_config_param = @config['scanner-timeout-ms']
+      max_lifespan_config_param = @config['scanner-timeout-s']
       # If a developer mistakenly defines this parameter
       # as a non-integer value, let it be known
       unless max_lifespan_config_param.is_a? Integer
-        raise ConfigFormatError, "'scanner-timeout-ms' parameter should be an integer"
+        raise ConfigFormatError, "'scanner-timeout-s' parameter should be an integer"
       end
 
       max_lifespan_config_param

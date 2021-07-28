@@ -9,7 +9,7 @@ describe Salus::Scanners::Base do
     let(:scanner) do
       Salus::Scanners::BundleAudit.new(
         repository: repository,
-        config: { 'scanner-timeout-ms' => 0 }
+        config: { 'scanner-timeout-s' => 0 }
       )
     end
     before do

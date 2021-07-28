@@ -90,67 +90,67 @@
     "scanner_configs": {
       "Bandit": {
         "pass_on_raise": false,
-        "scanner-timeout-ms": 0
+        "scanner-timeout-s": 0
       },
       "Brakeman": {
         "pass_on_raise": false,
-        "scanner-timeout-ms": 0
+        "scanner-timeout-s": 0
       },
       "BundleAudit": {
         "pass_on_raise": false,
-        "scanner-timeout-ms": 0
+        "scanner-timeout-s": 0
       },
       "CargoAudit": {
         "pass_on_raise": false,
-        "scanner-timeout-ms": 0
+        "scanner-timeout-s": 0
       },
       "Gosec": {
         "pass_on_raise": false,
-        "scanner-timeout-ms": 0
+        "scanner-timeout-s": 0
       },
       "NPMAudit": {
         "pass_on_raise": false,
-        "scanner-timeout-ms": 0
+        "scanner-timeout-s": 0
       },
       "PatternSearch": {
         "pass_on_raise": false,
-        "scanner-timeout-ms": 0
+        "scanner-timeout-s": 0
       },
       "RepoNotEmpty": {
         "pass_on_raise": false,
-        "scanner-timeout-ms": 0
+        "scanner-timeout-s": 0
       },
       "ReportGoDep": {
         "pass_on_raise": false,
-        "scanner-timeout-ms": 0
+        "scanner-timeout-s": 0
       },
       "ReportNodeModules": {
         "pass_on_raise": false,
-        "scanner-timeout-ms": 0
+        "scanner-timeout-s": 0
       },
       "ReportPythonModules": {
         "pass_on_raise": false,
-        "scanner-timeout-ms": 0
+        "scanner-timeout-s": 0
       },
       "ReportRubyGems": {
         "pass_on_raise": false,
-        "scanner-timeout-ms": 0
+        "scanner-timeout-s": 0
       },
       "ReportRustCrates": {
         "pass_on_raise": false,
-        "scanner-timeout-ms": 0
+        "scanner-timeout-s": 0
       },
       "Semgrep": {
         "pass_on_raise": false,
-        "scanner-timeout-ms": 0
+        "scanner-timeout-s": 0
       },
       "YarnAudit": {
         "pass_on_raise": false,
-        "scanner-timeout-ms": 0
+        "scanner-timeout-s": 0
       },
       "NodeAudit": {
         "pass_on_raise": false,
-        "scanner-timeout-ms": 0
+        "scanner-timeout-s": 0
       }
     },
     "report_uris": [
