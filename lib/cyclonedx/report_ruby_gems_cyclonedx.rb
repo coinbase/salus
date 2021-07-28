@@ -13,7 +13,7 @@ module Cyclonedx
         "group": "", # TODO: add group or domain name of the publisher
         "name": dependency[:name],
         "version": dependency[:version],
-        "purl": "pkg:#{dependency[:type]}/#{dependency[:name]}@#{dependency[:version]}",
+        "purl": "pkg:#{dependency[:type]}/#{dependency[:name]}#{version_string(dependency)}",
         "properties": [
           {
             "key": "source",
@@ -25,6 +25,16 @@ module Cyclonedx
           }
         ]
       }
+    end
+
+    # Return version string to be used in purl
+    def version_string(dependency)
+      if dependency[:dependency_file] == 'Gemfile.lock'
+        # Return empty string if concrete dependency version specified in Gemfile.lock
+        "@#{dependency[:version]}"
+      else
+        ""
+      end
     end
   end
 end

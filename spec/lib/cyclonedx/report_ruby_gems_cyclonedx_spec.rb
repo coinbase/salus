@@ -17,7 +17,7 @@ describe Cyclonedx::ReportRubyGems do
             "group": "",
             "name": "kibana_url",
             "version": "~> 1.0",
-            "purl": "pkg:gem/kibana_url@~> 1.0",
+            "purl": "pkg:gem/kibana_url",
             "properties": [
               {
                 "key": "source",
@@ -35,7 +35,7 @@ describe Cyclonedx::ReportRubyGems do
             "group": "",
             "name": "rails",
             "version": ">= 0",
-            "purl": "pkg:gem/rails@>= 0",
+            "purl": "pkg:gem/rails",
             "properties": [
               {
                 "key": "source",
@@ -53,7 +53,7 @@ describe Cyclonedx::ReportRubyGems do
             "group": "",
             "name": "master_lock",
             "version": ">= 0",
-            "purl": "pkg:gem/master_lock@>= 0",
+            "purl": "pkg:gem/master_lock",
             "properties": [
               {
                 "key": "source",
