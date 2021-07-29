@@ -53,10 +53,10 @@ describe Salus::Scanners::ReportGoDep do
       repo = Salus::Repo.new('spec/fixtures/report_go_mod')
       scanner = Salus::Scanners::ReportGoDep.new(repository: repo, config: {})
 
-      scanner.run 
+      scanner.run
 
       dependencies = scanner.report.to_h.fetch(:info).fetch(:dependencies)
-      
+
       expect(dependencies[0..2]).to match_array(
         [
           {

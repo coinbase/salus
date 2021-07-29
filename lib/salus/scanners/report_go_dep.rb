@@ -7,7 +7,6 @@ require 'salus/scanners/base'
 module Salus::Scanners
   class ReportGoDep < Base
     def run
-
       if @repository.go_mod_present?
         record_dep_from_go_mod
       elsif @repository.dep_lock_present?
@@ -21,22 +20,23 @@ module Salus::Scanners
     end
 
     def record_dep_from_go_mod
-      Dir.chdir("#{@repository.path_to_repo}"){
-      shell_return = run_shell("go list -json -m all")
-      unless shell_return.success?
-        raise ParseError, "Failed to parse go.mod file: #{shell_return.stderr}"
+      Dir.chdir(@repository.path_to_repo.to_s) do
+        shell_return = run_shell("go list -json -m all")
+        unless shell_return.success?
+          raise ParseError, "Failed to parse go.mod file: #{shell_return.stderr}"
+        end
+
+        go_mod = JSON.parse("[#{shell_return.stdout.gsub(/\}.*?\{/m, '},{')}]")
+        go_mod.each do |dependency|
+          record_dep_package(
+            name: dependency['Path'],
+            reference: "N/A for go.mod/go.sum dependencies",
+            version_tag: dependency['Version'],
+            dependency_file: "go.mod",
+            type: "go_mod"
+          )
+        end
       end
-      go_mod = JSON.parse("[#{shell_return.stdout.gsub(/\}.*?\{/m, '},{')}]")
-      go_mod.each do |dependency|
-        record_dep_package(
-          name: dependency['Path'],
-          reference: "N/A for go.mod/go.sum dependencies",
-          version_tag: dependency['Version'],
-          dependency_file: "go.mod",
-          type: "go_mod"
-        )
-      end
-    }
     end
 
     def record_dep_from_go_lock_package
@@ -60,7 +60,7 @@ module Salus::Scanners
 
     def should_run?
       @repository.dep_lock_present? ||
-      @repository.go_mod_present? ||
+        @repository.go_mod_present?
     end
 
     def record_dep_package(dependency_file:, name:, version_tag:, reference:, type:)
@@ -69,9 +69,8 @@ module Salus::Scanners
         type: type,
         name: name,
         reference: reference,
-        version_tag: version_tag,
+        version_tag: version_tag
       )
     end
-
   end
 end
