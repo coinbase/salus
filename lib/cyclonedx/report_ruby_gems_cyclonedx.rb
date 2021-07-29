@@ -5,14 +5,15 @@ module Cyclonedx
     end
 
     def package_url(dependency)
-      "pkg:#{dependency[:type]}/#{dependency[:name]}#{version_string(dependency)}"
+      "pkg:#{dependency[:type]}/#{dependency[:name]}#{version_string(dependency, true)}"
     end
 
     # Return version string to be used in purl
-    def version_string(dependency)
+    def version_string(dependency, is_purl_version = false)
+      prefix = is_purl_version ? "@" : ""
       if dependency[:dependency_file] == 'Gemfile.lock'
         # Return empty string if concrete dependency version specified in Gemfile.lock
-        "@#{dependency[:version]}"
+        "#{prefix}#{dependency[:version]}"
       else
         ""
       end

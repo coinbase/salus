@@ -38,7 +38,7 @@ module Cyclonedx
         "type": DEFAULT_DEP_COMPONENT_TYPE,
         "group": "", # TODO: add group or domain name of the publisher
         "name": dependency[:name],
-        "version": dependency[:version],
+        "version": version_string(dependency),
         "purl": package_url(dependency),
         "properties": [
           {
