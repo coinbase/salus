@@ -12,7 +12,7 @@ describe Cyclonedx::ReportRubyGems do
       expect(ruby_cyclonedx.build_components_object).to match_array(
         [
           {
-            "bom-ref": "",
+            "bom-ref": "pkg:gem/kibana_url",
             "type": "library",
             "group": "",
             "name": "kibana_url",
@@ -30,7 +30,7 @@ describe Cyclonedx::ReportRubyGems do
             ]
           },
           {
-            "bom-ref": "",
+            "bom-ref": "pkg:gem/rails",
             "type": "library",
             "group": "",
             "name": "rails",
@@ -48,7 +48,7 @@ describe Cyclonedx::ReportRubyGems do
             ]
           },
           {
-            "bom-ref": "",
+            "bom-ref": "pkg:gem/master_lock",
             "type": "library",
             "group": "",
             "name": "master_lock",
@@ -77,7 +77,7 @@ describe Cyclonedx::ReportRubyGems do
       ruby_cyclonedx = Cyclonedx::ReportRubyGems.new(scanner.report)
       expected = [
         {
-          "bom-ref": "",
+          "bom-ref": "pkg:gem/actioncable@5.1.2",
           "type": "library",
           "group": "",
           "name": "actioncable",
@@ -95,7 +95,7 @@ describe Cyclonedx::ReportRubyGems do
           ]
         },
         {
-          "bom-ref": "",
+          "bom-ref": "pkg:gem/actionmailer@5.1.2",
           "type": "library",
           "group": "",
           "name": "actionmailer",
@@ -113,7 +113,7 @@ describe Cyclonedx::ReportRubyGems do
           ]
         },
         {
-          "bom-ref": "",
+          "bom-ref": "pkg:gem/kibana_url@1.0.1",
           "type": "library",
           "group": "",
           "name": "kibana_url",
@@ -131,7 +131,7 @@ describe Cyclonedx::ReportRubyGems do
           ]
         },
         {
-          "bom-ref": "",
+          "bom-ref": "pkg:gem/master_lock@0.9.1",
           "type": "library",
           "group": "",
           "name": "master_lock",
