@@ -48,6 +48,7 @@
         "matches": [
           {
             "regex": "placeholder",
+            "blocksize": "256K",
             "forbidden": false,
             "required": false,
             "message": ""
