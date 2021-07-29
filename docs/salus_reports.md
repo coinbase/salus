@@ -38,7 +38,22 @@ The report, structurally, is a Hash of the following form:
 }
 ```
 
-While the report above is in JSON form, Salus reports can also be generated in YAML, text and SARIF form.
+While the report above is in JSON form, Salus reports can also be generated in YAML, text, SARIF and CycloneDX form.
+
+### CycloneDX Reports
+CycloneDX is a lightweight software bill of materials (SBOM) standard designed for use in application security contexts and supply chain component analysis. Salus can leverage CycloneDX to standardize dependency reporting. For more information see [CycloneDX Spec](https://cyclonedx.org/).
+
+### Salus Scanners with CycloneDX Support
+The following Salus scanners are currently planned to adapt to report CycloneDX output:
+
+- ReportGoDep
+- ReportRubyGems
+- ReportNodeModules 
+- ReportPythonModules 
+- ReportRustCrates
+
+### Example CycloneDX Report
+TODO
 
 ### SARIF Reports
 SARIF is a standardized output format for static analysis tools. Considering the wide range of security tools that Salus currently supports, with each tool producing its own unique output; SARIF provides a generalized report format for all these tools. For more information about the SARIF format visit the [SARIF website](https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html).
