@@ -2,13 +2,13 @@ require_relative '../../../spec_helper.rb'
 
 describe Salus::Scanners::ReportGoDep do
   describe '#run' do
-    it 'should throw an error if no Gopkg.lock is present' do
+    it 'should throw an error if no go.mod, go.sum, or Gopkg.lock is present' do
       repo = Salus::Repo.new('spec/fixtures/blank_repository')
       scanner = Salus::Scanners::ReportGoDep.new(repository: repo, config: {})
 
       expect { scanner.run }.to raise_error(
         Salus::Scanners::Base::InvalidScannerInvocationError,
-        'Cannot report on Go dependencies without a Gopkg.lock file.'
+        'Cannot report on Go dependencies without a Gopkg.lock or go.mod/go.sum file'
       )
     end
 
@@ -42,6 +42,43 @@ describe Salus::Scanners::ReportGoDep do
             name: 'golang.org/x/sys',
             reference: '9a7256cb28ed514b4e1e5f68959914c4c28a92e0',
             version_tag: nil
+          }
+        ]
+      )
+    end
+  end
+
+  describe '#record_dep_from_go_mod' do
+    it 'should report on all the dependencies in the go.mod file' do
+      repo = Salus::Repo.new('spec/fixtures/report_go_mod')
+      scanner = Salus::Scanners::ReportGoDep.new(repository: repo, config: {})
+
+      scanner.run 
+
+      dependencies = scanner.report.to_h.fetch(:info).fetch(:dependencies)
+      
+      expect(dependencies[0..2]).to match_array(
+        [
+          {
+            dependency_file: 'go.mod',
+            type: 'go_mod',
+            name: 'github.com/coinbase/memcachedbetween',
+            reference: 'N/A for go.mod/go.sum dependencies',
+            version_tag: nil
+          },
+          {
+            dependency_file: 'go.mod',
+            type: 'go_mod',
+            name: 'github.com/BurntSushi/toml',
+            reference: 'N/A for go.mod/go.sum dependencies',
+            version_tag: 'v0.3.1'
+          },
+          {
+            dependency_file: 'go.mod',
+            type: 'go_mod',
+            name: 'github.com/DataDog/datadog-go',
+            reference: 'N/A for go.mod/go.sum dependencies',
+            version_tag: 'v4.2.0+incompatible'
           }
         ]
       )
