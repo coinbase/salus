@@ -44,7 +44,7 @@ While the report above is in JSON form, Salus reports can also be generated in Y
 CycloneDX is a lightweight software bill of materials (SBOM) standard designed for use in application security contexts and supply chain component analysis. Salus can leverage CycloneDX to standardize dependency reporting. For more information see [CycloneDX Spec](https://cyclonedx.org/).
 
 ### Salus Scanners with CycloneDX Support
-The following Salus scanners are currently planned to adapt to report CycloneDX output:
+The following Salus dependency scanners are currently planned to adapt to report CycloneDX output:
 
 - ReportGoDep
 - ReportRubyGems
