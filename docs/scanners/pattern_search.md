@@ -9,7 +9,7 @@ The scanner also allows the options below.  These options can be set globally an
 * `exclude_extension` and `include_extension` for excluding and including file extensions, respectively. While these options can be combined, exclusions take precedence when extensions conflict (are both included and excluded) in declarations.
 * `exclude_directory` for excluding directories whose name matches GLOB.  It appears that sift does not support `/`s in the directory name.
 * `exclude_filepaths` for excluding file paths. Note the file paths must be regular paths, not GLOB, and cannot include regular expressions.
-
+* `blocksize` for defining the amount of memory that will be used to limit the parser. By default this is set to 256 KB and can be increased based on the application needs
 
 ## Configuration
 
@@ -20,6 +20,7 @@ scanner_configs:
       - regex: dangerouslySetInnerHTML
         message: Do not use dangerouslySetInnerHTML to render user controlled input.
         forbidden: true
+        blocksize: 256K
         exclude_directory:
           - node_modules
         exclude_filepaths:
@@ -33,6 +34,7 @@ scanner_configs:
       - regex: "# Threat Model"
         message: All repos must contain a documented threat model.
         required: true
+        blocksize: 256K
         exclude_extension:
           - rb
           - js
