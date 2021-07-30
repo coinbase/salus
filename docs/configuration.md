@@ -46,6 +46,11 @@ project_name: "my-repo"
 # that might be used by the consumer of the Salus report.
 custom_info: "PR-123"
 
+# Numeric (Integer or Float)
+# Defines how many seconds Salus should run its scans before timing
+# out (defaults to indefinite amount of time if not specified)
+salus_timeout_s: 120
+
 # Array[Hash[String=>String]]
 # Defines where to send Salus reports and in what format.
 #
