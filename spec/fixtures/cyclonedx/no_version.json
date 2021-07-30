@@ -1,0 +1,33 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.3",
+  "serialNumber": "urn:uuid:7750af5a-f172-11eb-9a03-0242ac130003",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2021-07-12T22:06:59Z",
+    "component": {
+      "bom-ref": "pkg:golang/github.com/coinbase/memcachedbetween@v0.0.0-20210303220134-385e30277ac5",
+      "type": "application",
+      "name": "github.com/coinbase/memcachedbetween",
+      "version": "v0.0.0-20210303220134-385e30277ac5",
+      "purl": "pkg:golang/github.com/coinbase/memcachedbetween@v0.0.0-20210303220134-385e30277ac5"
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "pkg:golang/github.com/DataDog/datadog-go@v4.2.0",
+      "type": "library" ,
+      "name": "github.com/DataDog/datadog-go",
+      "version": "",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT",
+            "url": "https://spdx.org/licenses/MIT.html"
+          }
+        }
+      ],
+      "purl": "pkg:golang/github.com/DataDog/datadog-go"
+    }
+  ]
+}
