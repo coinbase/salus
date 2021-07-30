@@ -76,7 +76,7 @@ module Salus
       @custom_info       = final_config['custom_info']
       @report_uris       = final_config['reports'] || []
       @builds            = final_config['builds'] || {}
-      @salus_timeout_s     = final_config['salus_timeout_s'] || 0
+      @salus_timeout_s   = final_config['salus_timeout_s'] || 0
 
       if !valid_name?(@project_name)
         bad_name_msg = "project name #{@project_name} cannot contain spaces or ;"

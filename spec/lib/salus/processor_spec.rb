@@ -131,12 +131,13 @@ describe Salus::Processor do
       processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/salus_nonzero_timeout')
       processor.scan_project
       report_hsh = processor.report.to_h
+      expected_errors = [{
+        message: "Salus timed out during execution",
+        error_class: Salus::Processor::SalusTimeoutError,
+        backtrace: []
+      }]
 
-      expect(report_hsh[:errors]).to eq([{
-        :message => "Salus timed out during execution",
-        :error_class => Salus::Processor::SalusTimeoutError,
-        :backtrace => [],        
-      }])
+      expect(report_hsh[:errors]).to eq(expected_errors)
     end
   end
 
