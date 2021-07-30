@@ -108,6 +108,7 @@
     ],
     "builds": {
     },
+    "salus_timeout_s": 0,
     "sources": {
       "configured": [
         "file:///salus.yaml"
