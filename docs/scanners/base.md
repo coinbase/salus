@@ -37,14 +37,14 @@ scanner_configs:
 
 #### Maximum Lifespan
 
-At times, scanners may perform scans for unacceptable lengths of time. To limit this behavior, you can define `scanner-timeout-s` with the number of seconds you wish the scan to last before it times out.  
+At times, scanners may perform scans for unacceptable lengths of time. To limit this behavior, you can define `scanner_timeout_s` with the number of seconds you wish the scan to last before it times out.  
 
 Example with `YarnAudit` configuration:
 
 ```yaml
 scanner_configs:
   YarnAudit:
-    scanner-timeout-s: 60
+    scanner_timeout_s: 60
 ```
 
 This will limit YarnAudit scans to 1 minute (60 seconds) in execution time.

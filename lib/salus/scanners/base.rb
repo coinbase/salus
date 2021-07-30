@@ -80,7 +80,7 @@ module Salus::Scanners
 
       begin
         @report.record do
-          Timeout.timeout(max_lifespan) { run }
+          Timeout.timeout(scanner_timeout) { run }
         end
 
         if @report.errors.any?
@@ -480,15 +480,15 @@ module Salus::Scanners
       end
     end
 
-    def max_lifespan
-      max_lifespan_config_param = @config['scanner-timeout-s']
+    def scanner_timeout
+      scanner_timeout_config_param = @config['scanner_timeout_s']
       # If a developer mistakenly defines this parameter
       # as a non-integer value, let it be known
-      unless max_lifespan_config_param.is_a? Integer
-        raise ConfigFormatError, "'scanner-timeout-s' parameter should be an integer"
+      unless scanner_timeout_config_param.is_a? Integer
+        raise ConfigFormatError, "'scanner_timeout_s' parameter should be an integer"
       end
 
-      max_lifespan_config_param
+      scanner_timeout_config_param
     end
   end
 end
