@@ -14,7 +14,7 @@ module Cyclonedx
       @config = config
     end
 
-    CYCLONEDX_SPEC_VERSION = "1.3.0".freeze
+    CYCLONEDX_SPEC_VERSION = "1.3".freeze
     CYCLONEDX_VERSION = "1".freeze
     CYCLONEDX_FORMAT = "CycloneDX".freeze
 
