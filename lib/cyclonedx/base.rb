@@ -12,7 +12,8 @@ module Cyclonedx
     # Returns the 'components' object for a supported/unsupported scanner's report
     def build_components_object
       info = @scan_report.to_h.fetch(:info)
-      return [] if not info[:dependencies]
+      return [] if !(info[:dependencies])
+
       components = []
 
       info[:dependencies].each do |dependency|
