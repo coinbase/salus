@@ -18,7 +18,8 @@ module Salus
                 :builds,
                 :active_scanners,
                 :enforced_scanners,
-                :scanner_configs
+                :scanner_configs,
+                :salus_timeout_s
 
     # Dynamically get all Scanner classes
     ABSTRACT_SCANNERS = %i[Base NodeAudit].freeze
@@ -75,6 +76,7 @@ module Salus
       @custom_info       = final_config['custom_info']
       @report_uris       = final_config['reports'] || []
       @builds            = final_config['builds'] || {}
+      @salus_timeout_s     = final_config['salus_timeout_s'] || 0
 
       if !valid_name?(@project_name)
         bad_name_msg = "project name #{@project_name} cannot contain spaces or ;"
@@ -117,7 +119,8 @@ module Salus
         project_name: @project_name,
         custom_info: @custom_info,
         report_uris: @report_uris,
-        builds: @builds
+        builds: @builds,
+        salus_timeout_s: @salus_timeout_s
       }.compact
     end
 

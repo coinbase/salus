@@ -126,6 +126,18 @@ describe Salus::Processor do
       cves = report_hsh[:scans]['BundleAudit'][:info][:vulnerabilities].map { |vuln| vuln[:cve] }
       expect(cves).to include('CVE-2016-6316')
     end
+
+    it 'should stop scanning once the timeout duration is exceeded', :focus do
+      processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/salus_nonzero_timeout')
+      processor.scan_project
+      report_hsh = processor.report.to_h
+
+      expect(report_hsh[:errors]).to eq([{
+        :message => "Salus timed out during execution",
+        :error_class => Salus::Processor::SalusTimeoutError,
+        :backtrace => [],        
+      }])
+    end
   end
 
   describe '#passed?' do
@@ -164,6 +176,7 @@ describe Salus::Processor do
           headers: { 'Content-Type' => 'application/json' },
           times: 1
         ) do |req|
+          puts req.body, expected_report
           expect(req.body).to match_report_json(expected_report)
         end
       end

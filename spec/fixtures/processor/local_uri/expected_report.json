@@ -147,6 +147,7 @@
       "url": "http://example.com/builds/123",
       "service_name": "buildkite"
     },
+    "salus_timeout_s": 0,
     "sources": {
       "configured": [
         "file:///salus.yaml"
@@ -154,6 +155,7 @@
       "valid": [
         "file:///salus.yaml"
       ]
-    }
+    },
+    "salus_timeout_s": 0
   }
 }

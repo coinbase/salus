@@ -154,6 +154,7 @@
       "valid": [
         "file:///salus.yaml"
       ]
-    }
+    },
+    "salus_timeout_s": 0
   }
 }

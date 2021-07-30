@@ -1,10 +1,12 @@
 require 'uri'
 require 'salus/report'
 require 'salus/plugin_manager'
+require 'timeout'
 
 module Salus
   class Processor
     class InvalidConfigSourceError < StandardError; end
+    class SalusTimeoutError < StandardError; end
 
     include Salus::SalusBugsnag
 
@@ -80,35 +82,47 @@ module Salus
 
     def scan_project
       repo = Repo.new(@repo_path)
-
+      scanners_ran = []
       # Record overall running time of the scan
       @report.record do
-        # If we're running tests, re-raise any exceptions raised by a scanner
-        # (vs. just catching them and recording them in a real run)
-        reraise_exceptions = ENV.key?('RUNNING_SALUS_TESTS')
-        scanners_ran = []
-        Config::SCANNERS.each do |scanner_name, scanner_class|
-          config = @config.scanner_configs.fetch(scanner_name, {})
+        Timeout.timeout(@config.salus_timeout_s) do
+          # If we're running tests, re-raise any exceptions raised by a scanner
+          # (vs. just catching them and recording them in a real run)
+          reraise_exceptions = ENV.key?('RUNNING_SALUS_TESTS')
+          Config::SCANNERS.each do |scanner_name, scanner_class|
+            config = @config.scanner_configs.fetch(scanner_name, {})
 
-          scanner = scanner_class.new(repository: repo, config: config)
-          unless @config.scanner_active?(scanner_name) && scanner.should_run?
-            Salus::PluginManager.send_event(:skip_scanner, scanner_name)
-            next
+            scanner = scanner_class.new(repository: repo, config: config)
+            unless @config.scanner_active?(scanner_name) && scanner.should_run?
+              Salus::PluginManager.send_event(:skip_scanner, scanner_name)
+              next
+            end
+            scanners_ran << scanner
+            Salus::PluginManager.send_event(:run_scanner, scanner_name)
+
+            required = @config.enforced_scanners.include?(scanner_name)
+
+            scanner.run!(
+              salus_report: @report,
+              required: required,
+              pass_on_raise: @config.scanner_configs[scanner_name]['pass_on_raise'],
+              reraise: reraise_exceptions
+            )
           end
-          scanners_ran << scanner
-          Salus::PluginManager.send_event(:run_scanner, scanner_name)
-
-          required = @config.enforced_scanners.include?(scanner_name)
-
-          scanner.run!(
-            salus_report: @report,
-            required: required,
-            pass_on_raise: @config.scanner_configs[scanner_name]['pass_on_raise'],
-            reraise: reraise_exceptions
-          )
         end
-        Salus::PluginManager.send_event(:scanners_ran, scanners_ran, @report)
       end
+    rescue Timeout::Error
+      # TODO: error in @report and bugsnag notify
+      error_message = "Salus timed out during execution"
+      timeout_error_data = {
+        message: error_message,
+        error_class: SalusTimeoutError,
+        backtrace: []
+      }
+      @report.error(timeout_error_data)
+      bugsnag_notify(error_message)
+    ensure
+      Salus::PluginManager.send_event(:scanners_ran, scanners_ran, @report)
     end
 
     # Returns an ASCII version of the report.
