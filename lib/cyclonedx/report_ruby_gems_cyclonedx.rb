@@ -12,7 +12,7 @@ module Cyclonedx
     def version_string(dependency, is_purl_version = false)
       prefix = is_purl_version ? "@" : ""
       if dependency[:dependency_file] == 'Gemfile.lock'
-        # Return empty string if concrete dependency version specified in Gemfile.lock
+        # Return concrete dependency version specified in Gemfile.lock
         "#{prefix}#{dependency[:version]}"
       else
         ""
