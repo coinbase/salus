@@ -16,6 +16,7 @@ module Salus
                 :builds,
                 :active_scanners,
                 :enforced_scanners,
+                :excluded_scanners,
                 :scanner_configs
 
     # Dynamically get all Scanner classes

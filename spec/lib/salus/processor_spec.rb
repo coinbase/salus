@@ -121,8 +121,6 @@ describe Salus::Processor do
       processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/exclude_scanner')
       processor.scan_project
 
-      
-
       report_hsh = processor.report.to_h
       expect(report_hsh[:scans].include?('BundleAudit')).to eq(false)
 
