@@ -26,10 +26,11 @@ describe Cyclonedx::ReportRubyGems do
       expect(Cyclonedx::Report.validate_cyclonedx(report)).to eq(report)
     end
 
-    it 'succeeds if generated cyclonedx version is empty' do
-      path = File.expand_path('../..//fixtures/cyclonedx/no_version.json', __dir__)
+    it 'fails if generated cyclonedx report is not valid' do
+      path = File.expand_path('../..//fixtures/cyclonedx/invalid_report.json', __dir__)
       report = JSON.parse(File.read(path))
-      expect(Cyclonedx::Report.validate_cyclonedx(report)).to eq(report)
+      error = Cyclonedx::Report::CycloneDXInvalidFormatError
+      expect { Cyclonedx::Report.validate_cyclonedx(report) }.to raise_error(error)
     end
   end
 end
