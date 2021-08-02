@@ -177,7 +177,6 @@ describe Salus::Processor do
           headers: { 'Content-Type' => 'application/json' },
           times: 1
         ) do |req|
-          puts req.body, expected_report
           expect(req.body).to match_report_json(expected_report)
         end
       end
