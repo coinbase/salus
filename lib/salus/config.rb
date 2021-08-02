@@ -10,6 +10,8 @@ module Salus
     # The URI format can help security teams update enforced scans or the latest
     # configuration in a centralized manner across all services in their organization.
 
+    include Salus::SalusBugsnag
+
     attr_reader :project_name,
                 :custom_info,
                 :report_uris,
@@ -48,7 +50,14 @@ module Salus
       # defined in the earlier files in the array (DEFAULT_CONFIG is the first such file/object).
       final_config = DEFAULT_CONFIG.dup
       configuration_files.each do |file|
-        filtered_data = filter_ignored_ids(YAML.safe_load(file), ignore_ids)
+        file_content = YAML.safe_load(file)
+        if file_content.is_a?(Hash)
+          filtered_data = filter_ignored_ids(file_content, ignore_ids)
+        else
+          msg = "file_content #{file_content.inspect} is not a hash"
+          bugsnag_notify(msg)
+          filtered_data = {}
+        end
         final_config.deep_merge!(filtered_data)
       end
 
