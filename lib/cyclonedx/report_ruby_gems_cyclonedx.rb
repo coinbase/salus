@@ -8,15 +8,14 @@ module Cyclonedx
       "pkg:#{dependency[:type]}/#{dependency[:name]}#{version_string(dependency, true)}"
     end
 
-    # Return version string to be used in purl
+    # Return version string to be used in purl or component
     def version_string(dependency, is_purl_version = false)
+      # If the dependency is specified in the Gemfile and an absolute version is needed for
+      # the purl return empty
+      return "" if dependency[:dependency_file] == 'Gemfile' && is_purl_version
+
       prefix = is_purl_version ? "@" : ""
-      if dependency[:dependency_file] == 'Gemfile.lock'
-        # Return concrete dependency version specified in Gemfile.lock
-        "#{prefix}#{dependency[:version]}"
-      else
-        ""
-      end
+      "#{prefix}#{dependency[:version]}"
     end
   end
 end
