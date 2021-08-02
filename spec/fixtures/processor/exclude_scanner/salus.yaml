@@ -3,3 +3,4 @@ custom_info: Purple unit
 
 exclude_scanners:
   - BundleAudit
+  - Brakeman

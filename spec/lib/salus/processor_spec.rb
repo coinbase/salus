@@ -120,9 +120,12 @@ describe Salus::Processor do
     it 'should not run excluded scanners' do
       processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/exclude_scanner')
       processor.scan_project
-
       report_hsh = processor.report.to_h
+      # Assert only that scanners we
+      # exclude are not executed
       expect(report_hsh[:scans].include?('BundleAudit')).to eq(false)
+      expect(report_hsh[:scans].include?('Brakeman')).to eq(false)
+      expect(report_hsh[:scans].include?('PatternSearch')).to eq(true)
 
       expect(report_hsh[:project_name]).to eq('EVA-01')
       expect(report_hsh[:custom_info]).to eq('Purple unit')
@@ -130,8 +133,6 @@ describe Salus::Processor do
       expect(report_hsh[:errors]).to eq([])
       expect(report_hsh[:passed]).to eq(true)
       expect(processor.passed?).to eq(true)
-
-      
     end
   end
 
@@ -171,6 +172,7 @@ describe Salus::Processor do
           headers: { 'Content-Type' => 'application/json' },
           times: 1
         ) do |req|
+          puts req.body, expected_report
           expect(req.body).to match_report_json(expected_report)
         end
       end

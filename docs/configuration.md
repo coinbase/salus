@@ -92,7 +92,7 @@ builds:
   service_name: circle_ci
 
 # Array[String] or String.
-# Array[String] - lists all the scanner to execute if Salus determines that
+# Array[String] - lists all the scanners to execute if Salus determines that
 #                 they are relevant to the source code in the repository.
 # String        - value of "all" or "none" which will use all defined scanners or none of them respectively.
 active_scanners:
@@ -109,6 +109,14 @@ active_scanners:
 enforced_scanners:
   - PatternSearch
   - Brakeman
+
+# Array[String] or String.
+# Array[String] - lists all scanners to be excluded from 
+#                 execution. This is particularly useful for overriding
+#                 custom default active scanners
+# String        - value of "all" or "none" which will use all defined scanners or none of them respectively.
+exclude_scanners:
+  - RepoNotEmpty
 
 # Hash[String=>Hash]
 # Defines configuration relevant to specific scanners.

@@ -38,6 +38,7 @@
     "enforced_scanners": [
       "PatternSearch"
     ],
+    "exclude_scanners": [],
     "scanner_configs": {
       "PatternSearch": {
         "pass_on_raise": false,

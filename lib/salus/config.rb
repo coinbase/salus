@@ -16,7 +16,7 @@ module Salus
                 :builds,
                 :active_scanners,
                 :enforced_scanners,
-                :excluded_scanners,
+                :exclude_scanners,
                 :scanner_configs
 
     # Dynamically get all Scanner classes
@@ -62,7 +62,7 @@ module Salus
       # Parse and store configuration.
       @active_scanners   = all_none_some(SCANNERS.keys, final_config['active_scanners'])
       @enforced_scanners = all_none_some(SCANNERS.keys, final_config['enforced_scanners'])
-      @excluded_scanners = all_none_some(SCANNERS.keys, final_config['exclude_scanners'])
+      @exclude_scanners  = all_none_some(SCANNERS.keys, final_config['exclude_scanners'])
       @scanner_configs   = final_config['scanner_configs'] || {}
       @project_name      = final_config['project_name']&.to_s
       @custom_info       = final_config['custom_info']
@@ -103,14 +103,14 @@ module Salus
     end
 
     def scanner_excluded?(scanner_class)
-      @excluded_scanners.include?(scanner_class.to_s)
+      @exclude_scanners.include?(scanner_class.to_s)
     end
 
     def to_h
       {
         active_scanners: @active_scanners.to_a.sort,
         enforced_scanners: @enforced_scanners.to_a.sort,
-        excluded_scanners: @excluded_scanners.to_a.sort,
+        exclude_scanners: @exclude_scanners.to_a.sort,
         scanner_configs: @scanner_configs,
         project_name: @project_name,
         custom_info: @custom_info,
