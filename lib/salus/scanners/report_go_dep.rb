@@ -22,14 +22,15 @@ module Salus::Scanners
     end
 
     def record_dep_from_go_sum
-      goSumPath = "#{@repository.path_to_repo}/go.sum"
-      depList = []
+      go_sum_path = "#{@repository.path_to_repo}/go.sum"
+      dep_list = []
 
-      File.open(goSumPath).each(sep="=\n") do |line|
-        depList.append({"fullDependency" => line, "name" => getName(line), "version" => getVersion(line)})
+      File.open(go_sum_path).each("=\n") do |line|
+        dep_list.append({ "fullDependency" => line, "name" => get_name(line),
+         "version" => get_version(line) })
       end
 
-      depList.each do |dependency|
+      dep_list.each do |dependency|
         record_dep_package(
           name: dependency['name'],
           reference: "N/A for go.mod/go.sum dependencies",
@@ -38,24 +39,25 @@ module Salus::Scanners
           type: "go_sum"
         )
       end
-    end  
+    end
 
     def record_dep_from_go_mod
-      goModPath = "#{@repository.path_to_repo}/go.mod"
-      depList = []
-      parseLine = false
+      go_mod_path = "#{@repository.path_to_repo}/go.mod"
+      dep_list = []
+      parse_line = false
 
-      File.open(goModPath).each(sep="\n") do |line|
+      File.open(go_mod_path).each("\n") do |line|
         if line.include? "require ("
-          parseLine = true
+          parse_line = true
         elsif line.include? ")"
-          parseLine = false
-        elsif parseLine
-          depList.append({"fullDependency" => line, "name" => getName(line), "version" => getVersion(line)})
+          parse_line = false
+        elsif parse_line
+          dep_list.append({ "fullDependency" => line, "name" => get_name(line),
+          "version" => get_version(line) })
         end
       end
 
-      depList.each do |dependency|
+      dep_list.each do |dependency|
         record_dep_package(
           name: dependency['name'],
           reference: "N/A for go.mod/go.sum dependencies",
@@ -85,14 +87,14 @@ module Salus::Scanners
       ['go']
     end
 
-    def getName(line)
-      depList = line.split(' ') 
-      depList[0]
+    def get_name(line)
+      dep_list = line.split(' ')
+      dep_list[0]
     end
 
-    def getVersion(line)
-      depList = line.split(' ')
-      depList[1]
+    def get_version(line)
+      dep_list = line.split(' ')
+      dep_list[1]
     end
 
     def should_run?
