@@ -8,7 +8,7 @@ describe Salus::Scanners::ReportGoDep do
 
       expect { scanner.run }.to raise_error(
         Salus::Scanners::Base::InvalidScannerInvocationError,
-        'Cannot report on Go dependencies without a Gopkg.lock or go.mod/go.sum file'
+        'Cannot report on Go dependencies without a Gopkg.lock, go.mod, or go.sum file'
       )
     end
 
@@ -48,6 +48,43 @@ describe Salus::Scanners::ReportGoDep do
     end
   end
 
+  describe '#record_dep_from_go_sum' do
+    it 'should report on all the dependencies in the go.mod file' do
+      repo = Salus::Repo.new('spec/fixtures/report_go_sum')
+      scanner = Salus::Scanners::ReportGoDep.new(repository: repo, config: {})
+
+      scanner.run
+
+      dependencies = scanner.report.to_h.fetch(:info).fetch(:dependencies)
+
+      expect(dependencies[0..2]).to match_array(
+        [
+          {
+            dependency_file: 'go.sum',
+            type: 'go_sum',
+            name: 'github.cbhq.net/c3/bls12-381',
+            reference: 'N/A for go.mod/go.sum dependencies',
+            version_tag: "v0.0.0-20210114210818-577bfdc5cb9c"
+          },
+          {
+            dependency_file: 'go.sum',
+            type: 'go_sum',
+            name: 'github.cbhq.net/c3/bls12-381',
+            reference: 'N/A for go.mod/go.sum dependencies',
+            version_tag: "v0.0.0-20210114210818-577bfdc5cb9c/go.mod"
+          },
+          {
+            dependency_file: 'go.sum',
+            type: 'go_sum',
+            name: 'github.com/davecgh/go-spew',
+            reference: 'N/A for go.mod/go.sum dependencies',
+            version_tag: "v1.1.0"
+          }
+        ]
+      )
+    end
+  end
+
   describe '#record_dep_from_go_mod' do
     it 'should report on all the dependencies in the go.mod file' do
       repo = Salus::Repo.new('spec/fixtures/report_go_mod')
@@ -62,23 +99,23 @@ describe Salus::Scanners::ReportGoDep do
           {
             dependency_file: 'go.mod',
             type: 'go_mod',
-            name: 'github.com/coinbase/memcachedbetween',
+            name: 'github.cbhq.net/engineering/csf',
             reference: 'N/A for go.mod/go.sum dependencies',
-            version_tag: nil
+            version_tag: "v1.21.0"
           },
           {
             dependency_file: 'go.mod',
             type: 'go_mod',
-            name: 'github.com/BurntSushi/toml',
+            name: 'github.cbhq.net/infra/assume-role',
             reference: 'N/A for go.mod/go.sum dependencies',
-            version_tag: 'v0.3.1'
+            version_tag: "v0.5.2-0.20200909132019-886bedb339a2"
           },
           {
             dependency_file: 'go.mod',
             type: 'go_mod',
-            name: 'github.com/DataDog/datadog-go',
+            name: 'github.cbhq.net/payments/protocol',
             reference: 'N/A for go.mod/go.sum dependencies',
-            version_tag: 'v4.2.0+incompatible'
+            version_tag: "v0.10.22"
           }
         ]
       )
