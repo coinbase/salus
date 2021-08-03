@@ -55,7 +55,6 @@ module Cyclonedx
     def converter(scan_report)
       adapter = "Cyclonedx::#{scan_report.scanner_name}"
       begin
-        print(Object.const_get(adapter).to_s)
         converter = Object.const_get(adapter).new(scan_report)
         converter.config = @config
       rescue NameError
