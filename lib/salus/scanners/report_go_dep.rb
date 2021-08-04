@@ -26,8 +26,13 @@ module Salus::Scanners
       dep_list = []
 
       File.open(go_sum_path).each("=\n") do |line|
-        dep_list.append({ "fullDependency" => line, "name" => get_name(line),
-         "version" => get_version(line) })
+        dep_list.append(
+          {
+            "fullDependency" => line,
+          "name" => get_name(line),
+          "version" => get_version(line)
+          }
+        )
       end
 
       dep_list.each do |dependency|
@@ -49,11 +54,26 @@ module Salus::Scanners
       File.open(go_mod_path).each("\n") do |line|
         if line.include? "require ("
           parse_line = true
+        # Edge case with only 1 dependency in go.mod
+        elsif line.include? "require "
+          split_dep_list = line.split(' ')
+          dep_list.append(
+            {
+              "fullDependency" => split_dep_list[1] + split_dep_list[2],
+              "name" => split_dep_list[1],
+              "version" => split_dep_list[2]
+            }
+          )
         elsif line.include? ")"
           parse_line = false
         elsif parse_line
-          dep_list.append({ "fullDependency" => line, "name" => get_name(line),
-          "version" => get_version(line) })
+          dep_list.append(
+            {
+              "fullDependency" => line,
+              "name" => get_name(line),
+              "version" => get_version(line)
+            }
+          )
         end
       end
 

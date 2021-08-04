@@ -120,6 +120,27 @@ describe Salus::Scanners::ReportGoDep do
         ]
       )
     end
+
+    it 'should report single dependency in go.mod file' do
+      repo = Salus::Repo.new('spec/fixtures/report_go_mod_edge')
+      scanner = Salus::Scanners::ReportGoDep.new(repository: repo, config: {})
+
+      scanner.run
+
+      dependencies = scanner.report.to_h.fetch(:info).fetch(:dependencies)
+
+      expect(dependencies).to match_array(
+        [
+          {
+            dependency_file: 'go.mod',
+            type: 'go_mod',
+            name: 'github.com/hashicorp/errwrap',
+            reference: 'N/A for go.mod/go.sum dependencies',
+            version_tag: "v1.1.0"
+          }
+        ]
+      )
+    end
   end
 
   describe '#should_run?' do
