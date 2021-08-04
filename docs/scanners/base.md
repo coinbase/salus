@@ -35,6 +35,20 @@ scanner_configs:
       Slack channel: #security
 ```
 
+#### Maximum Lifespan
+
+At times, scanners may perform scans for unacceptable lengths of time. To limit this behavior, you can define `scanner_timeout_s` with the number of seconds you wish the scan to last before it times out.  
+
+Example with `YarnAudit` configuration:
+
+```yaml
+scanner_configs:
+  YarnAudit:
+    scanner_timeout_s: 60
+```
+
+This will limit YarnAudit scans to 1 minute (60 seconds) in execution time.
+
 ## Reading/setting up custom configs for your scanner
 
 For setting up custom configurations for your scanner, you can optionally use the helper method ```build_options```.
