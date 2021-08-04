@@ -87,18 +87,20 @@ module Salus::Scanners
           pass_on_raise ? @report.pass : @report.fail
         end
       rescue Timeout::Error
-        error_message = "Scanner #{name} timed out during execution"
+        error_message = "Scanner #{name} timed out after #{@report.running_time} seconds"
         timeout_error_data = {
           message: error_message,
-          error_class: ScannerTimeoutError,
-          backtrace: []
+          error_class: ScannerTimeoutError
         }
+
+        pass_on_raise ? @report.pass : @report.fail
+
         @report.error(timeout_error_data)
         salus_report.error(timeout_error_data)
         bugsnag_notify(error_message)
 
         # Propagate this error if desired
-        raise ScannerTimeoutError, timeout_error_data.message if reraise && !pass_on_raise
+        raise ScannerTimeoutError, timeout_error_data[:message] if reraise
       rescue StandardError => e
         error_data = {
           message: "Unhandled exception running #{name}: #{e.class}: #{e}",
@@ -484,8 +486,10 @@ module Salus::Scanners
       scanner_timeout_config_param = @config['scanner_timeout_s']
       # If a developer mistakenly defines this parameter
       # as a non-integer value, let it be known
-      unless scanner_timeout_config_param.is_a? Integer
-        raise ConfigFormatError, "'scanner_timeout_s' parameter should be an integer"
+      unless scanner_timeout_config_param.is_a?(Integer) && scanner_timeout_config_param >= 0
+        error_message = "'scanner_timeout_s' parameter should be an integer"
+        bugsnag_notify(error_message)
+        raise ConfigFormatError, error_message
       end
 
       scanner_timeout_config_param
