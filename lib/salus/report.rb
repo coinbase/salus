@@ -188,6 +188,12 @@ module Salus
       sarif_results
     end
 
+    def to_cyclonedx(config = {})
+      Cyclonedx::Report.new(@scan_reports, config).to_cyclonedx
+    rescue StandardError => e
+      bugsnag_notify(e.class.to_s + " " + e.message + "\nBuild Info:" + @builds.to_s)
+    end
+
     def publish_report(directive)
       # First create the string for the report.
       uri = directive['uri']
