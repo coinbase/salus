@@ -87,7 +87,7 @@ module Salus::Scanners
           pass_on_raise ? @report.pass : @report.fail
         end
       rescue Timeout::Error
-        error_message = "Scanner #{name} timed out after #{@report.running_time} seconds"
+        error_message = "Scanner #{name} timed out after #{scanner_timeout} seconds"
         timeout_error_data = {
           message: error_message,
           error_class: ScannerTimeoutError

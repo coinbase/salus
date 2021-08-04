@@ -62,9 +62,10 @@ describe Salus::Scanners::Base do
     end
 
     it 'should time out when execution time exceeds configured timeout' do
+      timeout_s = 2
       sleeping_scanner = Salus::Scanners::BundleAudit.new(
         repository: repository,
-        config: { 'scanner_timeout_s' => 2 }
+        config: { 'scanner_timeout_s' => timeout_s }
       )
       allow(sleeping_scanner).to receive(:run) { sleep(5) }
       expect do
@@ -76,9 +77,7 @@ describe Salus::Scanners::Base do
         )
       end.to raise_error(
         Salus::Scanners::Base::ScannerTimeoutError,
-        # Using regex to match the message irrespective of the exact execution duration.
-        # Here, we expect a "2" before the "." and 1 or 2 digits of any number after it
-        /Scanner BundleAudit timed out after 2.\d{1,2} seconds/
+        "Scanner BundleAudit timed out after #{timeout_s} seconds"
       )
     end
   end
