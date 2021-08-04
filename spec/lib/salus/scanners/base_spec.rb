@@ -61,7 +61,7 @@ describe Salus::Scanners::Base do
       expect(salus_report.passed?).to eq(true)
     end
 
-    it 'should time out whene execution time exceeds configure timeout' do
+    it 'should time out when execution time exceeds configured timeout' do
       sleeping_scanner = Salus::Scanners::BundleAudit.new(
         repository: repository,
         config: { 'scanner_timeout_s' => 2 }
