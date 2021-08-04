@@ -4,12 +4,15 @@ require 'salus/shell_result'
 require 'salus/bugsnag'
 require 'shellwords'
 require 'salus/plugin_manager'
+require 'timeout'
 
 module Salus::Scanners
   # Super class for all scanner objects.
   class Base
     class UnhandledExitStatusError < StandardError; end
     class InvalidScannerInvocationError < StandardError; end
+    class ConfigFormatError < StandardError; end
+    class ScannerTimeoutError < StandardError; end
 
     include Salus::SalusBugsnag
 
@@ -76,11 +79,28 @@ module Salus::Scanners
       salus_report.add_scan_report(@report, required: required)
 
       begin
-        @report.record { run }
+        @report.record do
+          Timeout.timeout(scanner_timeout) { run }
+        end
 
         if @report.errors.any?
           pass_on_raise ? @report.pass : @report.fail
         end
+      rescue Timeout::Error
+        error_message = "Scanner #{name} timed out after #{scanner_timeout} seconds"
+        timeout_error_data = {
+          message: error_message,
+          error_class: ScannerTimeoutError
+        }
+
+        pass_on_raise ? @report.pass : @report.fail
+
+        @report.error(timeout_error_data)
+        salus_report.error(timeout_error_data)
+        bugsnag_notify(error_message)
+
+        # Propagate this error if desired
+        raise ScannerTimeoutError, timeout_error_data[:message] if reraise
       rescue StandardError => e
         error_data = {
           message: "Unhandled exception running #{name}: #{e.class}: #{e}",
@@ -460,6 +480,19 @@ module Salus::Scanners
                  end
         options + option
       end
+    end
+
+    def scanner_timeout
+      scanner_timeout_config_param = @config['scanner_timeout_s']
+      # If a developer mistakenly defines this parameter
+      # as a non-integer value, let it be known
+      unless scanner_timeout_config_param.is_a?(Integer) && scanner_timeout_config_param >= 0
+        error_message = "'scanner_timeout_s' parameter should be an integer"
+        bugsnag_notify(error_message)
+        raise ConfigFormatError, error_message
+      end
+
+      scanner_timeout_config_param
     end
   end
 end
