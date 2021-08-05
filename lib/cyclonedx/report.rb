@@ -1,4 +1,6 @@
 require 'securerandom'
+require 'json'
+require 'json-schema'
 require_relative './base'
 
 Dir.entries(File.expand_path('./', __dir__)).sort.each do |filename|
@@ -9,13 +11,16 @@ end
 
 module Cyclonedx
   class Report
+    DEFAULT_COMPONENT_TYPE = "application".freeze
+    class CycloneDXInvalidFormatError < StandardError; end
+
     def initialize(scan_reports, config = {})
       @scan_reports = scan_reports
       @config = config
     end
 
     CYCLONEDX_SPEC_VERSION = "1.3".freeze
-    CYCLONEDX_VERSION = "1".freeze
+    CYCLONEDX_VERSION = 1
     CYCLONEDX_FORMAT = "CycloneDX".freeze
 
     # Build CycloneDX Report.
@@ -28,13 +33,22 @@ module Cyclonedx
         metadata: {},
         components: []
       }
-      cyclonedx_report[:metadata] = converter.build_metadata
 
       # for each scanner report, run the appropriate converter
       @scan_reports.each do |scan_report|
-        cyclonedx_report[:components] << converter(scan_report[0])
+        cyclonedx_report[:components] += converter(scan_report[0])
       end
-      JSON.pretty_generate(cyclonedx_report)
+      report = JSON.pretty_generate(cyclonedx_report)
+      Cyclonedx::Report.validate_cyclonedx(report)
+    end
+
+    def self.validate_cyclonedx(cyclonedx_string)
+      path = File.expand_path('schema/bom-1.3.schema.json', __dir__)
+      schema = JSON.parse(File.read(path))
+      return cyclonedx_string if JSON::Validator.validate(schema, cyclonedx_string)
+
+      errors = JSON::Validator.fully_validate(schema, cyclonedx_string)
+      raise CycloneDXInvalidFormatError, "Incorrect Cyclone Output: #{errors}"
     end
 
     # Converts a ScanReport to a cyclonedx report for the given scanner
