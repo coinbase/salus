@@ -15,6 +15,18 @@ RSpec::Matchers.define :match_report_json do |expected|
   end
 end
 
+RSpec::Matchers.define :match_cyclonedx_report_json do |expected|
+  def remove_key(json_string)
+    json = JSON.parse(json_string)
+    json['bom'].delete('serialNumber')
+    json
+  end
+
+  match do |actual|
+    remove_key(actual) == remove_key(expected)
+  end
+end
+
 describe Salus::Processor do
   describe '#initialize' do
     let(:config_file_path) { 'spec/fixtures/processor/repo/salus.yaml' }
@@ -213,6 +225,43 @@ describe Salus::Processor do
         processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/multiple_endpoints')
         processor.scan_project
         processor.export_report
+      end
+    end
+
+    context 'remote URI headers verbs' do
+      let(:expected_report) do
+        File.read('spec/fixtures/processor/remote_uri_headers_verbs/expected_report.json').strip
+      end
+
+      let(:remote_uri) { 'https://nerv.tk3/salus-report' }
+
+      it 'should send the report to the remote URI with correct headers and verb' do
+        stub_request(:put, remote_uri)
+          .with(headers: { 'Content-Type' => 'application/json',
+                           'X-API-Key' => '',
+                           'repo' => 'Random Repo',
+                          },
+                body: {})
+          .to_return(status: 202)
+
+        processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/remote_uri_headers_verbs')
+        processor.scan_project
+        processor.export_report
+
+        assert_requested(
+          :put,
+          remote_uri,
+          headers:
+            {
+              'Content-Type' => 'application/json',
+              'X-API-Key' => '',
+              'repo' => 'Random Repo',
+            },
+          times: 1
+        ) do |req|
+        expect(req.body).to match_cyclonedx_report_json(expected_report)
+      end
+
       end
     end
   end

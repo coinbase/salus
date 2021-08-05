@@ -1,0 +1,12 @@
+---
+reports:
+  - uri: https://nerv.tk3/salus-report
+    format: cyclonedx-json
+    put:
+    headers:
+      X-API-Key: 'DUMMY_API_KEY'
+      repo: 'Random Repo'
+builds:
+  org: "random_org"
+  project: "random_project"
+

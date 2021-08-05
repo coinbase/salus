@@ -1,0 +1,14 @@
+{
+  "autoCreate": true,
+  "projectName": "random_org/random_project",
+  "projectVersion": "1",
+  "bom":
+    {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.3",
+      "serialNumber": "urn:uuid:a47a2119-725d-4270-aa84-9c7da54aa43b",
+      "version": 1,
+      "metadata": {},
+      "components": []
+    }
+}
