@@ -1,0 +1,91 @@
+GEM
+  remote: https://cool_rubygems.org/
+  specs:
+    dep1 (0.0.47)
+      activesupport
+    dep2 (0.15.3)
+      activesupport
+      google-protobuf (~> 3.14)
+      googleapis-common-protos-types (~> 1.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    activesupport (6.1.4)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      i18n (>= 1.6, < 2)
+      minitest (>= 5.1)
+      tzinfo (~> 2.0)
+      zeitwerk (~> 2.3)
+    aws-eventstream (1.1.1)
+    aws-partitions (1.472.0)
+    aws-sdk-core (3.115.0)
+      aws-eventstream (~> 1, >= 1.0.2)
+      aws-partitions (~> 1, >= 1.239.0)
+      aws-sigv4 (~> 1.1)
+      jmespath (~> 1.0)
+    aws-sdk-sns (1.41.0)
+      aws-sdk-core (~> 3, >= 3.112.0)
+      aws-sigv4 (~> 1.1)
+    aws-sdk-sqs (1.39.0)
+      aws-sdk-core (~> 3, >= 3.112.0)
+      aws-sigv4 (~> 1.1)
+    aws-sdk-xray (1.4.0)
+      aws-sdk-core (~> 3)
+      aws-sigv4 (~> 1.0)
+    aws-sigv4 (1.2.3)
+      aws-eventstream (~> 1, >= 1.0.2)
+    aws-xray-sdk (0.11.5)
+      aws-sdk-xray (~> 1.4.0)
+      multi_json (~> 1)
+    bugsnag (6.21.0)
+      concurrent-ruby (~> 1.0)
+    concurrent-ruby (1.1.9)
+    datadog-lambda (1.12.0)
+      aws-xray-sdk (~> 0.11.3)
+    ddtrace (0.50.0)
+      ffi (~> 1.0)
+      msgpack
+    faraday (1.4.3)
+      faraday-em_http (~> 1.0)
+      faraday-em_synchrony (~> 1.0)
+      faraday-excon (~> 1.1)
+      faraday-net_http (~> 1.0)
+      faraday-net_http_persistent (~> 1.1)
+      multipart-post (>= 1.2, < 3)
+      ruby2_keywords (>= 0.0.4)
+    faraday-em_http (1.0.0)
+    faraday-em_synchrony (1.0.0)
+    faraday-excon (1.1.0)
+    faraday-net_http (1.0.1)
+    faraday-net_http_persistent (1.1.0)
+    ffi (1.15.3)
+    google-protobuf (3.17.3-universal-darwin)
+    googleapis-common-protos-types (1.0.6)
+      google-protobuf (~> 3.14)
+    grpc-tools (1.38.0)
+    i18n (1.8.10)
+      concurrent-ruby (~> 1.0)
+    jmespath (1.4.0)
+    jwt (2.2.3)
+    minitest (5.14.4)
+    msgpack (1.4.2)
+    multi_json (1.15.0)
+    multipart-post (2.1.1)
+    oj (3.11.7)
+    rack (2.2.3)
+    ruby2_keywords (0.0.4)
+    tzinfo (2.0.4)
+      concurrent-ruby (~> 1.0)
+    zeitwerk (2.4.2)
+
+PLATFORMS
+  universal-darwin-20
+  x86_64-darwin-19
+
+DEPENDENCIES
+  dep1!
+  dep2!
+
+BUNDLED WITH
+   2.2.17
