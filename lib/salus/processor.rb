@@ -113,11 +113,10 @@ module Salus
       end
     rescue Timeout::Error
       # TODO: error in @report and bugsnag notify
-      error_message = "Salus timed out during execution"
+      error_message = "Salus timed out after #{@config.salus_timeout_s} seconds"
       timeout_error_data = {
         message: error_message,
-        error_class: SalusTimeoutError,
-        backtrace: []
+        error_class: SalusTimeoutError
       }
       @report.error(timeout_error_data)
       bugsnag_notify(error_message)

@@ -132,9 +132,8 @@ describe Salus::Processor do
       processor.scan_project
       report_hsh = processor.report.to_h
       expected_errors = [{
-        message: "Salus timed out during execution",
-        error_class: Salus::Processor::SalusTimeoutError,
-        backtrace: []
+        message: "Salus timed out after 1 seconds",
+        error_class: Salus::Processor::SalusTimeoutError
       }]
 
       expect(report_hsh[:errors]).to eq(expected_errors)
