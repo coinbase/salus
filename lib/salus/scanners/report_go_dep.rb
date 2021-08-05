@@ -25,16 +25,20 @@ module Salus::Scanners
       go_sum_path = "#{@repository.path_to_repo}/go.sum"
       dep_list = []
 
-      File.open(go_sum_path).each("=\n") do |line|
+      File.foreach(go_sum_path).each("=\n") do |line|
+        next if line.empty?
+
+        line_info = get_line_info(line)
+
         dep_list.append(
           {
             "fullDependency" => line,
-          "name" => get_name(line),
-          "version" => get_version(line)
+            "name" => line_info[0],
+            "version" => line_info[1]
           }
         )
       end
-
+      # Note references are hashes meant for packages in Gopkg.lock files
       dep_list.each do |dependency|
         record_dep_package(
           name: dependency['name'],
@@ -51,32 +55,38 @@ module Salus::Scanners
       dep_list = []
       parse_line = false
 
-      File.open(go_mod_path).each("\n") do |line|
+      File.foreach(go_mod_path).each("\n") do |line|
+        next if line.empty?
+
         if line.include? "require ("
           parse_line = true
         # Edge case with only 1 dependency in go.mod
         elsif line.include? "require "
-          split_dep_list = line.split(' ')
+          line_info = get_line_info(line)
+
           dep_list.append(
             {
-              "fullDependency" => split_dep_list[1] + split_dep_list[2],
-              "name" => split_dep_list[1],
-              "version" => split_dep_list[2]
+              "fullDependency" => line_info[1] + line_info[2],
+              "name" => line_info[1],
+              "version" => line_info[2]
             }
           )
         elsif line.include? ")"
           parse_line = false
         elsif parse_line
+          line_info = get_line_info(line)
+
           dep_list.append(
             {
               "fullDependency" => line,
-              "name" => get_name(line),
-              "version" => get_version(line)
+              "name" => line_info[0],
+              "version" => line_info[1]
             }
           )
         end
       end
 
+      # Note references are hashes meant for packages in Gopkg.lock files
       dep_list.each do |dependency|
         record_dep_package(
           name: dependency['name'],
@@ -107,14 +117,9 @@ module Salus::Scanners
       ['go']
     end
 
-    def get_name(line)
+    def get_line_info(line)
       dep_list = line.split(' ')
-      dep_list[0]
-    end
-
-    def get_version(line)
-      dep_list = line.split(' ')
-      dep_list[1]
+      dep_list
     end
 
     def should_run?
