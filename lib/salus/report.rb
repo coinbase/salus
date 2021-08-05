@@ -374,8 +374,12 @@ module Salus
         body = report_body_hash(config, JSON.parse(to_sarif(config['sarif_options'] || {})))
       end
       body = report_body_hash(config, JSON.parse(to_sarif_diff)) if config['format'] == 'sarif_diff'
-      body = report_body_hash(config, JSON.parse(to_cyclonedx(config['cyclonedx_options'] || {}))) if config['format'] == 'cyclonedx-json'
-      return JSON.pretty_generate(body) if %w[json sarif sarif_diff cyclonedx-json].include?(config['format'])
+      if config['format'] == 'cyclonedx-json'
+        body = report_body_hash(config, JSON.parse(to_cyclonedx(config['cyclonedx_options'] || {})))
+      end
+      if %w[json sarif sarif_diff cyclonedx-json].include?(config['format'])
+        return JSON.pretty_generate(body)
+      end
 
       return YAML.dump(report_body_hash(config, to_h)) if config['format'] == 'yaml'
 

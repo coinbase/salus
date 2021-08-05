@@ -239,12 +239,13 @@ describe Salus::Processor do
         stub_request(:put, remote_uri)
           .with(headers: { 'Content-Type' => 'application/json',
                            'X-API-Key' => '',
-                           'repo' => 'Random Repo',
-                          },
+                           'repo' => 'Random Repo' },
                 body: {})
           .to_return(status: 202)
 
-        processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/remote_uri_headers_verbs')
+        processor = Salus::Processor.new(
+          repo_path: 'spec/fixtures/processor/remote_uri_headers_verbs'
+        )
         processor.scan_project
         processor.export_report
 
@@ -255,13 +256,12 @@ describe Salus::Processor do
             {
               'Content-Type' => 'application/json',
               'X-API-Key' => '',
-              'repo' => 'Random Repo',
+              'repo' => 'Random Repo'
             },
           times: 1
         ) do |req|
-        expect(req.body).to match_cyclonedx_report_json(expected_report)
-      end
-
+          expect(req.body).to match_cyclonedx_report_json(expected_report)
+        end
       end
     end
   end
