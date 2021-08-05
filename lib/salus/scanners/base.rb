@@ -486,8 +486,13 @@ module Salus::Scanners
       scanner_timeout_config_param = @config['scanner_timeout_s']
       # If a developer mistakenly defines this parameter
       # as a non-integer value, let it be known
-      unless scanner_timeout_config_param.is_a?(Integer) && scanner_timeout_config_param >= 0
-        error_message = "'scanner_timeout_s' parameter should be an integer"
+      is_timeout_valid =
+        (scanner_timeout_config_param.is_a?(Integer) ||
+        scanner_timeout_config_param.is_a?(Float)) &&
+        scanner_timeout_config_param >= 0
+      unless is_timeout_valid
+        error_message = "'scanner_timeout_s' parameter must be an integer or float " \
+          "and should not be negative"
         bugsnag_notify(error_message)
         raise ConfigFormatError, error_message
       end
