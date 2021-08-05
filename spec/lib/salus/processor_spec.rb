@@ -127,12 +127,12 @@ describe Salus::Processor do
       expect(cves).to include('CVE-2016-6316')
     end
 
-    it 'should stop scanning once the timeout duration is exceeded', :focus do
+    it 'should stop scanning once the timeout duration is exceeded' do
       processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/salus_nonzero_timeout')
       processor.scan_project
       report_hsh = processor.report.to_h
       expected_errors = [{
-        message: "Salus timed out after 1 seconds",
+        message: "Salus timed out after 0.0001 seconds",
         error_class: Salus::Processor::SalusTimeoutError
       }]
 
