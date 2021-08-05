@@ -26,6 +26,7 @@ module Salus::Scanners
       dep_list = []
 
       File.foreach(go_sum_path).each("=\n") do |line|
+        line = line.strip
         next if line.empty?
 
         line_info = get_line_info(line)
@@ -45,7 +46,7 @@ module Salus::Scanners
           reference: "N/A for go.mod/go.sum dependencies",
           version_tag: dependency['version'],
           dependency_file: "go.sum",
-          type: "go_sum"
+          type: "golang"
         )
       end
     end
@@ -56,12 +57,13 @@ module Salus::Scanners
       parse_line = false
 
       File.foreach(go_mod_path).each("\n") do |line|
+        line = line.strip
         next if line.empty?
 
-        if line.include? "require ("
+        if line.match?(/^require\s{0,} \(/)
           parse_line = true
         # Edge case with only 1 dependency in go.mod
-        elsif line.include? "require "
+        elsif line.match?(/require\s{0,} /)
           line_info = get_line_info(line)
 
           dep_list.append(
@@ -71,7 +73,7 @@ module Salus::Scanners
               "version" => line_info[2]
             }
           )
-        elsif line.include? ")"
+        elsif line.match?(/^\)/)
           parse_line = false
         elsif parse_line
           line_info = get_line_info(line)
@@ -93,7 +95,7 @@ module Salus::Scanners
           reference: "N/A for go.mod/go.sum dependencies",
           version_tag: dependency['version'],
           dependency_file: "go.mod",
-          type: "go_mod"
+          type: "golang"
         )
       end
     end
@@ -108,7 +110,7 @@ module Salus::Scanners
           reference: dependency['revision'],
           version_tag: dependency['version'],
           dependency_file: "Gopkg.lock",
-          type: "go_dep_lock"
+          type: "golang"
         )
       end
     end

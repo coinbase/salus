@@ -24,21 +24,21 @@ describe Salus::Scanners::ReportGoDep do
         [
           {
             dependency_file: 'Gopkg.lock',
-            type: 'go_dep_lock',
+            type: 'golang',
             name: 'github.com/PagerDuty/go-pagerduty',
             reference: 'fe74e407c23e030fa1523e7cbd972398fd85ec5d',
             version_tag: nil
           },
           {
             dependency_file: 'Gopkg.lock',
-            type: 'go_dep_lock',
+            type: 'golang',
             name: 'github.com/Sirupsen/logrus',
             reference: 'ba1b36c82c5e05c4f912a88eab0dcd91a171688f',
             version_tag: 'v0.11.5'
           },
           {
             dependency_file: 'Gopkg.lock',
-            type: 'go_dep_lock',
+            type: 'golang',
             name: 'golang.org/x/sys',
             reference: '9a7256cb28ed514b4e1e5f68959914c4c28a92e0',
             version_tag: nil
@@ -61,21 +61,21 @@ describe Salus::Scanners::ReportGoDep do
         [
           {
             dependency_file: 'go.sum',
-            type: 'go_sum',
+            type: 'golang',
             name: 'github.cbhq.net/c3/bls12-381',
             reference: 'N/A for go.mod/go.sum dependencies',
             version_tag: "v0.0.0-20210114210818-577bfdc5cb9c"
           },
           {
             dependency_file: 'go.sum',
-            type: 'go_sum',
+            type: 'golang',
             name: 'github.cbhq.net/c3/bls12-381',
             reference: 'N/A for go.mod/go.sum dependencies',
             version_tag: "v0.0.0-20210114210818-577bfdc5cb9c/go.mod"
           },
           {
             dependency_file: 'go.sum',
-            type: 'go_sum',
+            type: 'golang',
             name: 'github.com/davecgh/go-spew',
             reference: 'N/A for go.mod/go.sum dependencies',
             version_tag: "v1.1.0"
@@ -98,21 +98,21 @@ describe Salus::Scanners::ReportGoDep do
         [
           {
             dependency_file: 'go.mod',
-            type: 'go_mod',
+            type: 'golang',
             name: 'github.cbhq.net/engineering/csf',
             reference: 'N/A for go.mod/go.sum dependencies',
             version_tag: "v1.21.0"
           },
           {
             dependency_file: 'go.mod',
-            type: 'go_mod',
+            type: 'golang',
             name: 'github.cbhq.net/infra/assume-role',
             reference: 'N/A for go.mod/go.sum dependencies',
             version_tag: "v0.5.2-0.20200909132019-886bedb339a2"
           },
           {
             dependency_file: 'go.mod',
-            type: 'go_mod',
+            type: 'golang',
             name: 'github.cbhq.net/payments/protocol',
             reference: 'N/A for go.mod/go.sum dependencies',
             version_tag: "v0.10.22"
@@ -133,7 +133,7 @@ describe Salus::Scanners::ReportGoDep do
         [
           {
             dependency_file: 'go.mod',
-            type: 'go_mod',
+            type: 'golang',
             name: 'github.com/hashicorp/errwrap',
             reference: 'N/A for go.mod/go.sum dependencies',
             version_tag: "v1.1.0"
