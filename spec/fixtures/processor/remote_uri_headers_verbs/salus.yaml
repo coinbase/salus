@@ -4,8 +4,9 @@ reports:
     format: cyclonedx-json
     put:
     headers:
-      X-API-Key: 'DUMMY_API_KEY'
       repo: 'Random Repo'
+    headers_env_var:
+      X-API-Key: 'DUMMY_API_KEY'
 builds:
   org: "random_org"
   project: "random_project"

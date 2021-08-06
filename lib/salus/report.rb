@@ -221,8 +221,7 @@ module Salus
         send_report(directive,
                     uri,
                     report_body(directive),
-                    directive['format'],
-                    directive['headers'])
+                    directive['format'])
       else
         # must remove the file:// schema portion of the uri.
         uri_object = URI(uri)
@@ -314,29 +313,29 @@ module Salus
             "Cannot write file #{report_file_path} - #{e.class}: #{e.message}"
     end
 
-    def report_headers_h(headers, format)
+    def report_headers_h(headers, headers_env_var, format)
       header_hash = {}
       header_hash['Content-Type'] = CONTENT_TYPE_FOR_FORMAT[format]
       header_hash['X-Scanner'] = x_scanner_type(format)
 
-      return header_hash unless headers
-
       # Iterate through specified headers and assign values
       headers.each do |field, value|
-        header_hash[field] = if field == "X-API-Key"
-                               ENV[value] || ''
-                             else
-                               value
-                             end
+        header_hash[field] = value
+      end
+
+      headers_env_var.each do |field, value|
+        header_hash[field] = ENV[value] || ''
       end
 
       header_hash
     end
 
-    def send_report(config, remote_uri, data, format, headers)
+    def send_report(config, remote_uri, data, format)
       conn = Faraday.new(
         url: remote_uri,
-        headers: report_headers_h(headers, format)
+        headers: report_headers_h(config['headers'] || {},
+                                  config['headers_env_var'] || {},
+                                  format)
       )
 
       response = if config&.key?('put')
