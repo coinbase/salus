@@ -194,7 +194,7 @@ describe Salus::Report do
 
         expect { report.export_report }.to raise_error(
           Salus::Report::ExportReportError,
-          'POST of Salus report to https://nerv.tk3/salus-report had response status 404.'
+          'Salus report to https://nerv.tk3/salus-report had response status 404.'
         )
       end
     end

@@ -195,7 +195,7 @@ module Salus
         autoCreate: true,
         projectName: "#{@builds['org']}/#{@builds['project']}",
         projectVersion: "1",
-        bom: cyclonedx_bom
+        bom: Base64.strict_encode64(JSON.generate(cyclonedx_bom))
       }
       JSON.pretty_generate(cyclonedx_report)
     rescue StandardError => e
@@ -350,7 +350,7 @@ module Salus
 
       unless response.success?
         raise ExportReportError,
-              "POST of Salus report to #{remote_uri} had response status #{response.status}."
+              "Salus report to #{remote_uri} had response status #{response.status}."
       end
     end
 

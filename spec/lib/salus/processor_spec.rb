@@ -18,7 +18,7 @@ end
 RSpec::Matchers.define :match_cyclonedx_report_json do |expected|
   def remove_key(json_string)
     json = JSON.parse(json_string)
-    json['bom'].delete('serialNumber')
+    json.delete('bom')
     json
   end
 
