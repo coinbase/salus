@@ -234,9 +234,17 @@ describe Salus::Processor do
       end
 
       let(:remote_uri) { 'https://nerv.tk3/salus-report' }
+      let(:remote_uri1) { 'https://nerv.tk4/salus-report' }
 
       it 'should send the report to the remote URI with correct headers and verb' do
         stub_request(:put, remote_uri)
+          .with(headers: { 'Content-Type' => 'application/json',
+                           'X-API-Key' => '',
+                           'repo' => 'Random Repo' },
+                body: {})
+          .to_return(status: 202)
+
+        stub_request(:post, remote_uri1)
           .with(headers: { 'Content-Type' => 'application/json',
                            'X-API-Key' => '',
                            'repo' => 'Random Repo' },
@@ -252,6 +260,20 @@ describe Salus::Processor do
         assert_requested(
           :put,
           remote_uri,
+          headers:
+            {
+              'Content-Type' => 'application/json',
+              'X-API-Key' => '',
+              'repo' => 'Random Repo'
+            },
+          times: 1
+        ) do |req|
+          expect(req.body).to match_cyclonedx_report_json(expected_report)
+        end
+
+        assert_requested(
+          :post,
+          remote_uri1,
           headers:
             {
               'Content-Type' => 'application/json',

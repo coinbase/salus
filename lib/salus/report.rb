@@ -355,7 +355,7 @@ module Salus
     end
 
     def report_body_hash(config, data)
-      return data unless config&.key?('post')
+      return data unless config&.key?('post') && !config['post'].nil?
 
       body_hash = config['post']['additional_params'] || {}
       return body_hash unless config['post']['salus_report_param_name']

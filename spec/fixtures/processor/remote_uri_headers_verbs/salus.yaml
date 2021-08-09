@@ -7,6 +7,13 @@ reports:
       repo: 'Random Repo'
     headers_env_var:
       X-API-Key: 'DUMMY_API_KEY'
+  - uri: https://nerv.tk4/salus-report
+    format: cyclonedx-json
+    post:
+    headers:
+      repo: 'Random Repo'
+    headers_env_var:
+      X-API-Key: 'DUMMY_API_KEY'
 builds:
   org: "random_org"
   project: "random_project"
