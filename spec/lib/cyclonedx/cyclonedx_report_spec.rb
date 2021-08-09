@@ -5,13 +5,10 @@ require 'json-schema'
 describe Cyclonedx::ReportRubyGems do
   let(:scan_reports) { [] }
 
-  describe "to_cyclonedx" do
+  describe "to_cyclonedx schema validation" do
     let(:repo) { Salus::Repo.new('spec/fixtures/report_ruby_gems/lockfile') }
     let(:name) { 'Cool Report' }
-    let(:custom_info) { { bitcoin_price: 100_000 } }
-    let(:config) { { lemurs: 'contained', raptors: 'loose' } }
-    let(:build) { { "url": "https://github.com" } }
-    let(:report) { Salus::Report.new(project_name: name, custom_info: custom_info, builds: build) }
+    let(:report) { Salus::Report.new(project_name: name) }
 
     it 'succeeds if generated cyclonedx format is correct' do
       scanner = Salus::Scanners::ReportRubyGems.new(repository: repo, config: {})
