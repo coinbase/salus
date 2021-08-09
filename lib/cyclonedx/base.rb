@@ -33,7 +33,8 @@ module Cyclonedx
         "properties": [
           {
             "key": "source",
-            "value": dependency[:source]
+            # Varies between these two values by scanner
+            "value": dependency[:source] || dependency[:reference]
           },
           {
             "key": "dependency_file",
