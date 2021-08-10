@@ -221,7 +221,7 @@ describe Salus::Processor do
           .with(headers: { 'Content-Type' => 'application/json' })
           .to_return(status: 202)
 
-        expect_any_instance_of(Salus::ReportRequest).to receive(:send_report).twice
+        Salus::ReportRequest.should_receive(:send_report).twice
 
         processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/multiple_endpoints')
         processor.scan_project
