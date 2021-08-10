@@ -17,7 +17,7 @@ module Salus
 
         conn = Faraday.new(
           url: remote_uri,
-          headers: report_headers_h(config['headers'], format)
+          headers: report_headers_h(config['headers'] || {}, format)
         )
 
         response = if config&.key?('put')
