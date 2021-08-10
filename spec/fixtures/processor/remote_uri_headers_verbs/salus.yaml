@@ -6,6 +6,9 @@ reports:
     headers:
       repo: 'Random Repo'
       X-API-Key: '{{DUMMY_API_KEY}}'
+    cyclonedx_options:
+      cyclonedx_project_name: '{{SALUS_BUILD_ORG}}/{{SALUS_BUILD_PROJECT}}'
+
   - uri: https://nerv.tk4/salus-report
     format: cyclonedx-json
     post:

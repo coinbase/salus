@@ -230,8 +230,12 @@ describe Salus::Processor do
     end
 
     context 'remote URI headers verbs' do
+      prefix = 'spec/fixtures/processor/remote_uri_headers_verbs'
       let(:expected_report) do
-        File.read('spec/fixtures/processor/remote_uri_headers_verbs/expected_report.json').strip
+        File.read("#{prefix}/expected_report.json").strip
+      end
+      let(:expected_report_no_project_name) do
+        File.read("#{prefix}/expected_report_no_project_name.json").strip
       end
 
       let(:remote_uri) { 'https://nerv.tk3/salus-report' }
@@ -241,6 +245,8 @@ describe Salus::Processor do
         allow(ENV).to receive(:[]).and_call_original # allow calls in general
         allow(ENV).to receive(:[]).with('RUNNING_SALUS_TESTS').and_return(nil) # otherwise aborts
         allow(ENV).to receive(:[]).with('DUMMY_API_KEY').and_return('123456789')
+        allow(ENV).to receive(:[]).with('SALUS_BUILD_ORG').and_return('random_org')
+        allow(ENV).to receive(:[]).with('SALUS_BUILD_PROJECT').and_return('random_project')
 
         stub_request(:put, remote_uri)
           .with(headers: { 'Content-Type' => 'application/json',
@@ -287,7 +293,7 @@ describe Salus::Processor do
             },
           times: 1
         ) do |req|
-          expect(req.body).to match_cyclonedx_report_json(expected_report)
+          expect(req.body).to match_cyclonedx_report_json(expected_report_no_project_name)
         end
       end
     end

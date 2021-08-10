@@ -183,7 +183,7 @@ module Salus
       cyclonedx_bom = Cyclonedx::Report.new(@scan_reports, config).to_cyclonedx
       cyclonedx_report = {
         autoCreate: true,
-        projectName: "#{@builds['org']}/#{@builds['project']}",
+        projectName: config['cyclonedx_project_name'] || "",
         projectVersion: "1",
         bom: Base64.strict_encode64(JSON.generate(cyclonedx_bom))
       }

@@ -72,6 +72,10 @@ custom_info: "PR-123"
 # The available options for the sarif_options keyword are:
 # 1) `include_suppressed: true/false` -This option allows users to include/exclude suppressed/excluded results 
 #    in their sarif reports. Currently this is supported for NPM audit reports
+#
+# Additional options are also available for cyclonedx using the optional keyword: cyclonedx_options
+# The available options for the cyclonedx_options keyword are:
+# 1) `cyclonedx_project_name: string` -This option allows users to specify the cyclonedx report project name.
 reports:
   - uri: file://tests/salus-report.txt
     format: txt
@@ -92,6 +96,8 @@ reports:
     headers:
       Age: '12'
       X-API-Key: '{{RANDOM_API_KEY}}'
+    cyclonedx_options:
+      cyclonedx_project_name: '{{SALUS_BUILD_ORG}}/{{SALUS_BUILD_PROJECT}}'
   - uri: file://tests/salus-report.sarif
     format: sarif
   - uri: file://tests/salus-report.sarif
