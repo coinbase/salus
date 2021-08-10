@@ -64,9 +64,9 @@ custom_info: "PR-123"
 # Each report hash can also specify what http verb should be used (currently support `put` and `post` key),
 # and headers to set. 
 # - If not specified http verb defaults to `post`
-# - you can pass in `headers` or `headers_env_var` with the corresponding list of name and value pairs.
-# - Values specified in `headers_env_var` will be treated as an environment variable `ENV[val]` while values
-# specified in `headers` are set as is. 
+# - you can pass in `headers` with the corresponding list of name and value pairs.
+# - Values specified with two parentheses i.e `{{VALUE}}` will be treated as an environment variable `ENV[VALUE]` while values
+# specified without will be set as is. 
 #
 # Additional options are also available for sarif using the optional keyword: sarif_options
 # The available options for the sarif_options keyword are:
@@ -91,8 +91,7 @@ reports:
     put:
     headers:
       Age: '12'
-    headers_env_var:
-      X-API-Key: 'RANDOM_API_KEY'
+      X-API-Key: '{{RANDOM_API_KEY}}'
   - uri: file://tests/salus-report.sarif
     format: sarif
   - uri: file://tests/salus-report.sarif

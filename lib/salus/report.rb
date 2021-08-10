@@ -1,4 +1,3 @@
-require 'faraday'
 require 'json'
 require 'salus/formatting'
 require 'salus/bugsnag'
@@ -12,15 +11,6 @@ module Salus
 
     # FIXME(as3richa): make wrapping behaviour configurable
     WRAP = 100
-
-    CONTENT_TYPE_FOR_FORMAT = {
-      'json' => 'application/json',
-      'yaml' => 'text/x-yaml',
-      'txt'  => 'text/plain',
-      'sarif' => 'application/json',
-      'sarif_diff' => 'application/json',
-      'cyclonedx-json' => 'application/json'
-    }.freeze
 
     SUMMARY_TABLE_HEADINGS = ['Scanner', 'Running Time', 'Required', 'Passed'].freeze
 
@@ -218,10 +208,7 @@ module Salus
                         raise ExportReportError, "unknown report format #{directive['format']}"
                       end
       if Salus::Config::REMOTE_URI_SCHEME_REGEX.match?(URI(uri).scheme)
-        send_report(directive,
-                    uri,
-                    report_body(directive),
-                    directive['format'])
+        Salus::ReportRequest.send_report(directive, report_body(directive), uri)
       else
         # must remove the file:// schema portion of the uri.
         uri_object = URI(uri)
@@ -244,14 +231,6 @@ module Salus
         puts "Could not send Salus report: (#{e.class}: #{e.message})"
         e = "Could not send Salus report. Exception: #{e}, Build info: #{builds}"
         bugsnag_notify(e)
-      end
-    end
-
-    def x_scanner_type(format)
-      if format == 'sarif_diff'
-        "salus_sarif_diff"
-      else
-        "salus"
       end
     end
 
@@ -313,49 +292,8 @@ module Salus
             "Cannot write file #{report_file_path} - #{e.class}: #{e.message}"
     end
 
-    def report_headers_h(headers, headers_env_var, format)
-      header_hash = {}
-      header_hash['Content-Type'] = CONTENT_TYPE_FOR_FORMAT[format]
-      header_hash['X-Scanner'] = x_scanner_type(format)
-
-      # Iterate through specified headers and assign values
-      headers.each do |field, value|
-        header_hash[field] = value
-      end
-
-      headers_env_var.each do |field, value|
-        header_hash[field] = ENV[value] || ''
-      end
-
-      header_hash
-    end
-
-    def send_report(config, remote_uri, data, format)
-      conn = Faraday.new(
-        url: remote_uri,
-        headers: report_headers_h(config['headers'] || {},
-                                  config['headers_env_var'] || {},
-                                  format)
-      )
-
-      response = if config&.key?('put')
-                   conn.put do |req|
-                     req.body = data
-                   end
-                 else
-                   conn.post do |req|
-                     req.body = data
-                   end
-                 end
-
-      unless response.success?
-        raise ExportReportError,
-              "Salus report to #{remote_uri} had response status #{response.status}."
-      end
-    end
-
     def report_body_hash(config, data)
-      return data unless config&.key?('post') && !config['post'].nil?
+      return data unless config&.key?('post') && config['post'].present?
 
       body_hash = config['post']['additional_params'] || {}
       return body_hash unless config['post']['salus_report_param_name']

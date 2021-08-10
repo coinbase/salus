@@ -16,14 +16,15 @@ RSpec::Matchers.define :match_report_json do |expected|
 end
 
 RSpec::Matchers.define :match_cyclonedx_report_json do |expected|
-  def remove_key(json_string)
+  def remove_key(json_string, encoded = false)
     json = JSON.parse(json_string)
-    json.delete('bom')
+    json['bom'] = JSON.parse(Base64.decode64(json['bom'])) if encoded
+    json['bom'].delete('serialNumber')
     json
   end
 
   match do |actual|
-    remove_key(actual) == remove_key(expected)
+    remove_key(actual, true) == remove_key(expected)
   end
 end
 
@@ -237,16 +238,20 @@ describe Salus::Processor do
       let(:remote_uri1) { 'https://nerv.tk4/salus-report' }
 
       it 'should send the report to the remote URI with correct headers and verb' do
+        allow(ENV).to receive(:[]).and_call_original # allow calls in general
+        allow(ENV).to receive(:[]).with('RUNNING_SALUS_TESTS').and_return(nil) # otherwise aborts
+        allow(ENV).to receive(:[]).with('DUMMY_API_KEY').and_return('123456789')
+
         stub_request(:put, remote_uri)
           .with(headers: { 'Content-Type' => 'application/json',
-                           'X-API-Key' => '',
+                           'X-API-Key' => '123456789',
                            'repo' => 'Random Repo' },
                 body: {})
           .to_return(status: 202)
 
         stub_request(:post, remote_uri1)
           .with(headers: { 'Content-Type' => 'application/json',
-                           'X-API-Key' => '',
+                           'X-API-Key' => '123456789',
                            'repo' => 'Random Repo' },
                 body: {})
           .to_return(status: 202)
@@ -263,7 +268,7 @@ describe Salus::Processor do
           headers:
             {
               'Content-Type' => 'application/json',
-              'X-API-Key' => '',
+              'X-API-Key' => '123456789',
               'repo' => 'Random Repo'
             },
           times: 1
@@ -277,7 +282,7 @@ describe Salus::Processor do
           headers:
             {
               'Content-Type' => 'application/json',
-              'X-API-Key' => '',
+              'X-API-Key' => '123456789',
               'repo' => 'Random Repo'
             },
           times: 1
