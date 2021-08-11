@@ -23,14 +23,23 @@ module Cyclonedx
     end
 
     def parse_dependency(dependency)
-      {
+      component = {
         "bom-ref": package_url(dependency),
         "type": DEFAULT_DEP_COMPONENT_TYPE,
         "group": "", # TODO: add group or domain name of the publisher
         "name": dependency[:name],
         "version": version_string(dependency),
-        "purl": package_url(dependency),
-        "properties": [
+        "purl": package_url(dependency)
+      }
+
+      unless @config['spec_version'].present? && @config['spec_version'] == "1.2"
+        component[:properties] = dependency_properties(dependency)
+      end
+      component
+    end
+
+    def dependency_properties(dependency)
+       [
           {
             "key": "source",
             # Varies between these two values by scanner
@@ -40,8 +49,7 @@ module Cyclonedx
             "key": "dependency_file",
             "value": dependency[:dependency_file]
           }
-        ]
-      }
+       ]
     end
   end
 end
