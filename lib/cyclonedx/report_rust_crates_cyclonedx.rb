@@ -10,7 +10,7 @@ module Cyclonedx
 
     # Return version string to be used in purl or component
     def version_string(dependency)
-      (dependency[:version_tag]).to_s
+      dependency[:version_tag].to_s
     end
   end
 end
