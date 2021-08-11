@@ -33,7 +33,7 @@ module Cyclonedx
         "properties": [
           {
             "key": "source",
-            "value": dependency[:source] || "" # In case unavailable for scanner
+            "value": dependency[:source].to_s
           },
           {
             "key": "dependency_file",
