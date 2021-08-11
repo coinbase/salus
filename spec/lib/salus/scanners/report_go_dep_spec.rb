@@ -49,7 +49,7 @@ describe Salus::Scanners::ReportGoDep do
   end
 
   describe '#record_dep_from_go_sum' do
-    it 'should report on all the dependencies in the go.mod file' do
+    it 'should report on all the dependencies in the go.sum file' do
       repo = Salus::Repo.new('spec/fixtures/report_go_sum')
       scanner = Salus::Scanners::ReportGoDep.new(repository: repo, config: {})
 
