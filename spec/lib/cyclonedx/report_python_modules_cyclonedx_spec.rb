@@ -76,12 +76,12 @@ describe Cyclonedx::ReportPythonModules do
       python_cyclonedx = Cyclonedx::ReportPythonModules.new(scanner.report)
       expected = [
         {
-          "bom-ref": "pkg:python_requirement/amqp",
+          "bom-ref": "pkg:python_requirement/amqp@2.2.2",
           "type": "library",
           "group": "",
           "name": "amqp",
-          "version": "==2.2.2",
-          "purl": "pkg:python_requirement/amqp",
+          "version": "2.2.2",
+          "purl": "pkg:python_requirement/amqp@2.2.2",
           "properties": [
             {
               "key": "source",
@@ -94,12 +94,12 @@ describe Cyclonedx::ReportPythonModules do
           ]
         },
         {
-          "bom-ref": "pkg:python_requirement/billiard",
+          "bom-ref": "pkg:python_requirement/billiard@3.5.0.3",
           "type": "library",
           "group": "",
           "name": "billiard",
-          "version": "==3.5.0.3",
-          "purl": "pkg:python_requirement/billiard",
+          "version": "3.5.0.3",
+          "purl": "pkg:python_requirement/billiard@3.5.0.3",
           "properties": [
             {
               "key": "source",
@@ -112,12 +112,12 @@ describe Cyclonedx::ReportPythonModules do
           ]
         },
         {
-          "bom-ref": "pkg:python_requirement/celery",
+          "bom-ref": "pkg:python_requirement/celery@4.1.0",
           "type": "library",
           "group": "",
           "name": "celery",
-          "version": "==4.1.0",
-          "purl": "pkg:python_requirement/celery",
+          "version": "4.1.0",
+          "purl": "pkg:python_requirement/celery@4.1.0",
           "properties": [
             {
               "key": "source",
@@ -177,12 +177,12 @@ describe Cyclonedx::ReportPythonModules do
           ]
         },
         {
-          "bom-ref": "pkg:python_requirement/celery",
+          "bom-ref": "pkg:python_requirement/celery@4.0.0",
           "type": "library",
           "group": "",
           "name": "celery",
-          "version": "==4.0.0",
-          "purl": "pkg:python_requirement/celery",
+          "version": "4.0.0",
+          "purl": "pkg:python_requirement/celery@4.0.0",
           "properties": [
             {
               "key": "source",
@@ -195,12 +195,12 @@ describe Cyclonedx::ReportPythonModules do
           ]
         },
         {
-          "bom-ref": "pkg:python_requirement/Jinja2",
+          "bom-ref": "pkg:python_requirement/Jinja2@2.10",
           "type": "library",
           "group": "",
           "name": "Jinja2",
-          "version": "==2.10",
-          "purl": "pkg:python_requirement/Jinja2",
+          "version": "2.10",
+          "purl": "pkg:python_requirement/Jinja2@2.10",
           "properties": [
             {
               "key": "source",
@@ -213,12 +213,12 @@ describe Cyclonedx::ReportPythonModules do
           ]
         },
         {
-          "bom-ref": "pkg:python_requirement/itsdangerous",
+          "bom-ref": "pkg:python_requirement/itsdangerous@0.24",
           "type": "library",
           "group": "",
           "name": "itsdangerous",
-          "version": "==0.24",
-          "purl": "pkg:python_requirement/itsdangerous",
+          "version": "0.24",
+          "purl": "pkg:python_requirement/itsdangerous@0.24",
           "properties": [
             {
               "key": "source",
@@ -231,12 +231,12 @@ describe Cyclonedx::ReportPythonModules do
           ]
         },
         {
-          "bom-ref": "pkg:python_requirement/idna",
+          "bom-ref": "pkg:python_requirement/idna@2.6",
           "type": "library",
           "group": "",
           "name": "idna",
-          "version": "==2.6",
-          "purl": "pkg:python_requirement/idna",
+          "version": "2.6",
+          "purl": "pkg:python_requirement/idna@2.6",
           "properties": [
             {
               "key": "source",
