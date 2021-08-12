@@ -34,7 +34,7 @@ module Cyclonedx
           {
             "key": "source",
             # Varies between these two values by scanner
-            "value": dependency[:source] || dependency[:reference]
+            "value": dependency[:source].to_s || dependency[:reference].to_s
           },
           {
             "key": "dependency_file",
