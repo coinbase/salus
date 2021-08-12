@@ -41,6 +41,7 @@ module Salus
 
       def x_scanner_type(format)
         return SCANNER_TYPE_SARIF_DIFF if format == FORMAT_SARIF_DIFF
+
         SCANNER_TYPE_SALUS
       end
     end
