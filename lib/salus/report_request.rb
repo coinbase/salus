@@ -11,6 +11,10 @@ module Salus
       'cyclonedx-json' => 'application/json'
     }.freeze
 
+    FORMAT_SARIF_DIFF = "sarif_diff".freeze
+    SCANNER_TYPE_SARIF_DIFF = "salus_sarif_diff".freeze
+    SCANNER_TYPE_SALUS = "salus".freeze
+
     class << self
       def send_report(config, data, remote_uri)
         format = config['format']
@@ -19,16 +23,8 @@ module Salus
           url: remote_uri,
           headers: report_headers_h(config['headers'] || {}, format)
         )
-
-        response = if config&.key?('put')
-                     conn.put do |req|
-                       req.body = data
-                     end
-                   else
-                     conn.post do |req|
-                       req.body = data
-                     end
-                   end
+        verb = config&.key?('put') ? :put : :post
+        response = conn.send(verb) { |req| req.body = data }
 
         unless response.success?
           raise Salus::Report::ExportReportError,
@@ -44,11 +40,8 @@ module Salus
       end
 
       def x_scanner_type(format)
-        if format == 'sarif_diff'
-          "salus_sarif_diff"
-        else
-          "salus"
-        end
+        return SCANNER_TYPE_SARIF_DIFF if format == FORMAT_SARIF_DIFF
+        SCANNER_TYPE_SALUS
       end
     end
   end
