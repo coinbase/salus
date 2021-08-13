@@ -19,15 +19,66 @@ describe Cyclonedx::ReportRubyGems do
 
     it 'succeeds if generated cyclonedx version is empty' do
       path = File.expand_path('../..//fixtures/cyclonedx/no_version.json', __dir__)
-      report = JSON.parse(File.read(path))
+      report = JSON.parse(File.read(path)).with_indifferent_access
+
       expect(Cyclonedx::Report.validate_cyclonedx(report)).to eq(report)
     end
 
     it 'fails if generated cyclonedx report is not valid' do
       path = File.expand_path('../..//fixtures/cyclonedx/invalid_report.json', __dir__)
-      report = JSON.parse(File.read(path))
+      report = JSON.parse(File.read(path)).with_indifferent_access
       error = Cyclonedx::Report::CycloneDXInvalidFormatError
       expect { Cyclonedx::Report.validate_cyclonedx(report) }.to raise_error(error)
+    end
+  end
+
+  describe "to_cyclonedx spec version validation" do
+    let(:repo) { Salus::Repo.new('spec/fixtures/report_ruby_gems/lockfile') }
+    let(:name) { 'Cool Report' }
+    let(:report) { Salus::Report.new(project_name: name) }
+
+    it 'cylonedx spec version 1.2 does not include properties field' do
+      repo = Salus::Repo.new('spec/fixtures/report_ruby_gems/lockfile')
+      scanner = Salus::Scanners::ReportRubyGems.new(repository: repo, config: {})
+      scanner.run
+
+      ruby_cyclonedx = Cyclonedx::ReportRubyGems.new(scanner.report, {"spec_version" => "1.2"})
+      expected = [
+        {
+          "bom-ref": "pkg:gem/actioncable@5.1.2",
+          "type": "library",
+          "group": "",
+          "name": "actioncable",
+          "version": "5.1.2",
+          "purl": "pkg:gem/actioncable@5.1.2",
+        },
+        {
+          "bom-ref": "pkg:gem/actionmailer@5.1.2",
+          "type": "library",
+          "group": "",
+          "name": "actionmailer",
+          "version": "5.1.2",
+          "purl": "pkg:gem/actionmailer@5.1.2",
+        },
+        {
+          "bom-ref": "pkg:gem/actionpack@5.1.2",
+          "type": "library",
+          "group": "",
+          "name": "actionpack",
+          "version": "5.1.2",
+          "purl": "pkg:gem/actionpack@5.1.2",
+        }
+      ]
+      expect(ruby_cyclonedx.build_components_object).to include(*expected)
+    end
+
+    it 'fails if provided cylonedx spec version is unsupported' do
+      scanner = Salus::Scanners::ReportRubyGems.new(repository: repo, config: {})
+      scanner.run
+
+      error = Cyclonedx::Base::CycloneDXInvalidVersionError
+      cyclonedx_reports = Cyclonedx::Report.new([[scanner.report, false]], {"spec_version" => "1.0"})
+      expect { cyclonedx_reports.to_cyclonedx}.to raise_error(error)
     end
   end
 end
