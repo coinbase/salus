@@ -38,14 +38,14 @@ module Cyclonedx
       @scan_reports.each do |scan_report|
         cyclonedx_report[:components] += converter(scan_report[0])
       end
-      report = JSON.pretty_generate(cyclonedx_report)
-      Cyclonedx::Report.validate_cyclonedx(report)
+      Cyclonedx::Report.validate_cyclonedx(cyclonedx_report)
     end
 
-    def self.validate_cyclonedx(cyclonedx_string)
+    def self.validate_cyclonedx(cyclonedx_report)
+      cyclonedx_string = JSON.pretty_generate(cyclonedx_report)
       path = File.expand_path('schema/bom-1.3.schema.json', __dir__)
       schema = JSON.parse(File.read(path))
-      return cyclonedx_string if JSON::Validator.validate(schema, cyclonedx_string)
+      return cyclonedx_report if JSON::Validator.validate(schema, cyclonedx_string)
 
       errors = JSON::Validator.fully_validate(schema, cyclonedx_string)
       raise CycloneDXInvalidFormatError, "Incorrect Cyclone Output: #{errors}"

@@ -194,7 +194,7 @@ describe Salus::Report do
 
         expect { report.export_report }.to raise_error(
           Salus::Report::ExportReportError,
-          'POST of Salus report to https://nerv.tk3/salus-report had response status 404.'
+          'Salus report to https://nerv.tk3/salus-report had response status 404.'
         )
       end
     end
@@ -342,7 +342,7 @@ describe Salus::Report do
 
     context 'x-scanner type' do
       it 'should get the correct x-scanner based on format' do
-        report = Salus::Report.new
+        report = Salus::ReportRequest
         expect(report.x_scanner_type('json')).to eq('salus')
         expect(report.x_scanner_type('yaml')).to eq('salus')
         expect(report.x_scanner_type('sarif_diff')).to eq('salus_sarif_diff')
