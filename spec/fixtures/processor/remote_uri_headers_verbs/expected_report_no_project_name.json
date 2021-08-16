@@ -1,0 +1,6 @@
+{
+  "autoCreate": true,
+  "projectName": "",
+  "projectVersion": "1",
+  "bom": {"bomFormat":"CycloneDX","specVersion":"1.3","serialNumber":"urn:uuid:b75641bb-b8e8-4c87-90b3-3b294d47a89b","version":1,"metadata":{},"components":[]}
+}

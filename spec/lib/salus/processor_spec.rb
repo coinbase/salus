@@ -15,6 +15,19 @@ RSpec::Matchers.define :match_report_json do |expected|
   end
 end
 
+RSpec::Matchers.define :match_cyclonedx_report_json do |expected|
+  def remove_key(json_string, encoded = false)
+    json = JSON.parse(json_string)
+    json['bom'] = JSON.parse(Base64.decode64(json['bom'])) if encoded
+    json['bom'].delete('serialNumber')
+    json
+  end
+
+  match do |actual|
+    remove_key(actual, true) == remove_key(expected)
+  end
+end
+
 describe Salus::Processor do
   describe '#initialize' do
     let(:config_file_path) { 'spec/fixtures/processor/repo/salus.yaml' }
@@ -208,11 +221,80 @@ describe Salus::Processor do
           .with(headers: { 'Content-Type' => 'application/json' })
           .to_return(status: 202)
 
-        expect_any_instance_of(Salus::Report).to receive(:send_report).twice
+        Salus::ReportRequest.should_receive(:send_report).twice
 
         processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/multiple_endpoints')
         processor.scan_project
         processor.export_report
+      end
+    end
+
+    context 'remote URI headers verbs' do
+      prefix = 'spec/fixtures/processor/remote_uri_headers_verbs'
+      let(:expected_report) do
+        File.read("#{prefix}/expected_report.json").strip
+      end
+      let(:expected_report_no_project_name) do
+        File.read("#{prefix}/expected_report_no_project_name.json").strip
+      end
+
+      let(:remote_uri) { 'https://nerv.tk3/salus-report' }
+      let(:remote_uri1) { 'https://nerv.tk4/salus-report' }
+
+      it 'should send the report to the remote URI with correct headers and verb' do
+        allow(ENV).to receive(:[]).and_call_original # allow calls in general
+        allow(ENV).to receive(:[]).with('RUNNING_SALUS_TESTS').and_return(nil) # otherwise aborts
+        allow(ENV).to receive(:[]).with('DUMMY_API_KEY').and_return('123456789')
+        allow(ENV).to receive(:[]).with('SALUS_BUILD_ORG').and_return('random_org')
+        allow(ENV).to receive(:[]).with('SALUS_BUILD_PROJECT').and_return('random_project')
+
+        stub_request(:put, remote_uri)
+          .with(headers: { 'Content-Type' => 'application/json',
+                           'X-API-Key' => '123456789',
+                           'repo' => 'Random Repo' },
+                body: {})
+          .to_return(status: 202)
+
+        stub_request(:post, remote_uri1)
+          .with(headers: { 'Content-Type' => 'application/json',
+                           'X-API-Key' => '123456789',
+                           'repo' => 'Random Repo' },
+                body: {})
+          .to_return(status: 202)
+
+        processor = Salus::Processor.new(
+          repo_path: 'spec/fixtures/processor/remote_uri_headers_verbs'
+        )
+        processor.scan_project
+        processor.export_report
+
+        assert_requested(
+          :put,
+          remote_uri,
+          headers:
+            {
+              'Content-Type' => 'application/json',
+              'X-API-Key' => '123456789',
+              'repo' => 'Random Repo'
+            },
+          times: 1
+        ) do |req|
+          expect(req.body).to match_cyclonedx_report_json(expected_report)
+        end
+
+        assert_requested(
+          :post,
+          remote_uri1,
+          headers:
+            {
+              'Content-Type' => 'application/json',
+              'X-API-Key' => '123456789',
+              'repo' => 'Random Repo'
+            },
+          times: 1
+        ) do |req|
+          expect(req.body).to match_cyclonedx_report_json(expected_report_no_project_name)
+        end
       end
     end
   end
