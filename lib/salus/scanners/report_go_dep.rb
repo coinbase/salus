@@ -1,5 +1,7 @@
 require 'toml'
 require 'salus/scanners/base'
+require 'salus/plugin_manager'
+require 'salus/report'
 
 # Report the use of Go packages captured in a Gopkg.lock files.
 # https://github.com/golang/dep
@@ -9,10 +11,10 @@ module Salus::Scanners
     def run
       if @repository.go_sum_present?
         record_dep_from_go_sum
-      elsif @repository.go_mod_present?
-        record_dep_from_go_mod
       elsif @repository.dep_lock_present?
         record_dep_from_go_lock_package
+      elsif @repository.go_mod_present?
+        record_dep_from_go_mod
       else
         raise(
           InvalidScannerInvocationError,
@@ -52,52 +54,13 @@ module Salus::Scanners
     end
 
     def record_dep_from_go_mod
-      go_mod_path = "#{@repository.path_to_repo}/go.mod"
-      dep_list = []
-      parse_line = false
+      # Typically go.mod files don't contain all of the transitive deps/info
+      # a go.sum would. Instead of parsing go.mod files, log that go.mod is 
+      # being used and create a web hook
+      warn_string = "WARNING: No go.sum/Gopkg.lock found, go.mod is currently unsupported for reporting Golang dependencies."
+      report_warn(:report_go_dep_non_fatal, warn_string)
 
-      File.foreach(go_mod_path).each("\n") do |line|
-        line = line.strip
-        next if line.empty?
-
-        if line.match?(/^require\s{0,} \(/)
-          parse_line = true
-        # Edge case with only 1 dependency in go.mod
-        elsif line.match?(/require\s{0,} /)
-          line_info = get_line_info(line)
-
-          dep_list.append(
-            {
-              "fullDependency" => line_info[1] + line_info[2],
-              "name" => line_info[1],
-              "version" => line_info[2]
-            }
-          )
-        elsif line.match?(/^\)/)
-          parse_line = false
-        elsif parse_line
-          line_info = get_line_info(line)
-
-          dep_list.append(
-            {
-              "fullDependency" => line,
-              "name" => line_info[0],
-              "version" => line_info[1]
-            }
-          )
-        end
-      end
-
-      # Note references are hashes meant for packages in Gopkg.lock files
-      dep_list.each do |dependency|
-        record_dep_package(
-          name: dependency['name'],
-          reference: "N/A for go.mod/go.sum dependencies",
-          version_tag: dependency['version'],
-          dependency_file: "go.mod",
-          type: "golang"
-        )
-      end
+      Salus::PluginManager.send_event(:skip_scanner, "ReportGoDep")
     end
 
     def record_dep_from_go_lock_package

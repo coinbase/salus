@@ -86,60 +86,14 @@ describe Salus::Scanners::ReportGoDep do
   end
 
   describe '#record_dep_from_go_mod' do
-    it 'should report on all the dependencies in the go.mod file' do
+    it 'should send an event and report warning' do
       repo = Salus::Repo.new('spec/fixtures/report_go_mod')
       scanner = Salus::Scanners::ReportGoDep.new(repository: repo, config: {})
 
       scanner.run
-
-      dependencies = scanner.report.to_h.fetch(:info).fetch(:dependencies)
-
-      expect(dependencies[0..2]).to match_array(
-        [
-          {
-            dependency_file: 'go.mod',
-            type: 'golang',
-            name: 'github.cbhq.net/engineering/csf',
-            reference: 'N/A for go.mod/go.sum dependencies',
-            version_tag: "v1.21.0"
-          },
-          {
-            dependency_file: 'go.mod',
-            type: 'golang',
-            name: 'github.cbhq.net/infra/assume-role',
-            reference: 'N/A for go.mod/go.sum dependencies',
-            version_tag: "v0.5.2-0.20200909132019-886bedb339a2"
-          },
-          {
-            dependency_file: 'go.mod',
-            type: 'golang',
-            name: 'github.cbhq.net/payments/protocol',
-            reference: 'N/A for go.mod/go.sum dependencies',
-            version_tag: "v0.10.22"
-          }
-        ]
-      )
-    end
-
-    it 'should report single dependency in go.mod file' do
-      repo = Salus::Repo.new('spec/fixtures/report_go_mod_edge')
-      scanner = Salus::Scanners::ReportGoDep.new(repository: repo, config: {})
-
-      scanner.run
-
-      dependencies = scanner.report.to_h.fetch(:info).fetch(:dependencies)
-
-      expect(dependencies).to match_array(
-        [
-          {
-            dependency_file: 'go.mod',
-            type: 'golang',
-            name: 'github.com/hashicorp/errwrap',
-            reference: 'N/A for go.mod/go.sum dependencies',
-            version_tag: "v1.1.0"
-          }
-        ]
-      )
+      warnings = scanner.report.to_h.fetch(:warn)
+      expect(warnings[:report_go_dep_non_fatal]).to eq('WARNING: No go.sum/Gopkg.lock found, go.mod is currently unsupported for reporting Golang dependencies.')
+      
     end
   end
 
