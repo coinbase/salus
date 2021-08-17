@@ -87,13 +87,23 @@ describe Salus::Scanners::ReportGoDep do
 
   describe '#record_dep_from_go_mod' do
     it 'should send an event and report warning' do
+      Salus::PluginManager.register_listener(listener)
+
       repo = Salus::Repo.new('spec/fixtures/report_go_mod')
       scanner = Salus::Scanners::ReportGoDep.new(repository: repo, config: {})
 
       scanner.run
       warnings = scanner.report.to_h.fetch(:warn)
-      expect(warnings[:report_go_dep_non_fatal]).to eq('WARNING: No go.sum/Gopkg.lock found, go.mod is currently unsupported for reporting Golang dependencies.')
-      
+
+      expect(listener).to receive(:report_go_dep_scan).with(
+        'This repository contains no go.sum or Gopkg.lock file. Currently '\
+        'go.mod files are unsupported for reporting Golang dependencies'
+      )
+
+      expect(warnings[:report_go_dep_missing_go_sum]).to eq(
+        'WARNING: No go.sum/Gopkg.lock found. Currently go.mod is '\
+        'unsupported for reporting Golang dependencies.'
+      )
     end
   end
 
