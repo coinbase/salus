@@ -50,7 +50,7 @@ module Cyclonedx
         "group": "", # TODO: add group or domain name of the publisher
         "name": dependency[:name],
         "version": version_string(dependency),
-        "purl": package_url(dependency),
+        "purl": package_url(dependency)
       }
     end
 
