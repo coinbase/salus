@@ -87,6 +87,7 @@ describe Salus::Scanners::ReportGoDep do
 
   describe '#record_dep_from_go_mod' do
     it 'should send an event and report warning' do
+      let(:listener) { Object.new }
       Salus::PluginManager.register_listener(listener)
 
       repo = Salus::Repo.new('spec/fixtures/report_go_mod')
