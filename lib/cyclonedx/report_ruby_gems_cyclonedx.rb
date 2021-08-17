@@ -1,11 +1,9 @@
 module Cyclonedx
   class ReportRubyGems < Base
+    TYPE = "gem".freeze
+
     def initialize(scan_report, config = {})
       super(scan_report, config)
-    end
-
-    def package_url(dependency)
-      "pkg:#{dependency[:type]}/#{dependency[:name]}#{version_string(dependency, true)}"
     end
 
     # Return version string to be used in purl or component
@@ -14,8 +12,7 @@ module Cyclonedx
       # the purl return empty
       return "" if dependency[:dependency_file] == 'Gemfile' && is_purl_version
 
-      prefix = is_purl_version ? "@" : ""
-      "#{prefix}#{dependency[:version]}"
+      dependency[:version]
     end
   end
 end

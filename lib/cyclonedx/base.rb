@@ -1,6 +1,8 @@
 module Cyclonedx
   class Base
     DEFAULT_DEP_COMPONENT_TYPE = "library".freeze
+    TYPE = "N/A".freeze
+
     class CycloneDXInvalidVersionError < StandardError; end
 
     attr_accessor :config
@@ -66,6 +68,12 @@ module Cyclonedx
           "value": dependency[:dependency_file]
         }
       ]
+    end
+
+    def package_url(dependency)
+      PackageUrl.new(type: self.class::TYPE,
+                     namespace: dependency[:name],
+                     version: version_string(dependency, true)).to_string
     end
   end
 end
