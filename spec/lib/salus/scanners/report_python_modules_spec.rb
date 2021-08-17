@@ -29,19 +29,19 @@ describe Salus::Scanners::ReportPythonModules do
           dependency_file: 'requirements.txt',
           name: 'requests',
           version: '>=2.5',
-          type: 'python_requirement'
+          type: 'pypi'
         },
         {
           dependency_file: 'requirements.txt',
           name: 'six',
           version: '>=1.9',
-          type: 'python_requirement'
+          type: 'pypi'
         },
         {
           dependency_file: 'requirements.txt',
           name: 'pycryptodome',
           version: '>=3.4.11',
-          type: 'python_requirement'
+          type: 'pypi'
         }
       ]
     )
