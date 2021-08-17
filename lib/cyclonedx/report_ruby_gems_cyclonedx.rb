@@ -6,6 +6,5 @@ module Cyclonedx
     def initialize(scan_report, config = {})
       super(scan_report, config)
     end
-
   end
 end
