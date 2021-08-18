@@ -237,9 +237,13 @@ describe Salus::Processor do
       let(:expected_report_no_project_name) do
         File.read("#{prefix}/expected_report_no_project_name.json").strip
       end
+      let(:expected_report_no_cyclonedx_options) do
+        File.read("#{prefix}/expected_report_no_cyclonedx_options.json").strip
+      end
 
       let(:remote_uri) { 'https://nerv.tk3/salus-report' }
       let(:remote_uri1) { 'https://nerv.tk4/salus-report' }
+      let(:remote_uri2) { 'https://nerv.tk5/salus-report' }
 
       it 'should send the report to the remote URI with correct headers and verb' do
         allow(ENV).to receive(:[]).and_call_original # allow calls in general
@@ -256,6 +260,13 @@ describe Salus::Processor do
           .to_return(status: 202)
 
         stub_request(:post, remote_uri1)
+          .with(headers: { 'Content-Type' => 'application/json',
+                           'X-API-Key' => '123456789',
+                           'repo' => 'Random Repo' },
+                body: {})
+          .to_return(status: 202)
+
+        stub_request(:put, remote_uri2)
           .with(headers: { 'Content-Type' => 'application/json',
                            'X-API-Key' => '123456789',
                            'repo' => 'Random Repo' },
@@ -294,6 +305,20 @@ describe Salus::Processor do
           times: 1
         ) do |req|
           expect(req.body).to match_cyclonedx_report_json(expected_report_no_project_name)
+        end
+
+        assert_requested(
+          :put,
+          remote_uri2,
+          headers:
+            {
+              'Content-Type' => 'application/json',
+              'X-API-Key' => '123456789',
+              'repo' => 'Random Repo'
+            },
+          times: 1
+        ) do |req|
+          expect(req.body).to match_cyclonedx_report_json(expected_report_no_cyclonedx_options)
         end
       end
     end

@@ -19,7 +19,7 @@ module Cyclonedx
       @config = config
     end
 
-    CYCLONEDX_SPEC_VERSION = "1.3".freeze
+    CYCLONEDX_DEFAULT_SPEC_VERSION = "1.3".freeze
     CYCLONEDX_VERSION = 1
     CYCLONEDX_FORMAT = "CycloneDX".freeze
 
@@ -27,7 +27,7 @@ module Cyclonedx
     def to_cyclonedx
       cyclonedx_report = {
         bomFormat: CYCLONEDX_FORMAT,
-        specVersion: CYCLONEDX_SPEC_VERSION,
+        specVersion: spec_version,
         serialNumber: random_urn_uuid,
         version: CYCLONEDX_VERSION,
         metadata: {},
@@ -43,7 +43,7 @@ module Cyclonedx
 
     def self.validate_cyclonedx(cyclonedx_report)
       cyclonedx_string = JSON.pretty_generate(cyclonedx_report)
-      path = File.expand_path('schema/bom-1.3.schema.json', __dir__)
+      path = File.expand_path("schema/bom-#{cyclonedx_report[:specVersion]}.schema.json", __dir__)
       schema = JSON.parse(File.read(path))
       return cyclonedx_report if JSON::Validator.validate(schema, cyclonedx_string)
 
@@ -65,6 +65,10 @@ module Cyclonedx
 
     def random_urn_uuid
       "urn:uuid:#{SecureRandom.uuid}"
+    end
+
+    def spec_version
+      @config['spec_version'] || CYCLONEDX_DEFAULT_SPEC_VERSION
     end
   end
 end

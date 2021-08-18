@@ -1,7 +1,7 @@
 module Cyclonedx
   class ReportRubyGems < Base
-    def initialize(scan_report)
-      super(scan_report)
+    def initialize(scan_report, config = {})
+      super(scan_report, config)
     end
 
     def package_url(dependency)
