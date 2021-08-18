@@ -11,7 +11,6 @@ gem 'parser', '~> 3.0.0'
 gem 'rgl', '~> 0.5.7'
 gem 'safe_yaml', '~> 1.0'
 gem 'thor', '~> 1.1.0'
-gem "toml", "~> 0.2.0"
 gem "toml-rb", "~> 2.0"
 
 group :scanners do
