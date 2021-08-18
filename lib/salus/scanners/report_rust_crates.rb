@@ -1,4 +1,4 @@
-require 'toml'
+require 'toml-rb'
 require 'salus/scanners/base'
 
 # Report the use of any Rust Crates.  Reports the
@@ -62,7 +62,7 @@ module Salus::Scanners
           "Check write premissions and Cargo version is at least 1.44"
       end
 
-      deps = TOML::Parser.new(@repository.cargo_lock).parsed
+      deps = TomlRB::Parser.new(@repository.cargo_lock).hash
 
       # Sample Package
       # { "name"=>"autocfg",
