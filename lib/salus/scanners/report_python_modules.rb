@@ -17,7 +17,7 @@ module Salus::Scanners
       dependencies.each do |name, version|
         report_dependency(
           'requirements.txt',
-          type: 'python_requirement',
+          type: 'pypi',
           name: name,
           version: version
         )

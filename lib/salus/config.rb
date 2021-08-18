@@ -174,7 +174,7 @@ module Salus
       # Get the configuration back into string format
       config_string = YAML.dump(config_hash)
 
-      # Check for references to evnars.
+      # Check for references to envars.
       envar_refs = config_string.scan(/\{\{([_a-zA-Z0-9]+)\}\}/).flatten
 
       # Replace all references to envars.
