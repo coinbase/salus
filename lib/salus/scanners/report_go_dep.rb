@@ -3,12 +3,14 @@ require 'salus/scanners/base'
 require 'salus/plugin_manager'
 require 'salus/report'
 
-# Report the use of Go packages captured in a Gopkg.lock files.
+# Report the use of Go packages captured in one of Gopkg.lock/go.sum/go.mod files.
 # https://github.com/golang/dep
 
 module Salus::Scanners
   class ReportGoDep < Base
     def run
+      unless should_run? 
+      end
       if @repository.go_sum_present?
         record_dep_from_go_sum
       elsif @repository.dep_lock_present?
