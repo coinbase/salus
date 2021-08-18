@@ -9,7 +9,7 @@ require 'salus/report'
 module Salus::Scanners
   class ReportGoDep < Base
     def run
-      unless should_run? 
+      unless should_run?
       end
       if @repository.go_sum_present?
         record_dep_from_go_sum
@@ -33,27 +33,27 @@ module Salus::Scanners
         line = line.strip
         next if line.empty?
 
-        go_sum_regex = /(?<namespace>(.*)(?!\/go\.mod))\/(?<name>[^\s]*)
-        (\s)*(?<version>(.*))(\s)*h1:(?<checksum>(.*))/x
+        go_sum_regex = %r{(?<namespace>(.*)(?!/go\.mod))/(?<name>[^\s]*)
+        (\s)*(?<version>(.*))(\s)*h1:(?<checksum>(.*))}x
 
-        if matches = line.match(go_sum_regex)
+        if (matches = line.match(go_sum_regex))
           dep_list.append(
             {
-              "namespace" => "#{matches[:namespace]}",
-              "name" => "#{matches[:name]}",
-              "version" => "#{matches[:version]}",
-              "checksum" => "#{matches[:checksum]}"
+              "namespace" => (matches[:namespace]).to_s,
+              "name" => (matches[:name]).to_s,
+              "version" => (matches[:version]).to_s,
+              "checksum" => (matches[:checksum]).to_s
             }
           )
-          end
         end
+      end
       # Note references are hashes meant for packages in Gopkg.lock files
       dep_list.each do |dependency|
         record_dep_package(
           namespace: dependency["namespace"],
           name: dependency["name"],
           reference: "N/A for go.mod/go.sum dependencies",
-          version_tag: dependency['version'].gsub(/\/go.mod/,'').strip,
+          version_tag: dependency['version'].gsub(%r{/go.mod}, '').strip,
           dependency_file: "go.sum",
           checksum: dependency['checksum'],
           type: "golang"
@@ -101,7 +101,16 @@ module Salus::Scanners
         @repository.go_sum_present?
     end
 
-    def record_dep_package(dependency_file:, name:, version_tag:, reference:, type:, namespace:, checksum:)
+    def record_dep_package(
+      dependency_file:,
+      name:,
+      version_tag:,
+      reference:,
+      type:,
+      namespace:,
+      checksum:
+    )
+
       report_dependency(
         dependency_file,
         type: type,

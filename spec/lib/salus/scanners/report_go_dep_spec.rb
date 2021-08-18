@@ -118,7 +118,7 @@ describe Salus::Scanners::ReportGoDep do
 
       scanner.run
       warnings = scanner.report.to_h.fetch(:warn)
-      
+
       expect(warnings[:report_go_dep_missing_go_sum]).to eq(
         'WARNING: No go.sum/Gopkg.lock found. Currently go.mod is '\
         'unsupported for reporting Golang dependencies.'
