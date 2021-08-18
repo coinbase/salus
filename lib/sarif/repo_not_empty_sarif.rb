@@ -4,7 +4,6 @@ module Sarif
   class RepoNotEmptySarif < BaseSarif
     include Salus::SalusBugsnag
 
-    NOT_FOUND = "Required Pattern Not Found".freeze
     REPO_NOT_EMPTY_URI = "https://github.com/coinbase/salus/blob/master/docs/scanners/"\
     "repository_not_blank.md".freeze
 
