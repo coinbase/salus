@@ -2,6 +2,7 @@ require 'securerandom'
 require 'json'
 require 'json-schema'
 require_relative './base'
+require_relative './package_url'
 
 Dir.entries(File.expand_path('./', __dir__)).sort.each do |filename|
   next unless /_cyclonedx.rb\z/.match?(filename) && !filename.eql?('base_cyclonedx.rb')

@@ -1,6 +1,9 @@
 module Cyclonedx
   class Base
     DEFAULT_DEP_COMPONENT_TYPE = "library".freeze
+    TYPE = "N/A".freeze
+    UNLOCKED_DEPENDENCY_FILE = "N/A".freeze
+
     class CycloneDXInvalidVersionError < StandardError; end
 
     attr_accessor :config
@@ -66,6 +69,23 @@ module Cyclonedx
           "value": dependency[:dependency_file]
         }
       ]
+    end
+
+    def package_url(dependency)
+      PackageUrl.new(type: self.class::TYPE,
+                     namespace: dependency[:name],
+                     version: version_string(dependency, true)).to_string
+    end
+
+    # Return version string to be used in purl or component
+    def version_string(dependency, is_purl_version = false)
+      # If the dependency is specified in a unlocked dependency file and an absolute version
+      # is needed for the purl return empty
+      if dependency[:dependency_file] == self.class::UNLOCKED_DEPENDENCY_FILE && is_purl_version
+        return ""
+      end
+
+      dependency[:version]
     end
   end
 end
