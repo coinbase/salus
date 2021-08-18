@@ -27,21 +27,27 @@ describe Salus::Scanners::ReportGoDep do
             type: 'golang',
             name: 'github.com/PagerDuty/go-pagerduty',
             reference: 'fe74e407c23e030fa1523e7cbd972398fd85ec5d',
-            version_tag: nil
+            version_tag: nil,
+            namespace: '',
+            checksum: ''
           },
           {
             dependency_file: 'Gopkg.lock',
             type: 'golang',
             name: 'github.com/Sirupsen/logrus',
             reference: 'ba1b36c82c5e05c4f912a88eab0dcd91a171688f',
-            version_tag: 'v0.11.5'
+            version_tag: 'v0.11.5',
+            namespace: '',
+            checksum: ''
           },
           {
             dependency_file: 'Gopkg.lock',
             type: 'golang',
             name: 'golang.org/x/sys',
             reference: '9a7256cb28ed514b4e1e5f68959914c4c28a92e0',
-            version_tag: nil
+            version_tag: nil,
+            namespace: '',
+            checksum: ''
           }
         ]
       )
@@ -62,22 +68,28 @@ describe Salus::Scanners::ReportGoDep do
           {
             dependency_file: 'go.sum',
             type: 'golang',
-            name: 'github.cbhq.net/c3/bls12-381',
+            namespace: 'github.cbhq.net/c3',
+            name: 'bls12-381',
             reference: 'N/A for go.mod/go.sum dependencies',
+            checksum: 'H6qPVjeq1XbGuaFaFD9aIXh7ZBmFziVAQCNRhBw8XnU=',
             version_tag: "v0.0.0-20210114210818-577bfdc5cb9c"
           },
           {
             dependency_file: 'go.sum',
             type: 'golang',
-            name: 'github.cbhq.net/c3/bls12-381',
+            namespace: 'github.cbhq.net/c3',
+            name: 'bls12-381',
             reference: 'N/A for go.mod/go.sum dependencies',
-            version_tag: "v0.0.0-20210114210818-577bfdc5cb9c/go.mod"
+            checksum: 'GKWeplG/c6sSm2WEWBVzld/RnaaMxB/4U0hk5lbKWqc=',
+            version_tag: "v0.0.0-20210114210818-577bfdc5cb9c"
           },
           {
             dependency_file: 'go.sum',
             type: 'golang',
-            name: 'github.com/davecgh/go-spew',
+            namespace: 'github.com/davecgh',
+            name: 'go-spew',
             reference: 'N/A for go.mod/go.sum dependencies',
+            checksum: 'ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=',
             version_tag: "v1.1.0"
           }
         ]
@@ -88,7 +100,7 @@ describe Salus::Scanners::ReportGoDep do
   describe '#record_dep_from_go_mod' do
     let(:listener) { Object.new }
     before(:each) do
-      def listener.report_go_dep_scan(data)
+      def listener.report_go_dep_missing_go_sum(data)
         data
       end
     end
@@ -99,14 +111,14 @@ describe Salus::Scanners::ReportGoDep do
       repo = Salus::Repo.new('spec/fixtures/report_go_mod')
       scanner = Salus::Scanners::ReportGoDep.new(repository: repo, config: {})
 
-      expect(listener).to receive(:report_go_dep_scan).with(
+      expect(listener).to receive(:report_go_dep_missing_go_sum).with(
         'This repository contains no go.sum or Gopkg.lock file. Currently '\
-        'go.mod files are unsupported for reporting Golang dependencies'
+        'go.mod files are unsupported for reporting Golang dependencies.'
       )
 
       scanner.run
       warnings = scanner.report.to_h.fetch(:warn)
-
+      
       expect(warnings[:report_go_dep_missing_go_sum]).to eq(
         'WARNING: No go.sum/Gopkg.lock found. Currently go.mod is '\
         'unsupported for reporting Golang dependencies.'

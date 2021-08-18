@@ -33,23 +33,29 @@ module Salus::Scanners
         line = line.strip
         next if line.empty?
 
-        line_info = get_line_info(line)
+        go_sum_regex = /(?<namespace>(.*)(?!\/go\.mod))\/(?<name>[^\s]*)
+        (\s)*(?<version>(.*))(\s)*h1:(?<checksum>(.*))/x
 
-        dep_list.append(
-          {
-            "fullDependency" => line,
-            "name" => line_info[0],
-            "version" => line_info[1]
-          }
-        )
-      end
+        if matches = line.match(go_sum_regex)
+          dep_list.append(
+            {
+              "namespace" => "#{matches[:namespace]}",
+              "name" => "#{matches[:name]}",
+              "version" => "#{matches[:version]}",
+              "checksum" => "#{matches[:checksum]}"
+            }
+          )
+          end
+        end
       # Note references are hashes meant for packages in Gopkg.lock files
       dep_list.each do |dependency|
         record_dep_package(
-          name: dependency['name'],
+          namespace: dependency["namespace"],
+          name: dependency["name"],
           reference: "N/A for go.mod/go.sum dependencies",
-          version_tag: dependency['version'],
+          version_tag: dependency['version'].gsub(/\/go.mod/,'').strip,
           dependency_file: "go.sum",
+          checksum: dependency['checksum'],
           type: "golang"
         )
       end
@@ -64,8 +70,8 @@ module Salus::Scanners
       report_warn(:report_go_dep_missing_go_sum, warning_string)
 
       data = "This repository contains no go.sum or Gopkg.lock file. Currently "\
-      "go.mod files are unsupported for reporting Golang dependencies"
-      Salus::PluginManager.send_event(:report_go_dep_scan, data)
+      "go.mod files are unsupported for reporting Golang dependencies."
+      Salus::PluginManager.send_event(:report_go_dep_missing_go_sum, data)
     end
 
     def record_dep_from_go_lock_package
@@ -78,7 +84,9 @@ module Salus::Scanners
           reference: dependency['revision'],
           version_tag: dependency['version'],
           dependency_file: "Gopkg.lock",
-          type: "golang"
+          type: "golang",
+          namespace: "",
+          checksum: ""
         )
       end
     end
@@ -87,24 +95,21 @@ module Salus::Scanners
       ['go']
     end
 
-    def get_line_info(line)
-      dep_list = line.split(' ')
-      dep_list
-    end
-
     def should_run?
       @repository.dep_lock_present? ||
         @repository.go_mod_present? ||
         @repository.go_sum_present?
     end
 
-    def record_dep_package(dependency_file:, name:, version_tag:, reference:, type:)
+    def record_dep_package(dependency_file:, name:, version_tag:, reference:, type:, namespace:, checksum:)
       report_dependency(
         dependency_file,
         type: type,
+        namespace: namespace,
         name: name,
         reference: reference,
-        version_tag: version_tag
+        version_tag: version_tag,
+        checksum: checksum
       )
     end
   end
