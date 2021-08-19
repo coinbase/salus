@@ -53,7 +53,23 @@ The following Salus dependency scanners are currently planned to adapt to report
 - ReportRustCrates
 
 ### Example CycloneDX Report
-TODO
+```
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.3",
+  "serialNumber": UUID for the BOM,
+  "version": 1 (always set to 1),
+  "components": [
+    {
+      "bom-ref": "pkg:golang/github.com/DataDog/datadog-go@v4.2.0",
+      "type": "library" (Other options are application, framework, operating-system, device or file),
+      "name": "github.com/DataDog/datadog-go",
+      "version": "v4.2.0" (component version),
+      "purl": "pkg:golang/github.com/DataDog/datadog-go@v4.2.0" 
+    }
+  ]
+}
+```
 
 ### SARIF Reports
 SARIF is a standardized output format for static analysis tools. Considering the wide range of security tools that Salus currently supports, with each tool producing its own unique output; SARIF provides a generalized report format for all these tools. For more information about the SARIF format visit the [SARIF website](https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html).
