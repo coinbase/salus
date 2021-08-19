@@ -53,6 +53,8 @@ The following Salus dependency scanners are currently planned to adapt to report
 - ReportRustCrates
 
 ### Example CycloneDX Report
+Below is an example of the structure of a CycloneDX report which will then be base64 encoded in the final json.
+
 ```
 {
   "bomFormat": "CycloneDX",
@@ -70,6 +72,18 @@ The following Salus dependency scanners are currently planned to adapt to report
   ]
 }
 ```
+
+Final json output:
+```
+{
+  "autoCreate": true,
+  "projectName": "<String, project name>",
+  "projectVersion": "1",
+  "bom": "<base64 encoded cyclonedx report>"
+}
+
+```
+
 
 ### SARIF Reports
 SARIF is a standardized output format for static analysis tools. Considering the wide range of security tools that Salus currently supports, with each tool producing its own unique output; SARIF provides a generalized report format for all these tools. For more information about the SARIF format visit the [SARIF website](https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html).
