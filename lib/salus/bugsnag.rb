@@ -13,6 +13,10 @@ if ENV['BUGSNAG_API_KEY']
       notify_endpoint = 'https://' + notify_endpoint
     end
 
+    config.add_on_error(proc do |report|
+      report.add_tab(:metaData, {})
+    end)
+
     config.set_endpoints(notify_endpoint, session_endpoint)
     config.api_key = ENV['BUGSNAG_API_KEY']
     config.release_stage = 'production'
