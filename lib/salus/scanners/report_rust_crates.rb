@@ -5,6 +5,7 @@ require 'salus/scanners/base'
 # create name, version and repository URL.
 #
 # The lock file (Cargo.lock) will be used if present.
+# The lock file (Cargo.lock) includes transitive dependencies.
 # If no lock file is present we will use cargo tree to analyze the
 # dependencies.  Cargo added tree support in version 1.44
 
@@ -72,7 +73,7 @@ module Salus::Scanners
       deps["package"].each do |package|
         report_dependency(
           LOCK_FILE,
-          type: LOCK_FILE.parameterize.underscore,
+          type: "cargo",
           name: package['name'],
           reference: package['source'],
           version_tag: package['version']
