@@ -71,7 +71,7 @@ module Salus
       if !content.nil? && !YAML.safe_load(content).is_a?(Hash)
         msg = "config source #{source_uri} content cannot be parsed as Hash. "\
               "Content: #{content.inspect}"
-        bugsnag_notify(msg)
+        bugsnag_notify(msg, @config[:metadata])
         content = nil
       end
 

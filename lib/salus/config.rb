@@ -18,7 +18,8 @@ module Salus
                 :builds,
                 :active_scanners,
                 :enforced_scanners,
-                :scanner_configs
+                :scanner_configs,
+                :metadata
 
     # Dynamically get all Scanner classes
     ABSTRACT_SCANNERS = %i[Base NodeAudit].freeze
@@ -56,7 +57,7 @@ module Salus
           filtered_data = filter_ignored_ids(file_content, ignore_ids)
         else
           msg = "file_content #{file_content.inspect} is not a hash"
-          bugsnag_notify(msg)
+          bugsnag_notify(msg, @metadata)
           filtered_data = {}
         end
         final_config.deep_merge!(filtered_data)
@@ -76,6 +77,7 @@ module Salus
       @custom_info       = final_config['custom_info']
       @report_uris       = final_config['reports'] || []
       @builds            = final_config['builds'] || {}
+      @metadata          = final_config['metadata'] || {}
 
       if !valid_name?(@project_name)
         bad_name_msg = "project name #{@project_name} cannot contain spaces or ;"
@@ -118,7 +120,8 @@ module Salus
         project_name: @project_name,
         custom_info: @custom_info,
         report_uris: @report_uris,
-        builds: @builds
+        builds: @builds,
+        metadata: @metadata
       }.compact
     end
 

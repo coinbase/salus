@@ -97,7 +97,7 @@ module Salus::Scanners
 
         @report.error(timeout_error_data)
         salus_report.error(timeout_error_data)
-        bugsnag_notify(error_message)
+        bugsnag_notify(error_message, @config[:metadata])
 
         # Propagate this error if desired
         raise ScannerTimeoutError, timeout_error_data[:message] if reraise
@@ -157,7 +157,7 @@ module Salus::Scanners
         scanner = @report.scanner_name
         message = "#{scanner} warning: #{type}, #{message}, build: #{@salus_report.builds}"
       end
-      bugsnag_notify(message)
+      bugsnag_notify(message, @config[:metadata])
     end
 
     # Report the STDOUT from the scanner.
@@ -177,7 +177,7 @@ module Salus::Scanners
       if @salus_report&.builds
         message = "#{@report.scanner_name} error: #{message}, build: #{@salus_report.builds}"
       end
-      bugsnag_notify(message)
+      bugsnag_notify(message, @config[:metadata])
     end
 
     # Report a dependency of the project
@@ -493,7 +493,7 @@ module Salus::Scanners
       unless is_timeout_valid
         error_message = "'scanner_timeout_s' parameter must be an integer or float " \
           "and should not be negative"
-        bugsnag_notify(error_message)
+        bugsnag_notify(error_message, @config[:metadata])
         raise ConfigFormatError, error_message
       end
 
