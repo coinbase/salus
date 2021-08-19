@@ -17,11 +17,6 @@ module Salus::Scanners
         record_dep_from_go_lock_package
       elsif @repository.go_mod_present?
         record_dep_from_go_mod
-      else
-        raise(
-          InvalidScannerInvocationError,
-          'Cannot report on Go dependencies without a Gopkg.lock, go.mod, or go.sum file'
-        )
       end
     end
 
@@ -41,7 +36,7 @@ module Salus::Scanners
             {
               "namespace" => (matches[:namespace]).to_s,
               "name" => (matches[:name]).to_s,
-              "version" => (matches[:version]).to_s,
+              "version" => (matches[:version]).to_s.gsub(%r{/go.mod}, '').strip,
               "checksum" => (matches[:checksum]).to_s
             }
           )
@@ -53,7 +48,7 @@ module Salus::Scanners
           namespace: dependency["namespace"],
           name: dependency["name"],
           reference: "N/A for go.mod/go.sum dependencies",
-          version_tag: dependency['version'].gsub(%r{/go.mod}, '').strip,
+          version_tag: dependency['version'],
           dependency_file: "go.sum",
           checksum: dependency['checksum'],
           type: "golang"

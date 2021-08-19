@@ -2,14 +2,11 @@ require_relative '../../../spec_helper.rb'
 
 describe Salus::Scanners::ReportGoDep do
   describe '#run' do
-    it 'should throw an error if no go.mod, go.sum, or Gopkg.lock is present' do
+    it 'should return nothing if no go.mod, go.sum, or Gopkg.lock is present' do
       repo = Salus::Repo.new('spec/fixtures/blank_repository')
       scanner = Salus::Scanners::ReportGoDep.new(repository: repo, config: {})
 
-      expect { scanner.run }.to raise_error(
-        Salus::Scanners::Base::InvalidScannerInvocationError,
-        'Cannot report on Go dependencies without a Gopkg.lock, go.mod, or go.sum file'
-      )
+      expect(scanner.run).to eq(nil)
     end
 
     it 'should report on all the dependencies in the Gopkg.lock file' do
