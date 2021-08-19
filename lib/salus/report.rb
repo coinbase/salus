@@ -189,7 +189,7 @@ module Salus
       }
       JSON.pretty_generate(cyclonedx_report)
     rescue StandardError => e
-      bugsnag_notify(e.class.to_s + " " + e.message + "\nBuild Info:" + @builds.to_s, @config['metadata'])
+      bugsnag_notify(e.class.to_s + " " + e.message + "\nBuild Info:" + @builds.to_s, @config[:metadata])
     end
 
     def publish_report(directive)
@@ -230,7 +230,7 @@ module Salus
 
         puts "Could not send Salus report: (#{e.class}: #{e.message})"
         e = "Could not send Salus report. Exception: #{e}, Build info: #{builds}"
-        bugsnag_notify(e, @config['metadata'])
+        bugsnag_notify(e, @config[:metadata])
       end
     end
 
