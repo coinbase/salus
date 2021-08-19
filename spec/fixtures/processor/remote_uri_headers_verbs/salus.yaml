@@ -1,0 +1,30 @@
+---
+reports:
+  - uri: https://nerv.tk3/salus-report
+    format: cyclonedx-json
+    put:
+    headers:
+      repo: 'Random Repo'
+      X-API-Key: '{{DUMMY_API_KEY}}'
+    cyclonedx_options:
+      cyclonedx_project_name: '{{SALUS_BUILD_ORG}}/{{SALUS_BUILD_PROJECT}}'
+
+  - uri: https://nerv.tk4/salus-report
+    format: cyclonedx-json
+    post:
+    headers:
+      repo: 'Random Repo'
+      X-API-Key: '{{DUMMY_API_KEY}}'
+    cyclonedx_options:
+      spec_version: '1.2'
+  - uri: https://nerv.tk5/salus-report
+    format: cyclonedx-json
+    put:
+    headers:
+      repo: 'Random Repo'
+      X-API-Key: '{{DUMMY_API_KEY}}'
+
+builds:
+  org: "random_org"
+  project: "random_project"
+

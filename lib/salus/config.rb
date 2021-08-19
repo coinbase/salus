@@ -37,7 +37,8 @@ module Salus
     ).freeze
 
     DEFAULT_SCANNER_CONFIG = {
-      'pass_on_raise' => false # strong default - if a scanner raises, it counts as failure.
+      'pass_on_raise' => false, # strong default - if a scanner raises, it counts as failure.
+      'scanner_timeout_s' => 0 # Scanner can run indefinitely if a max lifespan isn't provided
     }.freeze
 
     LOCAL_FILE_SCHEME_REGEX = /\Afile\z/.freeze # like file://foobar
@@ -173,7 +174,7 @@ module Salus
       # Get the configuration back into string format
       config_string = YAML.dump(config_hash)
 
-      # Check for references to evnars.
+      # Check for references to envars.
       envar_refs = config_string.scan(/\{\{([_a-zA-Z0-9]+)\}\}/).flatten
 
       # Replace all references to envars.

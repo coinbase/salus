@@ -1,4 +1,3 @@
-require 'faraday'
 require 'json'
 require 'salus/formatting'
 require 'salus/bugsnag'
@@ -12,14 +11,6 @@ module Salus
 
     # FIXME(as3richa): make wrapping behaviour configurable
     WRAP = 100
-
-    CONTENT_TYPE_FOR_FORMAT = {
-      'json' => 'application/json',
-      'yaml' => 'text/x-yaml',
-      'txt'  => 'text/plain',
-      'sarif' => 'application/json',
-      'sarif_diff' => 'application/json'
-    }.freeze
 
     SUMMARY_TABLE_HEADINGS = ['Scanner', 'Running Time', 'Required', 'Passed'].freeze
 
@@ -188,6 +179,19 @@ module Salus
       sarif_results
     end
 
+    def to_cyclonedx(config = {})
+      cyclonedx_bom = Cyclonedx::Report.new(@scan_reports, config).to_cyclonedx
+      cyclonedx_report = {
+        autoCreate: true,
+        projectName: config['cyclonedx_project_name'] || "",
+        projectVersion: "1",
+        bom: Base64.strict_encode64(JSON.generate(cyclonedx_bom))
+      }
+      JSON.pretty_generate(cyclonedx_report)
+    rescue StandardError => e
+      bugsnag_notify(e.class.to_s + " " + e.message + "\nBuild Info:" + @builds.to_s)
+    end
+
     def publish_report(directive)
       # First create the string for the report.
       uri = directive['uri']
@@ -199,11 +203,12 @@ module Salus
                       when 'yaml' then to_yaml
                       when 'sarif' then to_sarif(directive['sarif_options'] || {})
                       when 'sarif_diff' then to_sarif_diff
+                      when 'cyclonedx-json' then to_cyclonedx(directive['cyclonedx_options'] || {})
                       else
                         raise ExportReportError, "unknown report format #{directive['format']}"
                       end
       if Salus::Config::REMOTE_URI_SCHEME_REGEX.match?(URI(uri).scheme)
-        send_report(uri, report_body(directive), directive['format'])
+        Salus::ReportRequest.send_report(directive, report_body(directive), uri)
       else
         # must remove the file:// schema portion of the uri.
         uri_object = URI(uri)
@@ -226,14 +231,6 @@ module Salus
         puts "Could not send Salus report: (#{e.class}: #{e.message})"
         e = "Could not send Salus report. Exception: #{e}, Build info: #{builds}"
         bugsnag_notify(e)
-      end
-    end
-
-    def x_scanner_type(format)
-      if format == 'sarif_diff'
-        "salus_sarif_diff"
-      else
-        "salus"
       end
     end
 
@@ -295,22 +292,8 @@ module Salus
             "Cannot write file #{report_file_path} - #{e.class}: #{e.message}"
     end
 
-    def send_report(remote_uri, data, format)
-      response = Faraday.post do |req|
-        req.url remote_uri
-        req.headers['Content-Type'] = CONTENT_TYPE_FOR_FORMAT[format]
-        req.headers['X-Scanner'] = x_scanner_type(format)
-        req.body = data
-      end
-
-      unless response.success?
-        raise ExportReportError,
-              "POST of Salus report to #{remote_uri} had response status #{response.status}."
-      end
-    end
-
     def report_body_hash(config, data)
-      return data unless config&.key?('post')
+      return data unless config&.key?('post') && config['post'].present?
 
       body_hash = config['post']['additional_params'] || {}
       return body_hash unless config['post']['salus_report_param_name']
@@ -328,7 +311,12 @@ module Salus
         body = report_body_hash(config, JSON.parse(to_sarif(config['sarif_options'] || {})))
       end
       body = report_body_hash(config, JSON.parse(to_sarif_diff)) if config['format'] == 'sarif_diff'
-      return JSON.pretty_generate(body) if %w[json sarif sarif_diff].include?(config['format'])
+      if config['format'] == 'cyclonedx-json'
+        body = report_body_hash(config, JSON.parse(to_cyclonedx(config['cyclonedx_options'] || {})))
+      end
+      if %w[json sarif sarif_diff cyclonedx-json].include?(config['format'])
+        return JSON.pretty_generate(body)
+      end
 
       return YAML.dump(report_body_hash(config, to_h)) if config['format'] == 'yaml'
 

@@ -8,6 +8,8 @@ require 'salus/config'
 require 'salus/processor'
 require 'salus/plugin_manager'
 require 'sarif/sarif_report'
+require 'cyclonedx/report'
+require 'salus/report_request'
 
 module Salus
   VERSION = '2.11.13'.freeze
