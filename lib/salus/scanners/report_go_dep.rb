@@ -1,4 +1,4 @@
-require 'toml'
+require 'toml-rb'
 require 'salus/scanners/base'
 
 # Report the use of Go packages captured in a Gopkg.lock files.
@@ -13,7 +13,7 @@ module Salus::Scanners
           'Cannot report on Go dependencies without a Gopkg.lock file.'
         )
       end
-      dep_lock = TOML::Parser.new(@repository.dep_lock).parsed
+      dep_lock = TomlRB::Parser.new(@repository.dep_lock).hash
 
       # Report dependencies
       dep_lock['projects'].each do |dependency|
