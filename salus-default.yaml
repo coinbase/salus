@@ -29,3 +29,6 @@ enforced_scanners:
   - PatternSearch
   - Semgrep
   - CargoAudit
+
+metadata:
+  url: "test"
