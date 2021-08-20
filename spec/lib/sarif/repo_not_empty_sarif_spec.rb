@@ -53,6 +53,12 @@ describe Sarif::RepoNotEmptySarif do
           }
         )
       end
+
+      it 'creates a sarif report that follows the schema' do
+        report = Salus::Report.new(project_name: "Neon Genesis")
+        report.add_scan_report(scanner.report, required: false)
+        expect { report.to_sarif }.not_to raise_error
+      end
     end
 
     context 'no vulnerabilites found in project' do
