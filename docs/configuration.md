@@ -76,6 +76,10 @@ custom_info: "PR-123"
 # Additional options are also available for cyclonedx using the optional keyword: cyclonedx_options
 # The available options for the cyclonedx_options keyword are:
 # 1) `cyclonedx_project_name: string` -This option allows users to specify the cyclonedx report project name.
+# 2) `spec_version: string` -This option allows users to specify the cyclonedx report spec version.
+#     Currently only versions 1.2 and 1.3 are supported with 1.3 being the default version if the
+#     parameter is not specified.
+
 reports:
   - uri: file://tests/salus-report.txt
     format: txt
@@ -98,6 +102,7 @@ reports:
       X-API-Key: '{{RANDOM_API_KEY}}'
     cyclonedx_options:
       cyclonedx_project_name: '{{SALUS_BUILD_ORG}}/{{SALUS_BUILD_PROJECT}}'
+      spec_version: '1.3'
   - uri: file://tests/salus-report.sarif
     format: sarif
   - uri: file://tests/salus-report.sarif
