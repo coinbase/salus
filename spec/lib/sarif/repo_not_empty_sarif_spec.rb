@@ -54,5 +54,18 @@ describe Sarif::RepoNotEmptySarif do
         )
       end
     end
+
+    context 'no vulnerabilites found in project' do
+      let(:repo) { Salus::Repo.new('spec/fixtures/repo_not_empty/non_blank') }
+      it 'does not create sarif report for non-empty repo', :focus do
+        adapter = Sarif::RepoNotEmptySarif.new(scanner.report)
+        report = adapter.build_runs_object(true)
+        rules = report['tool'][:driver]['rules']
+        results = report['results']
+
+        expect(results.size).to eq(0)
+        expect(results.size).to eq(0)
+      end
+    end
   end
 end
