@@ -23,6 +23,7 @@ module Sarif
         name: "RepositoryIsEmpty",
         details: issue[:message],
         level: "HIGH",
+        uri: "",
         help_url: REPO_NOT_EMPTY_URI
       }
     end
