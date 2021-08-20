@@ -27,7 +27,7 @@ describe Sarif::RepoNotEmptySarif do
               {
                 "physicalLocation": {
                   "artifactLocation": {
-                    "uri": nil,
+                    "uri": "",
                     "uriBaseId": "%SRCROOT%"
                   }
                 }
