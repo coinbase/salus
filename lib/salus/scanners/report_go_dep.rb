@@ -60,13 +60,9 @@ module Salus::Scanners
       # Typically go.mod files don't contain all of the transitive deps/info
       # a go.sum file would. Instead of parsing go.mod files, warn that
       # go.sum is missing and send an event
-      warning_string = "WARNING: No go.sum/Gopkg.lock found. "\
+      message = "WARNING: No go.sum/Gopkg.lock found. "\
       "Currently go.mod is unsupported for reporting Golang dependencies."
-      report_warn(:report_go_dep_missing_go_sum, warning_string)
-
-      data = "This repository contains no go.sum or Gopkg.lock file. Currently "\
-      "go.mod files are unsupported for reporting Golang dependencies."
-      Salus::PluginManager.send_event(:report_go_dep_missing_go_sum, data)
+      report_warn(:report_go_dep_missing_go_sum, message)
     end
 
     def record_dep_from_go_lock_package

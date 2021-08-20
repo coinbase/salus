@@ -97,7 +97,7 @@ describe Salus::Scanners::ReportGoDep do
   describe '#record_dep_from_go_mod' do
     let(:listener) { Object.new }
     before(:each) do
-      def listener.report_go_dep_missing_go_sum(data)
+      def listener.report_warn(data)
         data
       end
     end
@@ -108,9 +108,12 @@ describe Salus::Scanners::ReportGoDep do
       repo = Salus::Repo.new('spec/fixtures/report_go_mod')
       scanner = Salus::Scanners::ReportGoDep.new(repository: repo, config: {})
 
-      expect(listener).to receive(:report_go_dep_missing_go_sum).with(
-        'This repository contains no go.sum or Gopkg.lock file. Currently '\
-        'go.mod files are unsupported for reporting Golang dependencies.'
+      expect(listener).to receive(:report_warn).with(
+        {
+          type: :report_go_dep_missing_go_sum,
+          message: 'WARNING: No go.sum/Gopkg.lock found. Currently '\
+          'go.mod is unsupported for reporting Golang dependencies.'
+        }
       )
 
       scanner.run
