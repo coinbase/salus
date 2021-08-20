@@ -64,7 +64,7 @@ describe Sarif::RepoNotEmptySarif do
         results = report['results']
 
         expect(results.size).to eq(0)
-        expect(results.size).to eq(0)
+        expect(rules.size).to eq(0)
       end
     end
   end
