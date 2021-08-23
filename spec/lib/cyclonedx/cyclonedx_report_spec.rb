@@ -148,7 +148,7 @@ describe Cyclonedx::ReportRubyGems do
       scanner = Salus::Scanners::ReportRubyGems.new(repository: repo, config: {})
       scanner.run
 
-      error = Cyclonedx::Base::CycloneDXInvalidVersionError
+      error = Cyclonedx::Report::CycloneDXInvalidVersionError
       cyclonedx_reports = Cyclonedx::Report.new([[scanner.report, false]],
                                                 { "spec_version" => "1.0" })
       expect { cyclonedx_reports.to_cyclonedx }.to raise_error(error)
