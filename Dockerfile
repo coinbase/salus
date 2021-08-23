@@ -95,7 +95,7 @@ RUN go get github.com/svent/sift@${SIFT_VERSION}
 
 ### semgrep
 # https://semgrep.dev
-ENV SEMGREP_VERSION 0.60.0
+ENV SEMGREP_VERSION 0.62.0
 
 RUN pip3 install --user --no-cache-dir semgrep==${SEMGREP_VERSION}
 
