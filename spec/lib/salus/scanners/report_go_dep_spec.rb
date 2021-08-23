@@ -24,7 +24,7 @@ describe Salus::Scanners::ReportGoDep do
             type: 'golang',
             name: 'github.com/PagerDuty/go-pagerduty',
             reference: 'fe74e407c23e030fa1523e7cbd972398fd85ec5d',
-            version_tag: nil,
+            version: nil,
             namespace: '',
             checksum: ''
           },
@@ -33,7 +33,7 @@ describe Salus::Scanners::ReportGoDep do
             type: 'golang',
             name: 'github.com/Sirupsen/logrus',
             reference: 'ba1b36c82c5e05c4f912a88eab0dcd91a171688f',
-            version_tag: 'v0.11.5',
+            version: 'v0.11.5',
             namespace: '',
             checksum: ''
           },
@@ -42,7 +42,7 @@ describe Salus::Scanners::ReportGoDep do
             type: 'golang',
             name: 'golang.org/x/sys',
             reference: '9a7256cb28ed514b4e1e5f68959914c4c28a92e0',
-            version_tag: nil,
+            version: nil,
             namespace: '',
             checksum: ''
           }
@@ -66,28 +66,28 @@ describe Salus::Scanners::ReportGoDep do
             dependency_file: 'go.sum',
             type: 'golang',
             namespace: 'github.cbhq.net/c3',
-            name: 'bls12-381',
+            name: 'github.cbhq.net/c3/bls12-381',
             reference: 'N/A for go.mod/go.sum dependencies',
             checksum: 'H6qPVjeq1XbGuaFaFD9aIXh7ZBmFziVAQCNRhBw8XnU=',
-            version_tag: "v0.0.0-20210114210818-577bfdc5cb9c"
+            version: "v0.0.0-20210114210818-577bfdc5cb9c"
           },
           {
             dependency_file: 'go.sum',
             type: 'golang',
             namespace: 'github.cbhq.net/c3',
-            name: 'bls12-381',
+            name: 'github.cbhq.net/c3/bls12-381',
             reference: 'N/A for go.mod/go.sum dependencies',
             checksum: 'GKWeplG/c6sSm2WEWBVzld/RnaaMxB/4U0hk5lbKWqc=',
-            version_tag: "v0.0.0-20210114210818-577bfdc5cb9c"
+            version: "v0.0.0-20210114210818-577bfdc5cb9c"
           },
           {
             dependency_file: 'go.sum',
             type: 'golang',
             namespace: 'github.com/davecgh',
-            name: 'go-spew',
+            name: 'github.com/davecgh/go-spew',
             reference: 'N/A for go.mod/go.sum dependencies',
             checksum: 'ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=',
-            version_tag: "v1.1.0"
+            version: "v1.1.0"
           }
         ]
       )

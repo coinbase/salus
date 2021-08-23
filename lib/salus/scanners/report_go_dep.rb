@@ -46,9 +46,9 @@ module Salus::Scanners
       dep_list.each do |dependency|
         record_dep_package(
           namespace: dependency["namespace"],
-          name: dependency["name"],
+          name: dependency["namespace"] + "/" + dependency["name"],
           reference: "N/A for go.mod/go.sum dependencies",
-          version_tag: dependency['version'],
+          version: dependency['version'],
           dependency_file: "go.sum",
           checksum: dependency['checksum'],
           type: "golang"
@@ -73,7 +73,7 @@ module Salus::Scanners
         record_dep_package(
           name: dependency['name'],
           reference: dependency['revision'],
-          version_tag: dependency['version'],
+          version: dependency['version'],
           dependency_file: "Gopkg.lock",
           type: "golang",
           namespace: "",
@@ -95,7 +95,7 @@ module Salus::Scanners
     def record_dep_package(
       dependency_file:,
       name:,
-      version_tag:,
+      version:,
       reference:,
       type:,
       namespace:,
@@ -108,7 +108,7 @@ module Salus::Scanners
         namespace: namespace,
         name: name,
         reference: reference,
-        version_tag: version_tag,
+        version: version,
         checksum: checksum
       )
     end
