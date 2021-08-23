@@ -17,6 +17,7 @@ module Cyclonedx
 
     DEFAULT_COMPONENT_TYPE = "application".freeze
     class CycloneDXInvalidFormatError < StandardError; end
+    class CycloneDXInvalidVersionError < StandardError; end
 
     def initialize(scan_reports, config = {})
       @scan_reports = scan_reports
@@ -29,6 +30,11 @@ module Cyclonedx
 
     # Build CycloneDX Report.
     def to_cyclonedx
+      unless is_valid_spec_version
+        raise CycloneDXInvalidVersionError, "Incorrect Cyclone version #{spec_version} " \
+        "Should be exactly 1.2 or 1.3"
+      end
+
       cyclonedx_report = {
         bomFormat: CYCLONEDX_FORMAT,
         specVersion: spec_version,
@@ -77,6 +83,11 @@ module Cyclonedx
 
     def spec_version
       @config['spec_version'] || CYCLONEDX_DEFAULT_SPEC_VERSION
+    end
+
+    def is_valid_spec_version
+      valid_spec_versions = %w[1.3 1.2]
+      valid_spec_versions.include?(spec_version)
     end
   end
 end
