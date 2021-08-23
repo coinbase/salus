@@ -27,6 +27,8 @@ module Cyclonedx
     CYCLONEDX_DEFAULT_SPEC_VERSION = "1.3".freeze
     CYCLONEDX_VERSION = 1
     CYCLONEDX_FORMAT = "CycloneDX".freeze
+    VALID_SPEC_VERSIONS = %w[1.3 1.2].freeze
+
 
     # Build CycloneDX Report.
     def to_cyclonedx
@@ -86,8 +88,7 @@ module Cyclonedx
     end
 
     def is_valid_spec_version
-      valid_spec_versions = %w[1.3 1.2]
-      valid_spec_versions.include?(spec_version)
+      VALID_SPEC_VERSIONS.include?(spec_version)
     end
   end
 end
