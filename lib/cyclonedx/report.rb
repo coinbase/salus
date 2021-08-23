@@ -3,6 +3,7 @@ require 'json'
 require 'json-schema'
 require_relative './base'
 require_relative './package_url'
+require 'salus/bugsnag'
 
 Dir.entries(File.expand_path('./', __dir__)).sort.each do |filename|
   next unless /_cyclonedx.rb\z/.match?(filename) && !filename.eql?('base_cyclonedx.rb')
@@ -12,6 +13,8 @@ end
 
 module Cyclonedx
   class Report
+    include Salus::SalusBugsnag
+
     DEFAULT_COMPONENT_TYPE = "application".freeze
     class CycloneDXInvalidFormatError < StandardError; end
 
@@ -37,7 +40,12 @@ module Cyclonedx
 
       # for each scanner report, run the appropriate converter
       @scan_reports.each do |scan_report|
-        cyclonedx_report[:components] += converter(scan_report[0])
+        begin
+          cyclonedx_report[:components] += converter(scan_report[0])
+        rescue StandardError => e
+          msg = "CycloneDX reporting errored on #{scan_report[0].scanner_name} with error message #{e.class}: #{e.message}"
+          bugsnag_notify(msg)
+        end
       end
       Cyclonedx::Report.validate_cyclonedx(cyclonedx_report)
     end
