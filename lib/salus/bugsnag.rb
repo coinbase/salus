@@ -28,7 +28,7 @@ module Salus
     def bugsnag_notify(msg, metadata = nil)
       if ENV['BUGSNAG_API_KEY']
         Bugsnag.notify(msg) do |report|
-          report.add_tab(:metaData, metadata) unless metadata.nil?
+          report.add_tab(:meta_data, metadata) unless metadata.nil?
         end
       end
     end
