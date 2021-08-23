@@ -33,7 +33,7 @@ describe Salus::Scanners::ReportGoDep do
             type: 'golang',
             name: 'github.com/Sirupsen/logrus',
             reference: 'ba1b36c82c5e05c4f912a88eab0dcd91a171688f',
-            version: '0.11.5',
+            version: 'v0.11.5',
             namespace: '',
             checksum: ''
           },
@@ -69,7 +69,7 @@ describe Salus::Scanners::ReportGoDep do
             name: 'github.cbhq.net/c3/bls12-381',
             reference: 'N/A for go.mod/go.sum dependencies',
             checksum: 'H6qPVjeq1XbGuaFaFD9aIXh7ZBmFziVAQCNRhBw8XnU=',
-            version: "0.0.0-20210114210818-577bfdc5cb9c"
+            version: "v0.0.0-20210114210818-577bfdc5cb9c"
           },
           {
             dependency_file: 'go.sum',
@@ -78,7 +78,7 @@ describe Salus::Scanners::ReportGoDep do
             name: 'github.cbhq.net/c3/bls12-381',
             reference: 'N/A for go.mod/go.sum dependencies',
             checksum: 'GKWeplG/c6sSm2WEWBVzld/RnaaMxB/4U0hk5lbKWqc=',
-            version: "0.0.0-20210114210818-577bfdc5cb9c"
+            version: "v0.0.0-20210114210818-577bfdc5cb9c"
           },
           {
             dependency_file: 'go.sum',
@@ -87,7 +87,7 @@ describe Salus::Scanners::ReportGoDep do
             name: 'github.com/davecgh/go-spew',
             reference: 'N/A for go.mod/go.sum dependencies',
             checksum: 'ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=',
-            version: "1.1.0"
+            version: "v1.1.0"
           }
         ]
       )

@@ -12,12 +12,12 @@ describe Cyclonedx::ReportGoDep do
       expect(golang_cyclonedx.build_components_object[0..2]).to match_array(
         [
           {
-            "bom-ref": "pkg:golang/github.cbhq.net/c3/bls12-381@0.0.0-20210114210818-577bfdc5cb9c",
+            "bom-ref": "pkg:golang/github.cbhq.net/c3/bls12-381@v0.0.0-20210114210818-577bfdc5cb9c",
             "type": "library",
             "group": "",
             "name": "github.cbhq.net/c3/bls12-381",
-            "version": "0.0.0-20210114210818-577bfdc5cb9c",
-            "purl": "pkg:golang/github.cbhq.net/c3/bls12-381@0.0.0-20210114210818-577bfdc5cb9c",
+            "version": "v0.0.0-20210114210818-577bfdc5cb9c",
+            "purl": "pkg:golang/github.cbhq.net/c3/bls12-381@v0.0.0-20210114210818-577bfdc5cb9c",
             "properties": [
               {
                 "key": "source",
@@ -30,12 +30,12 @@ describe Cyclonedx::ReportGoDep do
             ]
           },
           {
-            "bom-ref": "pkg:golang/github.cbhq.net/c3/bls12-381@0.0.0-20210114210818-577bfdc5cb9c",
+            "bom-ref": "pkg:golang/github.cbhq.net/c3/bls12-381@v0.0.0-20210114210818-577bfdc5cb9c",
             "type": "library",
             "group": "",
             "name": "github.cbhq.net/c3/bls12-381",
-            "version": "0.0.0-20210114210818-577bfdc5cb9c",
-            "purl": "pkg:golang/github.cbhq.net/c3/bls12-381@0.0.0-20210114210818-577bfdc5cb9c",
+            "version": "v0.0.0-20210114210818-577bfdc5cb9c",
+            "purl": "pkg:golang/github.cbhq.net/c3/bls12-381@v0.0.0-20210114210818-577bfdc5cb9c",
             "properties": [
               {
                 "key": "source",
@@ -48,12 +48,12 @@ describe Cyclonedx::ReportGoDep do
             ]
           },
           {
-            "bom-ref": "pkg:golang/github.com/davecgh/go-spew@1.1.0",
+            "bom-ref": "pkg:golang/github.com/davecgh/go-spew@v1.1.0",
             "type": "library",
             "group": "",
             "name": "github.com/davecgh/go-spew",
-            "version": "1.1.0",
-            "purl": "pkg:golang/github.com/davecgh/go-spew@1.1.0",
+            "version": "v1.1.0",
+            "purl": "pkg:golang/github.com/davecgh/go-spew@v1.1.0",
             "properties": [
               {
                 "key": "source",
@@ -96,12 +96,12 @@ describe Cyclonedx::ReportGoDep do
             ]
           },
           {
-            "bom-ref": "pkg:golang/github.com/Sirupsen/logrus@0.11.5",
+            "bom-ref": "pkg:golang/github.com/Sirupsen/logrus@v0.11.5",
             "type": "library",
             "group": "",
             "name": "github.com/Sirupsen/logrus",
-            "version": "0.11.5",
-            "purl": "pkg:golang/github.com/Sirupsen/logrus@0.11.5",
+            "version": "v0.11.5",
+            "purl": "pkg:golang/github.com/Sirupsen/logrus@v0.11.5",
             "properties": [
               {
                 "key": "source",
