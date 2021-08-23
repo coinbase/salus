@@ -76,7 +76,7 @@ module Salus::Scanners
           type: "cargo",
           name: package['name'],
           reference: package['source'],
-          version_tag: package['version']
+          version: package['version']
         )
       end
     end
