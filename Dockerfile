@@ -176,5 +176,6 @@ RUN gem install bundler -v'2.2.19' \
   && bundle config --local path vendor/bundle \
   && bundle config --local without development:test
 
-# run the salus scan when this docker container is run
-ENTRYPOINT ["bundle", "exec", "./bin/salus", "scan"]
+COPY entrypoint.sh /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
