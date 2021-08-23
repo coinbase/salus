@@ -29,7 +29,6 @@ module Cyclonedx
     CYCLONEDX_FORMAT = "CycloneDX".freeze
     VALID_SPEC_VERSIONS = %w[1.3 1.2].freeze
 
-
     # Build CycloneDX Report.
     def to_cyclonedx
       unless is_valid_spec_version
