@@ -81,3 +81,6 @@ Events are published, plugins can register listeners for events.
 
 - run_shell is called when a scanner executes a shell command to run a native scanner.  The data payload will be the array of arguments.
 
+`Event :report_warn`
+
+- report_warn will be invoked during scans if a scanner has determined a warning is necessary.  The data payload will be the type of warning and corresponding message.
