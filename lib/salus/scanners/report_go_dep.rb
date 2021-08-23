@@ -36,7 +36,7 @@ module Salus::Scanners
             {
               "namespace" => (matches[:namespace]).to_s,
               "name" => (matches[:name]).to_s,
-              "version" => (matches[:version]).to_s.gsub(%r{/go.mod}, '').strip,
+              "version" => (matches[:version]).to_s.gsub(/^v/, '').gsub(%r{/go.mod}, '').strip,
               "checksum" => (matches[:checksum]).to_s
             }
           )
@@ -73,7 +73,7 @@ module Salus::Scanners
         record_dep_package(
           name: dependency['name'],
           reference: dependency['revision'],
-          version: dependency['version'],
+          version: dependency['version'].to_s.gsub(/^v/, '').strip,
           dependency_file: "Gopkg.lock",
           type: "golang",
           namespace: "",

@@ -17,6 +17,13 @@ describe Cyclonedx::ReportRubyGems do
       expect { report.to_cyclonedx }.not_to raise_error
     end
 
+    it 'succeeds if generated cyclonedx format is correct' do
+      scanner = Salus::Scanners::ReportGoDep.new(repository: repo, config: {})
+      scanner.run
+      report.add_scan_report(scanner.report, required: false)
+      expect { report.to_cyclonedx }.not_to raise_error
+    end
+
     it 'succeeds if generated cyclonedx version is empty' do
       path = File.expand_path('../..//fixtures/cyclonedx/no_version.json', __dir__)
       report = JSON.parse(File.read(path)).with_indifferent_access
