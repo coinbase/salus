@@ -40,12 +40,11 @@ module Cyclonedx
 
       # for each scanner report, run the appropriate converter
       @scan_reports.each do |scan_report|
-        begin
-          cyclonedx_report[:components] += converter(scan_report[0])
-        rescue StandardError => e
-          msg = "CycloneDX reporting errored on #{scan_report[0].scanner_name} with error message #{e.class}: #{e.message}"
-          bugsnag_notify(msg)
-        end
+        cyclonedx_report[:components] += converter(scan_report[0])
+      rescue StandardError => e
+        msg = "CycloneDX reporting errored on #{scan_report[0].scanner_name} " \
+              "with error message #{e.class}: #{e.message}"
+        bugsnag_notify(msg)
       end
       Cyclonedx::Report.validate_cyclonedx(cyclonedx_report)
     end
