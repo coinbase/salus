@@ -54,17 +54,32 @@ custom_info: "PR-123"
 # - Request paramters (optional) can be included for HTTP destinations with the `params` field
 #   - if the report parameter is included, the report paramater would contain the salus report
 #   - when `report` is not included in params, the salus report will be located in the body of the request sent
-# The available formats are `json`, `yaml`, `txt` and `sarif`.
+# The available formats are `json`, `yaml`, `txt`, `sarif` and `cyclonedx-json`.
 # `verbose` is an optional key and defaults to false.
 # 
 # Each report hash can add post paramaters using the `post` key , 
 # - Salus reports can be sent as a report paramater by specifying the paramater name in `salus_report_param_name`
 # - additional post paramaters can be specified through the `additional_params` field
 #
+# Each report hash can also specify what http verb should be used (currently support `put` and `post` key),
+# and headers to set. 
+# - If not specified http verb defaults to `post`
+# - you can pass in `headers` with the corresponding list of name and value pairs.
+# - Values specified with two parentheses i.e `{{VALUE}}` will be treated as an environment variable `ENV[VALUE]` while values
+# specified without will be set as is. 
+#
 # Additional options are also available for sarif using the optional keyword: sarif_options
 # The available options for the sarif_options keyword are:
 # 1) `include_suppressed: true/false` -This option allows users to include/exclude suppressed/excluded results 
 #    in their sarif reports. Currently this is supported for NPM audit reports
+#
+# Additional options are also available for cyclonedx using the optional keyword: cyclonedx_options
+# The available options for the cyclonedx_options keyword are:
+# 1) `cyclonedx_project_name: string` -This option allows users to specify the cyclonedx report project name.
+# 2) `spec_version: string` -This option allows users to specify the cyclonedx report spec version.
+#     Currently only versions 1.2 and 1.3 are supported with 1.3 being the default version if the
+#     parameter is not specified.
+
 reports:
   - uri: file://tests/salus-report.txt
     format: txt
@@ -79,6 +94,15 @@ reports:
       additional_params:
         repo: 'Random Repo'
         user: 'John Doe' 
+  - uri: https://salus-config.internal2.net/salus-report
+    format: cyclonedx-json
+    put:
+    headers:
+      Age: '12'
+      X-API-Key: '{{RANDOM_API_KEY}}'
+    cyclonedx_options:
+      cyclonedx_project_name: '{{SALUS_BUILD_ORG}}/{{SALUS_BUILD_PROJECT}}'
+      spec_version: '1.3'
   - uri: file://tests/salus-report.sarif
     format: sarif
   - uri: file://tests/salus-report.sarif
