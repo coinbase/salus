@@ -293,7 +293,7 @@ describe Salus::Report do
             'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
             'Content-Type' => 'application/json',
             'User-Agent' => 'Faraday v1.3.0',
-            'X-Scanner' => 'salus' }
+            'X-Scanner' => 'sarif' }
         ).to_return(status: 200, body: "", headers: {})
 
         expect(report).to receive(:to_sarif).with(options).and_call_original.twice
