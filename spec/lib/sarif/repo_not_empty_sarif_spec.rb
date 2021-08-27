@@ -52,12 +52,23 @@ describe Sarif::RepoNotEmptySarif do
             }
           }
         )
+        report = Salus::Report.new(project_name: "Neon Genesis")
+        scan_reports = [
+          [scanner.report, false]
+        ]
+        sarif_json = Sarif::SarifReport.new(scan_reports).to_sarif
+        filtered_sarif = report.apply_report_sarif_filters(sarif_json)
+        expect { Sarif::SarifReport.validate_sarif(filtered_sarif) }.not_to raise_error
       end
 
       it 'creates a sarif report that follows the schema' do
         report = Salus::Report.new(project_name: "Neon Genesis")
-        report.add_scan_report(scanner.report, required: false)
-        expect { report.to_sarif }.not_to raise_error
+        scan_reports = [
+          [scanner.report, false]
+        ]
+        sarif_json = Sarif::SarifReport.new(scan_reports).to_sarif
+        filtered_sarif = report.apply_report_sarif_filters(sarif_json)
+        expect { Sarif::SarifReport.validate_sarif(filtered_sarif) }.not_to raise_error
       end
     end
 
@@ -71,6 +82,13 @@ describe Sarif::RepoNotEmptySarif do
 
         expect(results.size).to eq(0)
         expect(rules.size).to eq(0)
+        report = Salus::Report.new(project_name: "Neon Genesis")
+        scan_reports = [
+          [scanner.report, false]
+        ]
+        sarif_json = Sarif::SarifReport.new(scan_reports).to_sarif
+        filtered_sarif = report.apply_report_sarif_filters(sarif_json)
+        expect { Sarif::SarifReport.validate_sarif(filtered_sarif) }.not_to raise_error
       end
     end
   end
