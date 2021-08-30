@@ -12,9 +12,9 @@ module Salus
     }.freeze
 
     FORMAT_SARIF_DIFF = "sarif_diff".freeze
-    FORMAT_SARIF = "salus_sarif".freeze
+    FORMAT_SARIF = "sarif".freeze
     SCANNER_TYPE_SARIF_DIFF = "salus_sarif_diff".freeze
-    SCANNER_TYPE_SARIF = "sarif".freeze
+    SCANNER_TYPE_SARIF = "salus_sarif".freeze
     SCANNER_TYPE_SALUS = "salus".freeze
 
     class << self
