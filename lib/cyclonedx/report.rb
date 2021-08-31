@@ -3,6 +3,7 @@ require 'json'
 require 'json-schema'
 require_relative './base'
 require_relative './package_url'
+require 'salus/bugsnag'
 
 Dir.entries(File.expand_path('./', __dir__)).sort.each do |filename|
   next unless /_cyclonedx.rb\z/.match?(filename) && !filename.eql?('base_cyclonedx.rb')
@@ -12,8 +13,11 @@ end
 
 module Cyclonedx
   class Report
+    include Salus::SalusBugsnag
+
     DEFAULT_COMPONENT_TYPE = "application".freeze
     class CycloneDXInvalidFormatError < StandardError; end
+    class CycloneDXInvalidVersionError < StandardError; end
 
     def initialize(scan_reports, config = {})
       @scan_reports = scan_reports
@@ -23,9 +27,15 @@ module Cyclonedx
     CYCLONEDX_DEFAULT_SPEC_VERSION = "1.3".freeze
     CYCLONEDX_VERSION = 1
     CYCLONEDX_FORMAT = "CycloneDX".freeze
+    VALID_SPEC_VERSIONS = %w[1.3 1.2].freeze
 
     # Build CycloneDX Report.
     def to_cyclonedx
+      unless is_valid_spec_version
+        raise CycloneDXInvalidVersionError, "Incorrect Cyclone version #{spec_version} " \
+        "Should be exactly 1.2 or 1.3"
+      end
+
       cyclonedx_report = {
         bomFormat: CYCLONEDX_FORMAT,
         specVersion: spec_version,
@@ -38,6 +48,10 @@ module Cyclonedx
       # for each scanner report, run the appropriate converter
       @scan_reports.each do |scan_report|
         cyclonedx_report[:components] += converter(scan_report[0])
+      rescue StandardError => e
+        msg = "CycloneDX reporting errored on #{scan_report[0].scanner_name} " \
+              "with error message #{e.class}: #{e.message}"
+        bugsnag_notify(msg)
       end
       Cyclonedx::Report.validate_cyclonedx(cyclonedx_report)
     end
@@ -70,6 +84,10 @@ module Cyclonedx
 
     def spec_version
       @config['spec_version'] || CYCLONEDX_DEFAULT_SPEC_VERSION
+    end
+
+    def is_valid_spec_version
+      VALID_SPEC_VERSIONS.include?(spec_version)
     end
   end
 end

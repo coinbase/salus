@@ -153,6 +153,7 @@ module Salus::Scanners
     # Report a scanner warning such as a possible misconfiguration
     def report_warn(type, message)
       @report.warn(type, message)
+      Salus::PluginManager.send_event(:report_warn, { type: type, message: message })
       if @salus_report&.builds
         scanner = @report.scanner_name
         message = "#{scanner} warning: #{type}, #{message}, build: #{@salus_report.builds}"
