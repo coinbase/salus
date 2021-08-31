@@ -1280,6 +1280,10 @@
           "description": "A plain text message string.",
           "type": "string"
         },
+        "dependency_of": {
+          "description": "The name of the package that depends on this package",
+          "type": "string"
+        },
         "markdown": {
           "description": "A Markdown message string.",
           "type": "string"

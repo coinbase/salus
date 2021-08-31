@@ -45,7 +45,8 @@ module Sarif
         "ruleIndex": @mapped_rules[parsed_issue[:id]],
         "level": sarif_level(parsed_issue[:level]),
         "message": {
-          "text": parsed_issue[:details]
+          "text": parsed_issue[:details],
+          "dependency_of":  parsed_issue[:messageStrings][:dependency_of][:text]
         },
         "locations": [
           {
