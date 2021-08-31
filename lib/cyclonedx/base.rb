@@ -4,8 +4,6 @@ module Cyclonedx
     TYPE = "N/A".freeze
     UNLOCKED_DEPENDENCY_FILE = "N/A".freeze
 
-    class CycloneDXInvalidVersionError < StandardError; end
-
     attr_accessor :config
 
     def initialize(scan_report, config = {})
@@ -33,17 +31,9 @@ module Cyclonedx
       # Default to version 1.3 if no spec version is specified
       return component unless @config['spec_version'].present?
 
-      case @config['spec_version']
-      when "1.2"
-        component.delete(:properties)
-        component
-      when "1.3"
-        component
-      else
-        raise CycloneDXInvalidVersionError,
-              "Incorrect Cyclone Version Specified: #{@config['spec_version']}." \
-              " Should be exactly 1.2 or 1.3"
-      end
+      component.delete(:properties) if @config['spec_version'] == "1.2"
+
+      component
     end
 
     def build_component(dependency)
