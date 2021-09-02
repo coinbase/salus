@@ -16,7 +16,8 @@ describe Sarif::YarnAuditSarif do
           id: "39",
           name: "Incorrect Handling of Non-Boolean Comparisons During Minification",
           level: "LOW",
-          details: "Incorrect Handling of Non-Boolean Comparisons During Minification",
+          details: "Incorrect Handling of Non-Boolean Comparisons During" \
+            " Minification, Dependency of: uglify-js",
           messageStrings: { "package": { "text": "uglify-js" },
                            "severity": { "text": "low" },
                            "patched_versions": { "text": ">= 2.4.24" },
