@@ -656,7 +656,7 @@ describe Salus::Scanners::Semgrep do
         errors = scanner.report.to_h.fetch(:errors)
         expect(errors.size).to eq(1)
         expect(errors[0][:status]).to eq(4)
-        expect(errors[0][:stderr]).to eq("\n\n (error)\n\t")
+        expect(errors[0][:stderr].downcase).to include("error")
         expect(errors[0][:message]).to eq("Call to semgrep failed")
 
         info = scanner.report.to_h.fetch(:info)
