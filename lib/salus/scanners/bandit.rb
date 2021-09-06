@@ -83,7 +83,7 @@ module Salus::Scanners
                   configfile: { type: :file, keyword: 'c' },
                   profile: { type: :string, keyword: 'p' },
                   tests: { type: :list, keyword: 't', regex: /\AB\d{3}\z/i },
-                  skip: { type: :list, keyword: 's', regex: /\AB\d{3}\z/i },
+                  skips: { type: :list, keyword: 's', regex: /\AB\d{3}\z/i },
                   baseline: { type: :file, keyword: 'b' },
                   ini: { type: :file, prefix: '--' },
                   'ignore-nosec': { type: :flag, prefix: '--' },
