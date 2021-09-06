@@ -59,7 +59,11 @@ module Salus::Scanners
     end
 
     def should_run?
-      @repository.requirements_txt_present? || @repository.setup_cfg_present?
+      @repository.requirements_txt_present? ||
+      @repository.setup_cfg_present? ||
+      @repository.setup_py_present? ||
+      @repository.environment_yml_present? ||
+      @repository.environment_yaml_present?
     end
 
     def version
