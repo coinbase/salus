@@ -206,7 +206,7 @@
       "tool": {
         "driver": {
           "name": "Semgrep",
-          "version": "0.36.0",
+          "version": "0.62.0",
           "informationUri": "https://github.com/coinbase/salus",
           "rules": [
 
