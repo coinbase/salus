@@ -85,6 +85,23 @@ describe Salus::Scanners::BundleAudit do
       end
     end
 
+    context 'exceptions with past expirations' do
+      it 'should record success and report on the ignored CVEs' do
+        repo = Salus::Repo.new('spec/fixtures/bundle_audit/passes_with_ignores')
+        scanner = Salus::Scanners::BundleAudit.new(
+          repository: repo,
+          config: { 'ignore' => %w[CVE-2012-3464 CVE-2015-3227 CVE-2020-8165] }
+        )
+
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(true)
+
+        info = scanner.report.to_h.fetch(:info)
+        expect(info[:ignored_cves]).to eq(%w[CVE-2012-3464 CVE-2015-3227 CVE-2020-8165])
+      end
+    end
+
     context 'with local db' do
       it 'should report vulns from both local db and ruby advisory db' do
         dir = 'spec/fixtures/bundle_audit/local_db'

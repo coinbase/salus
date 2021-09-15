@@ -1,5 +1,6 @@
 require_relative '../../../spec_helper.rb'
 require 'json'
+require 'pry'
 
 describe Salus::Scanners::Brakeman do
   describe '#run' do
@@ -33,7 +34,8 @@ describe Salus::Scanners::Brakeman do
 
       it 'should respect the config for user defined app path if no top-level app dir' do
         repo = Salus::Repo.new('spec/fixtures/')
-        path = '/home/spec/fixtures/brakeman/vulnerable_rails_app'
+        path = File.expand_path("../../../../spec/fixtures/brakeman/vulnerable_rails_app", __dir__)
+
         scanner = Salus::Scanners::Brakeman.new(repository: repo, config: { 'path' => path })
         scanner.run
 
@@ -50,7 +52,9 @@ describe Salus::Scanners::Brakeman do
 
       it 'should respect the config for user defined app path' do
         repo = Salus::Repo.new('spec/fixtures/')
-        path = '/home/spec/fixtures/brakeman/vulnerable_rails_app'
+        path = File.expand_path("../../../../spec/fixtures/brakeman/vulnerable_rails_app", __dir__)
+
+        #path = '/home/spec/fixtures/brakeman/vulnerable_rails_app'
         scanner = Salus::Scanners::Brakeman.new(
           repository: repo,
           config: {
@@ -285,7 +289,7 @@ describe Salus::Scanners::Brakeman do
         expect(scanner.should_run?).to eq(false)
       end
     end
-  end
+  end 
 
   describe '#version_valid?' do
     context 'scanner version is valid' do

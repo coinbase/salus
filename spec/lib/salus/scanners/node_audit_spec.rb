@@ -128,6 +128,41 @@ describe Salus::Scanners::NodeAudit do
           end
         end
       end
+
+      context 'expired exceptions' do
+        it 'should record success and report on the ignored CVEs' do
+          repo = Salus::Repo.new("spec/fixtures/#{klass_snake_str}/success_with_exceptions")
+          config_file = YAML.load_file(
+            "spec/fixtures/#{klass_snake_str}/success_with_exceptions/salus.yaml"
+          )
+          scanner = klass_obj.new(
+            repository: repo, config: config_file['scanner_configs'][klass_str]
+          )
+          scanner.run
+
+          expect(scanner.report.passed?).to eq(true)
+          info = scanner.report.to_h.fetch(:info)
+          if klass_str == 'NPMAudit'
+            expect(info.key?(:stdout)).to eq(true)
+            expect(info).to include(
+              prod_advisories: %w[39 48],
+              dev_advisories: [],
+              unexcepted_prod_advisories: [],
+              exceptions: %w[39 48],
+              prod_exceptions: %w[39 48],
+              dev_exceptions: [],
+              useless_exceptions: []
+            )
+          else # YarnAudit
+            # YarnAudit no longer displays vulns that have been whitelisted
+            expect(info.key?(:stdout)).to eq(false)
+            expect(info).to include(
+              ignored_cves: [39, 48],
+              vulnerabilities: [39, 48]
+            )
+          end
+        end
+      end
     end
   end
 end

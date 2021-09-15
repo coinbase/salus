@@ -15,7 +15,7 @@ module Salus::Scanners
         return
       end
 
-      ignore = @config.fetch('ignore', [])
+      ignore = ignore_list()
       scanner = Bundler::Audit::Scanner.new(@repository.path_to_repo)
       @vulns = []
       run_scanner(scanner, ignore)
@@ -72,6 +72,14 @@ module Salus::Scanners
     end
 
     private
+
+    def ignore_list
+      # We are deprecating this.  This will pull the list of CVEs from the ignore setting.
+      list = @config.fetch('ignore', [])
+
+      # combine with the newer exception entry
+      (fetch_exception_ids + list).uniq
+    end
 
     def serialize_vuln(vuln)
       case vuln

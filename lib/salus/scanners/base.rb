@@ -332,6 +332,24 @@ module Salus::Scanners
       "#{prefix}#{keyword}#{separator}#{Shellwords.escape(validated_files.join(join_by))}#{suffix}"
     end
 
+
+    def fetch_exception_ids
+      exceptions = @config.fetch('exceptions', [])
+      ids = []
+      exceptions.each do |exception|
+        except = Salus::ConfigException.new(exception)
+        unless except.valid?
+          report_error(
+            'malformed exception; expected a hash with keys advisory_id, changed_by, notes, optionally expiration',
+            exception: exception
+          )
+          next
+        end
+        ids << except.id if except.active?
+      end
+      ids
+    end
+
     public
 
     def build_option(

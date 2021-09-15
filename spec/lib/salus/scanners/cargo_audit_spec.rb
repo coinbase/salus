@@ -119,6 +119,19 @@ describe Salus::Scanners::CargoAudit do
       expect(scanner.report.to_h.fetch(:passed)).to eq(true)
     end
 
+    it 'should honor exception expirations' do
+      fixture_directory = 'spec/fixtures/cargo_audit/failure-vulnerability-present'
+      repo = Salus::Repo.new(fixture_directory)
+
+      config_path = File.join(fixture_directory, 'salus-expired.yaml')
+      config = YAML.load_file(config_path)['scanner_configs']['CargoAudit']
+
+      scanner = Salus::Scanners::CargoAudit.new(repository: repo, config: config)
+      scanner.run
+
+      expect(scanner.report.to_h.fetch(:passed)).to eq(false)
+    end
+
     it 'should send the audit log as json' do
       path = 'spec/fixtures/cargo_audit/failure-vulnerability-present'
       repo = Salus::Repo.new(path)
