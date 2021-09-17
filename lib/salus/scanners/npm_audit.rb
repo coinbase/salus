@@ -7,14 +7,14 @@ require 'salus/scanners/node_audit'
 
 module Salus::Scanners
   class NPMAudit < NodeAudit
-    AUDIT_COMMAND = 'npm audit --json'.freeze
+    AUDIT_COMMAND = 'pnpm audit --json'.freeze
 
     def should_run?
-      @repository.package_lock_json_present?
+      true
     end
 
     def version
-      shell_return = run_shell('npm audit --version')
+      shell_return = run_shell('pnpm --version')
       # stdout looks like "6.14.8\n"
       shell_return.stdout&.strip
     end

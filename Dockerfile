@@ -132,6 +132,7 @@ ENV NODE_DOWNLOAD_URL https://nodejs.org/dist/v${NODE_VERSION}/${NODE_TARBALL_FI
 ENV NODE_DOWNLOAD_SHA256 bf30432175ea8a95fa3e5fe09e96d9fc17b07099742d5c83c4cf9d0edfc411ff
 ENV NPM_VERSION 6.14.8
 ENV YARN_VERSION 1.22.0
+ENV PNPM_VERSION 6.14.7
 ENV NPM_CONFIG_LOGLEVEL info
 
 COPY build/package.json build/yarn.lock /home/
@@ -140,10 +141,10 @@ RUN curl -fsSL "$NODE_DOWNLOAD_URL" -o node.tar.gz \
   && tar -C /usr/local -xzf node.tar.gz --strip-components=1 \
   && npm install -g npm@${NPM_VERSION} \
   && npm install -g yarn@${YARN_VERSION} \
+  && npm install -g pnpm@${PNPM_VERSION} \
   && cd /home \
   && yarn install \
   && rm -rf /node.tar.gz package.json yarn.lock /tmp/* ~/.npm
-
 
 ### All other tools
 ENV PIP_VERSION 18.1
