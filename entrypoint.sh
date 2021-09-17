@@ -27,6 +27,6 @@ custom_info:
 reports:
   - uri: $INPUT_REPORT_URI
     format: $INPUT_REPORT_FORMAT
-    verbose: $INPUT_REPORT_VERBOSITY" | tee $GITHUB_WORKSPACE/../salus-configuration.yaml 
+    verbose: $INPUT_REPORT_VERBOSITY" | tee $GITHUB_WORKSPACE/../salus-configuration.yaml
 
-cd /home && BUNDLE_GEMFILE=/home/Gemfile bundle exec /home/bin/salus scan --repo_path "$GITHUB_WORKSPACE" --config "$SALUS_CONFIGURATION"
+cd /home && BUNDLE_GEMFILE=/home/Gemfile bundle exec /home/bin/salus scan --repo_path "$GITHUB_WORKSPACE/$BASE_DIRECTORY" --config "$SALUS_CONFIGURATION"
