@@ -52,3 +52,7 @@ For more information on Brakeman configs, see [Brakeman Options](https://brakema
             - ensure_safe_protocol_or_something
         warning: # To only get warnings above a given confidence level. The -w switch takes a number from 1 to 3, with 1 being low (all warnings) and 3 being high (only highest confidence warnings). 'Warning' is the 'w' brakeman config option.
 ```
+
+## Exceptions
+
+The except configuration is supported for backwards compatibility and will be deprecated in the future.  Salus exceptions are being normalized to the new exceptions configuration

@@ -75,7 +75,8 @@ module Salus::Scanners
     end
 
     def run_with_exceptions_applied
-      return run_shell("brakeman #{config_options} -f json", env: { "CI" => "true" }) unless user_supplied_exceptions?
+      # We want to ensure we support filtering by exipration so commenting this out
+      #return run_shell("brakeman #{config_options} -f json", env: { "CI" => "true" }) unless user_supplied_exceptions?
     
       # create a temporary file combining ignore file entries with any user supplied
       # entires if exceptions hash is being used
@@ -83,6 +84,7 @@ module Salus::Scanners
       Tempfile.create('salus') do |f|
         f.write(merged_ignore_file_contents)
         f.close
+        # May want to use a Shellwords.escape here
         opts = user_supplied_ignore? ? config_options.gsub(@config['ignore'], f.path) : config_options + " -i #{f.path} "
         run_shell("brakeman #{opts} -f json", env: { "CI" => "true" })
       end
@@ -91,9 +93,14 @@ module Salus::Scanners
     def merged_ignore_file_contents
       # combine the ignore file and the exception config
       ignores = ignore_list
-      exceptions = exception_list.map { |ex| { 'fingerprint' => ex['advisory_id'], 'notes' => ex['notes'] } }
-      # TODO add expiration support to filter each list before combining
-      return JSON.generate({ 'ignored_warnings' => (ignores + exceptions).uniq })
+      exceptions = exception_list.map do |ex|
+        { 'fingerprint' => ex['advisory_id'],
+          'expiration' => ex['expiration'],
+          'notes' => ex['notes'] }
+      end
+      ignore = (ignores + exceptions).uniq.select { |ig| Salus::ConfigException.new(ig).active? }
+
+      return JSON.generate({ 'ignored_warnings' => ignore })
     end
 
     def ignore_list

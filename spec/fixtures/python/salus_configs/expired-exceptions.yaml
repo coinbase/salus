@@ -1,0 +1,11 @@
+scanner_configs:
+  Bandit:
+    exceptions:
+      - advisory_id: B301
+        changed_by: security-team
+        notes: Currently no patch exists and determined that this vulnerability is not exploitable.
+        expiration: "2021-04-27"
+      - advisory_id: B403
+        changed_by: security-team
+        notes: Currently no patch exists and determined that this vulnerability is not exploitable.
+        expiration: "2021-04-27"

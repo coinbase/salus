@@ -32,3 +32,7 @@ scanner_configs:
   BundleAudit:
     local_db: $local_db_dir
 ```
+
+## Exceptions
+
+The ignore configuration is supported for backwards compatibility and will be deprecated in the future.  Salus exceptions are being normalized to the new exceptions configuration

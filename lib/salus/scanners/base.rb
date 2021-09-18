@@ -363,6 +363,7 @@ module Salus::Scanners
       join_by: ',',
       max_depth: 1
     )
+
       clean_type = type.to_sym.downcase
       case clean_type
       when :flag, :string, :bool, :booleans, :file # Allow repeat values
@@ -440,12 +441,23 @@ module Salus::Scanners
       end
     end
 
-    def build_options(prefix:, suffix:, separator:, args:, join_by: ',')
+    def get_config_value(key, overrides)     
+      return overrides[key] if overrides&.key?(key)
+      @config.fetch(key)
+    end
+
+    def has_key?(key, overrides)
+      return @config.key?(key) || overrides&.key?(key)
+    end
+
+    # config_overrides allows easy overrides of the @config values
+    def build_options(prefix:, suffix:, separator:, args:, join_by: ',', config_overrides:{})
       default_regex = /.*/
       args.reduce('') do |options, (keyword, type_value)|
         keyword_string = keyword.to_s
-        option = if @config.key?(keyword_string)
-                   config_value = @config.fetch(keyword_string)
+        # @config is a hash
+        option = if has_key?(keyword_string, config_overrides)
+                   config_value = get_config_value(keyword_string, config_overrides)
                    case type_value
                    when Symbol, String
                      build_option(

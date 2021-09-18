@@ -8,6 +8,7 @@ module Salus
 
     attr_accessor :advisory_id, :changed_by, :notes, :expiration
 
+    alias_method :id, :advisory_id
     # allow blank to mirror our old logic validates_presense_of would be nice
     validates :advisory_id, :changed_by, :notes, length: { minimum: 0, allow_nil: false }
 
@@ -24,7 +25,6 @@ module Salus
     end
 
     def active?
-      return false unless valid?
       return true unless expiration.present?
  	    today = Date.today()
 	    expire = Date.strptime(expiration, DATE_FORMAT)

@@ -33,12 +33,17 @@ describe Salus::ConfigException do
       allow(Date).to receive(:today).and_return Date.new(2021,12,31)
     end
 
-     it 'should return false if the exception is invalid' do
-      expect(Salus::ConfigException.new({}).active?).to be false
+    #it 'should return false if the exception is invalid' do
+    #  expect(Salus::ConfigException.new({}).active?).to be false
+    #end
+
+    it 'should return true if no expiration was given' do
+      expect(Salus::ConfigException.new({'advisory_id' => 1, 'notes' => "", "changed_by"=> ""}).active?).to be true
     end
 
-     it 'should return true if no expiration was given' do
-      expect(Salus::ConfigException.new({'advisory_id' => 1, 'notes' => "", "changed_by"=> ""}).active?).to be true
+    it 'should return true if empty expiration was given' do
+      expect(Salus::ConfigException.new({'advisory_id' => 1,
+        'notes' => "", "changed_by"=> "", "expiration" => ""}).active?).to be true
     end
 
     it 'should return false for past dates' do
