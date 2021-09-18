@@ -75,24 +75,37 @@ module Salus::Scanners
     end
 
     def run_with_exceptions_applied
-      binding.pry
-      # --path /Users/joshuaostrom/Documents/public-git/salus/spec/fixtures/brakeman/vulnerable_rails_app "
-
-# @config
       return run_shell("brakeman #{config_options} -f json", env: { "CI" => "true" }) unless user_supplied_exceptions?
     
       # create a temporary file combining ignore file entries with any user supplied
       # entires if exceptions hash is being used
+
       Tempfile.create('salus') do |f|
         f.write(merged_ignore_file_contents)
         f.close
-        # TODO set the ignore value to f.path
-        run_shell("brakeman #{config_options} -f json", env: { "CI" => "true" })
+        opts = user_supplied_ignore? ? config_options.gsub(@config['ignore'], f.path) : config_options + " -i #{f.path} "
+        run_shell("brakeman #{opts} -f json", env: { "CI" => "true" })
       end
     end
 
     def merged_ignore_file_contents
-      "TODO supply this!"
+      # combine the ignore file and the exception config
+      ignores = ignore_list
+      exceptions = exception_list.map { |ex| { 'fingerprint' => ex['advisory_id'], 'notes' => ex['notes'] } }
+      # TODO add expiration support to filter each list before combining
+      return JSON.generate({ 'ignored_warnings' => (ignores + exceptions).uniq })
+    end
+
+    def ignore_list
+      return [] unless user_supplied_ignore?
+      data = JSON.parse(File.read(@config['ignore']))
+      return [] unless data.key?('ignored_warnings')
+      return data['ignored_warnings']
+    end
+
+    def exception_list
+      return [] unless user_supplied_exceptions?
+      @config['exceptions']
     end
 
     def user_supplied_ignore?

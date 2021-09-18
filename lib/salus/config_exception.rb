@@ -26,8 +26,8 @@ module Salus
     def active?
       return false unless valid?
       return true unless expiration.present?
- 	  today = Date.today()
-	  expire = Date.strptime(expiration, DATE_FORMAT)
+ 	    today = Date.today()
+	    expire = Date.strptime(expiration, DATE_FORMAT)
       return expire >= today
     end
   end
