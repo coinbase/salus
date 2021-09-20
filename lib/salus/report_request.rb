@@ -12,7 +12,9 @@ module Salus
     }.freeze
 
     FORMAT_SARIF_DIFF = "sarif_diff".freeze
+    FORMAT_SARIF = "sarif".freeze
     SCANNER_TYPE_SARIF_DIFF = "salus_sarif_diff".freeze
+    SCANNER_TYPE_SARIF = "salus_sarif".freeze
     SCANNER_TYPE_SALUS = "salus".freeze
 
     class << self
@@ -41,6 +43,7 @@ module Salus
 
       def x_scanner_type(format)
         return SCANNER_TYPE_SARIF_DIFF if format == FORMAT_SARIF_DIFF
+        return SCANNER_TYPE_SARIF if format == FORMAT_SARIF
 
         SCANNER_TYPE_SALUS
       end
