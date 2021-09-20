@@ -73,10 +73,10 @@ module Salus::Scanners
       ['python']
     end
 
-    def get_skips
+    def exception_skips
       skips = @config.fetch('skip', [])
       exception_ids = fetch_exception_ids
-      return (skips + exception_ids).uniq
+      (skips + exception_ids).uniq
     end
 
     # Taken from https://pypi.org/project/bandit/#usage
@@ -99,7 +99,7 @@ module Salus::Scanners
       # To allow backwards compatability we are creating a composite
       # of the skips and exceptions blocks.  Eventually we should retire skips
       # in favor of the new exception support
-      skips = get_skips
+      skips = exception_skips
       overrides = skips.empty? ? {} : { 'skip' => skips }
 
       build_options(

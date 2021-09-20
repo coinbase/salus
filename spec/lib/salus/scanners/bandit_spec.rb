@@ -173,7 +173,7 @@ describe Salus::Scanners::Bandit do
       let(:repo) { Salus::Repo.new("#{py_dir}/python_project_vulns") }
 
       before(:each) do
-        allow(Date).to receive(:today).and_return Date.new(2021,12,31)
+        allow(Date).to receive(:today).and_return Date.new(2021, 12, 31)
       end
 
       it 'should allow exception entries' do
@@ -184,7 +184,7 @@ describe Salus::Scanners::Bandit do
 
         expect(scanner.report.passed?).to eq(true)
       end
- 
+
       it 'should support expirations' do
         config_file = "#{py_dir}/salus_configs/expired-exceptions.yaml"
         configs = Salus::Config.new([File.read(config_file)]).scanner_configs['Bandit']
@@ -194,9 +194,9 @@ describe Salus::Scanners::Bandit do
         expect(scanner.report.passed?).to eq(false)
 
         logs = JSON.parse(scanner.report.to_h[:logs])
-        ids = logs['results'].map{|r| r["test_id"]}.uniq.sort
-        expect(ids).to eq(["B301", "B403"])
-      end     
+        ids = logs['results'].map { |r| r["test_id"] }.uniq.sort
+        expect(ids).to eq(%w[B301 B403])
+      end
     end
 
     context 'when using profile' do
