@@ -11,9 +11,15 @@ BundleAudit has a `--ignore` flag which allows you to ignore particular CVEs. To
 ```yaml
 scanner_configs:
   BundleAudit:
-    ignore:
+    ignore: # deprecated CVE allowlisting format please use exceptions
       - CVE-2018-3760
       - CVE-XXXX-YYYY
+
+    exceptions:
+      - advisory_id: CVE-2018-3760
+        changed_by: security-team
+        notes: Currently no patch exists and determined that this vulnerability is not exploitable.
+        expiration: "2021-04-27"
 ```
 
 By default, BundleAudit pulls advisory info from [ruby-advisory-db](https://github.com/rubysec/ruby-advisory-db).
@@ -26,3 +32,7 @@ scanner_configs:
   BundleAudit:
     local_db: $local_db_dir
 ```
+
+## Exceptions
+
+The ignore configuration is supported for backwards compatibility and will be deprecated in the future.  Salus exceptions are being normalized to the new exceptions configuration
