@@ -22,7 +22,7 @@ module Sarif
         id: "RNE0001",
         name: "RepositoryIsEmpty",
         details: issue[:message],
-        level: "HIGH",
+        level: "LOW",
         uri: "",
         help_url: REPO_NOT_EMPTY_URI
       }
