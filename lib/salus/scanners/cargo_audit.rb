@@ -110,21 +110,5 @@ module Salus::Scanners
 
       "cargo audit #{opts.join(' ')}"
     end
-
-    def fetch_exception_ids
-      exceptions = @config.fetch('exceptions', [])
-      ids = []
-      exceptions.each do |exception|
-        if !exception.is_a?(Hash) || exception.keys.sort != %w[advisory_id changed_by notes]
-          report_error(
-            'malformed exception; expected a hash with keys advisory_id, changed_by, notes',
-            exception: exception
-          )
-          next
-        end
-        ids << exception.fetch('advisory_id').to_s
-      end
-      ids
-    end
   end
 end
