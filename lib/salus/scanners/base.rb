@@ -332,7 +332,6 @@ module Salus::Scanners
       "#{prefix}#{keyword}#{separator}#{Shellwords.escape(validated_files.join(join_by))}#{suffix}"
     end
 
-
     def fetch_exception_ids
       exceptions = @config.fetch('exceptions', [])
       ids = []
@@ -340,7 +339,7 @@ module Salus::Scanners
         except = Salus::ConfigException.new(exception)
         unless except.valid?
           report_error(
-            'malformed exception; expected a hash with keys advisory_id, changed_by, notes, optionally expiration',
+            'malformed exception; expected a hash with keys advisory_id, changed_by, notes',
             exception: exception
           )
           next
@@ -441,17 +440,18 @@ module Salus::Scanners
       end
     end
 
-    def get_config_value(key, overrides)     
+    def get_config_value(key, overrides)
       return overrides[key] if overrides&.key?(key)
+
       @config.fetch(key)
     end
 
     def has_key?(key, overrides)
-      return @config.key?(key) || overrides&.key?(key)
+      @config.key?(key) || overrides&.key?(key)
     end
 
     # config_overrides allows easy overrides of the @config values
-    def build_options(prefix:, suffix:, separator:, args:, join_by: ',', config_overrides:{})
+    def build_options(prefix:, suffix:, separator:, args:, join_by: ',', config_overrides: {})
       default_regex = /.*/
       args.reduce('') do |options, (keyword, type_value)|
         keyword_string = keyword.to_s
