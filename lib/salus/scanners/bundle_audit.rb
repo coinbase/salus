@@ -15,7 +15,7 @@ module Salus::Scanners
         return
       end
 
-      ignore = ignore_list()
+      ignore = ignore_list
       scanner = Bundler::Audit::Scanner.new(@repository.path_to_repo)
       @vulns = []
       run_scanner(scanner, ignore)
