@@ -18,7 +18,7 @@ describe Sarif::RepoNotEmptySarif do
           {
             "ruleId": "RNE0001",
             "ruleIndex": 0,
-            "level": "error",
+            "level": "warning",
             "message": {
               "text": "Salus was run on a blank directory. This may indicate "\
                "misconfiguration such as not correctly voluming in the repository to be scanned."
