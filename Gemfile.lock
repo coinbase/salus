@@ -1,6 +1,8 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    activemodel (6.1.3.1)
+      activesupport (= 6.1.3.1)
     activesupport (6.1.3.1)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 1.6, < 2)
@@ -117,6 +119,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activemodel (~> 6.1.3)
   activesupport (~> 6.1.3)
   brakeman (= 4.10.0)
   bugsnag (~> 6.19.0)
