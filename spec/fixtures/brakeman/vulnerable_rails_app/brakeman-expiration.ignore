@@ -1,0 +1,22 @@
+{
+  "ignored_warnings": [
+    {
+      "fingerprint": "b16e1cd0d952433f80b0403b6a74aab0e98792ea015cc1b1fa5c003cbe7d56eb",
+      "note": "Dangerous Eval",
+      "expiration": "2000-12-31"
+    },
+    {
+      "fingerprint": "c8697fda60549ca065789e2ea74c94effecef88b2b5483bae17ddd62ece47194",
+      "note": "Cross-Site Request Forgery",
+      "expiration": "2000-12-31"
+    },
+    {
+      "fingerprint": "c8adc1c0caf2c9251d1d8de588fb949070212d0eed5e1580aee88bab2287b772",
+      "note": "Cross-Site Scripting"
+    },
+    {
+      "fingerprint": "e0636b950dd005468b5f9a0426ed50936e136f18477ca983cfc51b79e29f6463",
+      "note": "Cross-Site Scripting"
+    }
+  ]
+}
