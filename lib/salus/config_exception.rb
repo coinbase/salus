@@ -12,9 +12,6 @@ module Salus
     # allow blank to mirror our old logic validates_presense_of would be nice
     validates :advisory_id, :changed_by, :notes, length: { minimum: 0, allow_nil: false }
 
-# Old logic:
-#  if !exception.is_a?(Hash) || exception.keys.sort != %w[advisory_id changed_by notes]
-
     def initialize(exception_hash = nil)
       return unless exception_hash.is_a?(Hash)
 
