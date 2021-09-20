@@ -120,10 +120,7 @@ describe Salus::Scanners::YarnAudit do
       expect(scanner.report.to_h.fetch(:passed)).to eq(true)
     end
 
-
     it 'shoud support individual exceptions' do
-
-      
     end
 
     it 'should support expiring exceptions' do
@@ -140,7 +137,6 @@ describe Salus::Scanners::YarnAudit do
       scanner.run
       expect(scanner.report.to_h.fetch(:passed)).to eq(true)
     end
-
 
     it 'should warn if only optionalDependencies are scanned' do
       repo = Salus::Repo.new('spec/fixtures/yarn_audit/success')
