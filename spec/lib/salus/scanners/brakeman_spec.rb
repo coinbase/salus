@@ -22,7 +22,7 @@ describe Salus::Scanners::Brakeman do
       end
     end
 
-    context 'brakeman configs' do
+    context 'brakeman configs' do 
       before(:each) do
         allow(Date).to receive(:today).and_return Date.new(2021,12,31)
       end
@@ -109,13 +109,13 @@ describe Salus::Scanners::Brakeman do
 
         scanner = Salus::Scanners::Brakeman.new(repository: repo, config: {
           'exceptions' => [{'advisory_id' => 'b16e1cd0d952433f80b0403b6a74aab0e98792ea015cc1b1fa5c003cbe7d56eb',
-                            'notes' => 'Good reason to skip' },
+                            'notes' => 'One good reason to skip' },
                            {'advisory_id' => 'c8697fda60549ca065789e2ea74c94effecef88b2b5483bae17ddd62ece47194',
-                            'notes' => 'Good reason to skip' },
+                            'notes' => 'Two good reasons to skip' },
                            {'advisory_id' => 'c8adc1c0caf2c9251d1d8de588fb949070212d0eed5e1580aee88bab2287b772',
-                            'notes' => 'Good reason to skip', 'expiration' => '2000-12-31' },
+                            'notes' => 'Three ood reasons to skip', 'expiration' => '2000-12-31' },
                            {'advisory_id' => 'e0636b950dd005468b5f9a0426ed50936e136f18477ca983cfc51b79e29f6463',
-                            'notes' => 'Good reason to skip', 'expiration' => '2000-12-31' }
+                            'notes' => 'Four ood reasons to skip', 'expiration' => '2000-12-31' }
                           ]
         })
         scanner.run

@@ -19,7 +19,7 @@ scanner_configs:
       - advisory_id: CVE-2018-3760
         changed_by: security-team
         notes: Currently no patch exists and determined that this vulnerability is not exploitable.
-        expiration: 2021-04-27
+        expiration: "2021-04-27"
 ```
 
 By default, BundleAudit pulls advisory info from [ruby-advisory-db](https://github.com/rubysec/ruby-advisory-db).

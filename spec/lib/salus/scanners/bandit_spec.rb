@@ -339,7 +339,6 @@ describe Salus::Scanners::Bandit do
       it 'ini file option should work' do
         # ini_file.yaml points to file that specifies exclude main2.py
         config_file = "#{py_dir}/salus_configs/ini_file.yaml"
-
         configs = Salus::Config.new([File.read(config_file)]).scanner_configs['Bandit']
 
         scanner = Salus::Scanners::Bandit.new(repository: repo, config: configs)

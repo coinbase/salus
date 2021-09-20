@@ -41,7 +41,7 @@ For more information on Brakeman configs, see [Brakeman Options](https://brakema
           - advisory_id: CVE-2018-3760
             changed_by: security-team
             notes: Currently no patch exists and determined that this vulnerability is not exploitable.
-            expiration: 2021-04-27
+            expiration: "2021-04-27"
         ignore-model-output: true # To ignore possible XSS from model attributes
         ignore-protected: true # Brakeman will raise warnings on models that use attr_protected. To suppress these warnings, set this to true. 
         report-direct: true # To only raise warnings only when untrusted data is being directly used

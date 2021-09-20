@@ -19,7 +19,6 @@ module Salus
       return unless exception_hash.is_a?(Hash)
 
       exception_hash.each do |k,v|
-      	puts "v is nil" if v.nil?
         instance_variable_set("@#{k}", v) unless v.nil?
       end
     end
