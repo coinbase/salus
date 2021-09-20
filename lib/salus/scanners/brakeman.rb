@@ -20,7 +20,7 @@ module Salus::Scanners
         #   - vulns found    - exit 3 (warning) or 7 (error) and log to STDOUT
         #   - exception      - exit 1 and log to STDERR
         # Warnings_Found_Exit_Code = 3
- 
+
         # Exit code returned when no Rails application is detected
         # No_App_Found_Exit_Code = 4
 
@@ -67,16 +67,17 @@ module Salus::Scanners
     end
 
     def run_with_exceptions_applied
-      # We want to ensure we support filtering by exipration so commenting this out
-      #return run_shell("brakeman #{config_options} -f json", env: { "CI" => "true" }) unless user_supplied_exceptions?
-    
       # create a temporary file combining ignore file entries with any user supplied
       # entires if exceptions hash is being used
 
       Tempfile.create('salus') do |f|
         f.write(merged_ignore_file_contents)
         f.close
-        opts = user_supplied_ignore? ? config_options.gsub(@config['ignore'], f.path) : config_options + " -i #{f.path} "
+        if user_supplied_ignore?
+          opts = config_options.gsub(@config['ignore'], f.path)
+        else
+          config_options + " -i #{f.path} "
+        end
         run_shell("brakeman #{opts} -f json", env: { "CI" => "true" })
       end
     end
@@ -91,18 +92,21 @@ module Salus::Scanners
       end
       ignore = (ignores + exceptions).uniq.select { |ig| Salus::ConfigException.new(ig).active? }
 
-      return JSON.generate({ 'ignored_warnings' => ignore })
+      JSON.generate({ 'ignored_warnings' => ignore })
     end
 
     def ignore_list
       return [] unless user_supplied_ignore?
+
       data = JSON.parse(File.read(@config['ignore']))
       return [] unless data.key?('ignored_warnings')
-      return data['ignored_warnings']
+
+      data['ignored_warnings']
     end
 
     def exception_list
       return [] unless user_supplied_exceptions?
+
       @config['exceptions']
     end
 
@@ -115,7 +119,7 @@ module Salus::Scanners
     end
 
     # Taken from https://brakemanscanner.org/docs/options/
-    def config_options()
+    def config_options
       flag_with_two_dashes = { type: :flag, prefix: '--' }
       list_with_two_dashes = { type: :list, prefix: '--' }
       file_list_with_two_dashes = { type: :list_file, prefix: '--' }
