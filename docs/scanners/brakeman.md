@@ -38,7 +38,7 @@ For more information on Brakeman configs, see [Brakeman Options](https://brakema
             - check2
         ignore: path/to/config.ignore # Brakeman will ignore warnings if configured to do so. By default, it looks for a configuration file in config/brakeman.ignore. To specify a file to use this argument. 'Ignore' is the 'i' brakeman config option.
         exceptions:
-          - advisory_id: CVE-2018-3760
+          - advisory_id: e0636b950dd005468b5f9a0426ed50936e136f18477ca983cfc51b79e29f6463
             changed_by: security-team
             notes: Currently no patch exists and determined that this vulnerability is not exploitable.
             expiration: "2021-04-27"

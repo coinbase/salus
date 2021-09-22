@@ -73,10 +73,11 @@ module Salus::Scanners
       Tempfile.create('salus') do |f|
         f.write(merged_ignore_file_contents)
         f.close
+
         if user_supplied_ignore?
           opts = config_options.gsub(@config['ignore'], f.path)
         else
-          config_options + " -i #{f.path} "
+          opts = config_options + " -i #{f.path} "
         end
         run_shell("brakeman #{opts} -f json", env: { "CI" => "true" })
       end
