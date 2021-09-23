@@ -1,7 +1,10 @@
 require_relative '../../../spec_helper.rb'
 require 'json'
 
+# rubocop:disable Layout/LineLength
 describe Salus::Scanners::Brakeman do
+  let(:fixture_path) { File.expand_path("../../../../spec/fixtures/brakeman", __dir__) }
+
   describe '#run' do
     context 'non-rails project' do
       it 'should record the STDERR of brakeman' do
@@ -20,6 +23,10 @@ describe Salus::Scanners::Brakeman do
     end
 
     context 'brakeman configs' do
+      before(:each) do
+        allow(Date).to receive(:today).and_return Date.new(2021, 12, 31)
+      end
+
       it 'should error if no top-level app dir and no user defined app path' do
         repo = Salus::Repo.new('spec/fixtures/')
         scanner = Salus::Scanners::Brakeman.new(repository: repo, config: {})
@@ -33,7 +40,8 @@ describe Salus::Scanners::Brakeman do
 
       it 'should respect the config for user defined app path if no top-level app dir' do
         repo = Salus::Repo.new('spec/fixtures/')
-        path = '/home/spec/fixtures/brakeman/vulnerable_rails_app'
+        path = File.join(fixture_path, 'vulnerable_rails_app')
+
         scanner = Salus::Scanners::Brakeman.new(repository: repo, config: { 'path' => path })
         scanner.run
 
@@ -48,9 +56,121 @@ describe Salus::Scanners::Brakeman do
         expect(parsed_logs["scan_info"]["app_path"]).to eq(path)
       end
 
+      it 'should respect brakeman.ignore files' do
+        repo = Salus::Repo.new(File.join(fixture_path, 'vulnerable_rails_app'))
+
+        scanner = Salus::Scanners::Brakeman.new(repository: repo, config: {
+                                                  'ignore' => File.join(fixture_path,
+                                                                        'vulnerable_rails_app',
+                                                                        'brakeman.ignore')
+                                                })
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(true)
+        info = scanner.report.to_h.fetch(:info)
+        expect(info[:stdout]).to be_nil
+      end
+
+      it 'should respect expirations from brakeman.ignore files' do
+        repo = Salus::Repo.new(File.join(fixture_path, 'vulnerable_rails_app'))
+        config = {
+          'ignore' => File.join(fixture_path,
+                                'vulnerable_rails_app',
+                                'brakeman-expiration.ignore')
+        }
+        scanner = Salus::Scanners::Brakeman.new(repository: repo, config: config)
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(false)
+        logs = scanner.report.to_h.fetch(:logs)
+        parsed_logs = JSON.parse(logs)
+        expect(parsed_logs['warnings'].size).to eq(2)
+      end
+
+      it 'should support exceptions' do
+        repo = Salus::Repo.new(File.join(fixture_path, 'vulnerable_rails_app'))
+        exceptions = [{ 'advisory_id' => 'b16e1cd0d952433f80b0403b6a74aab0e98792ea015cc1b1fa5c003cbe7d56eb',
+                                                                    'notes' => 'Good reason to skip' },
+                      { 'advisory_id' => 'c8697fda60549ca065789e2ea74c94effecef88b2b5483bae17ddd62ece47194',
+                       'notes' => 'Good reason to skip' },
+                      { 'advisory_id' => 'c8adc1c0caf2c9251d1d8de588fb949070212d0eed5e1580aee88bab2287b772',
+                       'notes' => 'Good reason to skip' },
+                      { 'advisory_id' => 'e0636b950dd005468b5f9a0426ed50936e136f18477ca983cfc51b79e29f6463',
+                       'notes' => 'Good reason to skip' }]
+        scanner = Salus::Scanners::Brakeman.new(repository: repo, config: {
+                                                  'exceptions' => exceptions
+                                                })
+        scanner.run
+        expect(scanner.report.passed?).to eq(true)
+        info = scanner.report.to_h.fetch(:info)
+        expect(info[:stdout]).to be_nil
+      end
+
+      it 'should report an error if unable to create temporary ignore' do
+        allow(Tempfile).to receive(:create).and_raise(Errno::EROFS)
+
+        repo = Salus::Repo.new(File.join(fixture_path, 'vulnerable_rails_app'))
+        exceptions = [{ 'advisory_id' => 'b16e1cd0d952433f80b0403b6a74aab0e98792ea015cc1b1fa5c003cbe7d56eb',
+                                                                    'notes' => 'Good reason to skip' },
+                      { 'advisory_id' => 'c8697fda60549ca065789e2ea74c94effecef88b2b5483bae17ddd62ece47194',
+                       'notes' => 'Good reason to skip' },
+                      { 'advisory_id' => 'c8adc1c0caf2c9251d1d8de588fb949070212d0eed5e1580aee88bab2287b772',
+                       'notes' => 'Good reason to skip' },
+                      { 'advisory_id' => 'e0636b950dd005468b5f9a0426ed50936e136f18477ca983cfc51b79e29f6463',
+                       'notes' => 'Good reason to skip' }]
+        scanner = Salus::Scanners::Brakeman.new(repository: repo, config: {
+                                                  'exceptions' => exceptions
+                                                })
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(false)
+
+        errors = [{ message: "Read only filesystem, unable to apply exceptions" }]
+        expect(scanner.report.errors).to eq(errors)
+      end
+
+      it 'should support expirations in exceptions' do
+        repo = Salus::Repo.new(File.join(fixture_path, 'vulnerable_rails_app'))
+        exceptions = [{ 'advisory_id' => 'b16e1cd0d952433f80b0403b6a74aab0e98792ea015cc1b1fa5c003cbe7d56eb',
+                                          'notes' => 'One good reason to skip' },
+                      { 'advisory_id' => 'c8697fda60549ca065789e2ea74c94effecef88b2b5483bae17ddd62ece47194',
+                       'notes' => 'Two good reasons to skip' },
+                      { 'advisory_id' => 'c8adc1c0caf2c9251d1d8de588fb949070212d0eed5e1580aee88bab2287b772',
+                       'notes' => 'Three ood reasons to skip', 'expiration' => '2000-12-31' },
+                      { 'advisory_id' => 'e0636b950dd005468b5f9a0426ed50936e136f18477ca983cfc51b79e29f6463',
+                       'notes' => 'Four ood reasons to skip', 'expiration' => '2000-12-31' }]
+        scanner = Salus::Scanners::Brakeman.new(repository: repo, config: {
+                                                  'exceptions' => exceptions
+                                                })
+        scanner.run
+        expect(scanner.report.passed?).to eq(false)
+        logs = scanner.report.to_h.fetch(:logs)
+        parsed_logs = JSON.parse(logs)
+        expect(parsed_logs['warnings'].size).to eq(2)
+      end
+
+      it 'should support merging exceptions with brakeman.ignore files' do
+        repo = Salus::Repo.new(File.join(fixture_path, 'vulnerable_rails_app'))
+        exceptions = [{ 'advisory_id' => 'c8adc1c0caf2c9251d1d8de588fb949070212d0eed5e1580aee88bab2287b772',
+                            'notes' => 'Good reason to skip' },
+                      { 'advisory_id' => 'e0636b950dd005468b5f9a0426ed50936e136f18477ca983cfc51b79e29f6463',
+                       'notes' => 'Good reason to skip' }]
+        scanner = Salus::Scanners::Brakeman.new(repository: repo, config: {
+                                                  'ignore' => File.join(fixture_path,
+                                                                        'vulnerable_rails_app',
+                                                                        'brakeman-partial.ignore'),
+          'exceptions' => exceptions
+                                                })
+        scanner.run
+        expect(scanner.report.passed?).to eq(true)
+        info = scanner.report.to_h.fetch(:info)
+        expect(info[:stdout]).to be_nil
+      end
+
       it 'should respect the config for user defined app path' do
         repo = Salus::Repo.new('spec/fixtures/')
-        path = '/home/spec/fixtures/brakeman/vulnerable_rails_app'
+        path = File.join(fixture_path, 'vulnerable_rails_app')
+
         scanner = Salus::Scanners::Brakeman.new(
           repository: repo,
           config: {
@@ -306,3 +426,4 @@ describe Salus::Scanners::Brakeman do
     end
   end
 end
+# rubocop:enable Layout/LineLength
