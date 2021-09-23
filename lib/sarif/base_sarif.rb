@@ -67,6 +67,7 @@ module Sarif
       end
 
       location[:region][:snippet] = { "text": parsed_issue[:code] } if !parsed_issue[:code].nil?
+      result["properties"] = parsed_issue[:properties] if parsed_issue[:properties]
       result
     end
 
