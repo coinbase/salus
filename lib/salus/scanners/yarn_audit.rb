@@ -20,7 +20,7 @@ module Salus::Scanners
         command = "#{AUDIT_COMMAND} #{scan_deps}"
         shell_return = run_shell(command)
 
-        excpts = @config.fetch('exceptions', []).map { |e| e["advisory_id"].to_i }
+        excpts = fetch_exception_ids.map(&:to_i)
         report_info(:ignored_cves, excpts)
         return report_success if shell_return.success?
 
