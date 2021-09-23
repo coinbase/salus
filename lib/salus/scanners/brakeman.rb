@@ -38,18 +38,18 @@ module Salus::Scanners
         # --ensure-ignore-notes is set
         # Empty_Ignore_Note_Exit_Code = 8
 
-        return report_success if shell_return.success?
+        return report_success if shell_return&.success?
 
-        if shell_return.status == 3 || shell_return.status == 7
+        if shell_return&.status == 3 || shell_return&.status == 7
           report_failure
           report_stdout(shell_return.stdout)
           log(shell_return.stdout)
         else
           report_error(
             "brakeman exited with an unexpected exit status",
-            status: shell_return.status
+            status: shell_return&.status
           )
-          report_stderr(shell_return.stderr)
+          report_stderr(shell_return&.stderr)
         end
       end
     end
@@ -66,20 +66,32 @@ module Salus::Scanners
       ['ruby']
     end
 
+    def run_without_exceptions_applied
+      run_shell("brakeman #{config_options} -f json", env: { "CI" => "true" })
+    end
+
     def run_with_exceptions_applied
+      return run_without_exceptions_applied unless needs_temporary_ignore?
+
       # create a temporary file combining ignore file entries with any user supplied
-      # entires if exceptions hash is being used
+      # entires if exceptions hash is being used.
+      # We could look at using IO.popen to create an unnamed unidirectional pipe if
+      # we find the tempfile inelegant
+      begin
+        Tempfile.create('salus') do |f|
+          f.write(merged_ignore_file_contents)
+          f.close
 
-      Tempfile.create('salus') do |f|
-        f.write(merged_ignore_file_contents)
-        f.close
-
-        opts = if user_supplied_ignore?
-                 config_options.gsub(@config['ignore'], f.path)
-               else
-                 config_options + " -i #{f.path} "
-               end
-        run_shell("brakeman #{opts} -f json", env: { "CI" => "true" })
+          opts = if user_supplied_ignore?
+                   config_options.gsub(@config['ignore'], f.path)
+                 else
+                   config_options + " -i #{f.path} "
+                 end
+          run_shell("brakeman #{opts} -f json", env: { "CI" => "true" })
+        end
+      rescue Errno::EROFS
+        report_error("Read only filesystem, unable to apply exceptions")
+        run_without_exceptions_applied
       end
     end
 
@@ -109,6 +121,19 @@ module Salus::Scanners
       return [] unless user_supplied_exceptions?
 
       @config['exceptions']
+    end
+
+    def needs_temporary_ignore?
+      # If the user is using exceptions OR expirations in the ignore
+      # file we will need to make a temporary ignore
+      user_supplied_ignore_expirations? || user_supplied_exceptions?
+    end
+
+    def user_supplied_ignore_expirations?
+      ignore_list.each do |item|
+        return true if item.key?('expiration')
+      end
+      false
     end
 
     def user_supplied_ignore?

@@ -106,6 +106,29 @@ describe Salus::Scanners::Brakeman do
         expect(info[:stdout]).to be_nil
       end
 
+      it 'should report an error if unable to create temporary ignore' do
+        allow(Tempfile).to receive(:create).and_raise(Errno::EROFS)
+
+        repo = Salus::Repo.new(File.join(fixture_path, 'vulnerable_rails_app'))
+        exceptions = [{ 'advisory_id' => 'b16e1cd0d952433f80b0403b6a74aab0e98792ea015cc1b1fa5c003cbe7d56eb',
+                                                                    'notes' => 'Good reason to skip' },
+                      { 'advisory_id' => 'c8697fda60549ca065789e2ea74c94effecef88b2b5483bae17ddd62ece47194',
+                       'notes' => 'Good reason to skip' },
+                      { 'advisory_id' => 'c8adc1c0caf2c9251d1d8de588fb949070212d0eed5e1580aee88bab2287b772',
+                       'notes' => 'Good reason to skip' },
+                      { 'advisory_id' => 'e0636b950dd005468b5f9a0426ed50936e136f18477ca983cfc51b79e29f6463',
+                       'notes' => 'Good reason to skip' }]
+        scanner = Salus::Scanners::Brakeman.new(repository: repo, config: {
+                                                  'exceptions' => exceptions
+                                                })
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(false)
+
+        errors = [{ message: "Read only filesystem, unable to apply exceptions" }]
+        expect(scanner.report.errors).to eq(errors)
+      end
+
       it 'should support expirations in exceptions' do
         repo = Salus::Repo.new(File.join(fixture_path, 'vulnerable_rails_app'))
         exceptions = [{ 'advisory_id' => 'b16e1cd0d952433f80b0403b6a74aab0e98792ea015cc1b1fa5c003cbe7d56eb',
