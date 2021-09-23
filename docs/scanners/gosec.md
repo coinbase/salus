@@ -13,7 +13,7 @@ The [Gosec Scanner](https://github.com/securego/gosec) is a static analysis tool
       include:                            # List of rules IDs to include
         - G104                            # Note only basic regex formatting is performed and does  
                                           # not check if this is a valid rule number
-      exclude:                            # List of rules IDs to exclude
+      exclude:                            # List of rules IDs to exclude, deprecated in favor of exceptions
         - G102
       sort: true                          # Sort issues by severity
       #tags:                              # Unsupported due to upstream bug. List of build tags
@@ -32,4 +32,12 @@ The [Gosec Scanner](https://github.com/securego/gosec) is a static analysis tool
       run_from_dirs:                     # run gosec from the specified subdirs only
         - subdir1                        # for now, any other gosec config will apply to all subdir runs
         - subdir2
+      exceptions:
+        - advisory_id: G101
+          changed_by: security-team
+          notes: Currently no patch exists and determined that this vulnerability is not exploitable.
+          expiration: "2021-04-27"
 ```
+## Exceptions
+
+The exclude configuration is supported for backwards compatibility and will be deprecated in the future.  Salus exceptions are being normalized to the new exceptions configuration

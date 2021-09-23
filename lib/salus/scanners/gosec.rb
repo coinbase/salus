@@ -190,8 +190,13 @@ module Salus::Scanners
           # exlude the folders from scan
           # can be files or directories
           'exclude-dir': :file
-        }
+        },
+        config_overrides: { 'exclude' => excluded_ids }
       )
+    end
+
+    def excluded_ids
+      (fetch_exception_ids + @config.fetch('exclude', [])).uniq
     end
 
     def should_run?

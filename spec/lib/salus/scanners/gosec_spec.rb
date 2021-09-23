@@ -255,6 +255,44 @@ describe Salus::Scanners::Gosec do
       end
     end
 
+    context 'active exceptions' do
+      let(:repo) { Salus::Repo.new('spec/fixtures/gosec/gosec_rules') }
+      let(:exceptions) do
+        [{ 'advisory_id' => "G101",
+          'expiration' => '2022-12-31',
+          'changed_by' => 'appsec',
+          'notes' => 'foo' }]
+      end
+      let(:config) { { "exceptions" => exceptions, "nosec" => "true" } }
+
+      before(:each) do
+        allow(Date).to receive(:today).and_return Date.new(2021, 12, 31)
+      end
+
+      it 'should honor active exceptions' do
+        expect(config_scanner.report.passed?).to eq(true)
+      end
+    end
+
+    context 'expired exceptions' do
+      let(:repo) { Salus::Repo.new('spec/fixtures/gosec/gosec_rules') }
+      let(:exceptions) do
+        [{ 'advisory_id' => "G101",
+          'expiration' => '2020-12-31',
+          'changed_by' => 'appsec',
+          'notes' => 'foo' }]
+      end
+      let(:config) { { "exceptions" => exceptions, "nosec" => "true" } }
+
+      before(:each) do
+        allow(Date).to receive(:today).and_return Date.new(2021, 12, 31)
+      end
+
+      it 'should ignore expired exceptions' do
+        expect(config_scanner.report.passed?).to eq(false)
+      end
+    end
+
     context 'when sorting by severity' do
       require 'json'
       let(:repo) { Salus::Repo.new('spec/fixtures/gosec/multiple_vulns') }
