@@ -9,6 +9,7 @@ module Salus::Scanners
       Dir.chdir(@repository.path_to_repo) do
         # bandit compiled with python3
         copts = config_options
+
         shell_return = run_shell("bandit #{copts} -r -f json .")
 
         # if python3 couldn't parse files, then try bandit compiled with python2
@@ -72,6 +73,12 @@ module Salus::Scanners
       ['python']
     end
 
+    def exception_skips
+      skips = @config.fetch('skip', [])
+      exception_ids = fetch_exception_ids
+      (skips + exception_ids).uniq
+    end
+
     # Taken from https://pypi.org/project/bandit/#usage
     def config_options
       string_to_flag_map = {
@@ -88,11 +95,19 @@ module Salus::Scanners
                   ini: { type: :file, prefix: '--' },
                   'ignore-nosec': { type: :flag, prefix: '--' },
                   exclude: { type: :list_file, keyword: 'x' })
+
+      # To allow backwards compatability we are creating a composite
+      # of the skips and exceptions blocks.  Eventually we should retire skips
+      # in favor of the new exception support
+      skips = exception_skips
+      overrides = skips.empty? ? {} : { 'skip' => skips }
+
       build_options(
         prefix: '-',
         suffix: ' ',
         separator: ' ',
-        args: args
+        args: args,
+        config_overrides: overrides
       )
     end
   end

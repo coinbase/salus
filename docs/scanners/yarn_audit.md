@@ -14,6 +14,11 @@ scanner_configs:
     - dependencies            # project dependencies
     - devDependencies         # dev only dependencies
     - optionalDependencies    # specifically labelled as optional
+    exceptions:
+    - advisory_id: 788
+      changed_by: Appsec team
+      notes: Temporary exception generated automatically
+      expiration: "2021-04-27"
 ```
 
 If you only want to scan production-related dependencies, then you want the following:

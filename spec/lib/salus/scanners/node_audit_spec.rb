@@ -128,6 +128,38 @@ describe Salus::Scanners::NodeAudit do
           end
         end
       end
+
+      context 'exception expirations' do
+        before(:each) do
+          allow(Date).to receive(:today).and_return Date.new(2021, 12, 31)
+        end
+
+        it 'should record success and when expiration is future' do
+          repo = Salus::Repo.new("spec/fixtures/#{klass_snake_str}/success_with_exceptions")
+          config_file = YAML.load_file(
+            "spec/fixtures/#{klass_snake_str}/success_with_exceptions/salus-non-expired.yaml"
+          )
+          scanner = klass_obj.new(
+            repository: repo, config: config_file['scanner_configs'][klass_str]
+          )
+          scanner.run
+
+          expect(scanner.report.passed?).to eq(true)
+        end
+
+        it 'should record failure and when expiration is past' do
+          repo = Salus::Repo.new("spec/fixtures/#{klass_snake_str}/success_with_exceptions")
+          config_file = YAML.load_file(
+            "spec/fixtures/#{klass_snake_str}/success_with_exceptions/salus-expired.yaml"
+          )
+          scanner = klass_obj.new(
+            repository: repo, config: config_file['scanner_configs'][klass_str]
+          )
+          scanner.run
+
+          expect(scanner.report.passed?).to eq(false)
+        end
+      end
     end
   end
 end
