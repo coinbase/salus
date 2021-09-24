@@ -13,7 +13,7 @@ require 'cyclonedx/report'
 require 'salus/report_request'
 
 module Salus
-  VERSION = '2.12.1'.freeze
+  VERSION = '2.13.1'.freeze
   DEFAULT_REPO_PATH = './repo'.freeze # This is inside the docker container at /home/repo.
 
   SafeYAML::OPTIONS[:default_mode] = :safe
