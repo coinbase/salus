@@ -344,7 +344,7 @@ module Salus::Scanners
           )
           next
         end
-        ids << except.id if except.active?
+        ids << except.id.to_s if except.active?
       end
       ids
     end

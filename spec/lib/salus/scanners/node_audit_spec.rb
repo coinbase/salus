@@ -159,6 +159,18 @@ describe Salus::Scanners::NodeAudit do
 
           expect(scanner.report.passed?).to eq(false)
         end
+
+        it 'should support integer ids' do
+          repo = Salus::Repo.new("spec/fixtures/#{klass_snake_str}/success_with_exceptions")
+          config_file = YAML.load_file(
+            "spec/fixtures/#{klass_snake_str}/success_with_exceptions/salus-integer-ids.yaml"
+          )
+          scanner = klass_obj.new(
+            repository: repo, config: config_file['scanner_configs'][klass_str]
+          )
+          scanner.run
+          expect(scanner.report.passed?).to eq(true)
+        end
       end
     end
   end
