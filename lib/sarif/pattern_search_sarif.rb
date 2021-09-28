@@ -82,7 +82,8 @@ module Sarif
         start_column: 1,
         uri: url_info[0],
         help_url: PATTERN_SEARCH_URI,
-        code: issue[:hit]
+        code: issue[:hit],
+        properties: { 'severity': "HIGH" }
       }
     end
   end

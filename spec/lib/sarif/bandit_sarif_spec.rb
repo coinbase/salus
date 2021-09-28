@@ -1,6 +1,6 @@
 require_relative '../../spec_helper'
 
-describe Sarif::BanditSarif do
+describe Sarif::BanditSarif do 
   describe '#parse_issue' do
     let(:py_dir) { 'spec/fixtures/python' }
     let(:scanner) { Salus::Scanners::Bandit.new(repository: repo, config: {}) }
@@ -20,6 +20,7 @@ describe Sarif::BanditSarif do
           details: "Consider possible security implications associated with cPickle module.",
           messageStrings: { "confidence": { "text": "LOW" },
                            "severity": { "text": "LOW" } },
+          properties: { "severity": "LOW" },
           start_line: 1,
           start_column: 1,
           help_url: "https://bandit.readthedocs.io/en/latest/blacklists/blacklist_imports.html"\

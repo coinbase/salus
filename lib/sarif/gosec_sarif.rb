@@ -73,6 +73,7 @@ module Sarif
           messageStrings: { "severity": { "text": (issue['severity']).to_s },
                            "confidence": { "text": (issue['confidence']).to_s },
                            "cwe": { "text": (issue['cwe']['URL']).to_s } },
+          properties: { 'severity': (issue['severity']).to_s },
           start_line: issue['line'].to_i,
           start_column: issue['column'].to_i,
           uri: issue['file'],

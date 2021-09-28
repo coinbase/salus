@@ -57,6 +57,7 @@ module Sarif
                          "patched_versions": { "text": issue.dig('versions', 'patched').to_s },
                          "unaffected_versions": { "text": issue.dig('versions',
                                                                     'unaffected').to_s } },
+        properties: { 'severity': (advisory['cvss']).to_s },
         uri: 'Cargo.lock',
         help_url: issue['advisory']['url']
       }

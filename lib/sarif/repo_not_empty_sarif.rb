@@ -24,7 +24,8 @@ module Sarif
         details: issue[:message],
         level: "VERY LOW",
         uri: "",
-        help_url: REPO_NOT_EMPTY_URI
+        help_url: REPO_NOT_EMPTY_URI,
+        properties: { 'severity': "VERY LOW" }
       }
     end
   end

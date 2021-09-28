@@ -22,6 +22,7 @@ module Sarif
                          "osvdb": { "text": (issue[:osdvb]).to_s },
                          "type": { "text": (issue[:type]).to_s },
                          "version": { "text": (issue[:version]).to_s } },
+        properties: { 'severity': (issue[:cvss]).to_s },
         uri: 'Gemfile.lock',
         help_url: issue[:url]
       }
