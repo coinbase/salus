@@ -4,13 +4,15 @@ require 'json'
 describe Sarif::BrakemanSarif do
   describe '#parse_issue' do
     let(:scanner) { Salus::Scanners::Brakeman.new(repository: repo, config: { 'path' => path }) }
+    let(:basedir) { File.expand_path("../../../spec/", __dir__)}
     before { scanner.run }
 
     context 'scan report with logged vulnerabilites' do
       let(:repo) { Salus::Repo.new('spec/fixtures') }
-      let(:path) { '/home/spec/fixtures/brakeman/vulnerable_rails_app' }
+      let(:path) { File.join(basedir, "fixtures/brakeman/vulnerable_rails_app")}
       it 'parses information correctly' do
         brakeman_sarif = Sarif::BrakemanSarif.new(scanner.report)
+
         issue = JSON.parse(scanner.log(''))['warnings'][0]
 
         brakeman_sarif.build_runs_object(true)
@@ -30,6 +32,7 @@ describe Sarif::BrakemanSarif do
           properties: {
             fingerprint: "b16e1cd0d952433f80b0403b6a74aab0e98792ea015cc1b1fa5c003cbe7d56eb",
             confidence: "High",
+            severity: "High",
             render_path: "",
             user_input: "params[:evil]",
             location_type: "method",
@@ -136,7 +139,7 @@ describe Sarif::BrakemanSarif do
     end
 
     context 'rails project with no vulnerabilities' do
-      let(:repo) { Salus::Repo.new('/home/spec/fixtures/brakeman/bundler_2') }
+      let(:repo) { Salus::Repo.new(File.join(basedir, "/fixtures/brakeman/bundler_2")) }
       it 'should generate an empty sarif report' do
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
@@ -147,7 +150,7 @@ describe Sarif::BrakemanSarif do
     end
 
     context 'python project with empty report containing whitespace' do
-      let(:repo) { Salus::Repo.new('/home/spec/fixtures/brakeman/bundler_2') }
+      let(:repo) { Salus::Repo.new(File.join(basedir, "fixtures/brakeman/bundler_2")) }
       it 'should handle empty reports with whitespace' do
         report = Salus::Report.new(project_name: "Neon Genesis")
         # Override the report.log() to return "\n"
@@ -161,7 +164,7 @@ describe Sarif::BrakemanSarif do
     end
 
     context 'rails project with vulnerabilities' do
-      let(:repo) { Salus::Repo.new('/home/spec/fixtures/brakeman/vulnerable_rails_app') }
+      let(:repo) { Salus::Repo.new(File.join(basedir, "fixtures/brakeman/vulnerable_rails_app")) }
       it 'should generate the right results and rules' do
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)

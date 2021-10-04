@@ -13,6 +13,7 @@ describe Sarif::BanditSarif do
         issue = JSON.parse(scanner.log(''))['results'][0]
 
         expected = "1 import cPickle\n2 import pickle\n3 import StringIO\n"
+
         expect(bandit_sarif.parse_issue(issue)).to include(
           id: "B403",
           name: "blacklist",

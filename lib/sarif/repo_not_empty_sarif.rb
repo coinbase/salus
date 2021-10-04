@@ -25,7 +25,7 @@ module Sarif
         level: "VERY LOW",
         uri: "",
         help_url: REPO_NOT_EMPTY_URI,
-        properties: { 'severity': "VERY LOW" }
+        properties: { severity: "VERY LOW" }
       }
     end
   end

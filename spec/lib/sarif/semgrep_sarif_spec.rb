@@ -22,6 +22,7 @@ describe Sarif::SemgrepSarif do
         report.add_scan_report(scanner.report, required: true)
 
         sarif_report = JSON.parse(report.to_sarif)
+
         result = sarif_report["runs"][0]["results"]
         expect(result).to include({
           "ruleId": "Forbidden Pattern Found",

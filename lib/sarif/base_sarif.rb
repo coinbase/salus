@@ -67,7 +67,7 @@ module Sarif
       end
 
       location[:region][:snippet] = { "text": parsed_issue[:code] } if !parsed_issue[:code].nil?
-      result["properties"] = parsed_issue[:properties] if parsed_issue[:properties]
+      result[:properties] = parsed_issue[:properties] if parsed_issue[:properties]
       result
     end
 
@@ -98,11 +98,12 @@ module Sarif
       results = []
       rules = []
       @logs.each do |issue|
+        # {:type=>"Syntax error", :message=>"", :level=>"warn", :spans=>[]}
         parsed_issue = parse_issue(issue)
+
         next if !parsed_issue
         next if parsed_issue[:suppressed] && @config['include_suppressed'] == false
         next if @required == false && @config['include_suppressed'] == false
-
         rule = build_rule(parsed_issue)
         rules << rule if rule
         result = build_result(parsed_issue)
@@ -115,7 +116,6 @@ module Sarif
         end
         results << result
       end
-
       invocation = build_invocations(@scan_report, supported)
       {
         "tool" => build_tool(rules: rules),

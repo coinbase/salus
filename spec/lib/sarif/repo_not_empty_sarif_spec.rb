@@ -23,6 +23,7 @@ describe Sarif::RepoNotEmptySarif do
               "text": "Salus was run on a blank directory. This may indicate "\
                "misconfiguration such as not correctly voluming in the repository to be scanned."
             },
+            "properties": { "severity": "VERY LOW" },
             "locations": [
               {
                 "physicalLocation": {

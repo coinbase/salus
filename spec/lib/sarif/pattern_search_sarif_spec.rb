@@ -46,6 +46,7 @@ describe Sarif::PatternSearchSarif do
             "message": {
               "text": "not important string. Pattern Nerv is forbidden."
             },
+            "properties": { severity: "HIGH" },
             "locations": [
               {
                 "physicalLocation": {
