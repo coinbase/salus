@@ -4,12 +4,12 @@ require 'json'
 describe Sarif::BrakemanSarif do
   describe '#parse_issue' do
     let(:scanner) { Salus::Scanners::Brakeman.new(repository: repo, config: { 'path' => path }) }
-    let(:basedir) { File.expand_path("../../../spec/", __dir__)}
+    let(:basedir) { File.expand_path("../../../spec/", __dir__) }
     before { scanner.run }
 
     context 'scan report with logged vulnerabilites' do
       let(:repo) { Salus::Repo.new('spec/fixtures') }
-      let(:path) { File.join(basedir, "fixtures/brakeman/vulnerable_rails_app")}
+      let(:path) { File.join(basedir, "fixtures/brakeman/vulnerable_rails_app") }
       it 'parses information correctly' do
         brakeman_sarif = Sarif::BrakemanSarif.new(scanner.report)
 

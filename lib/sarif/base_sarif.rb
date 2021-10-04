@@ -102,8 +102,11 @@ module Sarif
         parsed_issue = parse_issue(issue)
 
         next if !parsed_issue
+
         next if parsed_issue[:suppressed] && @config['include_suppressed'] == false
+
         next if @required == false && @config['include_suppressed'] == false
+
         rule = build_rule(parsed_issue)
         rules << rule if rule
         result = build_result(parsed_issue)

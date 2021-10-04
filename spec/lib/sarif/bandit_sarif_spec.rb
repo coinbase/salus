@@ -1,6 +1,6 @@
 require_relative '../../spec_helper'
 
-describe Sarif::BanditSarif do 
+describe Sarif::BanditSarif do
   describe '#parse_issue' do
     let(:py_dir) { 'spec/fixtures/python' }
     let(:scanner) { Salus::Scanners::Bandit.new(repository: repo, config: {}) }
