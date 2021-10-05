@@ -5,15 +5,17 @@ require 'json-schema'
 describe Sarif::GosecSarif do
   describe '#parse_issue' do
     let(:scanner) { Salus::Scanners::Gosec.new(repository: repo, config: {}) }
+    let(:path) { 'spec/fixtures/gosec/safe_goapp' }
     before { scanner.run }
 
     context 'scan report with duplicate vulnerabilities' do
-      let(:repo) { Salus::Repo.new('spec/fixtures/gosec/safe_goapp') }
+      let(:repo) { Salus::Repo.new(path) }
+      let(:path) { 'spec/fixtures/gosec/duplicate_entries' }
       it 'should not include duplicate result entries' do
         scan_report = Salus::ScanReport.new(scanner_name: "Gosec")
-        f = File.read('spec/fixtures/gosec/duplicate_entries/report.json')
+        f = File.read("#{path}/report.json")
         scan_report.log(f.to_s)
-        adapter = Sarif::GosecSarif.new(scan_report)
+        adapter = Sarif::GosecSarif.new(scan_report, path)
         results = adapter.build_runs_object(true)["results"]
 
         expect(results.size).to eq(3)
@@ -28,7 +30,7 @@ describe Sarif::GosecSarif do
         scan_report = Salus::ScanReport.new(scanner_name: "Gosec")
         f = File.read('spec/fixtures/gosec/duplicate_entries/report.json')
         scan_report.log(f.to_s)
-        adapter = Sarif::GosecSarif.new(scan_report)
+        adapter = Sarif::GosecSarif.new(scan_report, 'spec/fixtures/gosec/duplicate_entries' )
         rules = adapter.build_runs_object(true)["tool"][:driver]["rules"]
         expect(rules.size).to eq(2)
         unique_rules = Set.new
@@ -41,10 +43,11 @@ describe Sarif::GosecSarif do
 
     describe '#sarif_level' do
       context 'gosec severities' do
-        let(:repo) { Salus::Repo.new('spec/fixtures/gosec/safe_goapp') }
+        let(:path) { 'spec/fixtures/gosec/safe_goapp' }
+        let(:repo) { Salus::Repo.new(path) }
         it 'are mapped to sarif levels' do
           scan_report = Salus::ScanReport.new(scanner_name: "Gosec")
-          adapter = Sarif::GosecSarif.new(scan_report)
+          adapter = Sarif::GosecSarif.new(scan_report, path )
           expect(adapter.sarif_level("MEDIUM")).to eq("error")
           expect(adapter.sarif_level("HIGH")).to eq("error")
           expect(adapter.sarif_level("LOW")).to eq("warning")
@@ -53,9 +56,10 @@ describe Sarif::GosecSarif do
     end
 
     context 'scan report with logged vulnerabilites' do
-      let(:repo) { Salus::Repo.new('spec/fixtures/gosec/vulnerable_goapp') }
+      let(:path) { 'spec/fixtures/gosec/vulnerable_goapp' }
+      let(:repo) { Salus::Repo.new(path) }
       it 'parses information correctly' do
-        gosec_sarif = Sarif::GosecSarif.new(scanner.report)
+        gosec_sarif = Sarif::GosecSarif.new(scanner.report, path)
         issue = JSON.parse(scanner.log(''))['Issues'][0]
 
         # should Parse and fill out hash
@@ -73,6 +77,8 @@ describe Sarif::GosecSarif do
           start_line: 8,
           start_column: 2,
           help_url: "https://cwe.mitre.org/data/definitions/798.html",
+          uri: "hello.go",
+          properties: {severity: "HIGH"},
           code: expected
         )
       end

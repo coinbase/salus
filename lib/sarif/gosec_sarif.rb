@@ -1,4 +1,5 @@
 require 'salus/bugsnag'
+require 'pathname'
 
 module Sarif
   class GosecSarif < BaseSarif
@@ -6,8 +7,8 @@ module Sarif
 
     GOSEC_URI = 'https://github.com/securego/gosec'.freeze
 
-    def initialize(scan_report)
-      super(scan_report)
+    def initialize(scan_report, repo_path)
+      super(scan_report, repo_path)
       @uri = GOSEC_URI
       @logs = parse_scan_report!(scan_report)
     end
@@ -62,22 +63,24 @@ module Sarif
       else
         id = issue['details'] + ' ' + issue['file'] + ' ' + issue['line']
         return nil if @issues.include?(id)
-
+        url = issue['cwe']['URL'] || issue['cwe']['url']
+        id = issue['cwe']['ID'] || issue['cwe']['id']
+        filepath = Pathname.new(issue['file'])
         @issues.add(id)
         {
           id: issue['rule_id'],
-          name: "CWE-#{issue['cwe']['ID']}",
+          name: "CWE-#{id}",
           level: issue['severity'],
           details: "#{issue['details']} \nSeverity: #{issue['severity']}\nConfidence:"\
-          " #{issue['confidence']}\nCWE: #{issue['cwe']['URL']}",
+          " #{issue['confidence']}\nCWE: #{url}",
           messageStrings: { "severity": { "text": (issue['severity']).to_s },
                            "confidence": { "text": (issue['confidence']).to_s },
-                           "cwe": { "text": (issue['cwe']['URL']).to_s } },
+                           "cwe": { "text": url.to_s } },
           properties: { 'severity': (issue['severity']).to_s },
           start_line: issue['line'].to_i,
           start_column: issue['column'].to_i,
-          uri: issue['file'],
-          help_url: issue['cwe']['URL'],
+          uri: filepath.relative? ? filepath.to_s : filepath.relative_path_from(base_path).to_s,
+          help_url: url,
           code: issue['code']
         }
       end

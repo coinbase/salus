@@ -11,7 +11,7 @@ describe Sarif::BrakemanSarif do
       let(:repo) { Salus::Repo.new('spec/fixtures') }
       let(:path) { File.join(basedir, "fixtures/brakeman/vulnerable_rails_app") }
       it 'parses information correctly' do
-        brakeman_sarif = Sarif::BrakemanSarif.new(scanner.report)
+        brakeman_sarif = Sarif::BrakemanSarif.new(scanner.report, path)
 
         issue = JSON.parse(scanner.log(''))['warnings'][0]
 
@@ -43,7 +43,7 @@ describe Sarif::BrakemanSarif do
       end
 
       it 'should parse brakeman errors' do
-        brakeman_sarif = Sarif::BrakemanSarif.new(scanner.report)
+        brakeman_sarif = Sarif::BrakemanSarif.new(scanner.report, path)
         error = { 'error' => 'foo', 'location' => 'fooclass' }.stringify_keys
         parsed_error = brakeman_sarif.parse_issue(error)
         expect(parsed_error[:id]).to eq('SAL002')
@@ -57,10 +57,11 @@ describe Sarif::BrakemanSarif do
 
   describe '#build_result' do
     context 'rails project with vulnerabilities' do
+      let(:path) { "./" }
       it 'should generate valid result for a brakeman warning with no code snippets' do
         scan_report = Salus::ScanReport.new('Brakeman')
         scan_report.add_version('0.1')
-        brakeman_sarif = Sarif::BrakemanSarif.new(scan_report)
+        brakeman_sarif = Sarif::BrakemanSarif.new(scan_report, path)
         issue = {
           "warning_type": "Cross-Site Request Forgery",
           "warning_code": 116,
@@ -86,7 +87,7 @@ describe Sarif::BrakemanSarif do
       it 'should generate valid result for a brakeman warning with code snippets' do
         scan_report = Salus::ScanReport.new('Brakeman')
         scan_report.add_version('0.1')
-        brakeman_sarif = Sarif::BrakemanSarif.new(scan_report)
+        brakeman_sarif = Sarif::BrakemanSarif.new(scan_report, path)
         issue = {
           "warning_type": "Cross-Site Request Forgery",
           "warning_code": 116,
@@ -114,7 +115,7 @@ describe Sarif::BrakemanSarif do
     it 'should map brakeman severity/confidence levels to sarif_levels' do
       scan_report = Salus::ScanReport.new('Brakeman')
       scan_report.add_version('0.1')
-      brakeman_adapter = Sarif::BrakemanSarif.new(scan_report)
+      brakeman_adapter = Sarif::BrakemanSarif.new(scan_report, "./")
       expect(brakeman_adapter.sarif_level('HIGH')).to eq('error')
       expect(brakeman_adapter.sarif_level('MEDIUM')).to eq('error')
       expect(brakeman_adapter.sarif_level('LOW')).to eq('warning')
@@ -139,6 +140,7 @@ describe Sarif::BrakemanSarif do
     end
 
     context 'rails project with no vulnerabilities' do
+      let(:basedir) { File.expand_path("../../../spec/", __dir__) }
       let(:repo) { Salus::Repo.new(File.join(basedir, "/fixtures/brakeman/bundler_2")) }
       it 'should generate an empty sarif report' do
         report = Salus::Report.new(project_name: "Neon Genesis")
@@ -150,6 +152,7 @@ describe Sarif::BrakemanSarif do
     end
 
     context 'python project with empty report containing whitespace' do
+      let(:basedir) { File.expand_path("../../../spec/", __dir__) }
       let(:repo) { Salus::Repo.new(File.join(basedir, "fixtures/brakeman/bundler_2")) }
       it 'should handle empty reports with whitespace' do
         report = Salus::Report.new(project_name: "Neon Genesis")
@@ -164,6 +167,7 @@ describe Sarif::BrakemanSarif do
     end
 
     context 'rails project with vulnerabilities' do
+      let(:basedir) { File.expand_path("../../../spec/", __dir__) }
       let(:repo) { Salus::Repo.new(File.join(basedir, "fixtures/brakeman/vulnerable_rails_app")) }
       it 'should generate the right results and rules' do
         report = Salus::Report.new(project_name: "Neon Genesis")

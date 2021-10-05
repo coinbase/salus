@@ -3,7 +3,7 @@ require 'json-schema'
 
 describe Sarif::BaseSarif do
   let(:scan_report) { Salus::ScanReport.new("Unsupported_Scanner") }
-  let(:base_sarif) { Sarif::BaseSarif.new(scan_report) }
+  let(:base_sarif) { Sarif::BaseSarif.new(scan_report, "./") }
   let(:report) { Salus::Report.new(project_name: 'Neon genesis') }
   before do
     scan_report.add_version('1.1.1')
@@ -47,6 +47,7 @@ describe Sarif::BaseSarif do
 
   describe '#build_runs_object' do
     context 'results object' do
+      let (:path) { "./" }
       it 'has suppressions objects for suppressed results' do
         parsed_issue = {
           id: 'SAL002',
@@ -60,7 +61,7 @@ describe Sarif::BaseSarif do
           code: "",
           suppressed: true
         }
-        adapter = Sarif::GosecSarif.new(scan_report)
+        adapter = Sarif::GosecSarif.new(scan_report, path)
         adapter.instance_variable_set(:@logs, [parsed_issue])
         runs_object = adapter.build_runs_object(true)
         expect(runs_object['results'][0]['suppressions'].nil?).to eq(false)
@@ -78,7 +79,7 @@ describe Sarif::BaseSarif do
           help_url: "https://github.com/coinbase/salus/blob/master/docs/salus_reports.md",
           code: ""
         }
-        adapter = Sarif::GosecSarif.new(scan_report)
+        adapter = Sarif::GosecSarif.new(scan_report, path)
         adapter.instance_variable_set(:@logs, [parsed_issue])
         runs_object = adapter.build_runs_object(true)
         expect(runs_object['results'][0]['suppressions'].nil?).to eq(true)
@@ -97,7 +98,7 @@ describe Sarif::BaseSarif do
           code: "",
           suppressed: true
         }
-        adapter = Sarif::GosecSarif.new(scan_report)
+        adapter = Sarif::GosecSarif.new(scan_report, path)
         adapter.instance_variable_set(:@logs, [parsed_issue])
         adapter.instance_variable_set(:@config, { "include_suppressed": false }.stringify_keys)
         runs_object = adapter.build_runs_object(true)
@@ -117,7 +118,7 @@ describe Sarif::BaseSarif do
           code: "",
           suppressed: true
         }
-        adapter = Sarif::GosecSarif.new(scan_report)
+        adapter = Sarif::GosecSarif.new(scan_report, path)
         adapter.instance_variable_set(:@logs, [parsed_issue])
         adapter.instance_variable_set(:@config, { "include_suppressed": true }.stringify_keys)
         runs_object = adapter.build_runs_object(true)
@@ -136,7 +137,7 @@ describe Sarif::BaseSarif do
           help_url: "https://github.com/coinbase/salus/blob/master/docs/salus_reports.md",
           code: ""
         }
-        adapter = Sarif::GosecSarif.new(scan_report)
+        adapter = Sarif::GosecSarif.new(scan_report, path)
         adapter.instance_variable_set(:@logs, [parsed_issue])
         adapter.instance_variable_set(:@config, { "include_suppressed": true }.stringify_keys)
         adapter.instance_variable_set(:@required, false)
@@ -157,7 +158,7 @@ describe Sarif::BaseSarif do
           help_url: "https://github.com/coinbase/salus/blob/master/docs/salus_reports.md",
           code: ""
         }
-        adapter = Sarif::GosecSarif.new(scan_report)
+        adapter = Sarif::GosecSarif.new(scan_report, path)
         adapter.instance_variable_set(:@logs, [parsed_issue])
         adapter.instance_variable_set(:@config, { "include_suppressed": true }.stringify_keys)
         adapter.instance_variable_set(:@required, false)
@@ -177,7 +178,7 @@ describe Sarif::BaseSarif do
           help_url: "https://github.com/coinbase/salus/blob/master/docs/salus_reports.md",
           code: ""
         }
-        adapter = Sarif::GosecSarif.new(scan_report)
+        adapter = Sarif::GosecSarif.new(scan_report, path)
         adapter.instance_variable_set(:@logs, [parsed_issue])
         adapter.instance_variable_set(:@config, { "include_suppressed": false }.stringify_keys)
         adapter.instance_variable_set(:@required, true)
@@ -197,7 +198,7 @@ describe Sarif::BaseSarif do
           help_url: "https://github.com/coinbase/salus/blob/master/docs/salus_reports.md",
           code: ""
         }
-        adapter = Sarif::GosecSarif.new(scan_report)
+        adapter = Sarif::GosecSarif.new(scan_report, path)
         adapter.instance_variable_set(:@logs, [parsed_issue])
         adapter.instance_variable_set(:@config, { "include_suppressed": false }.stringify_keys)
         adapter.instance_variable_set(:@required, false)

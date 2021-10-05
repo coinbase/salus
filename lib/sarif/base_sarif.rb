@@ -1,4 +1,5 @@
 require 'sarif/shared_objects'
+
 module Sarif
   class BaseSarif
     include Sarif::SharedObjects
@@ -13,7 +14,7 @@ module Sarif
 
     attr_accessor :config, :required # sarif_options
 
-    def initialize(scan_report, config = {})
+    def initialize(scan_report, repo_path, config = {})
       @scan_report = scan_report
       @mapped_rules = {} # map each rule to an index
       @rule_index = 0
@@ -21,6 +22,11 @@ module Sarif
       @uri = DEFAULT_URI
       @issues = Set.new
       @config = config
+      @repo_path = repo_path
+    end
+
+    def base_path
+      @base_path ||= File.expand_path(@repo_path)
     end
 
     # Retrieve tool section for sarif report

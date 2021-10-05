@@ -6,9 +6,10 @@ describe Sarif::RepoNotEmptySarif do
     before { scanner.run }
 
     context 'vulnerabilites found in project' do
-      let(:repo) { Salus::Repo.new('spec/fixtures/repo_not_empty/blank') }
+      let(:path) { 'spec/fixtures/repo_not_empty/blank' }
+      let(:repo) { Salus::Repo.new(path) }
       it 'creates valid sarif report with results populated' do
-        adapter = Sarif::RepoNotEmptySarif.new(scanner.report)
+        adapter = Sarif::RepoNotEmptySarif.new(scanner.report, path)
         report = adapter.build_runs_object(true)
         rules = report['tool'][:driver]['rules']
         results = report['results']
@@ -57,7 +58,7 @@ describe Sarif::RepoNotEmptySarif do
         scan_reports = [
           [scanner.report, false]
         ]
-        sarif_json = Sarif::SarifReport.new(scan_reports).to_sarif
+        sarif_json = Sarif::SarifReport.new(scan_reports, "./").to_sarif
         filtered_sarif = report.apply_report_sarif_filters(sarif_json)
         expect { Sarif::SarifReport.validate_sarif(filtered_sarif) }.not_to raise_error
       end
@@ -67,16 +68,17 @@ describe Sarif::RepoNotEmptySarif do
         scan_reports = [
           [scanner.report, false]
         ]
-        sarif_json = Sarif::SarifReport.new(scan_reports).to_sarif
+        sarif_json = Sarif::SarifReport.new(scan_reports, "./").to_sarif
         filtered_sarif = report.apply_report_sarif_filters(sarif_json)
         expect { Sarif::SarifReport.validate_sarif(filtered_sarif) }.not_to raise_error
       end
     end
 
     context 'no vulnerabilites found in project' do
-      let(:repo) { Salus::Repo.new('spec/fixtures/repo_not_empty/non_blank') }
+      let(:path) { 'spec/fixtures/repo_not_empty/non_blank' }
+      let(:repo) { Salus::Repo.new(path) }
       it 'does not create sarif report for non-empty repo' do
-        adapter = Sarif::RepoNotEmptySarif.new(scanner.report)
+        adapter = Sarif::RepoNotEmptySarif.new(scanner.report, path)
         report = adapter.build_runs_object(true)
         rules = report['tool'][:driver]['rules']
         results = report['results']
@@ -87,7 +89,7 @@ describe Sarif::RepoNotEmptySarif do
         scan_reports = [
           [scanner.report, false]
         ]
-        sarif_json = Sarif::SarifReport.new(scan_reports).to_sarif
+        sarif_json = Sarif::SarifReport.new(scan_reports, "./").to_sarif
         filtered_sarif = report.apply_report_sarif_filters(sarif_json)
         expect { Sarif::SarifReport.validate_sarif(filtered_sarif) }.not_to raise_error
       end

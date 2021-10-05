@@ -4,13 +4,14 @@ require 'json'
 describe Sarif::CargoAuditSarif do
   describe '#parse_issue' do
     let(:scanner) { Salus::Scanners::CargoAudit.new(repository: repo, config: {}) }
+    let(:path) { 'spec/fixtures/cargo_audit/failure-vulnerability-present' }
     before { scanner.run }
 
     context 'scan report with logged vulnerabilites' do
-      let(:repo) { Salus::Repo.new('spec/fixtures/cargo_audit/failure-vulnerability-present') }
+      let(:repo) { Salus::Repo.new(path) }
       it 'parses information correctly' do
         x = JSON.parse(scanner.report.to_h.fetch(:logs))
-        cargo_sarif = Sarif::CargoAuditSarif.new(scanner.report)
+        cargo_sarif = Sarif::CargoAuditSarif.new(scanner.report, path)
 
         issue = x['vulnerabilities']['list'][0]
 
@@ -60,7 +61,7 @@ describe Sarif::CargoAuditSarif do
     end
 
     context 'rust project with no vulnerabilities' do
-      let(:repo) { Salus::Repo.new('/home/spec/fixtures/cargo_audit/success') }
+      let(:repo) { Salus::Repo.new('spec/fixtures/cargo_audit/success') }
       it 'should generate an empty sarif report' do
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
@@ -71,7 +72,7 @@ describe Sarif::CargoAuditSarif do
     end
 
     context 'rust project with empty report containing whitespace' do
-      let(:repo) { Salus::Repo.new('/home/spec/fixtures/cargo_audit/success') }
+      let(:repo) { Salus::Repo.new('spec/fixtures/cargo_audit/success') }
       it 'should handle empty reports with whitespace' do
         report = Salus::Report.new(project_name: "Neon Genesis")
         # Override the report.log() to return "\n"
@@ -119,7 +120,7 @@ describe Sarif::CargoAuditSarif do
     it 'parses cargo severity levels to sarif levels' do
       scan_report = Salus::ScanReport.new('CargoAudit')
       scan_report.add_version('0.0.1')
-      cargo_sarif = Sarif::CargoAuditSarif.new(scan_report)
+      cargo_sarif = Sarif::CargoAuditSarif.new(scan_report, './')
       expect(cargo_sarif.sarif_level('HIGH')).to eq('error')
       expect(cargo_sarif.sarif_level('MEDIUM')).to eq('error')
       expect(cargo_sarif.sarif_level('LOW')).to eq('warning')
