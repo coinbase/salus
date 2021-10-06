@@ -4,8 +4,8 @@ module Sarif
 
     CARGO_AUDIT_URI = 'https://github.com/RustSec/cargo-audit/'.freeze
 
-    def initialize(scan_report, repo_path)
-      super(scan_report, repo_path)
+    def initialize(scan_report, repo_path = nil)
+      super(scan_report, {}, repo_path)
       @uri = CARGO_AUDIT_URI
       @logs = parse_scan_report!
     end

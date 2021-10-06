@@ -2,8 +2,8 @@ module Sarif
   class NPMAuditSarif < BaseSarif
     NPM_URI = 'https://docs.npmjs.com/cli/v7/commands/npm-audit'.freeze
 
-    def initialize(scan_report, repo_path)
-      super(scan_report, repo_path)
+    def initialize(scan_report, repo_path = nil)
+      super(scan_report, {}, repo_path)
       @uri = NPM_URI
       @logs = parse_scan_report!
       @exceptions = Set.new(@scan_report.to_h.dig(:info, :exceptions))

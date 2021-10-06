@@ -2,8 +2,8 @@ module Sarif
   class BundleAuditSarif < BaseSarif
     BUNDLEAUDIT_URI = 'https://github.com/rubysec/bundler-audit/'.freeze
 
-    def initialize(scan_report, repo_path)
-      super(scan_report, repo_path)
+    def initialize(scan_report, repo_path = nil)
+      super(scan_report, {}, repo_path)
       @logs = @scan_report.to_h.dig(:info, :vulnerabilities) || []
       @uri = BUNDLEAUDIT_URI
     end

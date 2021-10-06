@@ -7,8 +7,8 @@ module Sarif
 
     GOSEC_URI = 'https://github.com/securego/gosec'.freeze
 
-    def initialize(scan_report, repo_path)
-      super(scan_report, repo_path)
+    def initialize(scan_report, repo_path = nil)
+      super(scan_report, {}, repo_path)
       @uri = GOSEC_URI
       @logs = parse_scan_report!(scan_report)
     end

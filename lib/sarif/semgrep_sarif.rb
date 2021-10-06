@@ -8,8 +8,8 @@ module Sarif
     SEMGREP_URI = "https://github.com/coinbase/salus/blob/master/docs/scanners/"\
                      "semgrep.md".freeze
 
-    def initialize(scan_report, repo_path)
-      super(scan_report, repo_path)
+    def initialize(scan_report, repo_path = nil)
+      super(scan_report, {}, repo_path)
       @uri = SEMGREP_URI
       @logs = parse_scan_report!
       @issues = Set.new
