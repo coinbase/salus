@@ -6,10 +6,11 @@ describe Sarif::BundleAuditSarif do
     before { scanner.run }
 
     context 'scan report with logged vulnerabilities' do
-      let(:repo) { Salus::Repo.new('spec/fixtures/bundle_audit/cves_found') }
+      let(:path) { 'spec/fixtures/bundle_audit/cves_found' }
+      let(:repo) { Salus::Repo.new(path) }
 
       it 'updates ids accordingly' do
-        bundle_audit_sarif = Sarif::BundleAuditSarif.new(scanner.report)
+        bundle_audit_sarif = Sarif::BundleAuditSarif.new(scanner.report, path)
         issue = { "type": "InsecureSource",
           "source": "http://rubygems.org/" }
 
@@ -31,7 +32,7 @@ describe Sarif::BundleAuditSarif do
       end
 
       it 'parses information correctly' do
-        bundle_audit_sarif = Sarif::BundleAuditSarif.new(scanner.report)
+        bundle_audit_sarif = Sarif::BundleAuditSarif.new(scanner.report, path)
         issue = scanner.report.to_h[:info][:vulnerabilities]
         issue = issue.detect { |i| i[:cve] == 'CVE-2021-22885' }
 

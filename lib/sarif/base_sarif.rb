@@ -1,4 +1,5 @@
 require 'sarif/shared_objects'
+
 module Sarif
   class BaseSarif
     include Sarif::SharedObjects
@@ -13,7 +14,7 @@ module Sarif
 
     attr_accessor :config, :required # sarif_options
 
-    def initialize(scan_report, config = {})
+    def initialize(scan_report, config = {}, repo_path = nil)
       @scan_report = scan_report
       @mapped_rules = {} # map each rule to an index
       @rule_index = 0
@@ -21,6 +22,11 @@ module Sarif
       @uri = DEFAULT_URI
       @issues = Set.new
       @config = config
+      @repo_path = repo_path
+    end
+
+    def base_path
+      @base_path ||= @repo_path.nil? ? nil : File.expand_path(@repo_path)
     end
 
     # Retrieve tool section for sarif report
@@ -67,11 +73,12 @@ module Sarif
       end
 
       location[:region][:snippet] = { "text": parsed_issue[:code] } if !parsed_issue[:code].nil?
-      result["properties"] = parsed_issue[:properties] if parsed_issue[:properties]
+      result[:properties] = parsed_issue[:properties] unless parsed_issue[:properties].nil?
       result
     end
 
     def build_rule(parsed_issue)
+      # only include one entry per rule id
       if !@mapped_rules.include?(parsed_issue[:id])
         rule = {
           "id": parsed_issue[:id],
@@ -99,8 +106,11 @@ module Sarif
       rules = []
       @logs.each do |issue|
         parsed_issue = parse_issue(issue)
+
         next if !parsed_issue
+
         next if parsed_issue[:suppressed] && @config['include_suppressed'] == false
+
         next if @required == false && @config['include_suppressed'] == false
 
         rule = build_rule(parsed_issue)
@@ -115,6 +125,9 @@ module Sarif
         end
         results << result
       end
+
+      # unique-ify the results
+      results = results.each_with_object([]) { |h, result| result << h unless result.include?(h); }
 
       invocation = build_invocations(@scan_report, supported)
       {

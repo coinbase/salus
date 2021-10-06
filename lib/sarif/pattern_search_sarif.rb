@@ -8,8 +8,8 @@ module Sarif
     PATTERN_SEARCH_URI = "https://github.com/coinbase/salus/blob/master/docs/scanners/"\
     "pattern_search.md".freeze
 
-    def initialize(scan_report)
-      super(scan_report)
+    def initialize(scan_report, repo_path = nil)
+      super(scan_report, {}, repo_path)
       @uri = PATTERN_SEARCH_URI
       @logs = parse_scan_report!
     end
@@ -82,7 +82,8 @@ module Sarif
         start_column: 1,
         uri: url_info[0],
         help_url: PATTERN_SEARCH_URI,
-        code: issue[:hit]
+        code: issue[:hit],
+        properties: { severity: "HIGH" }
       }
     end
   end

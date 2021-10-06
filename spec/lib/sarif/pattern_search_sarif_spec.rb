@@ -2,8 +2,9 @@ require_relative '../../spec_helper'
 
 describe Sarif::PatternSearchSarif do
   context '#parse_issue' do
+    let(:path) { 'spec/fixtures/pattern_search' }
     it 'doesnt add duplicates to the report' do
-      repo = Salus::Repo.new('spec/fixtures/pattern_search')
+      repo = Salus::Repo.new(path)
       config = {
         'matches' => [
           { 'regex' => 'Nerv', 'required' => true, 'message' => 'important string' }
@@ -11,7 +12,7 @@ describe Sarif::PatternSearchSarif do
       }
       scanner = Salus::Scanners::PatternSearch.new(repository: repo, config: config)
       scanner.run
-      adapter = Sarif::PatternSearchSarif.new(scanner.report)
+      adapter = Sarif::PatternSearchSarif.new(scanner.report, path)
       x = scanner.report.to_h.dig(:info, :hits)
       adapter.parse_issue(x[0])
       expect(adapter.parse_issue(x[0])).to eq(nil)
@@ -20,8 +21,9 @@ describe Sarif::PatternSearchSarif do
 
   describe '#build_runs_object' do
     context 'vulnerabilites found in project' do
+      let(:path) { 'spec/fixtures/pattern_search' }
       it 'creates valid sarif report with results populated' do
-        repo = Salus::Repo.new('spec/fixtures/pattern_search')
+        repo = Salus::Repo.new(path)
         config = {
           'matches' => [
             { 'regex' => 'Nerv', 'forbidden' => true, 'message' => 'not important string' },
@@ -34,7 +36,7 @@ describe Sarif::PatternSearchSarif do
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: true)
 
-        adapter = Sarif::PatternSearchSarif.new(scanner.report)
+        adapter = Sarif::PatternSearchSarif.new(scanner.report, path)
         report = adapter.build_runs_object(true)
         rules = report['tool'][:driver]['rules']
         results = report['results']
@@ -46,6 +48,7 @@ describe Sarif::PatternSearchSarif do
             "message": {
               "text": "not important string. Pattern Nerv is forbidden."
             },
+            "properties": { severity: "HIGH" },
             "locations": [
               {
                 "physicalLocation": {

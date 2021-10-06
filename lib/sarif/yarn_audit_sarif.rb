@@ -4,8 +4,8 @@ module Sarif
     include Salus::SalusBugsnag
     YARN_URI = 'https://classic.yarnpkg.com/en/docs/cli/audit/'.freeze
 
-    def initialize(scan_report)
-      super(scan_report)
+    def initialize(scan_report, repo_path = nil)
+      super(scan_report, {}, repo_path)
       @uri = YARN_URI
       parse_scan_report!
     end
@@ -31,6 +31,7 @@ module Sarif
                          "severity": { "text": (issue['Severity']).to_s },
                          "patched_versions": { "text": (issue['Patched in']).to_s },
                          "dependency_of": { "text": (issue['Dependency of']).to_s } },
+        properties: { 'severity': (issue['Severity']).to_s },
         uri: "yarn.lock",
         help_url: issue['More info']
       }

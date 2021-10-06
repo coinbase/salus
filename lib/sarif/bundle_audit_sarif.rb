@@ -2,8 +2,8 @@ module Sarif
   class BundleAuditSarif < BaseSarif
     BUNDLEAUDIT_URI = 'https://github.com/rubysec/bundler-audit/'.freeze
 
-    def initialize(scan_report)
-      super(scan_report)
+    def initialize(scan_report, repo_path = nil)
+      super(scan_report, {}, repo_path)
       @logs = @scan_report.to_h.dig(:info, :vulnerabilities) || []
       @uri = BUNDLEAUDIT_URI
     end
@@ -22,6 +22,7 @@ module Sarif
                          "osvdb": { "text": (issue[:osdvb]).to_s },
                          "type": { "text": (issue[:type]).to_s },
                          "version": { "text": (issue[:version]).to_s } },
+        properties: { 'severity': (issue[:cvss]).to_s },
         uri: 'Gemfile.lock',
         help_url: issue[:url]
       }

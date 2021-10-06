@@ -10,7 +10,7 @@ describe Sarif::NPMAuditSarif do
       let(:repo) { Salus::Repo.new('spec/fixtures/npm_audit/failure-2') }
       it 'parses information correctly' do
         issue = scanner.report.to_h[:info][:stdout][:advisories].values[0]
-        npm_sarif = Sarif::NPMAuditSarif.new(scanner.report)
+        npm_sarif = Sarif::NPMAuditSarif.new(scanner.report, './')
 
         expect(npm_sarif.parse_issue(issue)).to include(
           id: "39",
@@ -32,11 +32,12 @@ describe Sarif::NPMAuditSarif do
     end
 
     context 'Duplicate advisories' do
-      let(:repo) { Salus::Repo.new('spec/fixtures/npm_audit/failure-2') }
+      let(:path) { 'spec/fixtures/npm_audit/failure-2' }
+      let(:repo) { Salus::Repo.new(path) }
       it 'should be parsed once' do
         issue = scanner.report.to_h[:info][:stdout][:advisories].values[0]
 
-        npm_sarif = Sarif::NPMAuditSarif.new(scanner.report)
+        npm_sarif = Sarif::NPMAuditSarif.new(scanner.report, path)
         expect(npm_sarif.parse_issue(issue).empty?).to eq(false)
         expect(npm_sarif.parse_issue(issue)).to eq(nil)
       end
@@ -47,10 +48,11 @@ describe Sarif::NPMAuditSarif do
     let(:scanner) { Salus::Scanners::NPMAudit.new(repository: repo, config: {}) }
     before { scanner.run }
     context 'NPM severities' do
-      let(:repo) { Salus::Repo.new('spec/fixtures/npm_audit/success') }
+      let(:path) { 'spec/fixtures/npm_audit/success' }
+      let(:repo) { Salus::Repo.new(path) }
       it 'should be mapped to the right sarif levels' do
         # NPM Severities: https://docs.npmjs.com/about-audit-reports#severity
-        adapter = Sarif::NPMAuditSarif.new(scanner.report)
+        adapter = Sarif::NPMAuditSarif.new(scanner.report, path)
 
         expect(adapter.sarif_level('CRITICAL')).to eq('error')
         expect(adapter.sarif_level('HIGH')).to eq('error')

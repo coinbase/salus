@@ -6,9 +6,10 @@ describe Sarif::RepoNotEmptySarif do
     before { scanner.run }
 
     context 'vulnerabilites found in project' do
-      let(:repo) { Salus::Repo.new('spec/fixtures/repo_not_empty/blank') }
+      let(:path) { 'spec/fixtures/repo_not_empty/blank' }
+      let(:repo) { Salus::Repo.new(path) }
       it 'creates valid sarif report with results populated' do
-        adapter = Sarif::RepoNotEmptySarif.new(scanner.report)
+        adapter = Sarif::RepoNotEmptySarif.new(scanner.report, path)
         report = adapter.build_runs_object(true)
         rules = report['tool'][:driver]['rules']
         results = report['results']
@@ -23,6 +24,7 @@ describe Sarif::RepoNotEmptySarif do
               "text": "Salus was run on a blank directory. This may indicate "\
                "misconfiguration such as not correctly voluming in the repository to be scanned."
             },
+            "properties": { "severity": "VERY LOW" },
             "locations": [
               {
                 "physicalLocation": {
@@ -73,9 +75,10 @@ describe Sarif::RepoNotEmptySarif do
     end
 
     context 'no vulnerabilites found in project' do
-      let(:repo) { Salus::Repo.new('spec/fixtures/repo_not_empty/non_blank') }
+      let(:path) { 'spec/fixtures/repo_not_empty/non_blank' }
+      let(:repo) { Salus::Repo.new(path) }
       it 'does not create sarif report for non-empty repo' do
-        adapter = Sarif::RepoNotEmptySarif.new(scanner.report)
+        adapter = Sarif::RepoNotEmptySarif.new(scanner.report, path)
         report = adapter.build_runs_object(true)
         rules = report['tool'][:driver]['rules']
         results = report['results']

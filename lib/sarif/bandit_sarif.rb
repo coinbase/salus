@@ -4,8 +4,8 @@ module Sarif
 
     BANDIT_URI = 'https://github.com/PyCQA/bandit'.freeze
 
-    def initialize(scan_report)
-      super(scan_report)
+    def initialize(scan_report, repo_path = nil)
+      super(scan_report, {}, repo_path)
       @uri = BANDIT_URI
       @logs = parse_scan_report!
     end
@@ -51,6 +51,7 @@ module Sarif
         details: (issue['issue_text']).to_s,
         messageStrings: { "confidence": { "text": (issue['issue_severity']).to_s },
                          "severity": { "text": (issue['issue_severity']).to_s } },
+        properties: { 'severity': issue['issue_severity'].to_s },
         start_line: issue["line_number"].to_i,
         end_line: endline,
         start_column: 1,

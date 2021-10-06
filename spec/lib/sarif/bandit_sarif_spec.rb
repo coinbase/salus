@@ -7,12 +7,14 @@ describe Sarif::BanditSarif do
     before { scanner.run }
 
     context 'scan report with logged vulnerabilites' do
-      let(:repo) { Salus::Repo.new("#{py_dir}/python_project_with_insecure_code_practices") }
+      let(:path) { "#{py_dir}/python_project_with_insecure_code_practices" }
+      let(:repo) { Salus::Repo.new(path) }
       it 'parses information correctly' do
-        bandit_sarif = Sarif::BanditSarif.new(scanner.report)
+        bandit_sarif = Sarif::BanditSarif.new(scanner.report, path)
         issue = JSON.parse(scanner.log(''))['results'][0]
 
         expected = "1 import cPickle\n2 import pickle\n3 import StringIO\n"
+
         expect(bandit_sarif.parse_issue(issue)).to include(
           id: "B403",
           name: "blacklist",
@@ -20,6 +22,7 @@ describe Sarif::BanditSarif do
           details: "Consider possible security implications associated with cPickle module.",
           messageStrings: { "confidence": { "text": "LOW" },
                            "severity": { "text": "LOW" } },
+          properties: { "severity": "LOW" },
           start_line: 1,
           start_column: 1,
           help_url: "https://bandit.readthedocs.io/en/latest/blacklists/blacklist_imports.html"\
@@ -29,7 +32,7 @@ describe Sarif::BanditSarif do
       end
 
       it 'dont have duplicate entries' do
-        bandit_sarif = Sarif::BanditSarif.new(scanner.report)
+        bandit_sarif = Sarif::BanditSarif.new(scanner.report, path)
         issue = JSON.parse(scanner.log(''))['results'][0]
 
         expect(bandit_sarif.parse_issue(issue).nil?).to eq(false)
@@ -41,12 +44,13 @@ describe Sarif::BanditSarif do
   describe '#sarif_level' do
     let(:scanner) { Salus::Scanners::Bandit.new(repository: repo, config: {}) }
     let(:py_dir) { 'spec/fixtures/python' }
+    let(:path) { "#{py_dir}/python_project_no_vulns" }
 
     context 'Bandit Severities' do
-      let(:repo) { Salus::Repo.new("#{py_dir}/python_project_no_vulns") }
+      let(:repo) { Salus::Repo.new(path) }
 
       it 'are mapped to the right sarif levels' do
-        adapter = Sarif::BanditSarif.new(scanner.report)
+        adapter = Sarif::BanditSarif.new(scanner.report, path)
         expect(adapter.sarif_level("HIGH")).to eq("error")
         expect(adapter.sarif_level("LOW")).to eq("warning")
         expect(adapter.sarif_level("MEDIUM")).to eq("error")

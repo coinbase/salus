@@ -7,10 +7,11 @@ describe Sarif::YarnAuditSarif do
     before { scanner.run }
 
     context 'scan report with logged vulnerabilites' do
-      let(:repo) { Salus::Repo.new('spec/fixtures/yarn_audit/failure-2') }
+      let(:path) { 'spec/fixtures/yarn_audit/failure-2' }
+      let(:repo) { Salus::Repo.new(path) }
       it 'parses information correctly' do
         issue = JSON.parse(scanner.report.to_h[:info][:stdout])[0]
-        yarn_sarif = Sarif::YarnAuditSarif.new(scanner.report)
+        yarn_sarif = Sarif::YarnAuditSarif.new(scanner.report, path)
 
         expect(yarn_sarif.parse_issue(issue)).to include(
           id: "39",
@@ -34,7 +35,8 @@ describe Sarif::YarnAuditSarif do
     before { scanner.run }
 
     context 'Yarn file with errors' do
-      let(:repo) { Salus::Repo.new('spec/fixtures/yarn_audit/failure-3') }
+      let(:path) { 'spec/fixtures/yarn_audit/failure-3' }
+      let(:repo) { Salus::Repo.new(path) }
       it 'should generate error in report' do
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
@@ -82,10 +84,11 @@ describe Sarif::YarnAuditSarif do
     end
 
     context 'yarn.lock file with vulnerabilities having the same ID' do
-      let(:repo) { Salus::Repo.new('spec/fixtures/yarn_audit/failure-2') }
+      let(:path) { 'spec/fixtures/yarn_audit/failure-2' }
+      let(:repo) { Salus::Repo.new(path) }
       it 'should generate all identified vulnerabilities' do
         issue = JSON.parse(scanner.report.to_h[:info][:stdout])[0]
-        yarn_sarif = Sarif::YarnAuditSarif.new(scanner.report)
+        yarn_sarif = Sarif::YarnAuditSarif.new(scanner.report, path)
 
         issue2 = issue.clone
         issue2['Dependency of'] = 'random package'

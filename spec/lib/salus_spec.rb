@@ -134,13 +134,10 @@ describe Salus::CLI do
 
           # filtered result file should include both new rules and project build info
           data = JSON.parse(File.read(diff_file))
-
           expect(data['report_type']).to eq('salus_sarif_diff')
-
           rule_ids = data['filtered_results'].map { |r| r['ruleId'] }.sort
 
           expect(rule_ids).to eq(%w[G401 G501])
-
           builds = data['builds']
           expect(builds['org']).to eq('my_org')
           expect(builds['project']).to eq('my_repo')

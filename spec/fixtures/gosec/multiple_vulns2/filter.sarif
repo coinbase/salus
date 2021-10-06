@@ -80,7 +80,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "/home/spec/fixtures/gosec/multiple_vulns2/hello.go",
+                  "uri": "hello.go",
                   "uriBaseId": "%SRCROOT%"
                 },
                 "region": {
@@ -92,7 +92,10 @@
                 }
               }
             }
-          ]
+          ],
+          "properties": {
+            "severity": "HIGH"
+          }
         },
         {
           "ruleId": "G104",
@@ -105,7 +108,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "/home/spec/fixtures/gosec/multiple_vulns2/hello.go",
+                  "uri": "hello.go",
                   "uriBaseId": "%SRCROOT%"
                 },
                 "region": {
@@ -117,7 +120,10 @@
                 }
               }
             }
-          ]
+          ],
+          "properties": {
+            "severity": "LOW"
+          }
         }
       ],
       "invocations": [
