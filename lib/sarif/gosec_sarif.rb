@@ -79,7 +79,7 @@ module Sarif
           properties: { 'severity': (issue['severity']).to_s },
           start_line: issue['line'].to_i,
           start_column: issue['column'].to_i,
-          uri: filepath.relative? ? filepath.to_s : filepath.relative_path_from(base_path).to_s,
+          uri: filepath.relative? || base_path.nil? ? filepath.to_s : filepath.relative_path_from(base_path).to_s,
           help_url: url,
           code: issue['code']
         }

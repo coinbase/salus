@@ -17,7 +17,6 @@ describe Sarif::GosecSarif do
         scan_report.log(f.to_s)
         adapter = Sarif::GosecSarif.new(scan_report, path)
         results = adapter.build_runs_object(true)["results"]
-
         expect(results.size).to eq(3)
         unique_results = Set.new
         results.each do |result|
@@ -149,11 +148,13 @@ describe Sarif::GosecSarif do
     end
 
     context 'go project with vulnerabilities' do
-      let(:repo) { Salus::Repo.new('spec/fixtures/gosec/recursive_vulnerable_goapp') }
+      let(:path) { 'spec/fixtures/gosec/recursive_vulnerable_goapp' }
+      let(:repo) { Salus::Repo.new(path) }
 
       it 'should generate the right results and rules' do
-        report = Salus::Report.new(project_name: "Neon Genesis")
+        report = Salus::Report.new(project_name: "Neon Genesis", repo_path: path)
         report.add_scan_report(scanner.report, required: false)
+
         result = JSON.parse(report.to_sarif)["runs"][0]["results"][0]
         rules = JSON.parse(report.to_sarif)["runs"][0]["tool"]["driver"]["rules"]
         # Check rule info

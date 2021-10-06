@@ -101,9 +101,9 @@ module Sarif
         name: warning[:type],
         level: "HIGH",
         details: warning[:message],
-        start_line: warning[:spans][0][:start]["line"],
-        start_column: warning[:spans][0][:start]["col"],
-        uri: warning[:spans][0][:file],
+        start_line: warning[:spans].empty? ? 1 : warning[:spans][0][:start]["line"],
+        start_column: warning[:spans].empty? ? 1 : warning[:spans][0][:start]["col"],
+        uri: warning[:spans].empty? ? "" : warning[:spans][0][:file],
         help_url: SEMGREP_URI
       }
     end

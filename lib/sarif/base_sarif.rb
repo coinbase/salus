@@ -26,7 +26,7 @@ module Sarif
     end
 
     def base_path
-      @base_path ||= File.expand_path(@repo_path)
+      @base_path ||= @repo_path.nil? ? nil : File.expand_path(@repo_path)
     end
 
     # Retrieve tool section for sarif report
@@ -73,11 +73,12 @@ module Sarif
       end
 
       location[:region][:snippet] = { "text": parsed_issue[:code] } if !parsed_issue[:code].nil?
-      result[:properties] = parsed_issue[:properties] if parsed_issue[:properties]
+      result[:properties] = parsed_issue[:properties] unless parsed_issue[:properties].nil?
       result
     end
 
     def build_rule(parsed_issue)
+      # only include one entry per rule id
       if !@mapped_rules.include?(parsed_issue[:id])
         rule = {
           "id": parsed_issue[:id],
@@ -104,7 +105,6 @@ module Sarif
       results = []
       rules = []
       @logs.each do |issue|
-        # {:type=>"Syntax error", :message=>"", :level=>"warn", :spans=>[]}
         parsed_issue = parse_issue(issue)
 
         next if !parsed_issue
@@ -125,6 +125,10 @@ module Sarif
         end
         results << result
       end
+
+      # unique-ify the results
+      results = results.inject([]) { |result,h| result << h unless result.include?(h); result }
+
       invocation = build_invocations(@scan_report, supported)
       {
         "tool" => build_tool(rules: rules),

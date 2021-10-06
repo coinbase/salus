@@ -50,7 +50,6 @@ module Salus::Scanners
 
     def version_valid?(version)
       return false if !version.is_a?(String)
-
       !/^\d+\.\d+(.\d+)*$/.match(version).nil?
     end
 

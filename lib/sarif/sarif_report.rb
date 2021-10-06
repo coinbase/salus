@@ -33,7 +33,6 @@ module Sarif
         "$schema" => SARIF_SCHEMA,
         "runs" => []
       }
-
       # for each scanner report, run the appropriate converter
       @scan_reports.each do |scan_report|
         sarif_report["runs"] << converter(scan_report[0], scan_report[1])
@@ -63,7 +62,7 @@ module Sarif
         converter.config = @config
         converter.required = required
         converter.build_runs_object(true)
-      rescue NameError
+      rescue NameError # this is greedy and will catch NoMethodError's too
         converter = BaseSarif.new(scan_report, @repo_path, @config)
         converter.required = required
         converter.build_runs_object(false)

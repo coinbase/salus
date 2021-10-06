@@ -20,9 +20,7 @@ describe Sarif::SemgrepSarif do
         scanner.run
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: true)
-
         sarif_report = JSON.parse(report.to_sarif)
-
         result = sarif_report["runs"][0]["results"]
 
         expect(result).to include({
@@ -48,7 +46,8 @@ describe Sarif::SemgrepSarif do
                 }
               }
             }
-          ]
+          ],
+          "properties": {"severity": "HIGH"},
         }.deep_stringify_keys)
       end
 
