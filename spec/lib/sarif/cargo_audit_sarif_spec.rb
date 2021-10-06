@@ -120,7 +120,7 @@ describe Sarif::CargoAuditSarif do
     it 'parses cargo severity levels to sarif levels' do
       scan_report = Salus::ScanReport.new('CargoAudit')
       scan_report.add_version('0.0.1')
-      cargo_sarif = Sarif::CargoAuditSarif.new(scan_report, './')
+      cargo_sarif = Sarif::CargoAuditSarif.new(scan_report)
       expect(cargo_sarif.sarif_level('HIGH')).to eq('error')
       expect(cargo_sarif.sarif_level('MEDIUM')).to eq('error')
       expect(cargo_sarif.sarif_level('LOW')).to eq('warning')

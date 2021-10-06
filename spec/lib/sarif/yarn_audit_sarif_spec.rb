@@ -103,7 +103,7 @@ describe Sarif::YarnAuditSarif do
   describe '#sarif_level' do
     it 'maps severities to the right sarif level' do
       scan_report = Salus::ScanReport.new('yarnaudit')
-      adapter = Sarif::YarnAuditSarif.new(scan_report, './')
+      adapter = Sarif::YarnAuditSarif.new(scan_report)
       expect(adapter.sarif_level("INFO")).to eq("note")
       expect(adapter.sarif_level("LOW")).to eq("note")
       expect(adapter.sarif_level("MODERATE")).to eq("warning")

@@ -114,7 +114,7 @@ describe Sarif::BundleAuditSarif do
   describe '#sarif_level' do
     context 'Bundler audit severities' do
       it 'should be mapped to the right sarif level' do
-        adapter = Sarif::BundleAuditSarif.new([], './')
+        adapter = Sarif::BundleAuditSarif.new([])
         expect(adapter.sarif_level(0)).to eq("note")
         expect(adapter.sarif_level(5.6)).to eq("warning")
         expect(adapter.sarif_level(9.7)).to eq("error")

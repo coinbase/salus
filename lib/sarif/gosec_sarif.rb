@@ -64,6 +64,8 @@ module Sarif
         id = issue['details'] + ' ' + issue['file'] + ' ' + issue['line']
         return nil if @issues.include?(id)
 
+        # Newer gosecs have changed case to lower. Preparing to upgrade,
+        # we'll support both
         url = issue['cwe']['URL'] || issue['cwe']['url']
         id = issue['cwe']['ID'] || issue['cwe']['id']
         filepath = Pathname.new(issue['file'])

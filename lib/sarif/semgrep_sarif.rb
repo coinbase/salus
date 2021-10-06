@@ -101,6 +101,8 @@ module Sarif
         name: warning[:type],
         level: "HIGH",
         details: warning[:message],
+        # Default to line one if not provided as SARIF spec requires this value
+        # to be > 0
         start_line: warning[:spans].empty? ? 1 : warning[:spans][0][:start]["line"],
         start_column: warning[:spans].empty? ? 1 : warning[:spans][0][:start]["col"],
         uri: warning[:spans].empty? ? "" : warning[:spans][0][:file],

@@ -115,7 +115,7 @@ describe Sarif::BrakemanSarif do
     it 'should map brakeman severity/confidence levels to sarif_levels' do
       scan_report = Salus::ScanReport.new('Brakeman')
       scan_report.add_version('0.1')
-      brakeman_adapter = Sarif::BrakemanSarif.new(scan_report, "./")
+      brakeman_adapter = Sarif::BrakemanSarif.new(scan_report)
       expect(brakeman_adapter.sarif_level('HIGH')).to eq('error')
       expect(brakeman_adapter.sarif_level('MEDIUM')).to eq('error')
       expect(brakeman_adapter.sarif_level('LOW')).to eq('warning')
