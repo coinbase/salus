@@ -67,6 +67,13 @@ module Sarif
         url = issue['cwe']['URL'] || issue['cwe']['url']
         id = issue['cwe']['ID'] || issue['cwe']['id']
         filepath = Pathname.new(issue['file'])
+
+        uri = if filepath.relative? || base_path.nil?
+                filepath.to_s
+              else
+                filepath.relative_path_from(base_path).to_s
+              end
+
         @issues.add(id)
         {
           id: issue['rule_id'],
@@ -80,7 +87,7 @@ module Sarif
           properties: { 'severity': (issue['severity']).to_s },
           start_line: issue['line'].to_i,
           start_column: issue['column'].to_i,
-          uri: filepath.relative? || base_path.nil? ? filepath.to_s : filepath.relative_path_from(base_path).to_s,
+          uri: uri,
           help_url: url,
           code: issue['code']
         }
