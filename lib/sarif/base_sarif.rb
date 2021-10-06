@@ -14,7 +14,7 @@ module Sarif
 
     attr_accessor :config, :required # sarif_options
 
-    def initialize(scan_report, repo_path, config = {})
+    def initialize(scan_report, config = {}, repo_path = nil)
       @scan_report = scan_report
       @mapped_rules = {} # map each rule to an index
       @rule_index = 0

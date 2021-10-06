@@ -58,7 +58,7 @@ describe Sarif::RepoNotEmptySarif do
         scan_reports = [
           [scanner.report, false]
         ]
-        sarif_json = Sarif::SarifReport.new(scan_reports, "./").to_sarif
+        sarif_json = Sarif::SarifReport.new(scan_reports).to_sarif
         filtered_sarif = report.apply_report_sarif_filters(sarif_json)
         expect { Sarif::SarifReport.validate_sarif(filtered_sarif) }.not_to raise_error
       end
@@ -68,7 +68,7 @@ describe Sarif::RepoNotEmptySarif do
         scan_reports = [
           [scanner.report, false]
         ]
-        sarif_json = Sarif::SarifReport.new(scan_reports, "./").to_sarif
+        sarif_json = Sarif::SarifReport.new(scan_reports).to_sarif
         filtered_sarif = report.apply_report_sarif_filters(sarif_json)
         expect { Sarif::SarifReport.validate_sarif(filtered_sarif) }.not_to raise_error
       end
@@ -89,7 +89,7 @@ describe Sarif::RepoNotEmptySarif do
         scan_reports = [
           [scanner.report, false]
         ]
-        sarif_json = Sarif::SarifReport.new(scan_reports, "./").to_sarif
+        sarif_json = Sarif::SarifReport.new(scan_reports).to_sarif
         filtered_sarif = report.apply_report_sarif_filters(sarif_json)
         expect { Sarif::SarifReport.validate_sarif(filtered_sarif) }.not_to raise_error
       end

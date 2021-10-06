@@ -3,7 +3,7 @@ require 'json-schema'
 
 describe Sarif::BaseSarif do
   let(:scan_report) { Salus::ScanReport.new("Unsupported_Scanner") }
-  let(:base_sarif) { Sarif::BaseSarif.new(scan_report, "./") }
+  let(:base_sarif) { Sarif::BaseSarif.new(scan_report) }
   let(:report) { Salus::Report.new(project_name: 'Neon genesis') }
   before do
     scan_report.add_version('1.1.1')

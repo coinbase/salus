@@ -141,7 +141,7 @@ module Salus
     end
 
     def to_sarif(config = {})
-      sarif_json = Sarif::SarifReport.new(@scan_reports, @repo_path, config).to_sarif
+      sarif_json = Sarif::SarifReport.new(@scan_reports, config, @repo_path).to_sarif
       # We will validate to ensure the applied filter
       # doesn't produce any invalid SARIF
       Sarif::SarifReport.validate_sarif(apply_report_sarif_filters(sarif_json))
