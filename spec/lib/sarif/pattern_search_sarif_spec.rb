@@ -2,7 +2,7 @@ require_relative '../../spec_helper'
 
 describe Sarif::PatternSearchSarif do
   context '#parse_issue' do
-    let(:path){ 'spec/fixtures/pattern_search' }
+    let(:path) { 'spec/fixtures/pattern_search' }
     it 'doesnt add duplicates to the report' do
       repo = Salus::Repo.new(path)
       config = {
@@ -21,7 +21,7 @@ describe Sarif::PatternSearchSarif do
 
   describe '#build_runs_object' do
     context 'vulnerabilites found in project' do
-      let(:path) {'spec/fixtures/pattern_search' }
+      let(:path) { 'spec/fixtures/pattern_search' }
       it 'creates valid sarif report with results populated' do
         repo = Salus::Repo.new(path)
         config = {

@@ -47,7 +47,7 @@ describe Sarif::BaseSarif do
 
   describe '#build_runs_object' do
     context 'results object' do
-      let (:path) { "./" }
+      let(:path) { "./" }
       it 'has suppressions objects for suppressed results' do
         parsed_issue = {
           id: 'SAL002',

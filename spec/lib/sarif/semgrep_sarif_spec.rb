@@ -47,7 +47,7 @@ describe Sarif::SemgrepSarif do
               }
             }
           ],
-          "properties": {"severity": "HIGH"},
+          "properties": { "severity": "HIGH" }
         }.deep_stringify_keys)
       end
 

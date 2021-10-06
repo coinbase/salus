@@ -29,7 +29,7 @@ describe Sarif::GosecSarif do
         scan_report = Salus::ScanReport.new(scanner_name: "Gosec")
         f = File.read('spec/fixtures/gosec/duplicate_entries/report.json')
         scan_report.log(f.to_s)
-        adapter = Sarif::GosecSarif.new(scan_report, 'spec/fixtures/gosec/duplicate_entries' )
+        adapter = Sarif::GosecSarif.new(scan_report, 'spec/fixtures/gosec/duplicate_entries')
         rules = adapter.build_runs_object(true)["tool"][:driver]["rules"]
         expect(rules.size).to eq(2)
         unique_rules = Set.new
@@ -46,7 +46,7 @@ describe Sarif::GosecSarif do
         let(:repo) { Salus::Repo.new(path) }
         it 'are mapped to sarif levels' do
           scan_report = Salus::ScanReport.new(scanner_name: "Gosec")
-          adapter = Sarif::GosecSarif.new(scan_report, path )
+          adapter = Sarif::GosecSarif.new(scan_report, path)
           expect(adapter.sarif_level("MEDIUM")).to eq("error")
           expect(adapter.sarif_level("HIGH")).to eq("error")
           expect(adapter.sarif_level("LOW")).to eq("warning")
@@ -77,7 +77,7 @@ describe Sarif::GosecSarif do
           start_column: 2,
           help_url: "https://cwe.mitre.org/data/definitions/798.html",
           uri: "hello.go",
-          properties: {severity: "HIGH"},
+          properties: { severity: "HIGH" },
           code: expected
         )
       end

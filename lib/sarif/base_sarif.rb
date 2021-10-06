@@ -127,7 +127,7 @@ module Sarif
       end
 
       # unique-ify the results
-      results = results.inject([]) { |result,h| result << h unless result.include?(h); result }
+      results = results.each_with_object([]) { |h, result| result << h unless result.include?(h); }
 
       invocation = build_invocations(@scan_report, supported)
       {

@@ -63,6 +63,7 @@ module Sarif
       else
         id = issue['details'] + ' ' + issue['file'] + ' ' + issue['line']
         return nil if @issues.include?(id)
+
         url = issue['cwe']['URL'] || issue['cwe']['url']
         id = issue['cwe']['ID'] || issue['cwe']['id']
         filepath = Pathname.new(issue['file'])
