@@ -1,5 +1,6 @@
 require 'bundler'
 require 'salus/scanners/base'
+require 'tempfile'
 # Brakeman scanner to check for Rails web app vulns.
 # https://github.com/presidentbeef/brakeman
 
