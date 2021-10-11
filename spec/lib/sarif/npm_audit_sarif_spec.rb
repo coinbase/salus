@@ -2,31 +2,38 @@ require_relative '../../spec_helper'
 require 'json'
 
 describe Sarif::NPMAuditSarif do
+  let(:vuln_1) { 1_004_707 } # was 39
+
   describe '#parse_issue' do
     let(:scanner) { Salus::Scanners::NPMAudit.new(repository: repo, config: {}) }
+
     before { scanner.run }
 
     context 'scan report with logged vulnerabilites' do
       let(:repo) { Salus::Repo.new('spec/fixtures/npm_audit/failure-2') }
       it 'parses information correctly' do
-        issue = scanner.report.to_h[:info][:stdout][:advisories].values[0]
+        issues = scanner.report.to_h[:info][:stdout][:advisories].values
+        issue = issues.select { |i| i[:id] == vuln_1 }.first
         npm_sarif = Sarif::NPMAuditSarif.new(scanner.report, './')
 
         expect(npm_sarif.parse_issue(issue)).to include(
-          id: "39",
-          name: "Incorrect Handling of Non-Boolean Comparisons During Minification",
-          level: "LOW",
-          details: "Versions of `uglify-js` prior to 2.4.24 are"\
-          " affected by a vulnerability which may cause crafted JavaScript to have altered"\
-          " functionality after minification.\n\n",
-          messageStrings: { "package": { "text": "uglify-js" },
-                           "severity": { "text": "low" },
-                           "patched_versions": { "text": ">= 2.4.24" },
-                           "cwe": { "text": "CWE-95" },
-                           "recommendation": { "text": "Upgrade UglifyJS to version >= 2.4.24." },
-                           "vulnerable_versions": { "text": "<= 2.4.23" } },
-          help_url: "https://npmjs.com/advisories/39",
-          uri: "package-lock.json"
+          id: vuln_1.to_s,
+          name: "Incorrect Handling of Non-Boolean Comparisons During Minification in uglify-js",
+          level: "CRITICAL",
+          details: "Versions of `uglify-js` prior to 2.4.24 are affected by a "\
+          "vulnerability which may cause crafted JavaScript to have altered functionality "\
+          "after minification.\n\n\n\n\n## Recommendation\n\nUpgrade UglifyJS "\
+          "to version >= 2.4.24.",
+          messageStrings: { "cwe": { "text": "CWE-1254" },
+                            "package": { "text": "uglify-js" },
+                            "patched_versions": { "text": ">=2.4.24" },
+                            "recommendation": { "text": "Upgrade to version 2.4.24 or later" },
+                            "severity": { "text": "critical" },
+                            "vulnerable_versions": { "text": "<2.4.24" } },
+          help_url: "https://github.com/advisories/GHSA-34r7-q49f-h37c",
+          uri: "package-lock.json",
+          properties: { severity: "critical" },
+          suppressed: false
         )
       end
     end
@@ -92,22 +99,24 @@ describe Sarif::NPMAuditSarif do
       it 'should generate the right results and rules' do
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
-        result = JSON.parse(report.to_sarif)["runs"][0]["results"][0]
+        results = JSON.parse(report.to_sarif)["runs"][0]["results"]
+        result = results.select { |r| r['ruleId'] == vuln_1.to_s }.first
         rules = JSON.parse(report.to_sarif)["runs"][0]["tool"]["driver"]["rules"]
+        rule = rules.select { |r| r['id'] == vuln_1.to_s }.first
         # Check rule info
-        expect(rules[0]['id']).to eq('39')
-        expect(rules[0]['name']).to eq("Incorrect Handling of Non-Boolean Comparisons During"\
-          " Minification")
+        expect(rule['id']).to eq(vuln_1.to_s)
+        expect(rule['name']).to eq("Incorrect Handling of Non-Boolean "\
+          "Comparisons During Minification in uglify-js")
         expected = "Versions of `uglify-js` prior to 2.4.24 are"\
         " affected by a vulnerability which may cause crafted JavaScript to have altered"\
-        " functionality after minification.\n\n"
-        expect(rules[0]['fullDescription']['text']).to eq(expected)
-        expect(rules[0]['helpUri']).to eq("https://npmjs.com/advisories/39")
+        " functionality after minification.\n\n\n\n\n## Recommendation\n\n"\
+        "Upgrade UglifyJS to version >= 2.4.24."
+        expect(rule['fullDescription']['text']).to eq(expected)
+        expect(rule['helpUri']).to eq("https://github.com/advisories/GHSA-34r7-q49f-h37c")
 
         # Check result info
-        expect(result['ruleId']).to eq('39')
-        expect(result['ruleIndex']).to eq(0)
-        expect(result['level']).to eq('note')
+        expect(result['ruleId']).to eq(vuln_1.to_s)
+        expect(result['level']).to eq('error')
       end
     end
 

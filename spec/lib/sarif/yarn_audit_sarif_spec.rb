@@ -4,6 +4,7 @@ require 'json'
 describe Sarif::YarnAuditSarif do
   describe '#parse_issue' do
     let(:scanner) { Salus::Scanners::YarnAudit.new(repository: repo, config: {}) }
+    let(:error_id_fail_2) { "1002899" } # was 39 before the great yarn advisory reshuffling of '21
     before { scanner.run }
 
     context 'scan report with logged vulnerabilites' do
@@ -14,17 +15,19 @@ describe Sarif::YarnAuditSarif do
         yarn_sarif = Sarif::YarnAuditSarif.new(scanner.report, path)
 
         expect(yarn_sarif.parse_issue(issue)).to include(
-          id: "39",
-          name: "Incorrect Handling of Non-Boolean Comparisons During Minification",
-          level: "LOW",
-          details: "Incorrect Handling of Non-Boolean Comparisons During" \
-            " Minification, Dependency of: uglify-js",
-          messageStrings: { "package": { "text": "uglify-js" },
-                           "severity": { "text": "low" },
-                           "patched_versions": { "text": ">= 2.4.24" },
-                           "dependency_of": { "text": "uglify-js" } },
+          id: error_id_fail_2,
+          name: "Prototype Pollution in merge",
+          level: "HIGH",
+          details: "Prototype Pollution in merge, Dependency of: merge",
+          messageStrings: {
+            dependency_of: { text: "merge" },
+            package: { text: "merge" },
+            patched_versions: { text: ">=2.1.1" },
+            severity: { text: "high" }
+          },
           uri: "yarn.lock",
-          help_url: "https://www.npmjs.com/advisories/39"
+          help_url: "https://www.npmjs.com/advisories/#{error_id_fail_2}",
+          properties: { severity: "high" }
         )
       end
     end
@@ -63,23 +66,31 @@ describe Sarif::YarnAuditSarif do
 
     context 'yarn project with vulnerabilities' do
       let(:repo) { Salus::Repo.new('spec/fixtures/yarn_audit/failure-4') }
+      let(:error_id_fail_4) { "1004708" } # was 39 before the great yarn advisory reshuffling of '21
+
       it 'should generate the right results and rules' do
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
-        result = JSON.parse(report.to_sarif)["runs"][0]["results"][0]
-        rules = JSON.parse(report.to_sarif)["runs"][0]["tool"]["driver"]["rules"]
+
+        parsed_json = JSON.parse(report.to_sarif)
+        result = parsed_json["runs"][0]["results"].select do |rule|
+          rule["ruleId"] == error_id_fail_4
+        end.first
+        rule = parsed_json["runs"][0]["tool"]["driver"]["rules"].select do |r|
+          r['id'] == error_id_fail_4
+        end.first
+
         # Check rule info
-        expect(rules[0]['id']).to eq('39')
-        expect(rules[0]['name']).to eq("Incorrect Handling of Non-Boolean Comparisons During"\
-          " Minification")
-        expect(rules[0]['fullDescription']['text']).to eq("Incorrect Handling of Non-Boolean"\
-          " Comparisons During Minification")
-        expect(rules[0]['helpUri']).to eq("https://www.npmjs.com/advisories/39")
+        expect(rule['id']).to eq(error_id_fail_4)
+        expect(rule['name']).to eq("Regular Expression Denial of Service in uglify-js")
+        expect(rule['fullDescription']['text']).to eq("Regular Expression Denial "\
+          "of Service in uglify-js")
+        expect(rule['helpUri']).to eq("https://www.npmjs.com/advisories/#{error_id_fail_4}")
 
         # Check result info
-        expect(result['ruleId']).to eq('39')
-        expect(result['ruleIndex']).to eq(0)
-        expect(result['level']).to eq('note')
+        expect(result['ruleId']).to eq(error_id_fail_4)
+        expect(result['ruleIndex']).to be >= 0 # liberal here to avoid hard coding the index
+        expect(result['level']).to eq('error')
       end
     end
 

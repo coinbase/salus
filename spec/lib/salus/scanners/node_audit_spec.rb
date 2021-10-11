@@ -7,6 +7,11 @@ NODE_AUDIT_SCANNERS = [
 ].freeze
 
 describe Salus::Scanners::NodeAudit do
+  let(:vuln_1) { 1_004_707 } # was 39
+  let(:vuln_2) { 1_004_708 } # was 48
+  let(:vuln_3) { 1_002_899 } # was 722
+  let(:vuln_4) { 1_004_565 } # was 1666
+
   # We will test all subclasses of NodeAudit the same for superclass methods like #run.
   # Public methods implemented in the subclass (#should_run?) can be tested in individual files.
   NODE_AUDIT_SCANNERS.each do |scanner|
@@ -27,9 +32,9 @@ describe Salus::Scanners::NodeAudit do
 
           if klass_str == 'NPMAudit'
             expect(info).to include(
-              prod_advisories: %w[39 48],
+              prod_advisories: [vuln_1.to_s, vuln_2.to_s],
               dev_advisories: [],
-              unexcepted_prod_advisories: %w[39 48],
+              unexcepted_prod_advisories: [vuln_1.to_s, vuln_2.to_s],
               exceptions: [],
               prod_exceptions: [],
               dev_exceptions: [],
@@ -37,7 +42,7 @@ describe Salus::Scanners::NodeAudit do
             )
           else # YarnAudit
             expect(info).to include(
-              vulnerabilities: [39, 48],
+              vulnerabilities: [vuln_1, vuln_2],
               ignored_cves: []
             )
           end
@@ -53,9 +58,9 @@ describe Salus::Scanners::NodeAudit do
           expect(info.key?(:stdout)).to eq(true)
           if klass_str == 'NPMAudit'
             expect(info).to include(
-              prod_advisories: %w[39 48 722 1666],
+              prod_advisories: [vuln_3.to_s, vuln_4.to_s, vuln_1.to_s, vuln_2.to_s],
               dev_advisories: [],
-              unexcepted_prod_advisories: %w[39 48 722 1666],
+              unexcepted_prod_advisories: [vuln_3.to_s, vuln_4.to_s, vuln_1.to_s, vuln_2.to_s],
               exceptions: [],
               prod_exceptions: [],
               dev_exceptions: [],
@@ -63,7 +68,7 @@ describe Salus::Scanners::NodeAudit do
             )
           else # YarnAudit
             expect(info).to include(
-              vulnerabilities: [39, 48, 722, 1666],
+              vulnerabilities: [vuln_3, vuln_4, vuln_1, vuln_2],
               ignored_cves: []
             )
           end
@@ -110,11 +115,11 @@ describe Salus::Scanners::NodeAudit do
           if klass_str == 'NPMAudit'
             expect(info.key?(:stdout)).to eq(true)
             expect(info).to include(
-              prod_advisories: %w[39 48],
+              prod_advisories: [vuln_1.to_s, vuln_2.to_s],
               dev_advisories: [],
               unexcepted_prod_advisories: [],
-              exceptions: %w[39 48],
-              prod_exceptions: %w[39 48],
+              exceptions: [vuln_1.to_s, vuln_2.to_s],
+              prod_exceptions: [vuln_1.to_s, vuln_2.to_s],
               dev_exceptions: [],
               useless_exceptions: []
             )
@@ -122,8 +127,8 @@ describe Salus::Scanners::NodeAudit do
             # YarnAudit no longer displays vulns that have been whitelisted
             expect(info.key?(:stdout)).to eq(false)
             expect(info).to include(
-              ignored_cves: [39, 48],
-              vulnerabilities: [39, 48]
+              ignored_cves: [vuln_1, vuln_2],
+              vulnerabilities: [vuln_1, vuln_2]
             )
           end
         end
@@ -143,7 +148,6 @@ describe Salus::Scanners::NodeAudit do
             repository: repo, config: config_file['scanner_configs'][klass_str]
           )
           scanner.run
-
           expect(scanner.report.passed?).to eq(true)
         end
 

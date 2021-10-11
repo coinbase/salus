@@ -34,6 +34,13 @@ describe Salus::Scanners::YarnAudit do
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
     end
 
+    let(:vuln_0_id) { 1_004_707 } # was 39
+    let(:vuln_1_id) { 1_004_708 } # was 48
+    let(:vuln_2_id) { 1_004_036 } # was 1213
+    let(:vuln_3_id) { 1_003_019 } # was 1500
+    let(:vuln_4_id) { 1_002_847 } # was 1673
+    let(:vuln_5_id) { 1_004_063 } # was 1523
+
     it 'should fail with the correct attr values' do
       repo = Salus::Repo.new('spec/fixtures/yarn_audit/failure-4')
       scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
@@ -43,54 +50,55 @@ describe Salus::Scanners::YarnAudit do
       vulns = JSON.parse(scanner.report.to_h[:info][:stdout]).sort { |a, b| a["ID"] <=> b["ID"] }
       expect(vulns.size).to eq(6)
       vuln0 = { "Package" => "uglify-js",
-                "Patched in" => ">= 2.4.24",
+                "Patched in" => ">=2.4.24",
                 "Dependency of" => "uglify-js",
-                "More info" => "https://www.npmjs.com/advisories/39",
-                "Severity" => "low",
-                "Title" => "Incorrect Handling of Non-Boolean Comparisons During Minification",
-                "ID" => 39 }
+                "More info" => "https://www.npmjs.com/advisories/#{vuln_0_id}",
+                "Severity" => "critical",
+                "Title" => "Incorrect Handling of Non-Boolean Comparisons "\
+                "During Minification in uglify-js",
+                "ID" => vuln_0_id }
       vuln1 = { "Package" => "uglify-js",
                 "Patched in" => ">=2.6.0",
                 "Dependency of" => "uglify-js",
-                "More info" => "https://www.npmjs.com/advisories/48",
-                "Severity" => "low",
-                "Title" => "Regular Expression Denial of Service",
-                "ID" => 48 }
+                "More info" => "https://www.npmjs.com/advisories/#{vuln_1_id}",
+                "Severity" => "high",
+                "Title" => "Regular Expression Denial of Service in uglify-js",
+                "ID" => vuln_1_id }
       vuln2 = { "Package" => "dot-prop",
-                "Patched in" => ">=4.2.1 <5.0.0 || >=5.1.1",
+                "Patched in" => ">=4.2.1",
                 "Dependency of" => "dot-prop",
-                "More info" => "https://www.npmjs.com/advisories/1213",
+                "More info" => "https://www.npmjs.com/advisories/#{vuln_2_id}",
                 "Severity" => "high",
-                "Title" => "Prototype Pollution",
-                "ID" => 1213 }
+                "Title" => "Prototype Pollution in dot-prop",
+                "ID" => vuln_2_id }
       vuln3 = { "Package" => "yargs-parser",
-                "Patched in" => ">=13.1.2 <14.0.0 || >=15.0.1 <16.0.0 || >=18.1.2",
+                "Patched in" => ">=13.1.2",
                 "Dependency of" => "yargs-parser",
-                "More info" => "https://www.npmjs.com/advisories/1500",
-                "Severity" => "low",
-                "Title" => "Prototype Pollution",
-                "ID" => 1500 }
+                "More info" => "https://www.npmjs.com/advisories/#{vuln_3_id}",
+                "Severity" => "moderate",
+                "Title" => "Prototype Pollution in yargs-parser",
+                "ID" => vuln_3_id }
       vuln4 = { "Package" => "lodash",
-                "Patched in" => ">=4.17.19",
-                "Dependency of" => "lodash",
-                "More info" => "https://www.npmjs.com/advisories/1523",
-                "Severity" => "low",
-                "Title" => "Prototype Pollution",
-                "ID" => 1523 }
-      vuln5 = { "Dependency of" => "lodash",
-                "ID" => 1673,
-                "More info" => "https://www.npmjs.com/advisories/1673",
-                "Package" => "lodash",
                 "Patched in" => ">=4.17.21",
+                "Dependency of" => "lodash",
+                "More info" => "https://www.npmjs.com/advisories/#{vuln_4_id}",
                 "Severity" => "high",
-                "Title" => "Command Injection" }
+                "Title" => "Command Injection in lodash",
+                "ID" => vuln_4_id }
+      vuln5 = { "Dependency of" => "lodash",
+                "ID" => vuln_5_id,
+                "More info" => "https://www.npmjs.com/advisories/#{vuln_5_id}",
+                "Package" => "lodash",
+                "Patched in" => ">=4.17.19",
+                "Severity" => "high",
+                "Title" => "Prototype Pollution in lodash" }
 
-      expect(vulns[0]).to eq(vuln0)
-      expect(vulns[1]).to eq(vuln1)
+      expect(vulns[4]).to eq(vuln0)
+      expect(vulns[5]).to eq(vuln1)
       expect(vulns[2]).to eq(vuln2)
-      expect(vulns[3]).to eq(vuln3)
-      expect(vulns[4]).to eq(vuln4)
-      expect(vulns[5]).to eq(vuln5)
+      expect(vulns[1]).to eq(vuln3)
+      expect(vulns[0]).to eq(vuln4)
+      expect(vulns[3]).to eq(vuln5)
     end
 
     it 'should fail with error if there are errors' do
