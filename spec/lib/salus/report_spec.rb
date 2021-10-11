@@ -209,7 +209,7 @@ describe Salus::Report do
         report = build_report(directive)
 
         stub_request(:post, "https://nerv.tk3/salus-report").with(body: "{\n  \"foo\": \"bar\",\n"\
-          "  \"abc\": \"def\",\n  \"report\": {\n    \"version\": \"2.13.3\",\n    \"project_nam"\
+          "  \"abc\": \"def\",\n  \"report\": {\n    \"version\": \"2.13.4\",\n    \"project_nam"\
           "e\": \"eva00\",\n    \"passed\": false,\n    \"scans\": {\n      \"DerpScanner\": {\n "\
           "       \"scanner_name\": \"DerpScanner\",\n        \"passed\": false,\n        \"warn"\
           "\": {\n        },\n        \"info\": {\n          \"asdf\": \"qwerty\"\n        },\n "\
@@ -235,7 +235,7 @@ describe Salus::Report do
         report = build_report(directive)
 
         stub_request(:post, "https://nerv.tk3/salus-report").with(body: "---\nfoo: bar\nabc: def\n"\
-          "report:\n  :version: 2.13.3\n  :project_name: eva00\n  :passed: false\n  :scans:\n    "\
+          "report:\n  :version: 2.13.4\n  :project_name: eva00\n  :passed: false\n  :scans:\n    "\
           "DerpScanner:\n      :scanner_name: DerpScanner\n      :passed: false\n      :warn: {}\n"\
           "      :info:\n        :asdf: qwerty\n      :errors: []\n  :errors:\n  - :message: derp"\
           "\n  - :message: derp\n  - :message: derp\n  - :message: derp\n  - :message: derp\n  "\
@@ -260,7 +260,7 @@ describe Salus::Report do
         report.instance_variable_set(:@config, config)
 
         stub_request(:post, "https://nerv.tk3/salus-report").with(body: "{\"foo\"=>\"bar\", \"abc"\
-          "\"=>\"def\", \"report\"=>\"==== Salus Scan v2.13.3 for eva00\\n\\n==== Salus "\
+          "\"=>\"def\", \"report\"=>\"==== Salus Scan v2.13.4 for eva00\\n\\n==== Salus "\
           "Configuration Files Used:\\n\\n  word\\n\\n\\n==== Salus Errors\\n\\n  [\\n    {\\n    "\
           "  \\\"message\\\": \\\"derp\\\"\\n    },\\n    {\\n      \\\"message\\\": \\\"derp\\"\
           "\"\\n    },\\n    {\\n      \\\"message\\\": \\\"derp\\\"\\n    },\\n    {\\n      "\
