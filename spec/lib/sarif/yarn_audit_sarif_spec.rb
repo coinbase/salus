@@ -2,7 +2,6 @@ require_relative '../../spec_helper'
 require 'json'
 
 describe Sarif::YarnAuditSarif do
-
   describe '#parse_issue' do
     let(:scanner) { Salus::Scanners::YarnAudit.new(repository: repo, config: {}) }
     let(:error_id_fail_2) { "1002899" } # was 39 before the great yarn advisory reshuffling of '21
@@ -21,14 +20,14 @@ describe Sarif::YarnAuditSarif do
           level: "HIGH",
           details: "Prototype Pollution in merge, Dependency of: merge",
           messageStrings: {
-            dependency_of:{text:"merge"},
-            package:{text:"merge"},
-            patched_versions:{text:">=2.1.1"},
-            severity:{text:"high"}
+            dependency_of: { text: "merge" },
+            package: { text: "merge" },
+            patched_versions: { text: ">=2.1.1" },
+            severity: { text: "high" }
           },
           uri: "yarn.lock",
           help_url: "https://www.npmjs.com/advisories/#{error_id_fail_2}",
-          properties: {severity: "high"}
+          properties: { severity: "high" }
         )
       end
     end
@@ -74,13 +73,18 @@ describe Sarif::YarnAuditSarif do
         report.add_scan_report(scanner.report, required: false)
 
         parsed_json = JSON.parse(report.to_sarif)
-        result = parsed_json["runs"][0]["results"].select{ |rule| rule["ruleId"] == error_id_fail_4}.first
-        rule = parsed_json["runs"][0]["tool"]["driver"]["rules"].select { |rule| rule['id'] == error_id_fail_4 }.first
- 
+        result = parsed_json["runs"][0]["results"].select do |rule|
+          rule["ruleId"] == error_id_fail_4
+        end.first
+        rule = parsed_json["runs"][0]["tool"]["driver"]["rules"].select do |r|
+          r['id'] == error_id_fail_4
+        end.first
+
         # Check rule info
         expect(rule['id']).to eq(error_id_fail_4)
         expect(rule['name']).to eq("Regular Expression Denial of Service in uglify-js")
-        expect(rule['fullDescription']['text']).to eq("Regular Expression Denial of Service in uglify-js")
+        expect(rule['fullDescription']['text']).to eq("Regular Expression Denial "\
+          "of Service in uglify-js")
         expect(rule['helpUri']).to eq("https://www.npmjs.com/advisories/#{error_id_fail_4}")
 
         # Check result info

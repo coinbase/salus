@@ -7,10 +7,10 @@ NODE_AUDIT_SCANNERS = [
 ].freeze
 
 describe Salus::Scanners::NodeAudit do
-  let(:vuln_1) { 1004707 } # was 39
-  let(:vuln_2) { 1004708 } # was 48
-  let(:vuln_3) { 1002899 } # was 722
-  let(:vuln_4) { 1004565 } # was 1666
+  let(:vuln_1) { 1_004_707 } # was 39
+  let(:vuln_2) { 1_004_708 } # was 48
+  let(:vuln_3) { 1_002_899 } # was 722
+  let(:vuln_4) { 1_004_565 } # was 1666
 
   # We will test all subclasses of NodeAudit the same for superclass methods like #run.
   # Public methods implemented in the subclass (#should_run?) can be tested in individual files.
@@ -47,9 +47,6 @@ describe Salus::Scanners::NodeAudit do
             )
           end
         end
-
-
-
 
         it 'should fail, recording advisory ids and npm output' do
           repo = Salus::Repo.new("spec/fixtures/#{klass_snake_str}/failure-2")

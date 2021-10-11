@@ -34,12 +34,12 @@ describe Salus::Scanners::YarnAudit do
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
     end
 
-    let(:vuln_0_id) { 1004707 } # was 39
-    let(:vuln_1_id) { 1004708 } # was 48
-    let(:vuln_2_id) { 1004036 } # was 1213
-    let(:vuln_3_id) { 1003019 } # was 1500
-    let(:vuln_4_id) { 1002847 } # was 1673
-    let(:vuln_5_id) { 1004063 } # was 1523
+    let(:vuln_0_id) { 1_004_707 } # was 39
+    let(:vuln_1_id) { 1_004_708 } # was 48
+    let(:vuln_2_id) { 1_004_036 } # was 1213
+    let(:vuln_3_id) { 1_003_019 } # was 1500
+    let(:vuln_4_id) { 1_002_847 } # was 1673
+    let(:vuln_5_id) { 1_004_063 } # was 1523
 
     it 'should fail with the correct attr values' do
       repo = Salus::Repo.new('spec/fixtures/yarn_audit/failure-4')
@@ -54,7 +54,8 @@ describe Salus::Scanners::YarnAudit do
                 "Dependency of" => "uglify-js",
                 "More info" => "https://www.npmjs.com/advisories/#{vuln_0_id}",
                 "Severity" => "critical",
-                "Title" => "Incorrect Handling of Non-Boolean Comparisons During Minification in uglify-js",
+                "Title" => "Incorrect Handling of Non-Boolean Comparisons "\
+                "During Minification in uglify-js",
                 "ID" => vuln_0_id }
       vuln1 = { "Package" => "uglify-js",
                 "Patched in" => ">=2.6.0",
