@@ -102,7 +102,7 @@ RUN pip3 install --user --no-cache-dir semgrep==${SEMGREP_VERSION}
 
 ### Ruby
 COPY Gemfile Gemfile.lock ./
-RUN bundle install --deployment --without development:test
+RUN bundle install --deployment
 
 
 
@@ -174,7 +174,7 @@ COPY salus-default.yaml /home/
 # install salus dependencies
 RUN gem install bundler -v'2.2.19' \
   && bundle config --local path vendor/bundle \
-  && bundle config --local without development:test
+  && bundle config --local
 
 # run the salus scan when this docker container is run
 ENTRYPOINT ["bundle", "exec", "./bin/salus", "scan"]
