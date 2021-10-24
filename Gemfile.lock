@@ -12,6 +12,10 @@ GEM
     addressable (2.8.0)
       public_suffix (>= 2.0.2, < 5.0)
     ast (2.4.2)
+    async (1.30.1)
+      console (~> 1.10)
+      nio4r (~> 2.3)
+      timers (~> 4.1)
     brakeman (4.10.0)
     bugsnag (6.19.0)
       concurrent-ruby (~> 1.0)
@@ -22,6 +26,8 @@ GEM
     charlock_holmes (0.7.7)
     coderay (1.1.2)
     concurrent-ruby (1.1.8)
+    console (1.13.1)
+      fiber-local
     crack (0.4.5)
       rexml
     diff-lcs (1.4.4)
@@ -32,6 +38,7 @@ GEM
       multipart-post (>= 1.2, < 3)
       ruby2_keywords
     faraday-net_http (1.0.1)
+    fiber-local (1.0.0)
     generator (0.0.1)
     github-linguist (7.13.0)
       charlock_holmes (~> 0.7.7)
@@ -48,6 +55,7 @@ GEM
     mini_mime (1.0.2)
     minitest (5.14.4)
     multipart-post (2.1.1)
+    nio4r (2.5.8)
     parallel (1.19.2)
     parser (3.0.0.0)
       ast (~> 2.4.1)
@@ -104,6 +112,7 @@ GEM
     stream (0.5.3)
       generator
     thor (1.1.0)
+    timers (4.3.3)
     toml (0.2.0)
       parslet (~> 1.8.0)
     tzinfo (2.0.4)
@@ -121,6 +130,7 @@ PLATFORMS
 DEPENDENCIES
   activemodel (~> 6.1.3)
   activesupport (~> 6.1.3)
+  async
   brakeman (= 4.10.0)
   bugsnag (~> 6.19.0)
   bundler (= 2.2.19)

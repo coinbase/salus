@@ -13,6 +13,7 @@ gem 'rgl', '~> 0.5.7'
 gem 'safe_yaml', '~> 1.0'
 gem 'thor', '~> 1.1.0'
 gem 'toml', '~> 0.2.0'
+gem 'async'
 
 group :scanners do
   gem 'brakeman', '4.10.0'

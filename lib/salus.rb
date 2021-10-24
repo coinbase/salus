@@ -1,5 +1,6 @@
 require 'active_support'
 require 'active_support/core_ext'
+require 'async'
 require 'salus/bugsnag'
 require 'salus/cli'
 require 'salus/repo'
@@ -11,6 +12,16 @@ require 'salus/plugin_manager'
 require 'sarif/sarif_report'
 require 'cyclonedx/report'
 require 'salus/report_request'
+
+class Async::Task
+  def scan_async(*args)
+    puts "************* INSIDE SCAN ASYNC"
+    Salus.scan_once(*args)
+    #sleep 20
+    puts "************* INSIDE SCAN ASYNC DONE
+    #sleep 10
+  end
+end
 
 module Salus
   VERSION = '2.13.4'.freeze
@@ -26,7 +37,31 @@ module Salus
   class << self
     include SalusBugsnag
 
-    def scan(
+    def scan_foo(*args)
+      Async do |task|
+        task.scan_async(*args)
+      end
+    end
+
+    def scan(*args)
+      Async do 
+        #task.scan_async(*args)
+        scan_foo(*args)
+#        scan_foo(*args)        
+      end
+    end
+
+=begin    
+    def scan(*args)
+      sleep 10
+#      puts "******** SCAN 1"
+      scan_once(*args)
+ #     puts "******** SCAN 2"      
+  #    scan_once(*args)
+    end
+=end
+
+    def scan_once(
       config: nil,
       quiet: false,
       verbose: false,
@@ -67,7 +102,8 @@ module Salus
       heartbeat_thr&.kill
 
       # System exit with success or failure - useful for CI builds.
-      system_exit(processor.passed? ? EXIT_SUCCESS : EXIT_FAILURE)
+      # TODO
+#      system_exit(processor.passed? ? EXIT_SUCCESS : EXIT_FAILURE)
     end
 
     private
