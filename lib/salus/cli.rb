@@ -36,6 +36,11 @@ module Salus
                  desc: 'Ignore id in salus config.',
                  type: :string,
                  default: ''
+    class_option :only,
+                 aliases: ['-o'],
+                 desc: 'Active certain scanners (overrides configured active scanners)',
+                 type: :array,
+                 default: []
 
     desc 'scan', 'Scan the source code of a repository.'
     def scan
@@ -48,7 +53,8 @@ module Salus
         repo_path: options[:repo_path],
         use_colors: !options[:no_colors],
         filter_sarif: options[:filter_sarif],
-        ignore_config_id: options[:ignore_config_id]
+        ignore_config_id: options[:ignore_config_id],
+        only: options[:only]
       )
     end
 
