@@ -32,7 +32,7 @@ describe Sarif::BrakemanSarif do
           properties: {
             fingerprint: "b16e1cd0d952433f80b0403b6a74aab0e98792ea015cc1b1fa5c003cbe7d56eb",
             confidence: "High",
-            severity: "High",
+            severity: "",
             render_path: "",
             user_input: "params[:evil]",
             location_type: "method",
