@@ -49,7 +49,7 @@ module Sarif
                           "warning_code": { "text": (issue['warning_code']).to_s } },
         properties: { 'fingerprint': issue['fingerprint'].to_s,
                       'confidence': issue['confidence'].to_s,
-                      'severity': issue['confidence'].to_s,
+                      'severity': "",
                       'render_path': issue['render_path'].to_s,
                       'user_input': issue['user_input'].to_s,
                       'location_type': issue.dig('location', 'type').to_s,
