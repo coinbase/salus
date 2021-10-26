@@ -32,6 +32,13 @@ module Salus
                  desc: 'Path to sarif file. Filters out results from the sarif file.',
                  type: :string,
                  default: ''
+    class_option :sarif_diff_full,
+                 desc: 'Paths to sarif files separated by space. ' \
+                       'Ex. (ex. "sarif_1.json sarif_2.json sarif_diff.json"). ' \
+                       'Filters out results of sarif_2.json from sarif_1.json. ' \
+                       'Results will be stored to sarif_diff.json.',
+                 type: :string,
+                 default: ''
     class_option :ignore_config_id,
                  desc: 'Ignore id in salus config.',
                  type: :string,
@@ -48,6 +55,7 @@ module Salus
         repo_path: options[:repo_path],
         use_colors: !options[:no_colors],
         filter_sarif: options[:filter_sarif],
+        sarif_diff_full: options[:sarif_diff_full],
         ignore_config_id: options[:ignore_config_id]
       )
     end

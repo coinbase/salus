@@ -1,3 +1,5 @@
+require 'json'
+require 'set'
 require 'sarif/shared_objects'
 
 module Sarif
@@ -164,7 +166,7 @@ module Sarif
       end
     end
 
-    def report_diff(sarif_new, sarif_old)
+    def self.report_diff(sarif_new, sarif_old)
       old_scanner_info = {}
 
       sarif_old["runs"].each do |run|

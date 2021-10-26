@@ -192,21 +192,24 @@ module Salus
       bugsnag_notify(e.class.to_s + " " + e.message + "\nBuild Info:" + @builds.to_s)
     end
 
-    def publish_report(directive)
+    def publish_report(directive, report_body = "")
       # First create the string for the report.
       uri = directive['uri']
       verbose = directive['verbose'] || false
       # Now send this string to its destination.
+
       report_string = case directive['format']
                       when 'txt' then to_s(verbose: verbose)
                       when 'json' then to_json
                       when 'yaml' then to_yaml
                       when 'sarif' then to_sarif(directive['sarif_options'] || {})
                       when 'sarif_diff' then to_sarif_diff
+                      when 'sarif_diff_full' then JSON.pretty_generate(report_body)
                       when 'cyclonedx-json' then to_cyclonedx(directive['cyclonedx_options'] || {})
                       else
                         raise ExportReportError, "unknown report format #{directive['format']}"
                       end
+
       if Salus::Config::REMOTE_URI_SCHEME_REGEX.match?(URI(uri).scheme)
         Salus::ReportRequest.send_report(directive, report_body(directive), uri)
       else
@@ -218,6 +221,7 @@ module Salus
                          "cannot have invalid chars"
           raise StandardError, bad_path_msg
         end
+
         write_report_to_file(file_path, report_string)
       end
     end

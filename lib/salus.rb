@@ -33,6 +33,7 @@ module Salus
       repo_path: DEFAULT_REPO_PATH,
       use_colors: true,
       filter_sarif: "",
+      sarif_diff_full: "",
       ignore_config_id: "",
       heartbeat: true
     )
@@ -52,6 +53,17 @@ module Salus
       processor = Salus::Processor.new(configuration_directives, repo_path: repo_path,
                                        filter_sarif: filter_sarif,
                                        ignore_config_id: ignore_config_id)
+
+      if sarif_diff_full != ""
+        begin
+          processor.create_full_sarif_diff(sarif_diff_full)
+        rescue StandardError => e
+          puts "Failed to get sarif diff #{e.inspect}"
+          system_exit(EXIT_FAILURE)
+        end
+
+        system_exit(EXIT_SUCCESS)
+      end
 
       ### Scan Project ###
       # Scan project with Salus client.

@@ -19,7 +19,6 @@ module Salus
       @repo_path = repo_path
       @filter_sarif = filter_sarif
       ignore_ids = ignore_config_id.split(',').map(&:strip)
-
       # Add default file path to the configs if empty.
       configuration_sources << DEFAULT_CONFIG_SOURCE if configuration_sources.empty?
       valid_sources = []
@@ -109,6 +108,33 @@ module Salus
         end
         Salus::PluginManager.send_event(:scanners_ran, scanners_ran, @report)
       end
+    end
+
+    def create_full_sarif_diff(sarif_diff_full)
+      sarif_file_new, sarif_file_old, outfile = sarif_diff_full.split(" ")
+
+      puts "\nCreating sarif diff report #{outfile} from #{sarif_file_new} and #{sarif_file_old}"
+
+      [sarif_file_new, sarif_file_old, outfile].each do |f|
+        raise Exception, "sarif diff file name is empty #{f}" if f.nil? || f == ""
+      end
+
+      sarif_file_new = File.join(@repo_path, sarif_file_new)
+      sarif_file_old = File.join(@repo_path, sarif_file_old)
+      outfile = File.join(@repo_path, outfile)
+
+      [sarif_file_new, sarif_file_old, outfile].each do |f|
+        if !Salus::Report.new(repo_path: @repo_path).safe_local_report_path?(f)
+          raise Exception, "sarif diff file path should not be outside working dir #{f}"
+        end
+      end
+
+      sarif_new = JSON.parse(File.read(sarif_file_new))
+      sarif_old = JSON.parse(File.read(sarif_file_old))
+      filtered_full_sarif = Sarif::BaseSarif.report_diff(sarif_new, sarif_old)
+      outpath = 'file://' + outfile
+      report_directive = { 'uri' => outpath, 'format' => 'sarif_diff_full' }
+      Salus::Report.new.publish_report(report_directive, filtered_full_sarif)
     end
 
     # Returns an ASCII version of the report.
