@@ -19,6 +19,7 @@ module Salus
       @repo_path = repo_path
       @filter_sarif = filter_sarif
       ignore_ids = ignore_config_id.split(',').map(&:strip)
+
       # Add default file path to the configs if empty.
       configuration_sources << DEFAULT_CONFIG_SOURCE if configuration_sources.empty?
       valid_sources = []
