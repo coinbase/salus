@@ -242,6 +242,32 @@ describe Sarif::BaseSarif do
       expect(expected_diff).to eq(diff)
     end
 
+    it 'diff should be sarif with no vuls if new sarif == old sarif and old sarif has vuls' do
+      old_sarif_file = 'spec/fixtures/sarifs/diff/sarif_1.json'
+      new_sarif_file = old_sarif_file
+      diff_file = 'spec/fixtures/sarifs/diff/sarif_1_2.json'
+      old_sarif = JSON.parse(File.read(old_sarif_file))
+      new_sarif = JSON.parse(File.read(new_sarif_file))
+      diff = Sarif::BaseSarif.report_diff(new_sarif, old_sarif)
+
+      expect { Sarif::SarifReport.validate_sarif(diff) }.not_to raise_error
+      expected_diff = JSON.parse(File.read(diff_file))
+      expect(expected_diff).to eq(diff)
+    end
+
+    it 'diff should be same as new sarif if new sarif == old sarif and old sarif has no vuls' do
+      old_sarif_file = 'spec/fixtures/sarifs/diff/sarif_1_2.json'
+      new_sarif_file = old_sarif_file
+      diff_file = old_sarif_file
+      old_sarif = JSON.parse(File.read(old_sarif_file))
+      new_sarif = JSON.parse(File.read(new_sarif_file))
+      diff = Sarif::BaseSarif.report_diff(new_sarif, old_sarif)
+
+      expect { Sarif::SarifReport.validate_sarif(diff) }.not_to raise_error
+      expected_diff = JSON.parse(File.read(diff_file))
+      expect(expected_diff).to eq(diff)
+    end
+
     it 'diff should be same as new sarif if everything passed in new sarif' do
       # if everything passed in new sarif but old sarif has vuls
       # then diff should be the same as new sarif
