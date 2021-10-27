@@ -256,8 +256,8 @@ describe Sarif::BaseSarif do
     end
 
     it 'diff should include vuls with same id but different artifact locations' do
-      old_sarif_file = 'spec/fixtures/sarifs/diff/sarif_1.json'
-      new_sarif_file = 'spec/fixtures/sarifs/diff/sarif_3.json'
+      old_sarif_file = 'spec/fixtures/sarifs/diff/sarif_3.json'
+      new_sarif_file = 'spec/fixtures/sarifs/diff/sarif_1.json'
       diff_file = 'spec/fixtures/sarifs/diff/sarif_1_3.json'
       old_sarif = JSON.parse(File.read(old_sarif_file))
       new_sarif = JSON.parse(File.read(new_sarif_file))
