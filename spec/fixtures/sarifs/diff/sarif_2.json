@@ -1,0 +1,2554 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/schemas/sarif-schema-2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Brakeman",
+          "version": "4.10.0",
+          "informationUri": "https://github.com/presidentbeef/brakeman",
+          "rules": [
+            {
+              "id": "116",
+              "name": "CSRFTokenForgeryCVE/Cross-Site Request Forgery",
+              "fullDescription": {
+                "text": "Rails 5.2.1.1 has a vulnerability that may allow CSRF token forgery. Upgrade to Rails 5.2.4.3 or patch"
+              },
+              "messageStrings": {
+                "title": {
+                  "text": "CSRFTokenForgeryCVE"
+                },
+                "type": {
+                  "text": "Cross-Site Request Forgery"
+                },
+                "warning_code": {
+                  "text": "116"
+                }
+              },
+              "helpUri": "https://groups.google.com/g/rubyonrails-security/c/NOjKiGeXUgw",
+              "help": {
+                "text": "More info: https://groups.google.com/g/rubyonrails-security/c/NOjKiGeXUgw",
+                "markdown": "[More info](https://groups.google.com/g/rubyonrails-security/c/NOjKiGeXUgw)."
+              }
+            }
+          ],
+          "properties": {
+            "salusEnforced": true
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+        {
+          "ruleId": "116",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Rails 5.2.1.1 has a vulnerability that may allow CSRF token forgery. Upgrade to Rails 5.2.4.3 or patch"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 123,
+                  "startColumn": 1
+                }
+              }
+            }
+          ],
+          "properties": {
+            "fingerprint": "c92347274974928740174398217412401374328",
+            "confidence": "Medium",
+            "severity": "",
+            "render_path": "",
+            "user_input": "",
+            "location_type": "",
+            "location_class": "",
+            "location_method": ""
+          }
+        }
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": false
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "BundleAudit",
+          "version": "0.8.0",
+          "informationUri": "https://github.com/rubysec/bundler-audit/",
+          "rules": [
+            {
+              "id": "CVE-2021-22885",
+              "name": "Possible Information Disclosure / Unintended Method Execution in Action Pack",
+              "fullDescription": {
+                "text": "There is a possible information disclosure / unintended method execution\nvulnerability in Action Pack which has been assigned the CVE identifier\nCVE-2021-22885.\n\nVersions Affected:  >= 2.0.0.\nNot affected:       < 2.0.0.\nFixed Versions:     6.1.3.2, 6.0.3.7, 5.2.4.6, 5.2.6\n\nImpact\n------\nThere is a possible information disclosure / unintended method execution\nvulnerability in Action Pack when using the `redirect_to` or `polymorphic_url`\nhelper with untrusted user input.\n\nVulnerable code will look like this:\n\n```\nredirect_to(params[:some_param])\n```\n\nAll users running an affected release should either upgrade or use one of the\nworkarounds immediately.\n\nWorkarounds\n-----------\nTo work around this problem, it is recommended to use an allow list for valid\nparameters passed from the user.  For example:\n\n```\nprivate def check(param)\n  case param\n  when \"valid\"\n    param\n  else\n    \"/\"\n  end\nend\n\ndef index\n  redirect_to(check(params[:some_param]))\nend\n```\n\nOr force the user input to be cast to a string like this:\n\n```\ndef index\n  redirect_to(params[:some_param].to_s)\nend\n```\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "actionpack"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 5.2.4.6\", \"~> 5.2.6\", \"~> 6.0.3, >= 6.0.3.7\", \">= 6.1.3.2\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[\"< 2.0.0\"]"
+                },
+                "title": {
+                  "text": "Possible Information Disclosure / Unintended Method Execution in Action Pack"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "5.2.1.1"
+                }
+              },
+              "helpUri": "https://groups.google.com/g/rubyonrails-security/c/NiQl-48cXYI",
+              "help": {
+                "text": "More info: https://groups.google.com/g/rubyonrails-security/c/NiQl-48cXYI",
+                "markdown": "[More info](https://groups.google.com/g/rubyonrails-security/c/NiQl-48cXYI)."
+              }
+            },
+            {
+              "id": "CVE-2020-8164",
+              "name": "Possible Strong Parameters Bypass in ActionPack",
+              "fullDescription": {
+                "text": "There is a strong parameters bypass vector in ActionPack.\n\nVersions Affected:  rails <= 6.0.3\nNot affected:       rails < 4.0.0\nFixed Versions:     rails >= 5.2.4.3, rails >= 6.0.3.1\n\nImpact\n------\nIn some cases user supplied information can be inadvertently leaked from\nStrong Parameters.  Specifically the return value of `each`, or `each_value`,\nor `each_pair` will return the underlying \"untrusted\" hash of data that was\nread from the parameters.  Applications that use this return value may be\ninadvertently use untrusted user input.\n\nImpacted code will look something like this:\n\n```\ndef update\n  # Attacker has included the parameter: `{ is_admin: true }`\n  User.update(clean_up_params)\nend\n\ndef clean_up_params\n   params.each { |k, v|  SomeModel.check(v) if k == :name }\nend\n```\n\nNote the mistaken use of `each` in the `clean_up_params` method in the above\nexample.\n\nWorkarounds\n-----------\nDo not use the return values of `each`, `each_value`, or `each_pair` in your\napplication.\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "actionpack"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 5.2.4, >= 5.2.4.3\", \">= 6.0.3.1\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[\"< 4.0.0\"]"
+                },
+                "title": {
+                  "text": "Possible Strong Parameters Bypass in ActionPack"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "5.2.1.1"
+                }
+              },
+              "helpUri": "https://groups.google.com/forum/#!topic/rubyonrails-security/f6ioe4sdpbY",
+              "help": {
+                "text": "More info: https://groups.google.com/forum/#!topic/rubyonrails-security/f6ioe4sdpbY",
+                "markdown": "[More info](https://groups.google.com/forum/#!topic/rubyonrails-security/f6ioe4sdpbY)."
+              }
+            },
+            {
+              "id": "CVE-2021-22904",
+              "name": "Possible DoS Vulnerability in Action Controller Token Authentication",
+              "fullDescription": {
+                "text": "There is a possible DoS vulnerability in the Token Authentication logic in\nAction Controller.  This vulnerability has been assigned the CVE identifier\nCVE-2021-22904.\n\nVersions Affected:  >= 4.0.0\nNot affected:       < 4.0.0\nFixed Versions:     6.1.3.2, 6.0.3.7, 5.2.4.6, 5.2.6\n\nImpact\n------\nImpacted code uses `authenticate_or_request_with_http_token` or\n`authenticate_with_http_token` for request authentication.  Impacted code will\nlook something like this:\n\n```\nclass PostsController < ApplicationController\n  before_action :authenticate\n\n  private\n\n  def authenticate\n    authenticate_or_request_with_http_token do |token, options|\n      # ...\n    end\n  end\nend\n```\n\nAll users running an affected release should either upgrade or use one of the\nworkarounds immediately.\n\nReleases\n--------\nThe fixed releases are available at the normal locations.\n\nWorkarounds\n-----------\nThe following monkey patch placed in an initializer can be used to work around\nthe issue:\n\n```ruby\nmodule ActionController::HttpAuthentication::Token\n  AUTHN_PAIR_DELIMITERS = /(?:,|;|\\t)/\nend\n```\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "actionpack"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 5.2.4.6\", \"~> 5.2.6\", \"~> 6.0.3, >= 6.0.3.7\", \">= 6.1.3.2\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[\"< 4.0.0\"]"
+                },
+                "title": {
+                  "text": "Possible DoS Vulnerability in Action Controller Token Authentication"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "5.2.1.1"
+                }
+              },
+              "helpUri": "https://groups.google.com/g/rubyonrails-security/c/Pf1TjkOBdyQ",
+              "help": {
+                "text": "More info: https://groups.google.com/g/rubyonrails-security/c/Pf1TjkOBdyQ",
+                "markdown": "[More info](https://groups.google.com/g/rubyonrails-security/c/Pf1TjkOBdyQ)."
+              }
+            },
+            {
+              "id": "CVE-2020-8166",
+              "name": "Ability to forge per-form CSRF tokens given a global CSRF token",
+              "fullDescription": {
+                "text": "It is possible to possible to, given a global CSRF token such as the one\npresent in the authenticity_token meta tag, forge a per-form CSRF token for\nany action for that session.\n\nVersions Affected:  rails < 5.2.5, rails < 6.0.4\nNot affected:       Applications without existing HTML injection vulnerabilities.\nFixed Versions:     rails >= 5.2.4.3, rails >= 6.0.3.1\n\nImpact\n------\n\nGiven the ability to extract the global CSRF token, an attacker would be able to\nconstruct a per-form CSRF token for that session.\n\nWorkarounds\n-----------\n\nThis is a low-severity security issue. As such, no workaround is necessarily\nuntil such time as the application can be upgraded.\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "actionpack"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 5.2.4, >= 5.2.4.3\", \">= 6.0.3.1\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Ability to forge per-form CSRF tokens given a global CSRF token"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "5.2.1.1"
+                }
+              },
+              "helpUri": "https://groups.google.com/forum/#!topic/rubyonrails-security/NOjKiGeXUgw",
+              "help": {
+                "text": "More info: https://groups.google.com/forum/#!topic/rubyonrails-security/NOjKiGeXUgw",
+                "markdown": "[More info](https://groups.google.com/forum/#!topic/rubyonrails-security/NOjKiGeXUgw)."
+              }
+            },
+            {
+              "id": "CVE-2020-8167",
+              "name": "CSRF Vulnerability in rails-ujs",
+              "fullDescription": {
+                "text": "There is an vulnerability in rails-ujs that allows attackers to send\nCSRF tokens to wrong domains.\n\nVersions Affected:  rails <= 6.0.3\nNot affected:       Applications which don't use rails-ujs.\nFixed Versions:     rails >= 5.2.4.3, rails >= 6.0.3.1\n\nImpact\n------\n\nThis is a regression of CVE-2015-1840.\n\nIn the scenario where an attacker might be able to control the href attribute of an anchor tag or\nthe action attribute of a form tag that will trigger a POST action, the attacker can set the\nhref or action to a cross-origin URL, and the CSRF token will be sent.\n\nWorkarounds\n-----------\n\nTo work around this problem, change code that allows users to control the href attribute of an anchor\ntag or the action attribute of a form tag to filter the user parameters.\n\nFor example, code like this:\n\n    link_to params\n\nto code like this:\n\n    link_to filtered_params\n\n    def filtered_params\n      # Filter just the parameters that you trust\n    end\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "actionview"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 5.2.4, >= 5.2.4.3\", \">= 6.0.3.1\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "CSRF Vulnerability in rails-ujs"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "5.2.1.1"
+                }
+              },
+              "helpUri": "https://groups.google.com/forum/#!topic/rubyonrails-security/x9DixQDG9a0",
+              "help": {
+                "text": "More info: https://groups.google.com/forum/#!topic/rubyonrails-security/x9DixQDG9a0",
+                "markdown": "[More info](https://groups.google.com/forum/#!topic/rubyonrails-security/x9DixQDG9a0)."
+              }
+            },
+            {
+              "id": "CVE-2019-5419",
+              "name": "Denial of Service Vulnerability in Action View",
+              "fullDescription": {
+                "text": "There is a potential denial of service vulnerability in actionview.\nThis vulnerability has been assigned the CVE identifier CVE-2019-5419.\n\nImpact\n------\nSpecially crafted accept headers can cause the Action View template location\ncode to consume 100% CPU, causing the server unable to process requests.  This\nimpacts all Rails applications that render views.\n\nAll users running an affected release should either upgrade or use one of the\nworkarounds immediately.\n\nWorkarounds\n-----------\nThis vulnerability can be mitigated by wrapping `render` calls with\n`respond_to` blocks.  For example, the following example is vulnerable:\n\n```\nclass UserController < ApplicationController\n  def index\n    render \"index\"\n  end\nend\n```\n\nBut the following code is not vulnerable:\n\n```\nclass UserController < ApplicationController\n  def index\n    respond_to |format|\n      format.html { render \"index\" }\n    end\n  end\nend\n```\n\nImplicit rendering is impacted, so this code is vulnerable:\n\n```\nclass UserController < ApplicationController\n  def index\n  end\nend\n```\n\nBut can be changed this this:\n\n```\nclass UserController < ApplicationController\n  def index\n    respond_to |format|\n      format.html { render \"index\" }\n    end\n  end\nend\n```\n\nAlternatively to specifying the format, the following monkey patch can be\napplied in an initializer:\n\n```\n$ cat config/initializers/formats_filter.rb\n# frozen_string_literal: true\n\nActionDispatch::Request.prepend(Module.new do\n  def formats\n    super().select do |format|\n      format.symbol || format.ref == \"*/*\"\n    end\n  end\nend)\n```\n\nCredits\n-------\nThanks to John Hawthorn <john@hawthorn.email> of GitHub\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "actionview"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\">= 6.0.0.beta3\", \"~> 5.2.2, >= 5.2.2.1\", \"~> 5.1.6, >= 5.1.6.2\", \"~> 5.0.7, >= 5.0.7.2\", \"~> 4.2.11, >= 4.2.11.1\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Denial of Service Vulnerability in Action View"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "5.2.1.1"
+                }
+              },
+              "helpUri": "https://groups.google.com/forum/#!topic/rubyonrails-security/GN7w9fFAQeI",
+              "help": {
+                "text": "More info: https://groups.google.com/forum/#!topic/rubyonrails-security/GN7w9fFAQeI",
+                "markdown": "[More info](https://groups.google.com/forum/#!topic/rubyonrails-security/GN7w9fFAQeI)."
+              }
+            },
+            {
+              "id": "CVE-2020-5267",
+              "name": "Possible XSS vulnerability in ActionView",
+              "fullDescription": {
+                "text": "There is a possible XSS vulnerability in ActionView's JavaScript literal\nescape helpers.  Views that use the `j` or `escape_javascript` methods\nmay be susceptible to XSS attacks.\n\nVersions Affected:  All.\nNot affected:       None.\nFixed Versions:     6.0.2.2, 5.2.4.2\n\nImpact\n------\nThere is a possible XSS vulnerability in the `j` and `escape_javascript`\nmethods in ActionView.  These methods are used for escaping JavaScript string\nliterals.  Impacted code will look something like this:\n\n```erb\n<script>let a = `<%= j unknown_input %>`</script>\n```\n\nor\n\n```erb\n<script>let a = `<%= escape_javascript unknown_input %>`</script>\n```\n\nReleases\n--------\nThe 6.0.2.2 and 5.2.4.2 releases are available at the normal locations.\n\nWorkarounds\n-----------\nFor those that can't upgrade, the following monkey patch may be used:\n\n```ruby\nActionView::Helpers::JavaScriptHelper::JS_ESCAPE_MAP.merge!(\n  {\n    \"`\" => \"\\\\`\",\n    \"$\" => \"\\\\$\"\n  }\n)\n\nmodule ActionView::Helpers::JavaScriptHelper\n  alias :old_ej :escape_javascript\n  alias :old_j :j\n\n  def escape_javascript(javascript)\n    javascript = javascript.to_s\n    if javascript.empty?\n      result = \"\"\n    else\n      result = javascript.gsub(/(\\\\|<\\/|\\r\\n|\\342\\200\\250|\\342\\200\\251|[\\n\\r\"']|[`]|[$])/u, JS_ESCAPE_MAP)\n    end\n    javascript.html_safe? ? result.html_safe : result\n  end\n\n  alias :j :escape_javascript\nend\n```\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "actionview"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 5.2.4, >= 5.2.4.2\", \">= 6.0.2.2\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Possible XSS vulnerability in ActionView"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "5.2.1.1"
+                }
+              },
+              "helpUri": "https://groups.google.com/forum/#!topic/rubyonrails-security/55reWMM_Pg8",
+              "help": {
+                "text": "More info: https://groups.google.com/forum/#!topic/rubyonrails-security/55reWMM_Pg8",
+                "markdown": "[More info](https://groups.google.com/forum/#!topic/rubyonrails-security/55reWMM_Pg8)."
+              }
+            },
+            {
+              "id": "CVE-2019-5418",
+              "name": "File Content Disclosure in Action View",
+              "fullDescription": {
+                "text": "There is a possible file content disclosure vulnerability in Action View. This\nvulnerability has been assigned the CVE identifier CVE-2019-5418.\n\nVersions Affected:  All.\nNot affected:       None.\nFixed Versions:     6.0.0.beta3, 5.2.2.1, 5.1.6.2, 5.0.7.2, 4.2.11.1\n\nImpact\n------\nThere is a possible file content disclosure vulnerability in Action View.\nSpecially crafted accept headers in combination with calls to `render file:`\ncan cause arbitrary files on the target server to be rendered, disclosing the\nfile contents.\n\nThe impact is limited to calls to `render` which render file contents without\na specified accept format.  Impacted code in a controller looks something like\nthis:\n\n```\nclass UserController < ApplicationController\n  def index\n    render file: \"#{Rails.root}/some/file\"\n  end\nend\n```\n\nRendering templates as opposed to files is not impacted by this vulnerability.\n\nAll users running an affected release should either upgrade or use one of the\nworkarounds immediately.\n\nReleases\n--------\nThe 6.0.0.beta3, 5.2.2.1, 5.1.6.2, 5.0.7.2, and 4.2.11.1 releases are\navailable at the normal locations.\n\nWorkarounds\n-----------\nThis vulnerability can be mitigated by specifying a format for file rendering,\nlike this:\n\n```\nclass UserController < ApplicationController\n  def index\n    render file: \"#{Rails.root}/some/file\", formats: [:html]\n  end\nend\n```\n\nIn summary, impacted calls to `render` look like this:\n\n```\nrender file: \"#{Rails.root}/some/file\"\n```\n\nThe vulnerability can be mitigated by changing to this:\n\n```\nrender file: \"#{Rails.root}/some/file\", formats: [:html]\n```\n\nOther calls to `render` are not impacted.\n\nAlternatively, the following monkey patch can be applied in an initializer:\n\n```\n$ cat config/initializers/formats_filter.rb\n# frozen_string_literal: true\n\nActionDispatch::Request.prepend(Module.new do\n  def formats\n    super().select do |format|\n      format.symbol || format.ref == \"*/*\"\n    end\n  end\nend)\n```\n\nCredits\n-------\nThanks to John Hawthorn <john@hawthorn.email> of GitHub\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "actionview"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 4.2.11, >= 4.2.11.1\", \"~> 5.0.7, >= 5.0.7.2\", \"~> 5.1.6, >= 5.1.6.2\", \"~> 5.2.2, >= 5.2.2.1\", \">= 6.0.0.beta3\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "File Content Disclosure in Action View"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "5.2.1.1"
+                }
+              },
+              "helpUri": "https://groups.google.com/forum/#!topic/rubyonrails-security/pFRKI96Sm8Q",
+              "help": {
+                "text": "More info: https://groups.google.com/forum/#!topic/rubyonrails-security/pFRKI96Sm8Q",
+                "markdown": "[More info](https://groups.google.com/forum/#!topic/rubyonrails-security/pFRKI96Sm8Q)."
+              }
+            },
+            {
+              "id": "CVE-2020-15169",
+              "name": "Potential XSS vulnerability in Action View",
+              "fullDescription": {
+                "text": "There is a potential Cross-Site Scripting (XSS) vulnerability in Action\nView's translation helpers. Views that allow the user to control the\ndefault (not found) value of the `t` and `translate` helpers could be\nsusceptible to XSS attacks.\n\nImpact\n------\n\nWhen an HTML-unsafe string is passed as the default for a missing\ntranslation key [named `html` or ending in `_html`](https://guides.rubyonrails.org/i18n.html#using-safe-html-translations),\nthe default string is incorrectly marked as HTML-safe and not escaped.\nVulnerable code may look like the following examples:\n\n```erb\n<%# The welcome_html translation is not defined for the current locale: %>\n<%= t(\"welcome_html\", default: untrusted_user_controlled_string) %>\n\n<%# Neither the title.html translation nor the missing.html translation is defined for the current locale: %>\n<%= t(\"title.html\", default: [:\"missing.html\", untrusted_user_controlled_string]) %>\n```\n\nWorkarounds\n-----------\nImpacted users who can’t upgrade to a patched Rails version can avoid\nthis issue by manually escaping default translations with the\n`html_escape` helper (aliased as `h`):\n\n```erb\n<%= t(\"welcome_html\", default: h(untrusted_user_controlled_string)) %>\n```\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "actionview"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 5.2.4, >= 5.2.4.4\", \">= 6.0.3.3\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Potential XSS vulnerability in Action View"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "5.2.1.1"
+                }
+              },
+              "helpUri": "https://groups.google.com/g/rubyonrails-security/c/b-C9kSGXYrc",
+              "help": {
+                "text": "More info: https://groups.google.com/g/rubyonrails-security/c/b-C9kSGXYrc",
+                "markdown": "[More info](https://groups.google.com/g/rubyonrails-security/c/b-C9kSGXYrc)."
+              }
+            },
+            {
+              "id": "CVE-2021-22880",
+              "name": "Possible DoS Vulnerability in Active Record PostgreSQL adapter",
+              "fullDescription": {
+                "text": "There is a possible DoS vulnerability in the PostgreSQL adapter in Active\nRecord. This vulnerability has been assigned the CVE identifier CVE-2021-22880.\n\nVersions Affected:  >= 4.2.0\nNot affected:       < 4.2.0\nFixed Versions:     6.1.2.1, 6.0.3.5, 5.2.4.5\n\nImpact\n------\nCarefully crafted input can cause the input validation in the \"money\" type of\nthe PostgreSQL adapter in Active Record to spend too much time in a regular\nexpression, resulting in the potential for a DoS attack.\n\nThis only impacts Rails applications that are using PostgreSQL along with\nmoney type columns that take user input.\n\nWorkarounds\n-----------\nIn the case a patch can't be applied, the following monkey patch can be used\nin an initializer:\n\n```\nmodule ActiveRecord\n  module ConnectionAdapters\n    module PostgreSQL\n      module OID # :nodoc:\n        class Money < Type::Decimal # :nodoc:\n          def cast_value(value)\n            return value unless ::String === value\n\n            value = value.sub(/^\\((.+)\\)$/, '-\\1') # (4)\n            case value\n            when /^-?\\D*+[\\d,]+\\.\\d{2}$/  # (1)\n              value.gsub!(/[^-\\d.]/, \"\")\n            when /^-?\\D*+[\\d.]+,\\d{2}$/  # (2)\n              value.gsub!(/[^-\\d,]/, \"\").sub!(/,/, \".\")\n            end\n\n            super(value)\n          end\n        end\n      end\n    end\n  end\nend\n```\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "activerecord"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 5.2.4, >= 5.2.4.5\", \"~> 6.0.3, >= 6.0.3.5\", \">= 6.1.2.1\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[\"< 4.2.0\"]"
+                },
+                "title": {
+                  "text": "Possible DoS Vulnerability in Active Record PostgreSQL adapter"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "5.2.1.1"
+                }
+              },
+              "helpUri": "https://groups.google.com/g/rubyonrails-security/c/ZzUqCh9vyhI",
+              "help": {
+                "text": "More info: https://groups.google.com/g/rubyonrails-security/c/ZzUqCh9vyhI",
+                "markdown": "[More info](https://groups.google.com/g/rubyonrails-security/c/ZzUqCh9vyhI)."
+              }
+            },
+            {
+              "id": "CVE-2020-8162",
+              "name": "Circumvention of file size limits in ActiveStorage",
+              "fullDescription": {
+                "text": "There is a vulnerability in ActiveStorage's S3 adapter that allows the Content-Length of a\ndirect file upload to be modified by an end user.\n\nVersions Affected:  rails < 5.2.4.2, rails < 6.0.3.1\nNot affected:       Applications that do not use the direct upload functionality of the ActiveStorage S3 adapter.\nFixed Versions:     rails >= 5.2.4.3, rails >= 6.0.3.1\n\nImpact\n------\n\nUtilizing this vulnerability, an attacker can control the Content-Length of an S3 direct upload URL without receiving a\nnew signature from the server. This could be used to bypass controls in place on the server to limit upload size.\n\nWorkarounds\n-----------\n\nThis is a low-severity security issue. As such, no workaround is necessarily\nuntil such time as the application can be upgraded.\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "activestorage"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 5.2.4, >= 5.2.4.3\", \">= 6.0.3.1\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Circumvention of file size limits in ActiveStorage"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "5.2.1.1"
+                }
+              },
+              "helpUri": "https://groups.google.com/forum/#!topic/rubyonrails-security/PjU3946mreQ",
+              "help": {
+                "text": "More info: https://groups.google.com/forum/#!topic/rubyonrails-security/PjU3946mreQ",
+                "markdown": "[More info](https://groups.google.com/forum/#!topic/rubyonrails-security/PjU3946mreQ)."
+              }
+            },
+            {
+              "id": "CVE-2020-8165",
+              "name": "Potentially unintended unmarshalling of user-provided objects in MemCacheStore and RedisCacheStore",
+              "fullDescription": {
+                "text": "There is potentially unexpected behaviour in the MemCacheStore and RedisCacheStore where, when\nuntrusted user input is written to the cache store using the `raw: true` parameter, re-reading the result\nfrom the cache can evaluate the user input as a Marshalled object instead of plain text. Vulnerable code looks like:\n\n```\ndata = cache.fetch(\"demo\", raw: true) { untrusted_string }\n```\n\nVersions Affected:  rails < 5.2.5, rails < 6.0.4\nNot affected:       Applications not using MemCacheStore or RedisCacheStore. Applications that do not use the `raw` option when storing untrusted user input.\nFixed Versions:     rails >= 5.2.4.3, rails >= 6.0.3.1\n\nImpact\n------\n\nUnmarshalling of untrusted user input can have impact up to and including RCE. At a minimum,\nthis vulnerability allows an attacker to inject untrusted Ruby objects into a web application.\n\nIn addition to upgrading to the latest versions of Rails, developers should ensure that whenever\nthey are calling `Rails.cache.fetch` they are using consistent values of the `raw` parameter for both\nreading and writing, especially in the case of the RedisCacheStore which does not, prior to these changes,\ndetect if data was serialized using the raw option upon deserialization.\n\nWorkarounds\n-----------\n\nIt is recommended that application developers apply the suggested patch or upgrade to the latest release as\nsoon as possible. If this is not possible, we recommend ensuring that all user-provided strings cached using\nthe `raw` argument should be double-checked to ensure that they conform to the expected format.\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "activesupport"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 5.2.4, >= 5.2.4.3\", \">= 6.0.3.1\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Potentially unintended unmarshalling of user-provided objects in MemCacheStore and RedisCacheStore"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "5.2.1.1"
+                }
+              },
+              "helpUri": "https://groups.google.com/forum/#!topic/rubyonrails-security/bv6fW4S0Y1c",
+              "help": {
+                "text": "More info: https://groups.google.com/forum/#!topic/rubyonrails-security/bv6fW4S0Y1c",
+                "markdown": "[More info](https://groups.google.com/forum/#!topic/rubyonrails-security/bv6fW4S0Y1c)."
+              }
+            },
+            {
+              "id": "CVE-2021-32740",
+              "name": "Regular Expression Denial of Service in Addressable templates",
+              "fullDescription": {
+                "text": "Within the URI template implementation in Addressable, a maliciously crafted template may result in uncontrolled resource consumption,\nleading to denial of service when matched against a URI. In typical usage, templates would not normally be read from untrusted user input,\nbut nonetheless, no previous security advisory for Addressable has cautioned against doing this.\nUsers of the parsing capabilities in Addressable but not the URI template capabilities are unaffected.\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "addressable"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\">= 2.8.0\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[\"< 2.3.0\"]"
+                },
+                "title": {
+                  "text": "Regular Expression Denial of Service in Addressable templates"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "2.6.0"
+                }
+              },
+              "helpUri": "https://github.com/advisories/GHSA-jxhc-q857-3j6g",
+              "help": {
+                "text": "More info: https://github.com/advisories/GHSA-jxhc-q857-3j6g",
+                "markdown": "[More info](https://github.com/advisories/GHSA-jxhc-q857-3j6g)."
+              }
+            },
+            {
+              "id": "CVE-2019-16779",
+              "name": "Race condition when using persistent connections",
+              "fullDescription": {
+                "text": "There was a race condition around persistent connections, where a connection\nwhich is interrupted (such as by a timeout) would leave data on the socket.\nSubsequent requests would then read this data, returning content from the\nprevious response. The race condition window appears to be short, and it\nwould be difficult to purposefully exploit this.\n\nUsers can workaround the problem by disabling persistent connections, though\nthis may cause performance implications."
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "excon"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\">= 0.71.0\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Race condition when using persistent connections"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "0.62.0"
+                }
+              },
+              "helpUri": "https://github.com/excon/excon/security/advisories/GHSA-q58g-455p-8vw9",
+              "help": {
+                "text": "More info: https://github.com/excon/excon/security/advisories/GHSA-q58g-455p-8vw9",
+                "markdown": "[More info](https://github.com/excon/excon/security/advisories/GHSA-q58g-455p-8vw9)."
+              }
+            },
+            {
+              "id": "CVE-2019-15587",
+              "name": "Loofah XSS Vulnerability",
+              "fullDescription": {
+                "text": "In the Loofah gem, through v2.3.0, unsanitized JavaScript may occur in\nsanitized output when a crafted SVG element is republished.\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "loofah"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\">= 2.3.1\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Loofah XSS Vulnerability"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "2.2.3"
+                }
+              },
+              "helpUri": "https://github.com/flavorjones/loofah/issues/171",
+              "help": {
+                "text": "More info: https://github.com/flavorjones/loofah/issues/171",
+                "markdown": "[More info](https://github.com/flavorjones/loofah/issues/171)."
+              }
+            },
+            {
+              "id": "GHSA-7rrm-v45f-jp64",
+              "name": "Update packaged dependency libxml2 from 2.9.10 to 2.9.12",
+              "fullDescription": {
+                "text": "### Summary\n\nNokogiri v1.11.4 updates the vendored libxml2 from v2.9.10 to v2.9.12 which addresses:\n\n- [CVE-2019-20388](https://security.archlinux.org/CVE-2019-20388) (Medium severity)\n- [CVE-2020-24977](https://security.archlinux.org/CVE-2020-24977) (Medium severity)\n- [CVE-2021-3517](https://security.archlinux.org/CVE-2021-3517) (Medium severity)\n- [CVE-2021-3518](https://security.archlinux.org/CVE-2021-3518) (Medium severity)\n- [CVE-2021-3537](https://security.archlinux.org/CVE-2021-3537) (Low severity)\n- [CVE-2021-3541](https://security.archlinux.org/CVE-2021-3541) (Low severity)\n\nNote that two additional CVEs were addressed upstream but are not relevant to this release. [CVE-2021-3516](https://security.archlinux.org/CVE-2021-3516) via `xmllint` is not present in Nokogiri, and [CVE-2020-7595](https://security.archlinux.org/CVE-2020-7595) has been patched in Nokogiri since v1.10.8 (see #1992).\n\nPlease note that this advisory only applies to the CRuby implementation of Nokogiri `< 1.11.4`, and only if the packaged version of libxml2 is being used. If you've overridden defaults at installation time to use system libraries instead of packaged libraries, you should instead pay attention to your distro's `libxml2` release announcements.\n\n\n### Mitigation\n\nUpgrade to Nokogiri `>= 1.11.4`.\n\n\n### Impact\n\nI've done a brief analysis of the published CVEs that are addressed in this upstream release. The libxml2 maintainers have not released a canonical set of CVEs, and so this list is pieced together from secondary sources and may be incomplete.\n\nAll information below is sourced from [security.archlinux.org](https://security.archlinux.org), which appears to have the most up-to-date information as of this analysis.\n\n#### [CVE-2019-20388](https://security.archlinux.org/CVE-2019-20388)\n\n- **Severity**: Medium\n- **Type**: Denial of service\n- **Description**: A memory leak was found in the xmlSchemaValidateStream function of libxml2. Applications that use this library may be vulnerable to memory not being freed leading to a denial of service.\n- **Fixed**: https://gitlab.gnome.org/GNOME/libxml2/commit/7ffcd44d7e6c46704f8af0321d9314cd26e0e18a\n\nVerified that the fix commit first appears in v2.9.11. It seems possible that this issue would be present in programs using Nokogiri < v1.11.4.\n\n\n#### [CVE-2020-7595](https://security.archlinux.org/CVE-2020-7595)\n\n- **Severity**: Medium\n- **Type**: Denial of service\n- **Description**: xmlStringLenDecodeEntities in parser.c in libxml2 2.9.10 has an infinite loop in a certain end-of-file situation.\n- **Fixed**: https://gitlab.gnome.org/GNOME/libxml2/commit/0e1a49c8907645d2e155f0d89d4d9895ac5112b5\n\nThis has been patched in Nokogiri since v1.10.8 (see #1992).\n\n\n#### [CVE-2020-24977](https://security.archlinux.org/CVE-2020-24977)\n\n- **Severity**: Medium\n- **Type**: Information disclosure\n- **Description**: GNOME project libxml2 <= 2.9.10 has a global buffer over-read vulnerability in xmlEncodeEntitiesInternal at libxml2/entities.c.\n- **Fixed**: https://gitlab.gnome.org/GNOME/libxml2/commit/50f06b3efb638efb0abd95dc62dca05ae67882c2\n\nVerified that the fix commit first appears in v2.9.11. It seems possible that this issue would be present in programs using Nokogiri < v1.11.4.\n\n\n#### [CVE-2021-3516](https://security.archlinux.org/CVE-2021-3516)\n\n- **Severity**: Medium\n- **Type**: Arbitrary code execution (no remote vector)\n- **Description**: A use-after-free security issue was found libxml2 before version 2.9.11 when \"xmllint --html --push\" is used to process crafted files.\n- **Issue**: https://gitlab.gnome.org/GNOME/libxml2/-/issues/230\n- **Fixed**: https://gitlab.gnome.org/GNOME/libxml2/-/commit/1358d157d0bd83be1dfe356a69213df9fac0b539\n\nVerified that the fix commit first appears in v2.9.11. This vector does not exist within Nokogiri, which does not ship `xmllint`.\n\n\n#### [CVE-2021-3517](https://security.archlinux.org/CVE-2021-3517)\n\n- **Severity**: Medium\n- **Type**: Arbitrary code execution\n- **Description**: A heap-based buffer overflow was found in libxml2 before version 2.9.11 when processing truncated UTF-8 input.\n- **Issue**: https://gitlab.gnome.org/GNOME/libxml2/-/issues/235\n- **Fixed**: https://gitlab.gnome.org/GNOME/libxml2/-/commit/bf22713507fe1fc3a2c4b525cf0a88c2dc87a3a2\n\nVerified that the fix commit first appears in v2.9.11. It seems possible that this issue would be present in programs using Nokogiri < v1.11.4.\n\n\n#### [CVE-2021-3518](https://security.archlinux.org/CVE-2021-3518)\n\n- **Severity**: Medium\n- **Type**: Arbitrary code execution\n- **Description**: A use-after-free security issue was found in libxml2 before version 2.9.11 in xmlXIncludeDoProcess() in xinclude.c when processing crafted files.\n- **Issue**: https://gitlab.gnome.org/GNOME/libxml2/-/issues/237\n- **Fixed**: https://gitlab.gnome.org/GNOME/libxml2/-/commit/1098c30a040e72a4654968547f415be4e4c40fe7\n\nVerified that the fix commit first appears in v2.9.11. It seems possible that this issue would be present in programs using Nokogiri < v1.11.4.\n\n\n#### [CVE-2021-3537](https://security.archlinux.org/CVE-2021-3537)\n\n- **Severity**: Low\n- **Type**: Denial of service\n- **Description**: It was found that libxml2 before version 2.9.11 did not propagate errors while parsing XML mixed content, causing a NULL dereference. If an untrusted XML document was parsed in recovery mode and post-validated, the flaw could be used to crash the application.\n- **Issue**: https://gitlab.gnome.org/GNOME/libxml2/-/issues/243\n- **Fixed**: https://gitlab.gnome.org/GNOME/libxml2/-/commit/babe75030c7f64a37826bb3342317134568bef61\n\nVerified that the fix commit first appears in v2.9.11. It seems possible that this issue would be present in programs using Nokogiri < v1.11.4.\n\n\n#### [CVE-2021-3541](https://security.archlinux.org/CVE-2021-3541)\n\n- **Severity**: Low\n- **Type**: Denial of service\n- **Description**: A security issue was found in libxml2 before version 2.9.11. Exponential entity expansion attack its possible bypassing all existing protection mechanisms and leading to denial of service.\n- **Fixed**: https://gitlab.gnome.org/GNOME/libxml2/-/commit/8598060bacada41a0eb09d95c97744ff4e428f8e\n\nVerified that the fix commit first appears in v2.9.11. It seems possible that this issue would be present in programs using Nokogiri < v1.11.4, however Nokogiri's default parse options prevent the attack from succeeding (it is necessary to opt into `DTDLOAD` which is off by default).\n\nFor more details supporting this analysis of this CVE, please visit #2233.\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "nokogiri"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\">= 1.11.4\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Update packaged dependency libxml2 from 2.9.10 to 2.9.12"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "1.8.5"
+                }
+              },
+              "helpUri": "https://github.com/sparklemotion/nokogiri/security/advisories/GHSA-7rrm-v45f-jp64",
+              "help": {
+                "text": "More info: https://github.com/sparklemotion/nokogiri/security/advisories/GHSA-7rrm-v45f-jp64",
+                "markdown": "[More info](https://github.com/sparklemotion/nokogiri/security/advisories/GHSA-7rrm-v45f-jp64)."
+              }
+            },
+            {
+              "id": "CVE-2019-11068",
+              "name": "Nokogiri gem, via libxslt, is affected by improper access control vulnerability",
+              "fullDescription": {
+                "text": "Nokogiri v1.10.3 has been released.\n\nThis is a security release. It addresses a CVE in upstream libxslt rated as\n\"Priority: medium\" by Canonical, and \"NVD Severity: high\" by Debian. More\ndetails are available below.\n\nIf you're using your distro's system libraries, rather than Nokogiri's\nvendored libraries, there's no security need to upgrade at this time, though\nyou may want to check with your distro whether they've patched this\n(Canonical has patched Ubuntu packages). Note that this patch is not yet (as\nof 2019-04-22) in an upstream release of libxslt.\n\nFull details about the security update are available in Github Issue\n[#1892] https://github.com/sparklemotion/nokogiri/issues/1892.\n\n---\n\nCVE-2019-11068\n\nPermalinks are:\n- Canonical: https://people.canonical.com/~ubuntu-security/cve/CVE-2019-11068\n- Debian: https://security-tracker.debian.org/tracker/CVE-2019-11068\n\nDescription:\n\n> libxslt through 1.1.33 allows bypass of a protection mechanism\n> because callers of xsltCheckRead and xsltCheckWrite permit access\n> even upon receiving a -1 error code. xsltCheckRead can return -1 for\n> a crafted URL that is not actually invalid and is subsequently\n> loaded.\n\nCanonical rates this as \"Priority: Medium\".\n\nDebian rates this as \"NVD Severity: High (attack range: remote)\".\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "nokogiri"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\">= 1.10.3\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Nokogiri gem, via libxslt, is affected by improper access control vulnerability"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "1.8.5"
+                }
+              },
+              "helpUri": "https://github.com/sparklemotion/nokogiri/issues/1892",
+              "help": {
+                "text": "More info: https://github.com/sparklemotion/nokogiri/issues/1892",
+                "markdown": "[More info](https://github.com/sparklemotion/nokogiri/issues/1892)."
+              }
+            },
+            {
+              "id": "CVE-2019-5477",
+              "name": "Nokogiri Command Injection Vulnerability via Nokogiri::CSS::Tokenizer#load_file",
+              "fullDescription": {
+                "text": "A command injection vulnerability in Nokogiri v1.10.3 and earlier allows\ncommands to be executed in a subprocess by Ruby's `Kernel.open` method.\nProcesses are vulnerable only if the undocumented method\n`Nokogiri::CSS::Tokenizer#load_file` is being passed untrusted user input.\n\nThis vulnerability appears in code generated by the Rexical gem versions\nv1.0.6 and earlier. Rexical is used by Nokogiri to generate lexical scanner\ncode for parsing CSS queries. The underlying vulnerability was addressed in\nRexical v1.0.7 and Nokogiri upgraded to this version of Rexical in\nNokogiri v1.10.4.\n\nUpgrade to Nokogiri v1.10.4, or avoid calling the undocumented method\n`Nokogiri::CSS::Tokenizer#load_file` with untrusted user input.\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "nokogiri"
+                },
+                "severity": {
+                  "text": "7.5"
+                },
+                "patched_versions": {
+                  "text": "[\">= 1.10.4\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Nokogiri Command Injection Vulnerability via Nokogiri::CSS::Tokenizer#load_file"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "1.8.5"
+                }
+              },
+              "helpUri": "https://github.com/sparklemotion/nokogiri/issues/1915",
+              "help": {
+                "text": "More info: https://github.com/sparklemotion/nokogiri/issues/1915",
+                "markdown": "[More info](https://github.com/sparklemotion/nokogiri/issues/1915)."
+              }
+            },
+            {
+              "id": "CVE-2020-7595",
+              "name": "libxml2 2.9.10 has an infinite loop in a certain end-of-file situation",
+              "fullDescription": {
+                "text": "\nNokogiri has backported the patch for CVE-2020-7595 into its vendored version\nof libxml2, and released this as v1.10.8\n\nCVE-2020-7595 has not yet been addressed in an upstream libxml2 release, and\nso Nokogiri versions <= v1.10.7 are vulnerable."
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "nokogiri"
+                },
+                "severity": {
+                  "text": "5.0"
+                },
+                "patched_versions": {
+                  "text": "[\">= 1.10.8\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "libxml2 2.9.10 has an infinite loop in a certain end-of-file situation"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "1.8.5"
+                }
+              },
+              "helpUri": "https://github.com/sparklemotion/nokogiri/issues/1992",
+              "help": {
+                "text": "More info: https://github.com/sparklemotion/nokogiri/issues/1992",
+                "markdown": "[More info](https://github.com/sparklemotion/nokogiri/issues/1992)."
+              }
+            },
+            {
+              "id": "CVE-2020-26247",
+              "name": "Nokogiri::XML::Schema trusts input by default, exposing risk of an XXE vulnerability",
+              "fullDescription": {
+                "text": "### Description\n\nIn Nokogiri versions <= 1.11.0.rc3, XML Schemas parsed by `Nokogiri::XML::Schema`\nare **trusted** by default, allowing external resources to be accessed over the\nnetwork, potentially enabling XXE or SSRF attacks.\n\nThis behavior is counter to\nthe security policy followed by Nokogiri maintainers, which is to treat all input\nas **untrusted** by default whenever possible.\n\nPlease note that this security\nfix was pushed into a new minor version, 1.11.x, rather than a patch release to\nthe 1.10.x branch, because it is a breaking change for some schemas and the risk\nwas assessed to be \"Low Severity\".\n\n### Affected Versions\n\nNokogiri `<= 1.10.10` as well as prereleases `1.11.0.rc1`, `1.11.0.rc2`, and `1.11.0.rc3`\n\n### Mitigation\n\nThere are no known workarounds for affected versions. Upgrade to Nokogiri\n`1.11.0.rc4` or later.\n\nIf, after upgrading to `1.11.0.rc4` or later, you wish\nto re-enable network access for resolution of external resources (i.e., return to\nthe previous behavior):\n\n1. Ensure the input is trusted. Do not enable this option\nfor untrusted input.\n2. When invoking the `Nokogiri::XML::Schema` constructor,\npass as the second parameter an instance of `Nokogiri::XML::ParseOptions` with the\n`NONET` flag turned off.\n\nSo if your previous code was:\n\n``` ruby\n# in v1.11.0.rc3 and earlier, this call allows resources to be accessed over the network\n# but in v1.11.0.rc4 and later, this call will disallow network access for external resources\nschema = Nokogiri::XML::Schema.new(schema)\n\n# in v1.11.0.rc4 and later, the following is equivalent to the code above\n# (the second parameter is optional, and this demonstrates its default value)\nschema = Nokogiri::XML::Schema.new(schema, Nokogiri::XML::ParseOptions::DEFAULT_SCHEMA)\n```\n\nThen you can add the second parameter to indicate that the input is trusted by changing it to:\n\n``` ruby\n# in v1.11.0.rc3 and earlier, this would raise an ArgumentError\n# but in v1.11.0.rc4 and later, this allows resources to be accessed over the network\nschema = Nokogiri::XML::Schema.new(trusted_schema, Nokogiri::XML::ParseOptions.new.nononet)\n```"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "nokogiri"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\">= 1.11.0.rc4\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Nokogiri::XML::Schema trusts input by default, exposing risk of an XXE vulnerability"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "1.8.5"
+                }
+              },
+              "helpUri": "https://github.com/sparklemotion/nokogiri/security/advisories/GHSA-vr8q-g5c7-m54m",
+              "help": {
+                "text": "More info: https://github.com/sparklemotion/nokogiri/security/advisories/GHSA-vr8q-g5c7-m54m",
+                "markdown": "[More info](https://github.com/sparklemotion/nokogiri/security/advisories/GHSA-vr8q-g5c7-m54m)."
+              }
+            },
+            {
+              "id": "CVE-2019-13117",
+              "name": "Nokogiri gem, via libxslt, is affected by multiple vulnerabilities",
+              "fullDescription": {
+                "text": "Nokogiri v1.10.5 has been released.\n\nThis is a security release. It addresses three CVEs in upstream libxml2,\nfor which details are below.\n\nIf you're using your distro's system libraries, rather than Nokogiri's\nvendored libraries, there's no security need to upgrade at this time,\nthough you may want to check with your distro whether they've patched this\n(Canonical has patched Ubuntu packages). Note that libxslt 1.1.34 addresses\nthese vulnerabilities.\n\nFull details about the security update are available in Github Issue\n[#1943] https://github.com/sparklemotion/nokogiri/issues/1943.\n\n---\n\nCVE-2019-13117\n\nhttps://people.canonical.com/~ubuntu-security/cve/2019/CVE-2019-13117.html\n\nPriority: Low\n\nDescription: In numbers.c in libxslt 1.1.33, an xsl:number with certain format strings\ncould lead to a uninitialized read in xsltNumberFormatInsertNumbers. This\ncould allow an attacker to discern whether a byte on the stack contains the\ncharacters A, a, I, i, or 0, or any other character.\n\nPatched with commit https://gitlab.gnome.org/GNOME/libxslt/commit/c5eb6cf3aba0af048596106ed839b4ae17ecbcb1\n\n---\n\nCVE-2019-13118\n\nhttps://people.canonical.com/~ubuntu-security/cve/2019/CVE-2019-13118.html\n\nPriority: Low\n\nDescription: In numbers.c in libxslt 1.1.33, a type holding grouping characters of an\nxsl:number instruction was too narrow and an invalid character/length\ncombination could be passed to xsltNumberFormatDecimal, leading to a read\nof uninitialized stack data\n\nPatched with commit https://gitlab.gnome.org/GNOME/libxslt/commit/6ce8de69330783977dd14f6569419489875fb71b\n\n---\n\nCVE-2019-18197\n\nhttps://people.canonical.com/~ubuntu-security/cve/2019/CVE-2019-18197.html\n\nPriority: Medium\n\nDescription: In xsltCopyText in transform.c in libxslt 1.1.33, a pointer variable isn't\nreset under certain circumstances. If the relevant memory area happened to\nbe freed and reused in a certain way, a bounds check could fail and memory\noutside a buffer could be written to, or uninitialized data could be\ndisclosed.\n\nPatched with commit https://gitlab.gnome.org/GNOME/libxslt/commit/2232473733b7313d67de8836ea3b29eec6e8e285\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "nokogiri"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\">= 1.10.5\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Nokogiri gem, via libxslt, is affected by multiple vulnerabilities"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "1.8.5"
+                }
+              },
+              "helpUri": "https://github.com/sparklemotion/nokogiri/issues/1943",
+              "help": {
+                "text": "More info: https://github.com/sparklemotion/nokogiri/issues/1943",
+                "markdown": "[More info](https://github.com/sparklemotion/nokogiri/issues/1943)."
+              }
+            },
+            {
+              "id": "CVE-2021-41098",
+              "name": "Improper Restriction of XML External Entity Reference (XXE) in Nokogiri on JRuby",
+              "fullDescription": {
+                "text": "### Severity\n\nThe Nokogiri maintainers have evaluated this as [**High Severity** 7.5 (CVSS3.0)](https://www.first.org/cvss/calculator/3.0#CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N/E:H/RL:O/RC:C/MAV:N/MAC:L) for JRuby users. (This security advisory does not apply to CRuby users.)\n\n### Impact\n\nIn Nokogiri v1.12.4 and earlier, **on JRuby only**, the SAX parser resolves external entities by default.\n\nUsers of Nokogiri on JRuby who parse untrusted documents using any of these classes are affected:\n\n- Nokogiri::XML::SAX::Parser\n- Nokogiri::HTML4::SAX::Parser or its alias Nokogiri::HTML::SAX::Parser\n- Nokogiri::XML::SAX::PushParser\n- Nokogiri::HTML4::SAX::PushParser or its alias Nokogiri::HTML::SAX::PushParser\n\n### Mitigation\n\nJRuby users should upgrade to Nokogiri v1.12.5 or later. There are no workarounds available for v1.12.4 or earlier.\n\nCRuby users are not affected."
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "nokogiri"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\">= 1.12.5\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Improper Restriction of XML External Entity Reference (XXE) in Nokogiri on JRuby"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "1.8.5"
+                }
+              },
+              "helpUri": "https://github.com/sparklemotion/nokogiri/security/advisories/GHSA-2rr5-8q37-2w7h",
+              "help": {
+                "text": "More info: https://github.com/sparklemotion/nokogiri/security/advisories/GHSA-2rr5-8q37-2w7h",
+                "markdown": "[More info](https://github.com/sparklemotion/nokogiri/security/advisories/GHSA-2rr5-8q37-2w7h)."
+              }
+            },
+            {
+              "id": "CVE-2021-29509",
+              "name": "Keepalive Connections Causing Denial Of Service in puma",
+              "fullDescription": {
+                "text": "### Impact\n\nThe fix for CVE-2019-16770 was incomplete. The original fix only protected\nexisting connections that had already been accepted from having their\nrequests starved by greedy persistent-connections saturating all threads in\nthe same process. However, new connections may still be starved by greedy\npersistent-connections saturating all threads in all processes in the\ncluster.\n\nA puma server which received more concurrent keep-alive connections than the\nserver had threads in its threadpool would service only a subset of\nconnections, denying service to the unserved connections.\n\n### Patches\n\nThis problem has been fixed in puma 4.3.8 and 5.3.1.\n\n### Workarounds\n\nSetting queue_requests false also fixes the issue. This is not advised when\nusing puma without a reverse proxy, such as nginx or apache, because you will\nopen yourself to slow client attacks (e.g. [slowloris][1]).\n\nThe fix is very small. [A git patch is available here][2] for those using\n[unsupported versions][3] of Puma.\n\n[1]: https://en.wikipedia.org/wiki/Slowloris_(computer_security)\n[2]: https://gist.github.com/nateberkopec/4b3ea5676c0d70cbb37c82d54be25837\n[3]: https://github.com/puma/puma/security/policy#supported-versions"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "puma"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 4.3.8\", \">= 5.3.1\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Keepalive Connections Causing Denial Of Service in puma"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "3.12.0"
+                }
+              },
+              "helpUri": "https://github.com/puma/puma/security/advisories/GHSA-q28m-8xjw-8vr5",
+              "help": {
+                "text": "More info: https://github.com/puma/puma/security/advisories/GHSA-q28m-8xjw-8vr5",
+                "markdown": "[More info](https://github.com/puma/puma/security/advisories/GHSA-q28m-8xjw-8vr5)."
+              }
+            },
+            {
+              "id": "CVE-2019-16770",
+              "name": "Keepalive thread overload/DoS in puma",
+              "fullDescription": {
+                "text": "A poorly-behaved client could use keepalive requests to monopolize\nPuma's reactor and create a denial of service attack.\n\nIf more keepalive connections to Puma are opened than there are\nthreads available, additional connections will wait permanently if\nthe attacker sends requests frequently enough.\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "puma"
+                },
+                "severity": {
+                  "text": "6.8"
+                },
+                "patched_versions": {
+                  "text": "[\"~> 3.12.2\", \">= 4.3.1\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Keepalive thread overload/DoS in puma"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "3.12.0"
+                }
+              },
+              "helpUri": "https://github.com/puma/puma/security/advisories/GHSA-7xx3-m584-x994",
+              "help": {
+                "text": "More info: https://github.com/puma/puma/security/advisories/GHSA-7xx3-m584-x994",
+                "markdown": "[More info](https://github.com/puma/puma/security/advisories/GHSA-7xx3-m584-x994)."
+              }
+            },
+            {
+              "id": "CVE-2020-5249",
+              "name": "HTTP Response Splitting (Early Hints) in Puma",
+              "fullDescription": {
+                "text": "### Impact\nIf an application using Puma allows untrusted input in an early-hints header,\nan attacker can use a carriage return character to end the header and inject\nmalicious content, such as additional headers or an entirely new response body.\nThis vulnerability is known as [HTTP Response\nSplitting](https://owasp.org/www-community/attacks/HTTP_Response_Splitting)\n\nWhile not an attack in itself, response splitting is a vector for several other\nattacks, such as cross-site scripting (XSS).\n\nThis is related to [CVE-2020-5247](https://github.com/puma/puma/security/advisories/GHSA-84j7-475p-hp8v),\nwhich fixed this vulnerability but only for regular responses.\n\n### Patches\nThis has been fixed in 4.3.3 and 3.12.4.\n\n### Workarounds\nUsers can not allow untrusted/user input in the Early Hints response header."
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "puma"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 3.12.4\", \">= 4.3.3\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "HTTP Response Splitting (Early Hints) in Puma"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "3.12.0"
+                }
+              },
+              "helpUri": "https://github.com/puma/puma/security/advisories/GHSA-33vf-4xgg-9r58",
+              "help": {
+                "text": "More info: https://github.com/puma/puma/security/advisories/GHSA-33vf-4xgg-9r58",
+                "markdown": "[More info](https://github.com/puma/puma/security/advisories/GHSA-33vf-4xgg-9r58)."
+              }
+            },
+            {
+              "id": "CVE-2020-11077",
+              "name": "HTTP Smuggling via Transfer-Encoding Header in Puma",
+              "fullDescription": {
+                "text": "### Impact\n\nThis is a similar but different vulnerability to the one patched in 3.12.5 and 4.3.4.\n\nA client could smuggle a request through a proxy, causing the proxy to send a response\nback to another unknown client.\n\nIf the proxy uses persistent connections and the client adds another request in via HTTP\npipelining, the proxy may mistake it as the first request's body. Puma, however,\nwould see it as two requests, and when processing the second request, send back\na response that the proxy does not expect. If the proxy has reused the persistent\nconnection to Puma to send another request for a different client, the second response\nfrom the first client will be sent to the second client.\n\n### Patches\n\nThe problem has been fixed in Puma 3.12.6 and Puma 4.3.5."
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "puma"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 3.12.6\", \">= 4.3.5\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "HTTP Smuggling via Transfer-Encoding Header in Puma"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "3.12.0"
+                }
+              },
+              "helpUri": "https://github.com/puma/puma/security/advisories/GHSA-w64w-qqph-5gxm",
+              "help": {
+                "text": "More info: https://github.com/puma/puma/security/advisories/GHSA-w64w-qqph-5gxm",
+                "markdown": "[More info](https://github.com/puma/puma/security/advisories/GHSA-w64w-qqph-5gxm)."
+              }
+            },
+            {
+              "id": "CVE-2020-11076",
+              "name": "HTTP Smuggling via Transfer-Encoding Header in Puma",
+              "fullDescription": {
+                "text": "### Impact\n\nBy using an invalid transfer-encoding header, an attacker could\n[smuggle an HTTP response.](https://portswigger.net/web-security/request-smuggling)\n\n### Patches\n\nThe problem has been fixed in Puma 3.12.5 and Puma 4.3.4."
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "puma"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 3.12.5\", \">= 4.3.4\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "HTTP Smuggling via Transfer-Encoding Header in Puma"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "3.12.0"
+                }
+              },
+              "helpUri": "https://github.com/puma/puma/security/advisories/GHSA-x7jg-6pwg-fx5h",
+              "help": {
+                "text": "More info: https://github.com/puma/puma/security/advisories/GHSA-x7jg-6pwg-fx5h",
+                "markdown": "[More info](https://github.com/puma/puma/security/advisories/GHSA-x7jg-6pwg-fx5h)."
+              }
+            },
+            {
+              "id": "CVE-2020-5247",
+              "name": "HTTP Response Splitting vulnerability in puma",
+              "fullDescription": {
+                "text": "If an application using Puma allows untrusted input in a response header,\nan attacker can use newline characters (i.e. CR, LF) to end the header and\ninject malicious content, such as additional headers or an entirely new\nresponse body. This vulnerability is known as HTTP Response Splitting.\n\nWhile not an attack in itself, response splitting is a vector for several\nother attacks, such as cross-site scripting (XSS)."
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "puma"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 3.12.4\", \">= 4.3.3\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "HTTP Response Splitting vulnerability in puma"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "3.12.0"
+                }
+              },
+              "helpUri": "https://github.com/puma/puma/security/advisories/GHSA-84j7-475p-hp8v",
+              "help": {
+                "text": "More info: https://github.com/puma/puma/security/advisories/GHSA-84j7-475p-hp8v",
+                "markdown": "[More info](https://github.com/puma/puma/security/advisories/GHSA-84j7-475p-hp8v)."
+              }
+            },
+            {
+              "id": "CVE-2021-41136",
+              "name": "Inconsistent Interpretation of HTTP Requests ('HTTP Request Smuggling') in puma",
+              "fullDescription": {
+                "text": "### Impact\n\nPrior to `puma` version 5.5.0, using `puma` with a proxy which forwards LF characters as line endings could allow HTTP request smuggling. A client could smuggle a request through a proxy, causing the proxy to send a response back to another unknown client.\n\nThis behavior (forwarding LF characters as line endings) is very uncommon amongst proxy servers, so we have graded the impact here as \"low\". Puma is only aware of a single proxy server which has this behavior.\n\nIf the proxy uses persistent connections and the client adds another request in via HTTP pipelining, the proxy may mistake it as the first request's body. Puma, however, would see it as two requests, and when processing the second request, send back a response that the proxy does not expect. If the proxy has reused the persistent connection to Puma to send another request for a different client, the second response from the first client will be sent to the second client.\n\n### Patches\n\nThis vulnerability was patched in Puma 5.5.1 and 4.3.9.\n\n### Workarounds\n\nThis vulnerability only affects Puma installations without any proxy in front.\n\nUse a proxy which does not forward LF characters as line endings.\n\nProxies which do not forward LF characters as line endings:\n\n* Nginx\n* Apache (>2.4.25)\n* Haproxy\n* Caddy\n* Traefik\n\n### Possible Breakage\n\nIf you are [dealing with legacy clients that want to send `LF` as a line ending](https://stackoverflow.com/questions/43574428/have-apache-accept-lf-vs-crlf-in-request-headers) in an HTTP header, this will cause those clients to receive a `400` error.\n\n### References\n\n* [HTTP Request Smuggling](https://portswigger.net/web-security/request-smuggling)\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "puma"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 4.3.9\", \">= 5.5.1\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Inconsistent Interpretation of HTTP Requests ('HTTP Request Smuggling') in puma"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "3.12.0"
+                }
+              },
+              "helpUri": "https://github.com/puma/puma/security/advisories/GHSA-48w2-rm65-62xx",
+              "help": {
+                "text": "More info: https://github.com/puma/puma/security/advisories/GHSA-48w2-rm65-62xx",
+                "markdown": "[More info](https://github.com/puma/puma/security/advisories/GHSA-48w2-rm65-62xx)."
+              }
+            },
+            {
+              "id": "CVE-2019-16782",
+              "name": "Possible information leak / session hijack vulnerability",
+              "fullDescription": {
+                "text": "There's a possible information leak / session hijack vulnerability in Rack.\n\nAttackers may be able to find and hijack sessions by using timing attacks\ntargeting the session id. Session ids are usually stored and indexed in a\ndatabase that uses some kind of scheme for speeding up lookups of that\nsession id. By carefully measuring the amount of time it takes to look up\na session, an attacker may be able to find a valid session id and hijack\nthe session.\n\nThe session id itself may be generated randomly, but the way the session is\nindexed by the backing store does not use a secure comparison.\n\nImpact:\n\nThe session id stored in a cookie is the same id that is used when querying\nthe backing session storage engine.  Most storage mechanisms (for example a\ndatabase) use some sort of indexing in order to speed up the lookup of that\nid.  By carefully timing requests and session lookup failures, an attacker\nmay be able to perform a timing attack to determine an existing session id\nand hijack that session."
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "rack"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 1.6.12\", \">= 2.0.8\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Possible information leak / session hijack vulnerability"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "2.0.6"
+                }
+              },
+              "helpUri": "https://github.com/rack/rack/security/advisories/GHSA-hrqr-hxpp-chr3",
+              "help": {
+                "text": "More info: https://github.com/rack/rack/security/advisories/GHSA-hrqr-hxpp-chr3",
+                "markdown": "[More info](https://github.com/rack/rack/security/advisories/GHSA-hrqr-hxpp-chr3)."
+              }
+            },
+            {
+              "id": "CVE-2020-8184",
+              "name": "Percent-encoded cookies can be used to overwrite existing prefixed cookie names",
+              "fullDescription": {
+                "text": "It is possible to forge a secure or host-only cookie prefix in Rack using\nan arbitrary cookie write by using URL encoding (percent-encoding) on the\nname of the cookie. This could result in an application that is dependent on\nthis prefix to determine if a cookie is safe to process being manipulated\ninto processing an insecure or cross-origin request.\nThis vulnerability has been assigned the CVE identifier CVE-2020-8184.\n\nVersions Affected:  rack < 2.2.3, rack < 2.1.4\nNot affected:       Applications which do not rely on __Host- and __Secure- prefixes to determine if a cookie is safe to process\nFixed Versions:     rack >= 2.2.3, rack >= 2.1.4\n\nImpact\n------\n\nAn attacker may be able to trick a vulnerable application into processing an\ninsecure (non-SSL) or cross-origin request if they can gain the ability to write\narbitrary cookies that are sent to the application.\n\nWorkarounds\n-----------\n\nIf your application is impacted but you cannot upgrade to the released versions or apply\nthe provided patch, this issue can be temporarily addressed by adding the following workaround:\n\n```\nmodule Rack\n  module Utils\n    module_function def parse_cookies_header(header)\n      return {} unless header\n      header.split(/[;] */n).each_with_object({}) do |cookie, cookies|\n        next if cookie.empty?\n        key, value = cookie.split('=', 2)\n        cookies[key] = (unescape(value) rescue value) unless cookies.key?(key)\n      end\n    end\n  end\nend\n```\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "rack"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 2.1.4\", \">= 2.2.3\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Percent-encoded cookies can be used to overwrite existing prefixed cookie names"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "2.0.6"
+                }
+              },
+              "helpUri": "https://groups.google.com/g/rubyonrails-security/c/OWtmozPH9Ak",
+              "help": {
+                "text": "More info: https://groups.google.com/g/rubyonrails-security/c/OWtmozPH9Ak",
+                "markdown": "[More info](https://groups.google.com/g/rubyonrails-security/c/OWtmozPH9Ak)."
+              }
+            },
+            {
+              "id": "CVE-2020-8161",
+              "name": "Directory traversal in Rack::Directory app bundled with Rack",
+              "fullDescription": {
+                "text": "There was a possible directory traversal vulnerability in the Rack::Directory app\nthat is bundled with Rack.\n\nVersions Affected:  rack < 2.2.0\nNot affected:       Applications that do not use Rack::Directory.\nFixed Versions:     2.1.3, >= 2.2.0\n\nImpact\n------\n\nIf certain directories exist in a director that is managed by\n`Rack::Directory`, an attacker could, using this vulnerability, read the\ncontents of files on the server that were outside of the root specified in the\nRack::Directory initializer.\n\nWorkarounds\n-----------\n\nUntil such time as the patch is applied or their Rack version is upgraded,\nwe recommend that developers do not use Rack::Directory in their\napplications.\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "rack"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 2.1.3\", \">= 2.2.0\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Directory traversal in Rack::Directory app bundled with Rack"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "2.0.6"
+                }
+              },
+              "helpUri": "https://groups.google.com/forum/#!topic/ruby-security-ann/T4ZIsfRf2eA",
+              "help": {
+                "text": "More info: https://groups.google.com/forum/#!topic/ruby-security-ann/T4ZIsfRf2eA",
+                "markdown": "[More info](https://groups.google.com/forum/#!topic/ruby-security-ann/T4ZIsfRf2eA)."
+              }
+            },
+            {
+              "id": "CVE-2019-18978",
+              "name": "rack-cors directory traversal via path",
+              "fullDescription": {
+                "text": "An issue was discovered in the rack-cors (aka Rack CORS Middleware) gem\nbefore 1.0.4 for Ruby. It allows ../ directory traversal to access private resources\nbecause resource matching does not ensure that pathnames are in a canonical format.\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "rack-cors"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\">= 1.0.4\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "rack-cors directory traversal via path"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "1.0.2"
+                }
+              },
+              "helpUri": "https://github.com/cyu/rack-cors/commit/e4d4fc362a4315808927011cbe5afcfe5486f17d",
+              "help": {
+                "text": "More info: https://github.com/cyu/rack-cors/commit/e4d4fc362a4315808927011cbe5afcfe5486f17d",
+                "markdown": "[More info](https://github.com/cyu/rack-cors/commit/e4d4fc362a4315808927011cbe5afcfe5486f17d)."
+              }
+            },
+            {
+              "id": "CVE-2019-5420",
+              "name": "Possible Remote Code Execution Exploit in Rails Development Mode",
+              "fullDescription": {
+                "text": "There is a possible a possible remote code executing exploit in Rails when in\ndevelopment mode. This vulnerability has been assigned the CVE identifier\nCVE-2019-5420.\n\nVersions Affected:  6.0.0.X, 5.2.X.\nNot affected:       < 5.2.0\nFixed Versions:     6.0.0.beta3, 5.2.2.1\n\nImpact\n------\nWith some knowledge of a target application it is possible for an attacker to\nguess the automatically generated development mode secret token.  This secret\ntoken can be used in combination with other Rails internals to escalate to a\nremote code execution exploit.\n\nAll users running an affected release should either upgrade or use one of the\nworkarounds immediately.\n\nReleases\n--------\nThe 6.0.0.beta3 and 5.2.2.1 releases are available at the normal locations.\n\nWorkarounds\n-----------\nThis issue can be mitigated by specifying a secret key in development mode.\nIn \"config/environments/development.rb\" add this:\n\n  config.secret_key_base = SecureRandom.hex(64)\n\nCredits\n-------\nThanks to ooooooo_q\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "railties"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 5.2.2, >= 5.2.2.1\", \">= 6.0.0.beta3\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[\"< 5.2.0\"]"
+                },
+                "title": {
+                  "text": "Possible Remote Code Execution Exploit in Rails Development Mode"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "5.2.1.1"
+                }
+              },
+              "helpUri": "https://groups.google.com/forum/#!topic/rubyonrails-security/IsQKvDqZdKw",
+              "help": {
+                "text": "More info: https://groups.google.com/forum/#!topic/rubyonrails-security/IsQKvDqZdKw",
+                "markdown": "[More info](https://groups.google.com/forum/#!topic/rubyonrails-security/IsQKvDqZdKw)."
+              }
+            },
+            {
+              "id": "CVE-2020-8130",
+              "name": "OS Command Injection in Rake",
+              "fullDescription": {
+                "text": "There is an OS command injection vulnerability in Ruby Rake < 12.3.3 in\nRake::FileList when supplying a filename that begins with the pipe character\n`|`.\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "rake"
+                },
+                "severity": {
+                  "text": "9.3"
+                },
+                "patched_versions": {
+                  "text": "[\">= 12.3.3\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "OS Command Injection in Rake"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "12.3.1"
+                }
+              },
+              "helpUri": "https://github.com/advisories/GHSA-jppv-gw3r-w3q8",
+              "help": {
+                "text": "More info: https://github.com/advisories/GHSA-jppv-gw3r-w3q8",
+                "markdown": "[More info](https://github.com/advisories/GHSA-jppv-gw3r-w3q8)."
+              }
+            },
+            {
+              "id": "CVE-2020-26298",
+              "name": "Injection/XSS in Redcarpet",
+              "fullDescription": {
+                "text": "Redcarpet is a Ruby library for Markdown processing. In Redcarpet before\nversion 3.5.1, there is an injection vulnerability which can enable a cross-site\nscripting attack. In affected versions no HTML escaping was being performed when\nprocessing quotes. This applies even when the `:escape_html` option was being used.\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "redcarpet"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\">= 3.5.1\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Injection/XSS in Redcarpet"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "3.4.0"
+                }
+              },
+              "helpUri": "https://github.com/vmg/redcarpet/commit/a699c82292b17c8e6a62e1914d5eccc252272793",
+              "help": {
+                "text": "More info: https://github.com/vmg/redcarpet/commit/a699c82292b17c8e6a62e1914d5eccc252272793",
+                "markdown": "[More info](https://github.com/vmg/redcarpet/commit/a699c82292b17c8e6a62e1914d5eccc252272793)."
+              }
+            },
+            {
+              "id": "CVE-2020-7663",
+              "name": "Regular Expression Denial of Service in websocket-extensions (RubyGem)",
+              "fullDescription": {
+                "text": "### Impact\n\nThe ReDoS flaw allows an attacker to exhaust the server's capacity to process\nincoming requests by sending a WebSocket handshake request containing a header\nof the following form:\n\n    Sec-WebSocket-Extensions: a; b=\"\\c\\c\\c\\c\\c\\c\\c\\c\\c\\c ...\n\nThat is, a header containing an unclosed string parameter value whose content is\na repeating two-byte sequence of a backslash and some other character. The\nparser takes exponential time to reject this header as invalid, and this will\nblock the processing of any other work on the same thread. Thus if you are\nrunning a single-threaded server, such a request can render your service\ncompletely unavailable.\n\n### Workarounds\n\nThere are no known work-arounds other than disabling any public-facing WebSocket functionality you are operating."
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "websocket-extensions"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\">= 0.1.5\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Regular Expression Denial of Service in websocket-extensions (RubyGem)"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "0.1.3"
+                }
+              },
+              "helpUri": "https://github.com/faye/websocket-extensions-ruby/security/advisories/GHSA-g6wq-qcwm-j5g2",
+              "help": {
+                "text": "More info: https://github.com/faye/websocket-extensions-ruby/security/advisories/GHSA-g6wq-qcwm-j5g2",
+                "markdown": "[More info](https://github.com/faye/websocket-extensions-ruby/security/advisories/GHSA-g6wq-qcwm-j5g2)."
+              }
+            },
+            {
+              "id": "GHSA-xfhh-rx56-rxcr",
+              "name": "Possible arbitrary path traversal and file access via `yard server`",
+              "fullDescription": {
+                "text": "A path traversal vulnerability was discovered in YARD <= 0.9.19 when using `yard server` to serve documentation. This bug would allow unsanitized HTTP requests to access arbitrary files on the machine of a yard server host under certain conditions."
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "yard"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\">= 0.9.20\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Possible arbitrary path traversal and file access via `yard server`"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "0.9.16"
+                }
+              },
+              "helpUri": "https://github.com/lsegal/yard/security/advisories/GHSA-xfhh-rx56-rxcr",
+              "help": {
+                "text": "More info: https://github.com/lsegal/yard/security/advisories/GHSA-xfhh-rx56-rxcr",
+                "markdown": "[More info](https://github.com/lsegal/yard/security/advisories/GHSA-xfhh-rx56-rxcr)."
+              }
+            },
+            {
+              "id": "CVE-2019-1020001",
+              "name": "Arbitrary path traversal and file access via `yard server`",
+              "fullDescription": {
+                "text": "A path traversal vulnerability was discovered in YARD <= 0.9.19 when using\n`yard server` to serve documentation. This bug would allow unsanitized HTTP\nrequests to access arbitrary files on the machine of a yard server host under\ncertain conditions.\n\nThe issue is resolved in v0.9.20 and later.\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "yard"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\">= 0.9.20\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Arbitrary path traversal and file access via `yard server`"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "0.9.16"
+                }
+              },
+              "helpUri": "https://github.com/lsegal/yard/security/advisories/GHSA-xfhh-rx56-rxcr",
+              "help": {
+                "text": "More info: https://github.com/lsegal/yard/security/advisories/GHSA-xfhh-rx56-rxcr",
+                "markdown": "[More info](https://github.com/lsegal/yard/security/advisories/GHSA-xfhh-rx56-rxcr)."
+              }
+            }
+          ],
+          "properties": {
+            "salusEnforced": true
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+        {
+          "ruleId": "CVE-2021-22885",
+          "ruleIndex": 0,
+          "level": "note",
+          "message": {
+            "text": "There is a possible information disclosure / unintended method execution\nvulnerability in Action Pack which has been assigned the CVE identifier\nCVE-2021-22885.\n\nVersions Affected:  >= 2.0.0.\nNot affected:       < 2.0.0.\nFixed Versions:     6.1.3.2, 6.0.3.7, 5.2.4.6, 5.2.6\n\nImpact\n------\nThere is a possible information disclosure / unintended method execution\nvulnerability in Action Pack when using the `redirect_to` or `polymorphic_url`\nhelper with untrusted user input.\n\nVulnerable code will look like this:\n\n```\nredirect_to(params[:some_param])\n```\n\nAll users running an affected release should either upgrade or use one of the\nworkarounds immediately.\n\nWorkarounds\n-----------\nTo work around this problem, it is recommended to use an allow list for valid\nparameters passed from the user.  For example:\n\n```\nprivate def check(param)\n  case param\n  when \"valid\"\n    param\n  else\n    \"/\"\n  end\nend\n\ndef index\n  redirect_to(check(params[:some_param]))\nend\n```\n\nOr force the user input to be cast to a string like this:\n\n```\ndef index\n  redirect_to(params[:some_param].to_s)\nend\n```\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2020-8164",
+          "ruleIndex": 1,
+          "level": "note",
+          "message": {
+            "text": "There is a strong parameters bypass vector in ActionPack.\n\nVersions Affected:  rails <= 6.0.3\nNot affected:       rails < 4.0.0\nFixed Versions:     rails >= 5.2.4.3, rails >= 6.0.3.1\n\nImpact\n------\nIn some cases user supplied information can be inadvertently leaked from\nStrong Parameters.  Specifically the return value of `each`, or `each_value`,\nor `each_pair` will return the underlying \"untrusted\" hash of data that was\nread from the parameters.  Applications that use this return value may be\ninadvertently use untrusted user input.\n\nImpacted code will look something like this:\n\n```\ndef update\n  # Attacker has included the parameter: `{ is_admin: true }`\n  User.update(clean_up_params)\nend\n\ndef clean_up_params\n   params.each { |k, v|  SomeModel.check(v) if k == :name }\nend\n```\n\nNote the mistaken use of `each` in the `clean_up_params` method in the above\nexample.\n\nWorkarounds\n-----------\nDo not use the return values of `each`, `each_value`, or `each_pair` in your\napplication.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2021-22904",
+          "ruleIndex": 2,
+          "level": "note",
+          "message": {
+            "text": "There is a possible DoS vulnerability in the Token Authentication logic in\nAction Controller.  This vulnerability has been assigned the CVE identifier\nCVE-2021-22904.\n\nVersions Affected:  >= 4.0.0\nNot affected:       < 4.0.0\nFixed Versions:     6.1.3.2, 6.0.3.7, 5.2.4.6, 5.2.6\n\nImpact\n------\nImpacted code uses `authenticate_or_request_with_http_token` or\n`authenticate_with_http_token` for request authentication.  Impacted code will\nlook something like this:\n\n```\nclass PostsController < ApplicationController\n  before_action :authenticate\n\n  private\n\n  def authenticate\n    authenticate_or_request_with_http_token do |token, options|\n      # ...\n    end\n  end\nend\n```\n\nAll users running an affected release should either upgrade or use one of the\nworkarounds immediately.\n\nReleases\n--------\nThe fixed releases are available at the normal locations.\n\nWorkarounds\n-----------\nThe following monkey patch placed in an initializer can be used to work around\nthe issue:\n\n```ruby\nmodule ActionController::HttpAuthentication::Token\n  AUTHN_PAIR_DELIMITERS = /(?:,|;|\\t)/\nend\n```\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2020-8166",
+          "ruleIndex": 3,
+          "level": "note",
+          "message": {
+            "text": "It is possible to possible to, given a global CSRF token such as the one\npresent in the authenticity_token meta tag, forge a per-form CSRF token for\nany action for that session.\n\nVersions Affected:  rails < 5.2.5, rails < 6.0.4\nNot affected:       Applications without existing HTML injection vulnerabilities.\nFixed Versions:     rails >= 5.2.4.3, rails >= 6.0.3.1\n\nImpact\n------\n\nGiven the ability to extract the global CSRF token, an attacker would be able to\nconstruct a per-form CSRF token for that session.\n\nWorkarounds\n-----------\n\nThis is a low-severity security issue. As such, no workaround is necessarily\nuntil such time as the application can be upgraded.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2020-8167",
+          "ruleIndex": 4,
+          "level": "note",
+          "message": {
+            "text": "There is an vulnerability in rails-ujs that allows attackers to send\nCSRF tokens to wrong domains.\n\nVersions Affected:  rails <= 6.0.3\nNot affected:       Applications which don't use rails-ujs.\nFixed Versions:     rails >= 5.2.4.3, rails >= 6.0.3.1\n\nImpact\n------\n\nThis is a regression of CVE-2015-1840.\n\nIn the scenario where an attacker might be able to control the href attribute of an anchor tag or\nthe action attribute of a form tag that will trigger a POST action, the attacker can set the\nhref or action to a cross-origin URL, and the CSRF token will be sent.\n\nWorkarounds\n-----------\n\nTo work around this problem, change code that allows users to control the href attribute of an anchor\ntag or the action attribute of a form tag to filter the user parameters.\n\nFor example, code like this:\n\n    link_to params\n\nto code like this:\n\n    link_to filtered_params\n\n    def filtered_params\n      # Filter just the parameters that you trust\n    end\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2019-5419",
+          "ruleIndex": 5,
+          "level": "note",
+          "message": {
+            "text": "There is a potential denial of service vulnerability in actionview.\nThis vulnerability has been assigned the CVE identifier CVE-2019-5419.\n\nImpact\n------\nSpecially crafted accept headers can cause the Action View template location\ncode to consume 100% CPU, causing the server unable to process requests.  This\nimpacts all Rails applications that render views.\n\nAll users running an affected release should either upgrade or use one of the\nworkarounds immediately.\n\nWorkarounds\n-----------\nThis vulnerability can be mitigated by wrapping `render` calls with\n`respond_to` blocks.  For example, the following example is vulnerable:\n\n```\nclass UserController < ApplicationController\n  def index\n    render \"index\"\n  end\nend\n```\n\nBut the following code is not vulnerable:\n\n```\nclass UserController < ApplicationController\n  def index\n    respond_to |format|\n      format.html { render \"index\" }\n    end\n  end\nend\n```\n\nImplicit rendering is impacted, so this code is vulnerable:\n\n```\nclass UserController < ApplicationController\n  def index\n  end\nend\n```\n\nBut can be changed this this:\n\n```\nclass UserController < ApplicationController\n  def index\n    respond_to |format|\n      format.html { render \"index\" }\n    end\n  end\nend\n```\n\nAlternatively to specifying the format, the following monkey patch can be\napplied in an initializer:\n\n```\n$ cat config/initializers/formats_filter.rb\n# frozen_string_literal: true\n\nActionDispatch::Request.prepend(Module.new do\n  def formats\n    super().select do |format|\n      format.symbol || format.ref == \"*/*\"\n    end\n  end\nend)\n```\n\nCredits\n-------\nThanks to John Hawthorn <john@hawthorn.email> of GitHub\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2020-5267",
+          "ruleIndex": 6,
+          "level": "note",
+          "message": {
+            "text": "There is a possible XSS vulnerability in ActionView's JavaScript literal\nescape helpers.  Views that use the `j` or `escape_javascript` methods\nmay be susceptible to XSS attacks.\n\nVersions Affected:  All.\nNot affected:       None.\nFixed Versions:     6.0.2.2, 5.2.4.2\n\nImpact\n------\nThere is a possible XSS vulnerability in the `j` and `escape_javascript`\nmethods in ActionView.  These methods are used for escaping JavaScript string\nliterals.  Impacted code will look something like this:\n\n```erb\n<script>let a = `<%= j unknown_input %>`</script>\n```\n\nor\n\n```erb\n<script>let a = `<%= escape_javascript unknown_input %>`</script>\n```\n\nReleases\n--------\nThe 6.0.2.2 and 5.2.4.2 releases are available at the normal locations.\n\nWorkarounds\n-----------\nFor those that can't upgrade, the following monkey patch may be used:\n\n```ruby\nActionView::Helpers::JavaScriptHelper::JS_ESCAPE_MAP.merge!(\n  {\n    \"`\" => \"\\\\`\",\n    \"$\" => \"\\\\$\"\n  }\n)\n\nmodule ActionView::Helpers::JavaScriptHelper\n  alias :old_ej :escape_javascript\n  alias :old_j :j\n\n  def escape_javascript(javascript)\n    javascript = javascript.to_s\n    if javascript.empty?\n      result = \"\"\n    else\n      result = javascript.gsub(/(\\\\|<\\/|\\r\\n|\\342\\200\\250|\\342\\200\\251|[\\n\\r\"']|[`]|[$])/u, JS_ESCAPE_MAP)\n    end\n    javascript.html_safe? ? result.html_safe : result\n  end\n\n  alias :j :escape_javascript\nend\n```\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2019-5418",
+          "ruleIndex": 7,
+          "level": "note",
+          "message": {
+            "text": "There is a possible file content disclosure vulnerability in Action View. This\nvulnerability has been assigned the CVE identifier CVE-2019-5418.\n\nVersions Affected:  All.\nNot affected:       None.\nFixed Versions:     6.0.0.beta3, 5.2.2.1, 5.1.6.2, 5.0.7.2, 4.2.11.1\n\nImpact\n------\nThere is a possible file content disclosure vulnerability in Action View.\nSpecially crafted accept headers in combination with calls to `render file:`\ncan cause arbitrary files on the target server to be rendered, disclosing the\nfile contents.\n\nThe impact is limited to calls to `render` which render file contents without\na specified accept format.  Impacted code in a controller looks something like\nthis:\n\n```\nclass UserController < ApplicationController\n  def index\n    render file: \"#{Rails.root}/some/file\"\n  end\nend\n```\n\nRendering templates as opposed to files is not impacted by this vulnerability.\n\nAll users running an affected release should either upgrade or use one of the\nworkarounds immediately.\n\nReleases\n--------\nThe 6.0.0.beta3, 5.2.2.1, 5.1.6.2, 5.0.7.2, and 4.2.11.1 releases are\navailable at the normal locations.\n\nWorkarounds\n-----------\nThis vulnerability can be mitigated by specifying a format for file rendering,\nlike this:\n\n```\nclass UserController < ApplicationController\n  def index\n    render file: \"#{Rails.root}/some/file\", formats: [:html]\n  end\nend\n```\n\nIn summary, impacted calls to `render` look like this:\n\n```\nrender file: \"#{Rails.root}/some/file\"\n```\n\nThe vulnerability can be mitigated by changing to this:\n\n```\nrender file: \"#{Rails.root}/some/file\", formats: [:html]\n```\n\nOther calls to `render` are not impacted.\n\nAlternatively, the following monkey patch can be applied in an initializer:\n\n```\n$ cat config/initializers/formats_filter.rb\n# frozen_string_literal: true\n\nActionDispatch::Request.prepend(Module.new do\n  def formats\n    super().select do |format|\n      format.symbol || format.ref == \"*/*\"\n    end\n  end\nend)\n```\n\nCredits\n-------\nThanks to John Hawthorn <john@hawthorn.email> of GitHub\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2020-15169",
+          "ruleIndex": 8,
+          "level": "note",
+          "message": {
+            "text": "There is a potential Cross-Site Scripting (XSS) vulnerability in Action\nView's translation helpers. Views that allow the user to control the\ndefault (not found) value of the `t` and `translate` helpers could be\nsusceptible to XSS attacks.\n\nImpact\n------\n\nWhen an HTML-unsafe string is passed as the default for a missing\ntranslation key [named `html` or ending in `_html`](https://guides.rubyonrails.org/i18n.html#using-safe-html-translations),\nthe default string is incorrectly marked as HTML-safe and not escaped.\nVulnerable code may look like the following examples:\n\n```erb\n<%# The welcome_html translation is not defined for the current locale: %>\n<%= t(\"welcome_html\", default: untrusted_user_controlled_string) %>\n\n<%# Neither the title.html translation nor the missing.html translation is defined for the current locale: %>\n<%= t(\"title.html\", default: [:\"missing.html\", untrusted_user_controlled_string]) %>\n```\n\nWorkarounds\n-----------\nImpacted users who can’t upgrade to a patched Rails version can avoid\nthis issue by manually escaping default translations with the\n`html_escape` helper (aliased as `h`):\n\n```erb\n<%= t(\"welcome_html\", default: h(untrusted_user_controlled_string)) %>\n```\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2021-22880",
+          "ruleIndex": 9,
+          "level": "note",
+          "message": {
+            "text": "There is a possible DoS vulnerability in the PostgreSQL adapter in Active\nRecord. This vulnerability has been assigned the CVE identifier CVE-2021-22880.\n\nVersions Affected:  >= 4.2.0\nNot affected:       < 4.2.0\nFixed Versions:     6.1.2.1, 6.0.3.5, 5.2.4.5\n\nImpact\n------\nCarefully crafted input can cause the input validation in the \"money\" type of\nthe PostgreSQL adapter in Active Record to spend too much time in a regular\nexpression, resulting in the potential for a DoS attack.\n\nThis only impacts Rails applications that are using PostgreSQL along with\nmoney type columns that take user input.\n\nWorkarounds\n-----------\nIn the case a patch can't be applied, the following monkey patch can be used\nin an initializer:\n\n```\nmodule ActiveRecord\n  module ConnectionAdapters\n    module PostgreSQL\n      module OID # :nodoc:\n        class Money < Type::Decimal # :nodoc:\n          def cast_value(value)\n            return value unless ::String === value\n\n            value = value.sub(/^\\((.+)\\)$/, '-\\1') # (4)\n            case value\n            when /^-?\\D*+[\\d,]+\\.\\d{2}$/  # (1)\n              value.gsub!(/[^-\\d.]/, \"\")\n            when /^-?\\D*+[\\d.]+,\\d{2}$/  # (2)\n              value.gsub!(/[^-\\d,]/, \"\").sub!(/,/, \".\")\n            end\n\n            super(value)\n          end\n        end\n      end\n    end\n  end\nend\n```\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2020-8162",
+          "ruleIndex": 10,
+          "level": "note",
+          "message": {
+            "text": "There is a vulnerability in ActiveStorage's S3 adapter that allows the Content-Length of a\ndirect file upload to be modified by an end user.\n\nVersions Affected:  rails < 5.2.4.2, rails < 6.0.3.1\nNot affected:       Applications that do not use the direct upload functionality of the ActiveStorage S3 adapter.\nFixed Versions:     rails >= 5.2.4.3, rails >= 6.0.3.1\n\nImpact\n------\n\nUtilizing this vulnerability, an attacker can control the Content-Length of an S3 direct upload URL without receiving a\nnew signature from the server. This could be used to bypass controls in place on the server to limit upload size.\n\nWorkarounds\n-----------\n\nThis is a low-severity security issue. As such, no workaround is necessarily\nuntil such time as the application can be upgraded.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2020-8165",
+          "ruleIndex": 11,
+          "level": "note",
+          "message": {
+            "text": "There is potentially unexpected behaviour in the MemCacheStore and RedisCacheStore where, when\nuntrusted user input is written to the cache store using the `raw: true` parameter, re-reading the result\nfrom the cache can evaluate the user input as a Marshalled object instead of plain text. Vulnerable code looks like:\n\n```\ndata = cache.fetch(\"demo\", raw: true) { untrusted_string }\n```\n\nVersions Affected:  rails < 5.2.5, rails < 6.0.4\nNot affected:       Applications not using MemCacheStore or RedisCacheStore. Applications that do not use the `raw` option when storing untrusted user input.\nFixed Versions:     rails >= 5.2.4.3, rails >= 6.0.3.1\n\nImpact\n------\n\nUnmarshalling of untrusted user input can have impact up to and including RCE. At a minimum,\nthis vulnerability allows an attacker to inject untrusted Ruby objects into a web application.\n\nIn addition to upgrading to the latest versions of Rails, developers should ensure that whenever\nthey are calling `Rails.cache.fetch` they are using consistent values of the `raw` parameter for both\nreading and writing, especially in the case of the RedisCacheStore which does not, prior to these changes,\ndetect if data was serialized using the raw option upon deserialization.\n\nWorkarounds\n-----------\n\nIt is recommended that application developers apply the suggested patch or upgrade to the latest release as\nsoon as possible. If this is not possible, we recommend ensuring that all user-provided strings cached using\nthe `raw` argument should be double-checked to ensure that they conform to the expected format.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2021-32740",
+          "ruleIndex": 12,
+          "level": "note",
+          "message": {
+            "text": "Within the URI template implementation in Addressable, a maliciously crafted template may result in uncontrolled resource consumption,\nleading to denial of service when matched against a URI. In typical usage, templates would not normally be read from untrusted user input,\nbut nonetheless, no previous security advisory for Addressable has cautioned against doing this.\nUsers of the parsing capabilities in Addressable but not the URI template capabilities are unaffected.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2019-16779",
+          "ruleIndex": 13,
+          "level": "note",
+          "message": {
+            "text": "There was a race condition around persistent connections, where a connection\nwhich is interrupted (such as by a timeout) would leave data on the socket.\nSubsequent requests would then read this data, returning content from the\nprevious response. The race condition window appears to be short, and it\nwould be difficult to purposefully exploit this.\n\nUsers can workaround the problem by disabling persistent connections, though\nthis may cause performance implications."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2019-15587",
+          "ruleIndex": 14,
+          "level": "note",
+          "message": {
+            "text": "In the Loofah gem, through v2.3.0, unsanitized JavaScript may occur in\nsanitized output when a crafted SVG element is republished.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "GHSA-7rrm-v45f-jp64",
+          "ruleIndex": 15,
+          "level": "note",
+          "message": {
+            "text": "### Summary\n\nNokogiri v1.11.4 updates the vendored libxml2 from v2.9.10 to v2.9.12 which addresses:\n\n- [CVE-2019-20388](https://security.archlinux.org/CVE-2019-20388) (Medium severity)\n- [CVE-2020-24977](https://security.archlinux.org/CVE-2020-24977) (Medium severity)\n- [CVE-2021-3517](https://security.archlinux.org/CVE-2021-3517) (Medium severity)\n- [CVE-2021-3518](https://security.archlinux.org/CVE-2021-3518) (Medium severity)\n- [CVE-2021-3537](https://security.archlinux.org/CVE-2021-3537) (Low severity)\n- [CVE-2021-3541](https://security.archlinux.org/CVE-2021-3541) (Low severity)\n\nNote that two additional CVEs were addressed upstream but are not relevant to this release. [CVE-2021-3516](https://security.archlinux.org/CVE-2021-3516) via `xmllint` is not present in Nokogiri, and [CVE-2020-7595](https://security.archlinux.org/CVE-2020-7595) has been patched in Nokogiri since v1.10.8 (see #1992).\n\nPlease note that this advisory only applies to the CRuby implementation of Nokogiri `< 1.11.4`, and only if the packaged version of libxml2 is being used. If you've overridden defaults at installation time to use system libraries instead of packaged libraries, you should instead pay attention to your distro's `libxml2` release announcements.\n\n\n### Mitigation\n\nUpgrade to Nokogiri `>= 1.11.4`.\n\n\n### Impact\n\nI've done a brief analysis of the published CVEs that are addressed in this upstream release. The libxml2 maintainers have not released a canonical set of CVEs, and so this list is pieced together from secondary sources and may be incomplete.\n\nAll information below is sourced from [security.archlinux.org](https://security.archlinux.org), which appears to have the most up-to-date information as of this analysis.\n\n#### [CVE-2019-20388](https://security.archlinux.org/CVE-2019-20388)\n\n- **Severity**: Medium\n- **Type**: Denial of service\n- **Description**: A memory leak was found in the xmlSchemaValidateStream function of libxml2. Applications that use this library may be vulnerable to memory not being freed leading to a denial of service.\n- **Fixed**: https://gitlab.gnome.org/GNOME/libxml2/commit/7ffcd44d7e6c46704f8af0321d9314cd26e0e18a\n\nVerified that the fix commit first appears in v2.9.11. It seems possible that this issue would be present in programs using Nokogiri < v1.11.4.\n\n\n#### [CVE-2020-7595](https://security.archlinux.org/CVE-2020-7595)\n\n- **Severity**: Medium\n- **Type**: Denial of service\n- **Description**: xmlStringLenDecodeEntities in parser.c in libxml2 2.9.10 has an infinite loop in a certain end-of-file situation.\n- **Fixed**: https://gitlab.gnome.org/GNOME/libxml2/commit/0e1a49c8907645d2e155f0d89d4d9895ac5112b5\n\nThis has been patched in Nokogiri since v1.10.8 (see #1992).\n\n\n#### [CVE-2020-24977](https://security.archlinux.org/CVE-2020-24977)\n\n- **Severity**: Medium\n- **Type**: Information disclosure\n- **Description**: GNOME project libxml2 <= 2.9.10 has a global buffer over-read vulnerability in xmlEncodeEntitiesInternal at libxml2/entities.c.\n- **Fixed**: https://gitlab.gnome.org/GNOME/libxml2/commit/50f06b3efb638efb0abd95dc62dca05ae67882c2\n\nVerified that the fix commit first appears in v2.9.11. It seems possible that this issue would be present in programs using Nokogiri < v1.11.4.\n\n\n#### [CVE-2021-3516](https://security.archlinux.org/CVE-2021-3516)\n\n- **Severity**: Medium\n- **Type**: Arbitrary code execution (no remote vector)\n- **Description**: A use-after-free security issue was found libxml2 before version 2.9.11 when \"xmllint --html --push\" is used to process crafted files.\n- **Issue**: https://gitlab.gnome.org/GNOME/libxml2/-/issues/230\n- **Fixed**: https://gitlab.gnome.org/GNOME/libxml2/-/commit/1358d157d0bd83be1dfe356a69213df9fac0b539\n\nVerified that the fix commit first appears in v2.9.11. This vector does not exist within Nokogiri, which does not ship `xmllint`.\n\n\n#### [CVE-2021-3517](https://security.archlinux.org/CVE-2021-3517)\n\n- **Severity**: Medium\n- **Type**: Arbitrary code execution\n- **Description**: A heap-based buffer overflow was found in libxml2 before version 2.9.11 when processing truncated UTF-8 input.\n- **Issue**: https://gitlab.gnome.org/GNOME/libxml2/-/issues/235\n- **Fixed**: https://gitlab.gnome.org/GNOME/libxml2/-/commit/bf22713507fe1fc3a2c4b525cf0a88c2dc87a3a2\n\nVerified that the fix commit first appears in v2.9.11. It seems possible that this issue would be present in programs using Nokogiri < v1.11.4.\n\n\n#### [CVE-2021-3518](https://security.archlinux.org/CVE-2021-3518)\n\n- **Severity**: Medium\n- **Type**: Arbitrary code execution\n- **Description**: A use-after-free security issue was found in libxml2 before version 2.9.11 in xmlXIncludeDoProcess() in xinclude.c when processing crafted files.\n- **Issue**: https://gitlab.gnome.org/GNOME/libxml2/-/issues/237\n- **Fixed**: https://gitlab.gnome.org/GNOME/libxml2/-/commit/1098c30a040e72a4654968547f415be4e4c40fe7\n\nVerified that the fix commit first appears in v2.9.11. It seems possible that this issue would be present in programs using Nokogiri < v1.11.4.\n\n\n#### [CVE-2021-3537](https://security.archlinux.org/CVE-2021-3537)\n\n- **Severity**: Low\n- **Type**: Denial of service\n- **Description**: It was found that libxml2 before version 2.9.11 did not propagate errors while parsing XML mixed content, causing a NULL dereference. If an untrusted XML document was parsed in recovery mode and post-validated, the flaw could be used to crash the application.\n- **Issue**: https://gitlab.gnome.org/GNOME/libxml2/-/issues/243\n- **Fixed**: https://gitlab.gnome.org/GNOME/libxml2/-/commit/babe75030c7f64a37826bb3342317134568bef61\n\nVerified that the fix commit first appears in v2.9.11. It seems possible that this issue would be present in programs using Nokogiri < v1.11.4.\n\n\n#### [CVE-2021-3541](https://security.archlinux.org/CVE-2021-3541)\n\n- **Severity**: Low\n- **Type**: Denial of service\n- **Description**: A security issue was found in libxml2 before version 2.9.11. Exponential entity expansion attack its possible bypassing all existing protection mechanisms and leading to denial of service.\n- **Fixed**: https://gitlab.gnome.org/GNOME/libxml2/-/commit/8598060bacada41a0eb09d95c97744ff4e428f8e\n\nVerified that the fix commit first appears in v2.9.11. It seems possible that this issue would be present in programs using Nokogiri < v1.11.4, however Nokogiri's default parse options prevent the attack from succeeding (it is necessary to opt into `DTDLOAD` which is off by default).\n\nFor more details supporting this analysis of this CVE, please visit #2233.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2019-11068",
+          "ruleIndex": 16,
+          "level": "note",
+          "message": {
+            "text": "Nokogiri v1.10.3 has been released.\n\nThis is a security release. It addresses a CVE in upstream libxslt rated as\n\"Priority: medium\" by Canonical, and \"NVD Severity: high\" by Debian. More\ndetails are available below.\n\nIf you're using your distro's system libraries, rather than Nokogiri's\nvendored libraries, there's no security need to upgrade at this time, though\nyou may want to check with your distro whether they've patched this\n(Canonical has patched Ubuntu packages). Note that this patch is not yet (as\nof 2019-04-22) in an upstream release of libxslt.\n\nFull details about the security update are available in Github Issue\n[#1892] https://github.com/sparklemotion/nokogiri/issues/1892.\n\n---\n\nCVE-2019-11068\n\nPermalinks are:\n- Canonical: https://people.canonical.com/~ubuntu-security/cve/CVE-2019-11068\n- Debian: https://security-tracker.debian.org/tracker/CVE-2019-11068\n\nDescription:\n\n> libxslt through 1.1.33 allows bypass of a protection mechanism\n> because callers of xsltCheckRead and xsltCheckWrite permit access\n> even upon receiving a -1 error code. xsltCheckRead can return -1 for\n> a crafted URL that is not actually invalid and is subsequently\n> loaded.\n\nCanonical rates this as \"Priority: Medium\".\n\nDebian rates this as \"NVD Severity: High (attack range: remote)\".\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2019-5477",
+          "ruleIndex": 17,
+          "level": "error",
+          "message": {
+            "text": "A command injection vulnerability in Nokogiri v1.10.3 and earlier allows\ncommands to be executed in a subprocess by Ruby's `Kernel.open` method.\nProcesses are vulnerable only if the undocumented method\n`Nokogiri::CSS::Tokenizer#load_file` is being passed untrusted user input.\n\nThis vulnerability appears in code generated by the Rexical gem versions\nv1.0.6 and earlier. Rexical is used by Nokogiri to generate lexical scanner\ncode for parsing CSS queries. The underlying vulnerability was addressed in\nRexical v1.0.7 and Nokogiri upgraded to this version of Rexical in\nNokogiri v1.10.4.\n\nUpgrade to Nokogiri v1.10.4, or avoid calling the undocumented method\n`Nokogiri::CSS::Tokenizer#load_file` with untrusted user input.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": "7.5"
+          }
+        },
+        {
+          "ruleId": "CVE-2020-7595",
+          "ruleIndex": 18,
+          "level": "warning",
+          "message": {
+            "text": "\nNokogiri has backported the patch for CVE-2020-7595 into its vendored version\nof libxml2, and released this as v1.10.8\n\nCVE-2020-7595 has not yet been addressed in an upstream libxml2 release, and\nso Nokogiri versions <= v1.10.7 are vulnerable."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": "5.0"
+          }
+        },
+        {
+          "ruleId": "CVE-2020-26247",
+          "ruleIndex": 19,
+          "level": "note",
+          "message": {
+            "text": "### Description\n\nIn Nokogiri versions <= 1.11.0.rc3, XML Schemas parsed by `Nokogiri::XML::Schema`\nare **trusted** by default, allowing external resources to be accessed over the\nnetwork, potentially enabling XXE or SSRF attacks.\n\nThis behavior is counter to\nthe security policy followed by Nokogiri maintainers, which is to treat all input\nas **untrusted** by default whenever possible.\n\nPlease note that this security\nfix was pushed into a new minor version, 1.11.x, rather than a patch release to\nthe 1.10.x branch, because it is a breaking change for some schemas and the risk\nwas assessed to be \"Low Severity\".\n\n### Affected Versions\n\nNokogiri `<= 1.10.10` as well as prereleases `1.11.0.rc1`, `1.11.0.rc2`, and `1.11.0.rc3`\n\n### Mitigation\n\nThere are no known workarounds for affected versions. Upgrade to Nokogiri\n`1.11.0.rc4` or later.\n\nIf, after upgrading to `1.11.0.rc4` or later, you wish\nto re-enable network access for resolution of external resources (i.e., return to\nthe previous behavior):\n\n1. Ensure the input is trusted. Do not enable this option\nfor untrusted input.\n2. When invoking the `Nokogiri::XML::Schema` constructor,\npass as the second parameter an instance of `Nokogiri::XML::ParseOptions` with the\n`NONET` flag turned off.\n\nSo if your previous code was:\n\n``` ruby\n# in v1.11.0.rc3 and earlier, this call allows resources to be accessed over the network\n# but in v1.11.0.rc4 and later, this call will disallow network access for external resources\nschema = Nokogiri::XML::Schema.new(schema)\n\n# in v1.11.0.rc4 and later, the following is equivalent to the code above\n# (the second parameter is optional, and this demonstrates its default value)\nschema = Nokogiri::XML::Schema.new(schema, Nokogiri::XML::ParseOptions::DEFAULT_SCHEMA)\n```\n\nThen you can add the second parameter to indicate that the input is trusted by changing it to:\n\n``` ruby\n# in v1.11.0.rc3 and earlier, this would raise an ArgumentError\n# but in v1.11.0.rc4 and later, this allows resources to be accessed over the network\nschema = Nokogiri::XML::Schema.new(trusted_schema, Nokogiri::XML::ParseOptions.new.nononet)\n```"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2019-13117",
+          "ruleIndex": 20,
+          "level": "note",
+          "message": {
+            "text": "Nokogiri v1.10.5 has been released.\n\nThis is a security release. It addresses three CVEs in upstream libxml2,\nfor which details are below.\n\nIf you're using your distro's system libraries, rather than Nokogiri's\nvendored libraries, there's no security need to upgrade at this time,\nthough you may want to check with your distro whether they've patched this\n(Canonical has patched Ubuntu packages). Note that libxslt 1.1.34 addresses\nthese vulnerabilities.\n\nFull details about the security update are available in Github Issue\n[#1943] https://github.com/sparklemotion/nokogiri/issues/1943.\n\n---\n\nCVE-2019-13117\n\nhttps://people.canonical.com/~ubuntu-security/cve/2019/CVE-2019-13117.html\n\nPriority: Low\n\nDescription: In numbers.c in libxslt 1.1.33, an xsl:number with certain format strings\ncould lead to a uninitialized read in xsltNumberFormatInsertNumbers. This\ncould allow an attacker to discern whether a byte on the stack contains the\ncharacters A, a, I, i, or 0, or any other character.\n\nPatched with commit https://gitlab.gnome.org/GNOME/libxslt/commit/c5eb6cf3aba0af048596106ed839b4ae17ecbcb1\n\n---\n\nCVE-2019-13118\n\nhttps://people.canonical.com/~ubuntu-security/cve/2019/CVE-2019-13118.html\n\nPriority: Low\n\nDescription: In numbers.c in libxslt 1.1.33, a type holding grouping characters of an\nxsl:number instruction was too narrow and an invalid character/length\ncombination could be passed to xsltNumberFormatDecimal, leading to a read\nof uninitialized stack data\n\nPatched with commit https://gitlab.gnome.org/GNOME/libxslt/commit/6ce8de69330783977dd14f6569419489875fb71b\n\n---\n\nCVE-2019-18197\n\nhttps://people.canonical.com/~ubuntu-security/cve/2019/CVE-2019-18197.html\n\nPriority: Medium\n\nDescription: In xsltCopyText in transform.c in libxslt 1.1.33, a pointer variable isn't\nreset under certain circumstances. If the relevant memory area happened to\nbe freed and reused in a certain way, a bounds check could fail and memory\noutside a buffer could be written to, or uninitialized data could be\ndisclosed.\n\nPatched with commit https://gitlab.gnome.org/GNOME/libxslt/commit/2232473733b7313d67de8836ea3b29eec6e8e285\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2021-41098",
+          "ruleIndex": 21,
+          "level": "note",
+          "message": {
+            "text": "### Severity\n\nThe Nokogiri maintainers have evaluated this as [**High Severity** 7.5 (CVSS3.0)](https://www.first.org/cvss/calculator/3.0#CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N/E:H/RL:O/RC:C/MAV:N/MAC:L) for JRuby users. (This security advisory does not apply to CRuby users.)\n\n### Impact\n\nIn Nokogiri v1.12.4 and earlier, **on JRuby only**, the SAX parser resolves external entities by default.\n\nUsers of Nokogiri on JRuby who parse untrusted documents using any of these classes are affected:\n\n- Nokogiri::XML::SAX::Parser\n- Nokogiri::HTML4::SAX::Parser or its alias Nokogiri::HTML::SAX::Parser\n- Nokogiri::XML::SAX::PushParser\n- Nokogiri::HTML4::SAX::PushParser or its alias Nokogiri::HTML::SAX::PushParser\n\n### Mitigation\n\nJRuby users should upgrade to Nokogiri v1.12.5 or later. There are no workarounds available for v1.12.4 or earlier.\n\nCRuby users are not affected."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2021-29509",
+          "ruleIndex": 22,
+          "level": "note",
+          "message": {
+            "text": "### Impact\n\nThe fix for CVE-2019-16770 was incomplete. The original fix only protected\nexisting connections that had already been accepted from having their\nrequests starved by greedy persistent-connections saturating all threads in\nthe same process. However, new connections may still be starved by greedy\npersistent-connections saturating all threads in all processes in the\ncluster.\n\nA puma server which received more concurrent keep-alive connections than the\nserver had threads in its threadpool would service only a subset of\nconnections, denying service to the unserved connections.\n\n### Patches\n\nThis problem has been fixed in puma 4.3.8 and 5.3.1.\n\n### Workarounds\n\nSetting queue_requests false also fixes the issue. This is not advised when\nusing puma without a reverse proxy, such as nginx or apache, because you will\nopen yourself to slow client attacks (e.g. [slowloris][1]).\n\nThe fix is very small. [A git patch is available here][2] for those using\n[unsupported versions][3] of Puma.\n\n[1]: https://en.wikipedia.org/wiki/Slowloris_(computer_security)\n[2]: https://gist.github.com/nateberkopec/4b3ea5676c0d70cbb37c82d54be25837\n[3]: https://github.com/puma/puma/security/policy#supported-versions"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2019-16770",
+          "ruleIndex": 23,
+          "level": "warning",
+          "message": {
+            "text": "A poorly-behaved client could use keepalive requests to monopolize\nPuma's reactor and create a denial of service attack.\n\nIf more keepalive connections to Puma are opened than there are\nthreads available, additional connections will wait permanently if\nthe attacker sends requests frequently enough.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": "6.8"
+          }
+        },
+        {
+          "ruleId": "CVE-2020-5249",
+          "ruleIndex": 24,
+          "level": "note",
+          "message": {
+            "text": "### Impact\nIf an application using Puma allows untrusted input in an early-hints header,\nan attacker can use a carriage return character to end the header and inject\nmalicious content, such as additional headers or an entirely new response body.\nThis vulnerability is known as [HTTP Response\nSplitting](https://owasp.org/www-community/attacks/HTTP_Response_Splitting)\n\nWhile not an attack in itself, response splitting is a vector for several other\nattacks, such as cross-site scripting (XSS).\n\nThis is related to [CVE-2020-5247](https://github.com/puma/puma/security/advisories/GHSA-84j7-475p-hp8v),\nwhich fixed this vulnerability but only for regular responses.\n\n### Patches\nThis has been fixed in 4.3.3 and 3.12.4.\n\n### Workarounds\nUsers can not allow untrusted/user input in the Early Hints response header."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2020-11077",
+          "ruleIndex": 25,
+          "level": "note",
+          "message": {
+            "text": "### Impact\n\nThis is a similar but different vulnerability to the one patched in 3.12.5 and 4.3.4.\n\nA client could smuggle a request through a proxy, causing the proxy to send a response\nback to another unknown client.\n\nIf the proxy uses persistent connections and the client adds another request in via HTTP\npipelining, the proxy may mistake it as the first request's body. Puma, however,\nwould see it as two requests, and when processing the second request, send back\na response that the proxy does not expect. If the proxy has reused the persistent\nconnection to Puma to send another request for a different client, the second response\nfrom the first client will be sent to the second client.\n\n### Patches\n\nThe problem has been fixed in Puma 3.12.6 and Puma 4.3.5."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2020-11076",
+          "ruleIndex": 26,
+          "level": "note",
+          "message": {
+            "text": "### Impact\n\nBy using an invalid transfer-encoding header, an attacker could\n[smuggle an HTTP response.](https://portswigger.net/web-security/request-smuggling)\n\n### Patches\n\nThe problem has been fixed in Puma 3.12.5 and Puma 4.3.4."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2020-5247",
+          "ruleIndex": 27,
+          "level": "note",
+          "message": {
+            "text": "If an application using Puma allows untrusted input in a response header,\nan attacker can use newline characters (i.e. CR, LF) to end the header and\ninject malicious content, such as additional headers or an entirely new\nresponse body. This vulnerability is known as HTTP Response Splitting.\n\nWhile not an attack in itself, response splitting is a vector for several\nother attacks, such as cross-site scripting (XSS)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2021-41136",
+          "ruleIndex": 28,
+          "level": "note",
+          "message": {
+            "text": "### Impact\n\nPrior to `puma` version 5.5.0, using `puma` with a proxy which forwards LF characters as line endings could allow HTTP request smuggling. A client could smuggle a request through a proxy, causing the proxy to send a response back to another unknown client.\n\nThis behavior (forwarding LF characters as line endings) is very uncommon amongst proxy servers, so we have graded the impact here as \"low\". Puma is only aware of a single proxy server which has this behavior.\n\nIf the proxy uses persistent connections and the client adds another request in via HTTP pipelining, the proxy may mistake it as the first request's body. Puma, however, would see it as two requests, and when processing the second request, send back a response that the proxy does not expect. If the proxy has reused the persistent connection to Puma to send another request for a different client, the second response from the first client will be sent to the second client.\n\n### Patches\n\nThis vulnerability was patched in Puma 5.5.1 and 4.3.9.\n\n### Workarounds\n\nThis vulnerability only affects Puma installations without any proxy in front.\n\nUse a proxy which does not forward LF characters as line endings.\n\nProxies which do not forward LF characters as line endings:\n\n* Nginx\n* Apache (>2.4.25)\n* Haproxy\n* Caddy\n* Traefik\n\n### Possible Breakage\n\nIf you are [dealing with legacy clients that want to send `LF` as a line ending](https://stackoverflow.com/questions/43574428/have-apache-accept-lf-vs-crlf-in-request-headers) in an HTTP header, this will cause those clients to receive a `400` error.\n\n### References\n\n* [HTTP Request Smuggling](https://portswigger.net/web-security/request-smuggling)\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2019-16782",
+          "ruleIndex": 29,
+          "level": "note",
+          "message": {
+            "text": "There's a possible information leak / session hijack vulnerability in Rack.\n\nAttackers may be able to find and hijack sessions by using timing attacks\ntargeting the session id. Session ids are usually stored and indexed in a\ndatabase that uses some kind of scheme for speeding up lookups of that\nsession id. By carefully measuring the amount of time it takes to look up\na session, an attacker may be able to find a valid session id and hijack\nthe session.\n\nThe session id itself may be generated randomly, but the way the session is\nindexed by the backing store does not use a secure comparison.\n\nImpact:\n\nThe session id stored in a cookie is the same id that is used when querying\nthe backing session storage engine.  Most storage mechanisms (for example a\ndatabase) use some sort of indexing in order to speed up the lookup of that\nid.  By carefully timing requests and session lookup failures, an attacker\nmay be able to perform a timing attack to determine an existing session id\nand hijack that session."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2020-8184",
+          "ruleIndex": 30,
+          "level": "note",
+          "message": {
+            "text": "It is possible to forge a secure or host-only cookie prefix in Rack using\nan arbitrary cookie write by using URL encoding (percent-encoding) on the\nname of the cookie. This could result in an application that is dependent on\nthis prefix to determine if a cookie is safe to process being manipulated\ninto processing an insecure or cross-origin request.\nThis vulnerability has been assigned the CVE identifier CVE-2020-8184.\n\nVersions Affected:  rack < 2.2.3, rack < 2.1.4\nNot affected:       Applications which do not rely on __Host- and __Secure- prefixes to determine if a cookie is safe to process\nFixed Versions:     rack >= 2.2.3, rack >= 2.1.4\n\nImpact\n------\n\nAn attacker may be able to trick a vulnerable application into processing an\ninsecure (non-SSL) or cross-origin request if they can gain the ability to write\narbitrary cookies that are sent to the application.\n\nWorkarounds\n-----------\n\nIf your application is impacted but you cannot upgrade to the released versions or apply\nthe provided patch, this issue can be temporarily addressed by adding the following workaround:\n\n```\nmodule Rack\n  module Utils\n    module_function def parse_cookies_header(header)\n      return {} unless header\n      header.split(/[;] */n).each_with_object({}) do |cookie, cookies|\n        next if cookie.empty?\n        key, value = cookie.split('=', 2)\n        cookies[key] = (unescape(value) rescue value) unless cookies.key?(key)\n      end\n    end\n  end\nend\n```\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2020-8161",
+          "ruleIndex": 31,
+          "level": "note",
+          "message": {
+            "text": "There was a possible directory traversal vulnerability in the Rack::Directory app\nthat is bundled with Rack.\n\nVersions Affected:  rack < 2.2.0\nNot affected:       Applications that do not use Rack::Directory.\nFixed Versions:     2.1.3, >= 2.2.0\n\nImpact\n------\n\nIf certain directories exist in a director that is managed by\n`Rack::Directory`, an attacker could, using this vulnerability, read the\ncontents of files on the server that were outside of the root specified in the\nRack::Directory initializer.\n\nWorkarounds\n-----------\n\nUntil such time as the patch is applied or their Rack version is upgraded,\nwe recommend that developers do not use Rack::Directory in their\napplications.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2019-18978",
+          "ruleIndex": 32,
+          "level": "note",
+          "message": {
+            "text": "An issue was discovered in the rack-cors (aka Rack CORS Middleware) gem\nbefore 1.0.4 for Ruby. It allows ../ directory traversal to access private resources\nbecause resource matching does not ensure that pathnames are in a canonical format.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2019-5420",
+          "ruleIndex": 33,
+          "level": "note",
+          "message": {
+            "text": "There is a possible a possible remote code executing exploit in Rails when in\ndevelopment mode. This vulnerability has been assigned the CVE identifier\nCVE-2019-5420.\n\nVersions Affected:  6.0.0.X, 5.2.X.\nNot affected:       < 5.2.0\nFixed Versions:     6.0.0.beta3, 5.2.2.1\n\nImpact\n------\nWith some knowledge of a target application it is possible for an attacker to\nguess the automatically generated development mode secret token.  This secret\ntoken can be used in combination with other Rails internals to escalate to a\nremote code execution exploit.\n\nAll users running an affected release should either upgrade or use one of the\nworkarounds immediately.\n\nReleases\n--------\nThe 6.0.0.beta3 and 5.2.2.1 releases are available at the normal locations.\n\nWorkarounds\n-----------\nThis issue can be mitigated by specifying a secret key in development mode.\nIn \"config/environments/development.rb\" add this:\n\n  config.secret_key_base = SecureRandom.hex(64)\n\nCredits\n-------\nThanks to ooooooo_q\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2020-8130",
+          "ruleIndex": 34,
+          "level": "error",
+          "message": {
+            "text": "There is an OS command injection vulnerability in Ruby Rake < 12.3.3 in\nRake::FileList when supplying a filename that begins with the pipe character\n`|`.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": "9.3"
+          }
+        },
+        {
+          "ruleId": "CVE-2020-26298",
+          "ruleIndex": 35,
+          "level": "note",
+          "message": {
+            "text": "Redcarpet is a Ruby library for Markdown processing. In Redcarpet before\nversion 3.5.1, there is an injection vulnerability which can enable a cross-site\nscripting attack. In affected versions no HTML escaping was being performed when\nprocessing quotes. This applies even when the `:escape_html` option was being used.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2020-7663",
+          "ruleIndex": 36,
+          "level": "note",
+          "message": {
+            "text": "### Impact\n\nThe ReDoS flaw allows an attacker to exhaust the server's capacity to process\nincoming requests by sending a WebSocket handshake request containing a header\nof the following form:\n\n    Sec-WebSocket-Extensions: a; b=\"\\c\\c\\c\\c\\c\\c\\c\\c\\c\\c ...\n\nThat is, a header containing an unclosed string parameter value whose content is\na repeating two-byte sequence of a backslash and some other character. The\nparser takes exponential time to reject this header as invalid, and this will\nblock the processing of any other work on the same thread. Thus if you are\nrunning a single-threaded server, such a request can render your service\ncompletely unavailable.\n\n### Workarounds\n\nThere are no known work-arounds other than disabling any public-facing WebSocket functionality you are operating."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "GHSA-xfhh-rx56-rxcr",
+          "ruleIndex": 37,
+          "level": "note",
+          "message": {
+            "text": "A path traversal vulnerability was discovered in YARD <= 0.9.19 when using `yard server` to serve documentation. This bug would allow unsanitized HTTP requests to access arbitrary files on the machine of a yard server host under certain conditions."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2019-1020001",
+          "ruleIndex": 38,
+          "level": "note",
+          "message": {
+            "text": "A path traversal vulnerability was discovered in YARD <= 0.9.19 when using\n`yard server` to serve documentation. This bug would allow unsanitized HTTP\nrequests to access arbitrary files on the machine of a yard server host under\ncertain conditions.\n\nThe issue is resolved in v0.9.20 and later.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        }
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": false
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "PatternSearch",
+          "version": "0.9.0",
+          "informationUri": "https://github.com/coinbase/salus/blob/master/docs/scanners/pattern_search.md",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": true
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "RepoNotEmpty",
+          "version": "",
+          "informationUri": "https://github.com/coinbase/salus/blob/master/docs/scanners/repository_not_blank.md",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": true
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "ReportRubyGems",
+          "version": "",
+          "informationUri": "https://github.com/coinbase/salus",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": false
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "toolExecutionNotifications": [
+            {
+              "descriptor": {
+                "id": "SAL001"
+              },
+              "message": {
+                "text": "SARIF reports are not available for this scanner"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Semgrep",
+          "version": "0.62.0",
+          "informationUri": "https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": true
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ]
+    }
+  ]
+}
