@@ -140,8 +140,9 @@ describe Salus::Processor do
       expect(cves).to include('CVE-2016-6316')
     end
 
-    it 'should scan the project using only scanners provided from the command line', :focus do
-      processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/explicit_path', cli_scanners_to_run: ['Brakeman', 'NPMAudit'])
+    it 'should scan the project using only scanners provided from the command line' do
+      processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/allowlist_scanners',
+        cli_scanners_to_run: %w[Brakeman NPMAudit])
       processor.scan_project
 
       expect(processor.passed?).to eq(false)
@@ -154,11 +155,13 @@ describe Salus::Processor do
       expect(report_hsh[:passed]).to eq(false)
       expect(report_hsh[:errors]).to eq([])
 
-      expect(report_hsh[:scans]['BundleAudit'][:passed]).to eq(false)
-      expect(report_hsh[:scans]['BundleAudit'][:info][:vulnerabilities].length).to be_positive
+      expect(report_hsh[:scans]['Brakeman'][:passed]).to eq(false)
+      expect(report_hsh[:scans]['Brakeman'][:info][:stdout].length).to be_positive
+      expect(report_hsh[:scans]['Brakeman'][:logs].length).to be_positive
 
-      cves = report_hsh[:scans]['BundleAudit'][:info][:vulnerabilities].map { |vuln| vuln[:cve] }
-      expect(cves).to include('CVE-2016-6316')
+      expect(report_hsh[:scans]['NPMAudit'][:passed]).to eq(false)
+      expect(report_hsh[:scans]['NPMAudit'][:info][:stdout][:actions].length).to be_positive
+      expect(report_hsh[:scans]['NPMAudit'][:logs].length).to be_positive
     end
   end
 
