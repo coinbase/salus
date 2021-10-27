@@ -15,9 +15,10 @@ module Salus
     DEFAULT_CONFIG_SOURCE = "file:///salus.yaml".freeze
 
     def initialize(configuration_sources = [], repo_path: DEFAULT_REPO_PATH, filter_sarif: "",
-                   ignore_config_id: "")
+                   ignore_config_id: "", cli_scanners_to_run: [])
       @repo_path = repo_path
       @filter_sarif = filter_sarif
+      @cli_scanners_to_run = cli_scanners_to_run
       ignore_ids = ignore_config_id.split(',').map(&:strip)
 
       # Add default file path to the configs if empty.
@@ -87,25 +88,46 @@ module Salus
         # (vs. just catching them and recording them in a real run)
         reraise_exceptions = ENV.key?('RUNNING_SALUS_TESTS')
         scanners_ran = []
-        Config::SCANNERS.each do |scanner_name, scanner_class|
-          config = @config.scanner_configs.fetch(scanner_name, {})
+        if @cli_scanners_to_run.empty?
+          Config::SCANNERS.each do |scanner_name, scanner_class|
+            config = @config.scanner_configs.fetch(scanner_name, {})
 
-          scanner = scanner_class.new(repository: repo, config: config)
-          unless @config.scanner_active?(scanner_name) && scanner.should_run?
-            Salus::PluginManager.send_event(:skip_scanner, scanner_name)
-            next
+            scanner = scanner_class.new(repository: repo, config: config)
+            unless @config.scanner_active?(scanner_name) && scanner.should_run?
+              Salus::PluginManager.send_event(:skip_scanner, scanner_name)
+              next
+            end
+            scanners_ran << scanner
+            Salus::PluginManager.send_event(:run_scanner, scanner_name)
+
+            required = @config.enforced_scanners.include?(scanner_name)
+
+            scanner.run!(
+              salus_report: @report,
+              required: required,
+              pass_on_raise: @config.scanner_configs[scanner_name]['pass_on_raise'],
+              reraise: reraise_exceptions
+            )
           end
-          scanners_ran << scanner
-          Salus::PluginManager.send_event(:run_scanner, scanner_name)
+        else
+          Config::SCANNERS.each do |scanner_name, scanner_class|
+            config = @config.scanner_configs.fetch(scanner_name, {})
 
-          required = @config.enforced_scanners.include?(scanner_name)
+            scanner = scanner_class.new(repository: repo, config: config)
+            unless @cli_scanners_to_run.include? scanner_name
+              Salus::PluginManager.send_event(:skip_scanner, scanner_name)
+              next
+            end
+            scanners_ran << scanner
+            Salus::PluginManager.send_event(:run_scanner, scanner_name)
 
-          scanner.run!(
-            salus_report: @report,
-            required: required,
-            pass_on_raise: @config.scanner_configs[scanner_name]['pass_on_raise'],
-            reraise: reraise_exceptions
-          )
+            scanner.run!(
+              salus_report: @report,
+              required: true,
+              pass_on_raise: false,
+              reraise: reraise_exceptions
+            )
+          end
         end
         Salus::PluginManager.send_event(:scanners_ran, scanners_ran, @report)
       end

@@ -34,6 +34,7 @@ module Salus
       use_colors: true,
       filter_sarif: "",
       ignore_config_id: "",
+      only: [],
       heartbeat: true
     )
       Salus::PluginManager.load_plugins
@@ -51,7 +52,8 @@ module Salus
 
       processor = Salus::Processor.new(configuration_directives, repo_path: repo_path,
                                        filter_sarif: filter_sarif,
-                                       ignore_config_id: ignore_config_id)
+                                       ignore_config_id: ignore_config_id,
+                                       cli_scanners_to_run: only)
 
       ### Scan Project ###
       # Scan project with Salus client.
