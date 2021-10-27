@@ -168,6 +168,7 @@ module Sarif
 
     def self.report_diff(sarif_new, sarif_old)
       old_scanner_info = {}
+      delete_results = Set.new
 
       sarif_old["runs"].each do |run|
         if run["results"].size.positive?
@@ -184,9 +185,11 @@ module Sarif
         rule_index = 0
 
         run["results"].each do |result|
+          # result_copy = result.clone
           result.delete('ruleIndex')
           if old_scanner_info[scanner]&.include?(result)
-            run["results"].delete(result)
+            # delete_results.add result_copy
+            delete_results.add result
             scanner_updated = true
           else
             result["ruleIndex"] = rule_index
@@ -195,9 +198,12 @@ module Sarif
           end
         end
 
+        run["results"].reject! { |result| delete_results.include?(result) }
+
         if scanner_updated # delete relevant rule ids from rules section
-          run["tool"]["driver"]["rules"].each do |rule|
-            run["tool"]["driver"]["rules"].delete(rule) if !rule_ids.include? rule["id"]
+          run["tool"]["driver"]["rules"].select! { |rule| rule_ids.include? rule["id"] }
+          if run["tool"]["driver"]["rules"].empty?
+            run["invocations"][0]["executionSuccessful"] = true
           end
         end
       end
