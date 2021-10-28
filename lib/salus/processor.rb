@@ -18,7 +18,6 @@ module Salus
                    ignore_config_id: "", cli_scanners_to_run: [])
       @repo_path = repo_path
       @filter_sarif = filter_sarif
-      @cli_scanners_to_run = cli_scanners_to_run
       ignore_ids = ignore_config_id.split(',').map(&:strip)
 
       # Add default file path to the configs if empty.
@@ -36,7 +35,7 @@ module Salus
       end
 
       @config = Salus::Config.new(source_data, ignore_ids)
-      @config.active_scanners = Set.new(@cli_scanners_to_run) if !@cli_scanners_to_run.empty?
+      @config.active_scanners = Set.new(cli_scanners_to_run) if !cli_scanners_to_run.empty?
 
       report_uris = interpolate_local_report_uris(@config.report_uris)
       sources = {
