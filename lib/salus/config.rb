@@ -16,9 +16,10 @@ module Salus
                 :custom_info,
                 :report_uris,
                 :builds,
-                :active_scanners,
                 :enforced_scanners,
                 :scanner_configs
+
+    attr_accessor :active_scanners
 
     # Dynamically get all Scanner classes
     ABSTRACT_SCANNERS = %i[Base NodeAudit].freeze
