@@ -139,6 +139,47 @@ describe Salus::Processor do
       cves = report_hsh[:scans]['BundleAudit'][:info][:vulnerabilities].map { |vuln| vuln[:cve] }
       expect(cves).to include('CVE-2016-6316')
     end
+
+    it 'should override the configured active scanners when they\'re provided via command line' do
+      processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/allowlist_scanners',
+        cli_scanners_to_run: %w[Brakeman CargoAudit NPMAudit])
+      processor.scan_project
+
+      report_hsh = processor.report.to_h
+
+      expect(report_hsh[:config][:active_scanners].length).to eq(3)
+      expect(report_hsh[:config][:active_scanners][0]).to eq('Brakeman')
+      expect(report_hsh[:config][:active_scanners][1]).to eq('CargoAudit')
+      expect(report_hsh[:config][:active_scanners][2]).to eq('NPMAudit')
+    end
+
+    it 'should scan the project using only scanners provided from the command line' do
+      processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/allowlist_scanners',
+        cli_scanners_to_run: %w[Brakeman NPMAudit])
+      processor.scan_project
+
+      expect(processor.passed?).to eq(false)
+
+      report_hsh = processor.report.to_h
+
+      expect(report_hsh[:config][:active_scanners].length).to eq(2)
+      expect(report_hsh[:config][:active_scanners][0]).to eq('Brakeman')
+      expect(report_hsh[:config][:active_scanners][1]).to eq('NPMAudit')
+
+      expect(report_hsh[:project_name]).to eq('EVA-01')
+      expect(report_hsh[:custom_info]).to eq('Purple unit')
+      expect(report_hsh[:version]).to eq(Salus::VERSION)
+      expect(report_hsh[:passed]).to eq(false)
+      expect(report_hsh[:errors]).to eq([])
+
+      expect(report_hsh[:scans]['Brakeman'][:passed]).to eq(false)
+      expect(report_hsh[:scans]['Brakeman'][:info][:stdout].length).to be_positive
+      expect(report_hsh[:scans]['Brakeman'][:logs].length).to be_positive
+
+      expect(report_hsh[:scans]['NPMAudit'][:passed]).to eq(false)
+      expect(report_hsh[:scans]['NPMAudit'][:info][:stdout][:actions].length).to be_positive
+      expect(report_hsh[:scans]['NPMAudit'][:logs].length).to be_positive
+    end
   end
 
   describe '#passed?' do
