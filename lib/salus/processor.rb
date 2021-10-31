@@ -15,7 +15,7 @@ module Salus
     DEFAULT_CONFIG_SOURCE = "file:///salus.yaml".freeze
 
     def initialize(configuration_sources = [], repo_path: DEFAULT_REPO_PATH, filter_sarif: "",
-                   ignore_config_id: "")
+                   ignore_config_id: "", cli_scanners_to_run: [])
       @repo_path = repo_path
       @filter_sarif = filter_sarif
       ignore_ids = ignore_config_id.split(',').map(&:strip)
@@ -35,6 +35,8 @@ module Salus
       end
 
       @config = Salus::Config.new(source_data, ignore_ids)
+      @config.active_scanners = Set.new(cli_scanners_to_run) if !cli_scanners_to_run.empty?
+
       report_uris = interpolate_local_report_uris(@config.report_uris)
       sources = {
         sources: {

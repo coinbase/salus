@@ -37,6 +37,7 @@ module Salus
       filter_sarif: "",
       sarif_diff_full: "",
       ignore_config_id: "",
+      only: [],
       heartbeat: true
     )
       Salus::PluginManager.load_plugins
@@ -54,7 +55,8 @@ module Salus
 
       processor = Salus::Processor.new(configuration_directives, repo_path: repo_path,
                                        filter_sarif: filter_sarif,
-                                       ignore_config_id: ignore_config_id)
+                                       ignore_config_id: ignore_config_id,
+                                       cli_scanners_to_run: only)
 
       if sarif_diff_full != ""
         begin
