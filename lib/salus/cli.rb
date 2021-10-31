@@ -34,9 +34,8 @@ module Salus
                  default: ''
     class_option :sarif_diff_full,
                  desc: 'Paths to sarif files separated by space. ' \
-                       'Ex. (ex. "sarif_1.json sarif_2.json sarif_diff.json"). ' \
-                       'Filters out results of sarif_2.json from sarif_1.json. ' \
-                       'Results will be stored to sarif_diff.json.',
+                       'Ex. (ex. "sarif_1.json sarif_2.json"). ' \
+                       'Filters out results of sarif_2.json from sarif_1.json.',
                  type: :string,
                  default: ''
     class_option :ignore_config_id,
