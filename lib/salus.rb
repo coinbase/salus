@@ -21,6 +21,8 @@ module Salus
   EXIT_SUCCESS = 0
   EXIT_FAILURE = 1
 
+  FULL_SARIF_DIFF_FORMAT = 'sarif_diff_full'.freeze
+
   URI_DELIMITER = ' '.freeze # space
 
   class << self
@@ -62,6 +64,8 @@ module Salus
           system_exit(EXIT_FAILURE)
         end
 
+        processor.report.report_uris.select! { |u| u['format'] == FULL_SARIF_DIFF_FORMAT }
+        processor.export_report
         system_exit(EXIT_SUCCESS)
       end
 
@@ -73,6 +77,7 @@ module Salus
       # Print report to stdout.
       puts processor.string_report(verbose: verbose, use_colors: use_colors) unless quiet
 
+      processor.report.report_uris.reject! { |u| u['format'] == FULL_SARIF_DIFF_FORMAT }
       # Try to send Salus reports to remote server or local files.
       processor.export_report
 

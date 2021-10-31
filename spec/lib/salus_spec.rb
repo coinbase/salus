@@ -120,28 +120,25 @@ describe Salus::CLI do
     context 'With --sarif_diff_full' do
       it 'Should ouput full sarif diff of two files' do
         Dir.chdir('spec/fixtures/sarifs/diff') do
-          args = 'sarif_1.json sarif_2.json diff_1_2.json'
+          args = 'sarif_1.json sarif_2.json'
+          ENV['SALUS_CONFIGURATION'] = 'file:///salus_diff.yaml'
           Salus.scan(quiet: true, repo_path: '.', sarif_diff_full: args)
           diff_file = 'diff_1_2.json'
           expect(File).to exist(diff_file)
           diff_sarif = JSON.parse(File.read(diff_file))
-          expected_sarif = JSON.parse(File.read('sarif_1_2.json'))
+          expected_sarif = JSON.parse(File.read('diff_1_2.json'))
           expect(expected_sarif).to eq(diff_sarif)
         end
       end
 
       it 'Should report error if invalid arguments used for option' do
         Dir.chdir('spec/fixtures/sarifs/diff') do
-          expect do
-            Salus.scan(quiet: true, repo_path: '.', sarif_diff_full: 'sarif_1.json sarif_2.json')
-          end.to raise_error
-
-          expect do
+          expect do # two sarifs should be provided for sarif diff
             Salus.scan(quiet: true, repo_path: '.', sarif_diff_full: 'sarif_1.json')
           end.to raise_error
 
           expect do # file names should not be outside repo dir
-            args = 'sarif_1.json sarif_2.json ../out.json'
+            args = 'sarif_1.json ../sarif_2.json'
             Salus.scan(quiet: true, repo_path: '.', sarif_diff_full: args)
           end.to raise_error
         end
