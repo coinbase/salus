@@ -203,7 +203,6 @@ module Salus
       uri = directive['uri']
       verbose = directive['verbose'] || false
       # Now send this string to its destination.
-
       report_string = case directive['format']
                       when 'txt' then to_s(verbose: verbose)
                       when 'json' then to_json
@@ -215,7 +214,6 @@ module Salus
                       else
                         raise ExportReportError, "unknown report format #{directive['format']}"
                       end
-
       if Salus::Config::REMOTE_URI_SCHEME_REGEX.match?(URI(uri).scheme)
         Salus::ReportRequest.send_report(directive, report_body(directive), uri)
       else
@@ -227,7 +225,6 @@ module Salus
                          "cannot have invalid chars"
           raise StandardError, bad_path_msg
         end
-
         write_report_to_file(file_path, report_string)
       end
     end
