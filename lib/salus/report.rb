@@ -17,18 +17,20 @@ module Salus
     attr_reader :builds
 
     def initialize(report_uris: [], builds: {}, project_name: nil, custom_info: nil, config: nil,
-                   repo_path: nil, filter_sarif: nil, ignore_config_id: nil)
-      @report_uris = report_uris     # where we will send this report
-      @builds = builds               # build hash, could have arbitrary keys
-      @project_name = project_name   # the project_name we are scanning
-      @scan_reports = []             # ScanReports for each scan run
-      @errors = []                   # errors from Salus execution
-      @custom_info = custom_info     # some additional info to send
-      @config = config               # the configuration for this run
-      @running_time = nil            # overall running time for the scan; see #record
-      @filter_sarif = filter_sarif   # Filter out results from this file
-      @repo_path = repo_path         # path to repo
+                   repo_path: nil, filter_sarif: nil, ignore_config_id: nil,
+                   report_filter: DEFAULT_REPORT_FILTER)
+      @report_uris = report_uris           # where we will send this report
+      @builds = builds                     # build hash, could have arbitrary keys
+      @project_name = project_name         # the project_name we are scanning
+      @scan_reports = []                   # ScanReports for each scan run
+      @errors = []                         # errors from Salus execution
+      @custom_info = custom_info           # some additional info to send
+      @config = config                     # the configuration for this run
+      @running_time = nil                  # overall running time for the scan; see #record
+      @filter_sarif = filter_sarif         # Filter out results from this file
+      @repo_path = repo_path               # path to repo
       @ignore_config_id = ignore_config_id # ignore id in salus config
+      @report_filter = report_filter       # filter reports that'll run based on their configuration
     end
 
     # Syntatical sugar to apply report hash filters
@@ -222,9 +224,26 @@ module Salus
       end
     end
 
+    def satisfies_filter?(directive)
+      return true if @report_filter == 'all'
+      return false if @report_filter == 'none'
+
+      # Use regex to capture two parts of the filter, delimited by a ':'
+      filter_regex = Regexp.new('([a-zA-Z0-9]+):?([a-zA-Z0-9\*]*)')
+      captured_parameters = filter_regex.match(@report_filter)
+      directive_key = captured_parameters[1]
+      directive_value = directive[directive_key]
+      # Since the value of the second capture group can follow a regex
+      # pattern (i.e. can use wildcards), we build a regex from it
+      # and use it to match against the directive value
+      directive_value_regex = Regexp.new(captured_parameters[2])
+
+      directive.key?(directive_key) && directive_value_regex.match?(directive_value)
+    end
+
     def export_report
       @report_uris.each do |directive|
-        publish_report(directive)
+        publish_report(directive) if satisfies_filter?(directive)
       rescue StandardError => e
         raise e if ENV['RUNNING_SALUS_TESTS']
 

@@ -45,7 +45,7 @@ module Salus
                  aliases: ['-r'],
                  desc: 'Filter the types of reports that will be executed',
                  type: :string,
-                 default: 'name:*'
+                 default: 'all'
 
     desc 'scan', 'Scan the source code of a repository.'
     def scan
