@@ -7,8 +7,8 @@ NODE_AUDIT_SCANNERS = [
 ].freeze
 
 describe Salus::Scanners::NodeAudit do
-  let(:vuln_1) { 1_004_707 } # was 39
-  let(:vuln_2) { 1_004_708 } # was 48
+  let(:vuln_1) { 1_004_708 } # was 39, then 1004707
+  let(:vuln_2) { 1_004_774 } # was 48, then 1004708
   let(:vuln_3) { 1_002_899 } # was 722
   let(:vuln_4) { 1_004_565 } # was 1666
 

@@ -34,8 +34,8 @@ describe Salus::Scanners::YarnAudit do
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
     end
 
-    let(:vuln_0_id) { 1_004_707 } # was 39
-    let(:vuln_1_id) { 1_004_708 } # was 48
+    let(:vuln_0_id) { 1_004_708 } # was 39, 1004707
+    let(:vuln_1_id) { 1_004_774 } # was 48, 1004708
     let(:vuln_2_id) { 1_004_036 } # was 1213
     let(:vuln_3_id) { 1_003_019 } # was 1500
     let(:vuln_4_id) { 1_002_847 } # was 1673
@@ -50,19 +50,19 @@ describe Salus::Scanners::YarnAudit do
       vulns = JSON.parse(scanner.report.to_h[:info][:stdout]).sort { |a, b| a["ID"] <=> b["ID"] }
       expect(vulns.size).to eq(6)
       vuln0 = { "Package" => "uglify-js",
-                "Patched in" => ">=2.4.24",
-                "Dependency of" => "uglify-js",
-                "More info" => "https://www.npmjs.com/advisories/#{vuln_0_id}",
-                "Severity" => "critical",
-                "Title" => "Incorrect Handling of Non-Boolean Comparisons "\
-                "During Minification in uglify-js",
-                "ID" => vuln_0_id }
-      vuln1 = { "Package" => "uglify-js",
                 "Patched in" => ">=2.6.0",
                 "Dependency of" => "uglify-js",
-                "More info" => "https://www.npmjs.com/advisories/#{vuln_1_id}",
+                "More info" => "https://www.npmjs.com/advisories/#{vuln_0_id}",
                 "Severity" => "high",
                 "Title" => "Regular Expression Denial of Service in uglify-js",
+                "ID" => vuln_0_id }
+      vuln1 = { "Package" => "uglify-js",
+                "Patched in" => ">=2.4.24",
+                "Dependency of" => "uglify-js",
+                "More info" => "https://www.npmjs.com/advisories/#{vuln_1_id}",
+                "Severity" => "critical",
+                "Title" => "Incorrect Handling of Non-Boolean Comparisons During "\
+                           "Minification in uglify-js",
                 "ID" => vuln_1_id }
       vuln2 = { "Package" => "dot-prop",
                 "Patched in" => ">=4.2.1",
