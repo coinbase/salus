@@ -114,7 +114,8 @@ module Salus
     end
 
     def create_full_sarif_diff(sarif_diff_full)
-      sarif_file_new, sarif_file_old = sarif_diff_full.split(" ")
+      sarif_file_new = sarif_diff_full[0]
+      sarif_file_old = sarif_diff_full[1]
 
       puts "\nCreating full sarif diff report from #{sarif_file_new} and #{sarif_file_old}"
 

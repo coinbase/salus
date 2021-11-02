@@ -36,8 +36,8 @@ module Salus
                  desc: 'Paths to sarif files separated by space. ' \
                        'Ex. (ex. "sarif_1.json sarif_2.json"). ' \
                        'Filters out results of sarif_2.json from sarif_1.json.',
-                 type: :string,
-                 default: ''
+                 type: :array,
+                 default: []
     class_option :ignore_config_id,
                  desc: 'Ignore id in salus config.',
                  type: :string,
