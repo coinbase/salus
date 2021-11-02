@@ -454,46 +454,6 @@ describe Salus::Report do
       expect(File.exist?(file_path)).to eq(false)
     end
 
-    it 'runs only http reports when `uri:http*` filter is provided' do
-      http_url_one = 'https://nerv.tk3/salus-report'
-      http_url_two = 'https://nerv.tk4/salus-report2'
-      file_path = './spec/fixtures/report/salus_report.json'
-      directives = [
-        { 'uri' => http_url_one, 'format' => 'json' },
-        { 'uri' => file_path, 'format' => 'json' },
-        { 'uri' => http_url_two, 'format' => 'json' }
-      ]
-      report = build_report(
-        directives,
-        'uri:http*'
-      )
-
-      stub_request(:post, http_url_one)
-        .with(headers: { 'Content-Type' => 'application/json' }, body: report.to_json)
-        .to_return(status: 202)
-      stub_request(:post, http_url_two)
-        .with(headers: { 'Content-Type' => 'application/json' }, body: report.to_json)
-        .to_return(status: 202)
-
-      report.export_report
-
-      assert_requested(
-        :post,
-        http_url_one,
-        headers: { 'Content-Type' => 'application/json' },
-        body: report.to_json,
-        times: 1
-      )
-      assert_requested(
-        :post,
-        http_url_two,
-        headers: { 'Content-Type' => 'application/json' },
-        body: report.to_json,
-        times: 1
-      )
-      expect(File.exist?(file_path)).to eq(false)
-    end
-
     it 'runs only `good-name` reports when `name:good-name` filter is provided' do
       http_url_one = 'https://nerv.tk3/salus-report'
       http_url_two = 'https://nerv.tk4/salus-report2'

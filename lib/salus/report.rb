@@ -228,17 +228,13 @@ module Salus
       return true if @report_filter == 'all'
       return false if @report_filter == 'none'
 
-      # Use regex to capture two parts of the filter, delimited by a ':'
-      filter_regex = Regexp.new('([a-zA-Z0-9]+):?([a-zA-Z0-9\*]*)')
-      captured_parameters = filter_regex.match(@report_filter)
-      directive_key = captured_parameters[1]
-      directive_value = directive[directive_key]
-      # Since the value of the second capture group can follow a regex
-      # pattern (i.e. can use wildcards), we build a regex from it
-      # and use it to match against the directive value
-      directive_value_regex = Regexp.new(captured_parameters[2])
+      recovered_values = @report_filter.split(':')
+      filter_key = recovered_values[0]
+      filter_value = recovered_values[1]
 
-      directive.key?(directive_key) && directive_value_regex.match?(directive_value)
+      directive.key?(filter_key) && (
+        directive[filter_key] == filter_value || directive[filter_key] == '*'
+      )
     end
 
     def export_report
