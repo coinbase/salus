@@ -1,10 +1,10 @@
 scanner_configs:
   YarnAudit:
     exceptions:
-    - advisory_id: 1004707
+    - advisory_id: 1004708
       changed_by: commerce-team
       notes: Low Sev. Prototype Pollution from lodash <=4.17.18. Need to upgrade to bitcore-lib-cash@8.25.7, which is a breaking change. Requires extensive testing.
-    - advisory_id: 1004708
+    - advisory_id: 1004774
       changed_by: commerce-team
       notes: High Sev. Prototype Pollution from lodash <=4.17.18. Need to upgrade to bitcore-lib-cash@8.25.7, which is a breaking change. Requires extensive testing.
     exclude_groups:
