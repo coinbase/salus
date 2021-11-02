@@ -58,18 +58,7 @@ module Salus
                                        ignore_config_id: ignore_config_id,
                                        cli_scanners_to_run: only)
 
-      if sarif_diff_full != ""
-        begin
-          processor.create_full_sarif_diff(sarif_diff_full)
-        rescue StandardError => e
-          puts "Failed to get sarif diff #{e.inspect}"
-          system_exit(EXIT_FAILURE)
-        end
-
-        processor.report.report_uris.select! { |u| u['format'] == FULL_SARIF_DIFF_FORMAT }
-        processor.export_report
-        system_exit(EXIT_SUCCESS)
-      end
+      process_sarif_full_diff(processor, sarif_diff_full) unless sarif_diff_full.empty?
 
       ### Scan Project ###
       # Scan project with Salus client.
@@ -87,6 +76,19 @@ module Salus
 
       # System exit with success or failure - useful for CI builds.
       system_exit(processor.passed? ? EXIT_SUCCESS : EXIT_FAILURE)
+    end
+
+    def process_sarif_full_diff(processor, sarif_diff_full)
+      begin
+        processor.create_full_sarif_diff(sarif_diff_full)
+      rescue StandardError => e
+        puts "Failed to get sarif diff #{e.inspect}"
+        system_exit(EXIT_FAILURE)
+      end
+
+      processor.report.report_uris.select! { |u| u['format'] == FULL_SARIF_DIFF_FORMAT }
+      processor.export_report
+      system_exit(EXIT_SUCCESS)
     end
 
     private
