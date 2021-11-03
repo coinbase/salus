@@ -207,4 +207,91 @@ describe Sarif::BaseSarif do
       end
     end
   end
+
+  describe 'full sarif diff' do
+    it 'diff should have 0 vul with exec success if old sarif includes all vuls in new sarif' do
+      # old sarif includes all vuls in new sarif
+      # expected_diff has 0 rule/result for each scanner
+      #               executionSuccessful for scanner updated to true
+      old_sarif_file = 'spec/fixtures/sarifs/diff/sarif_2.json'
+      new_sarif_file = 'spec/fixtures/sarifs/diff/sarif_1.json'
+      diff_file = 'spec/fixtures/sarifs/diff/sarif_1_2.json'
+      old_sarif = JSON.parse(File.read(old_sarif_file))
+      new_sarif = JSON.parse(File.read(new_sarif_file))
+      diff = Sarif::BaseSarif.report_diff(new_sarif, old_sarif)
+
+      expect { Sarif::SarifReport.validate_sarif(diff) }.not_to raise_error
+      expected_diff = JSON.parse(File.read(diff_file))
+      expect(expected_diff).to eq(diff)
+    end
+
+    it 'diff should include vuls in new sarif that are not in old sarif' do
+      # new sarif has 20+ BundleAudit vuls and Brakeman vul
+      # old sarif has 2 BundleAudit vuls that are in new sarif, and no Brakeman vul
+      # expect diff has the Brakeman vul in new sarif
+      #                 and the BundleAudit vuls in new sarif, except the 2 in old sarif
+      old_sarif_file = 'spec/fixtures/sarifs/diff/sarif_1.json'
+      new_sarif_file = 'spec/fixtures/sarifs/diff/sarif_2.json'
+      diff_file = 'spec/fixtures/sarifs/diff/sarif_2_1.json'
+      old_sarif = JSON.parse(File.read(old_sarif_file))
+      new_sarif = JSON.parse(File.read(new_sarif_file))
+      diff = Sarif::BaseSarif.report_diff(new_sarif, old_sarif)
+
+      expect { Sarif::SarifReport.validate_sarif(diff) }.not_to raise_error
+      expected_diff = JSON.parse(File.read(diff_file))
+      expect(expected_diff).to eq(diff)
+    end
+
+    it 'diff should be sarif with no vuls if new sarif == old sarif and old sarif has vuls' do
+      old_sarif_file = 'spec/fixtures/sarifs/diff/sarif_1.json'
+      new_sarif_file = old_sarif_file
+      diff_file = 'spec/fixtures/sarifs/diff/sarif_1_2.json'
+      old_sarif = JSON.parse(File.read(old_sarif_file))
+      new_sarif = JSON.parse(File.read(new_sarif_file))
+      diff = Sarif::BaseSarif.report_diff(new_sarif, old_sarif)
+
+      expect { Sarif::SarifReport.validate_sarif(diff) }.not_to raise_error
+      expected_diff = JSON.parse(File.read(diff_file))
+      expect(expected_diff).to eq(diff)
+    end
+
+    it 'diff should be same as new sarif if new sarif == old sarif and old sarif has no vuls' do
+      old_sarif_file = 'spec/fixtures/sarifs/diff/sarif_1_2.json'
+      new_sarif_file = old_sarif_file
+      diff_file = old_sarif_file
+      old_sarif = JSON.parse(File.read(old_sarif_file))
+      new_sarif = JSON.parse(File.read(new_sarif_file))
+      diff = Sarif::BaseSarif.report_diff(new_sarif, old_sarif)
+
+      expect { Sarif::SarifReport.validate_sarif(diff) }.not_to raise_error
+      expected_diff = JSON.parse(File.read(diff_file))
+      expect(expected_diff).to eq(diff)
+    end
+
+    it 'diff should be same as new sarif if everything passed in new sarif' do
+      # if everything passed in new sarif but old sarif has vuls
+      # then diff should be the same as new sarif
+      old_sarif_file = 'spec/fixtures/sarifs/diff/sarif_1.json' # has vuls
+      new_sarif_file = 'spec/fixtures/sarifs/diff/sarif_succ.json' # everything passed
+      old_sarif = JSON.parse(File.read(old_sarif_file))
+      new_sarif = JSON.parse(File.read(new_sarif_file))
+      diff = Sarif::BaseSarif.report_diff(new_sarif, old_sarif)
+
+      expect { Sarif::SarifReport.validate_sarif(diff) }.not_to raise_error
+      expect(new_sarif).to eq(diff)
+    end
+
+    it 'diff should include vuls with same id but different artifact locations' do
+      old_sarif_file = 'spec/fixtures/sarifs/diff/sarif_3.json'
+      new_sarif_file = 'spec/fixtures/sarifs/diff/sarif_1.json'
+      diff_file = 'spec/fixtures/sarifs/diff/sarif_1_3.json'
+      old_sarif = JSON.parse(File.read(old_sarif_file))
+      new_sarif = JSON.parse(File.read(new_sarif_file))
+      diff = Sarif::BaseSarif.report_diff(new_sarif, old_sarif)
+
+      expect { Sarif::SarifReport.validate_sarif(diff) }.not_to raise_error
+      expected_diff = JSON.parse(File.read(diff_file))
+      expect(expected_diff).to eq(diff)
+    end
+  end
 end
