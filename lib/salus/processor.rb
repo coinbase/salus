@@ -115,6 +115,32 @@ module Salus
       end
     end
 
+    def create_full_sarif_diff(sarif_diff_full)
+      sarif_file_new = sarif_diff_full[0]
+      sarif_file_old = sarif_diff_full[1]
+
+      puts "\nCreating full sarif diff report from #{sarif_file_new} and #{sarif_file_old}"
+
+      [sarif_file_new, sarif_file_old].each do |f|
+        raise Exception, "sarif diff file name is empty #{f}" if f.nil? || f == ""
+      end
+
+      sarif_file_new = File.join(@repo_path, sarif_file_new)
+      sarif_file_old = File.join(@repo_path, sarif_file_old)
+
+      [sarif_file_new, sarif_file_old].each do |f|
+        if !Salus::Report.new(repo_path: @repo_path).safe_local_report_path?(f)
+          raise Exception, "sarif diff file path should not be outside working dir #{f}"
+        end
+      end
+
+      sarif_new = JSON.parse(File.read(sarif_file_new))
+      sarif_old = JSON.parse(File.read(sarif_file_old))
+      filtered_full_sarif = Sarif::BaseSarif.report_diff(sarif_new, sarif_old)
+
+      @report.full_diff_sarif = filtered_full_sarif
+    end
+
     # Returns an ASCII version of the report.
     def string_report(verbose: false, use_colors: false)
       @report.to_s(verbose: verbose, use_colors: use_colors)

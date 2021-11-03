@@ -15,6 +15,7 @@ module Salus
     SUMMARY_TABLE_HEADINGS = ['Scanner', 'Running Time', 'Required', 'Passed'].freeze
 
     attr_reader :builds
+    attr_accessor :full_diff_sarif, :report_uris
 
     def initialize(report_uris: [], builds: {}, project_name: nil, custom_info: nil, config: nil,
                    repo_path: nil, filter_sarif: nil, ignore_config_id: nil,
@@ -31,6 +32,7 @@ module Salus
       @repo_path = repo_path               # path to repo
       @ignore_config_id = ignore_config_id # ignore id in salus config
       @report_filter = report_filter       # filter reports that'll run based on their configuration
+      @full_diff_sarif = nil
     end
 
     # Syntatical sugar to apply report hash filters
@@ -181,6 +183,10 @@ module Salus
       sarif_results
     end
 
+    def to_full_sarif_diff
+      JSON.pretty_generate(@full_diff_sarif)
+    end
+
     def to_cyclonedx(config = {})
       cyclonedx_bom = Cyclonedx::Report.new(@scan_reports, config).to_cyclonedx
       cyclonedx_report = {
@@ -205,6 +211,7 @@ module Salus
                       when 'yaml' then to_yaml
                       when 'sarif' then to_sarif(directive['sarif_options'] || {})
                       when 'sarif_diff' then to_sarif_diff
+                      when 'sarif_diff_full' then to_full_sarif_diff
                       when 'cyclonedx-json' then to_cyclonedx(directive['cyclonedx_options'] || {})
                       else
                         raise ExportReportError, "unknown report format #{directive['format']}"

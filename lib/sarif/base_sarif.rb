@@ -1,3 +1,5 @@
+require 'json'
+require 'set'
 require 'sarif/shared_objects'
 
 module Sarif
@@ -162,6 +164,49 @@ module Sarif
       else
         SARIF_WARNINGS[:note]
       end
+    end
+
+    def self.report_diff(sarif_new, sarif_old)
+      old_scanner_info = {}
+      delete_results = Set.new
+
+      sarif_old["runs"].each do |run|
+        if run["results"].size.positive?
+          scanner = run["tool"]["driver"]["name"]
+          run["results"].each { |result| result.delete("ruleIndex") }
+          old_scanner_info[scanner] = Set.new run["results"]
+        end
+      end
+
+      sarif_new["runs"].each do |run| # loop over results for each scanner
+        scanner = run["tool"]["driver"]["name"]
+        rule_ids = Set.new # rule ids of final results
+        scanner_updated = false
+        rule_index = 0
+
+        run["results"].each do |result|
+          result.delete('ruleIndex')
+          if old_scanner_info[scanner]&.include?(result)
+            delete_results.add result
+            scanner_updated = true
+          else
+            result["ruleIndex"] = rule_index
+            rule_ids.add result['ruleId']
+            rule_index += 1
+          end
+        end
+
+        run["results"].reject! { |result| delete_results.include?(result) }
+
+        if scanner_updated # delete relevant rule ids from rules section
+          run["tool"]["driver"]["rules"].select! { |rule| rule_ids.include? rule["id"] }
+          if run["tool"]["driver"]["rules"].empty?
+            run["invocations"][0]["executionSuccessful"] = true
+          end
+        end
+      end
+
+      sarif_new
     end
   end
 end
