@@ -185,10 +185,8 @@ module Sarif
         rule_index = 0
 
         run["results"].each do |result|
-          # result_copy = result.clone
           result.delete('ruleIndex')
           if old_scanner_info[scanner]&.include?(result)
-            # delete_results.add result_copy
             delete_results.add result
             scanner_updated = true
           else
