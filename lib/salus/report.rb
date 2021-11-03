@@ -228,9 +228,15 @@ module Salus
       return true if @report_filter == 'all'
       return false if @report_filter == 'none'
 
-      recovered_values = @report_filter.split(':')
+      # Split the filter string only by the first colon
+      recovered_values = @report_filter.split(':', 2)
       filter_key = recovered_values[0]
       filter_value = recovered_values[1]
+
+      if filter_key.nil? || filter_key == '' || filter_value.nil? || filter_value == ''
+        raise ExportReportError, 'Poorly formatted report filter found. ' \
+          'Filter key and pattern must be non-empty strings'
+      end
 
       directive.key?(filter_key) && (
         directive[filter_key] == filter_value || directive[filter_key] == '*'
