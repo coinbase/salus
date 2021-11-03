@@ -2,7 +2,7 @@ require_relative '../../spec_helper'
 require 'json'
 
 describe Sarif::NPMAuditSarif do
-  let(:vuln_1) { 1_004_707 } # was 39
+  let(:vuln_1) { 1_004_708 } # was 39, 1004707
 
   describe '#parse_issue' do
     let(:scanner) { Salus::Scanners::NPMAudit.new(repository: repo, config: {}) }
@@ -15,26 +15,24 @@ describe Sarif::NPMAuditSarif do
         issues = scanner.report.to_h[:info][:stdout][:advisories].values
         issue = issues.select { |i| i[:id] == vuln_1 }.first
         npm_sarif = Sarif::NPMAuditSarif.new(scanner.report, './')
-
-        expect(npm_sarif.parse_issue(issue)).to include(
+        parsed_issue = npm_sarif.parse_issue(issue)
+        expect(parsed_issue).to include(
           id: vuln_1.to_s,
-          name: "Incorrect Handling of Non-Boolean Comparisons During Minification in uglify-js",
-          level: "CRITICAL",
-          details: "Versions of `uglify-js` prior to 2.4.24 are affected by a "\
-          "vulnerability which may cause crafted JavaScript to have altered functionality "\
-          "after minification.\n\n\n\n\n## Recommendation\n\nUpgrade UglifyJS "\
-          "to version >= 2.4.24.",
-          messageStrings: { "cwe": { "text": "CWE-1254" },
+          name: "Regular Expression Denial of Service in uglify-js",
+          level: "HIGH",
+          messageStrings: { "cwe": { "text": "" },
                             "package": { "text": "uglify-js" },
-                            "patched_versions": { "text": ">=2.4.24" },
-                            "recommendation": { "text": "Upgrade to version 2.4.24 or later" },
-                            "severity": { "text": "critical" },
-                            "vulnerable_versions": { "text": "<2.4.24" } },
-          help_url: "https://github.com/advisories/GHSA-34r7-q49f-h37c",
+                            "patched_versions": { "text": ">=2.6.0" },
+                            "recommendation": { "text": "Upgrade to version 2.6.0 or later" },
+                            "severity": { "text": "high" },
+                            "vulnerable_versions": { "text": "<2.6.0" } },
+          help_url: "https://github.com/advisories/GHSA-c9f4-xj24-8jqx",
           uri: "package-lock.json",
-          properties: { severity: "critical" },
+          properties: { severity: "high" },
           suppressed: false
         )
+        expected_details = "Versions of `uglify-js` prior to 2.6.0 are affected by a regular"
+        expect(parsed_issue[:details]).to include(expected_details)
       end
     end
 
@@ -105,14 +103,11 @@ describe Sarif::NPMAuditSarif do
         rule = rules.select { |r| r['id'] == vuln_1.to_s }.first
         # Check rule info
         expect(rule['id']).to eq(vuln_1.to_s)
-        expect(rule['name']).to eq("Incorrect Handling of Non-Boolean "\
-          "Comparisons During Minification in uglify-js")
-        expected = "Versions of `uglify-js` prior to 2.4.24 are"\
-        " affected by a vulnerability which may cause crafted JavaScript to have altered"\
-        " functionality after minification.\n\n\n\n\n## Recommendation\n\n"\
-        "Upgrade UglifyJS to version >= 2.4.24."
-        expect(rule['fullDescription']['text']).to eq(expected)
-        expect(rule['helpUri']).to eq("https://github.com/advisories/GHSA-34r7-q49f-h37c")
+        expect(rule['name']).to eq("Regular Expression Denial of Service in uglify-js")
+        expected = "Versions of `uglify-js` prior to 2.6.0 are affected by a regular "\
+                   "expression denial of service"
+        expect(rule['fullDescription']['text']).to include(expected)
+        expect(rule['helpUri']).to eq("https://github.com/advisories/GHSA-c9f4-xj24-8jqx")
 
         # Check result info
         expect(result['ruleId']).to eq(vuln_1.to_s)
