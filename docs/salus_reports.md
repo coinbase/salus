@@ -2,7 +2,11 @@
 
 Salus compiles a report while executing each scanner and before finishing, this report is output in one or multiple ways.
 
-By default, Salus always prints the report to STDOUT. This can be turned off via the `--quiet` (`-q`) flag. Additionally, Salus can be configured to send reports to both the local file system or remote HTTP endpoints. See the [configuration documentation](configuration.md) for more detail.
+By default, Salus always prints the report to STDOUT. This can be turned off via the `--quiet` (`-q`) flag. Additionally, Salus can be configured to send reports to both the local file system or remote HTTP endpoints. See the [configuration documentation](configuration.md) for more detail.  
+
+The destinations that receive reports can be configured using the `--reports` (`-r`) flag. Values for this flag follow the format `--reports <report-key>:<report-pattern>`, where `<report-key>` is the configuration key by which reports will be filtered, and `<report-pattern>` is the pattern that values corresponding to `<report-key>` must equal.  
+
+For example, `--reports name:John` will filter reporting so that only reports with a `name` key set to `John` in their configuration receive scan reports.
 
 Salus reports contain the following information:
   - Report format version - important for report consumers to correctly determine how to parse the report.

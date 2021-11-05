@@ -44,9 +44,14 @@ module Salus
                  default: ''
     class_option :only,
                  aliases: ['-o'],
-                 desc: 'Active certain scanners (overrides configured active scanners)',
+                 desc: 'Activate certain scanners (overrides configured active scanners)',
                  type: :array,
                  default: []
+    class_option :reports,
+                 aliases: ['-r'],
+                 desc: 'Filter the types of reports that will be executed',
+                 type: :string,
+                 default: 'all'
 
     desc 'scan', 'Scan the source code of a repository.'
     def scan
@@ -61,7 +66,8 @@ module Salus
         filter_sarif: options[:filter_sarif],
         sarif_diff_full: options[:sarif_diff_full],
         ignore_config_id: options[:ignore_config_id],
-        only: options[:only]
+        only: options[:only],
+        reports: options[:reports]
       )
     end
 

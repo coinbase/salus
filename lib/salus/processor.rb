@@ -15,7 +15,8 @@ module Salus
     DEFAULT_CONFIG_SOURCE = "file:///salus.yaml".freeze
 
     def initialize(configuration_sources = [], repo_path: DEFAULT_REPO_PATH, filter_sarif: "",
-                   ignore_config_id: "", cli_scanners_to_run: [])
+                   ignore_config_id: "", cli_scanners_to_run: [],
+                   report_filter: DEFAULT_REPORT_FILTER)
       @repo_path = repo_path
       @filter_sarif = filter_sarif
       ignore_ids = ignore_config_id.split(',').map(&:strip)
@@ -53,7 +54,8 @@ module Salus
         config: @config.to_h.merge(sources),
         repo_path: repo_path,
         filter_sarif: filter_sarif,
-        ignore_config_id: ignore_config_id
+        ignore_config_id: ignore_config_id,
+        report_filter: report_filter
       )
     end
 

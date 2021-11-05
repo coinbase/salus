@@ -15,6 +15,7 @@ require 'salus/report_request'
 module Salus
   VERSION = '2.14.0'.freeze
   DEFAULT_REPO_PATH = './repo'.freeze # This is inside the docker container at /home/repo.
+  DEFAULT_REPORT_FILTER = 'all'.freeze
 
   SafeYAML::OPTIONS[:default_mode] = :safe
 
@@ -28,6 +29,7 @@ module Salus
   class << self
     include SalusBugsnag
 
+    # rubocop:disable Metrics/ParameterLists
     def scan(
       config: nil,
       quiet: false,
@@ -38,8 +40,10 @@ module Salus
       sarif_diff_full: "",
       ignore_config_id: "",
       only: [],
+      reports: DEFAULT_REPORT_FILTER,
       heartbeat: true
     )
+      # rubocop:enable Metrics/ParameterLists
       Salus::PluginManager.load_plugins
 
       Salus::PluginManager.send_event(:salus_scan, method(__method__).parameters)
@@ -56,7 +60,7 @@ module Salus
       processor = Salus::Processor.new(configuration_directives, repo_path: repo_path,
                                        filter_sarif: filter_sarif,
                                        ignore_config_id: ignore_config_id,
-                                       cli_scanners_to_run: only)
+                                       cli_scanners_to_run: only, report_filter: reports)
 
       process_sarif_full_diff(processor, sarif_diff_full) unless sarif_diff_full.empty?
 

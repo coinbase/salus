@@ -349,4 +349,230 @@ describe Salus::Report do
       end
     end
   end
+
+  describe '#satisfies_filter' do
+    def build_report(report_uris, filter)
+      report = Salus::Report.new(
+        report_uris: report_uris,
+        project_name: 'eva00',
+        custom_info: 'test unit',
+        report_filter: filter
+      )
+
+      3.times do
+        scan_report = Salus::ScanReport.new('DerpScanner')
+        scan_report.info(:asdf, 'qwerty')
+        scan_report.fail
+        report.add_scan_report(scan_report, required: true)
+      end
+
+      5.times { report.error(message: 'derp') }
+
+      report
+    end
+
+    it 'runs all reports when `all` filter is provided' do
+      http_url_one = 'https://nerv.tk3/salus-report'
+      http_url_two = 'https://nerv.tk4/salus-report2'
+      file_path = './spec/fixtures/report/salus_report.json'
+      directives = [
+        { 'uri' => http_url_one, 'format' => 'json' },
+        { 'uri' => file_path, 'format' => 'json' },
+        { 'uri' => http_url_two, 'format' => 'json' }
+      ]
+      report = build_report(
+        directives,
+        'all'
+      )
+
+      stub_request(:post, http_url_one)
+        .with(headers: { 'Content-Type' => 'application/json' }, body: report.to_json)
+        .to_return(status: 202)
+      stub_request(:post, http_url_two)
+        .with(headers: { 'Content-Type' => 'application/json' }, body: report.to_json)
+        .to_return(status: 202)
+
+      report.export_report
+
+      assert_requested(
+        :post,
+        http_url_one,
+        headers: { 'Content-Type' => 'application/json' },
+        body: report.to_json,
+        times: 1
+      )
+      assert_requested(
+        :post,
+        http_url_two,
+        headers: { 'Content-Type' => 'application/json' },
+        body: report.to_json,
+        times: 1
+      )
+
+      expect(File.exist?(file_path)).to eq(true)
+
+      remove_file(file_path)
+    end
+
+    it 'doesnt run any reports when `none` filter is provided' do
+      http_url_one = 'https://nerv.tk3/salus-report'
+      http_url_two = 'https://nerv.tk4/salus-report2'
+      file_path = './spec/fixtures/report/salus_report.json'
+      directives = [
+        { 'uri' => http_url_one, 'format' => 'json' },
+        { 'uri' => file_path, 'format' => 'json' },
+        { 'uri' => http_url_two, 'format' => 'json' }
+      ]
+      report = build_report(
+        directives,
+        'none'
+      )
+
+      stub_request(:post, http_url_one)
+        .with(headers: { 'Content-Type' => 'application/json' }, body: report.to_json)
+        .to_return(status: 202)
+      stub_request(:post, http_url_two)
+        .with(headers: { 'Content-Type' => 'application/json' }, body: report.to_json)
+        .to_return(status: 202)
+
+      report.export_report
+
+      assert_requested(
+        :post,
+        http_url_one,
+        headers: { 'Content-Type' => 'application/json' },
+        body: report.to_json,
+        times: 0
+      )
+      assert_requested(
+        :post,
+        http_url_two,
+        headers: { 'Content-Type' => 'application/json' },
+        body: report.to_json,
+        times: 0
+      )
+      expect(File.exist?(file_path)).to eq(false)
+    end
+
+    it 'runs only `good-name` reports when `name:good-name` filter is provided' do
+      http_url_one = 'https://nerv.tk3/salus-report'
+      http_url_two = 'https://nerv.tk4/salus-report2'
+      file_path = './spec/fixtures/report/salus_report.json'
+      directives = [
+        { 'uri' => http_url_one, 'format' => 'json', 'name' => 'good-name' },
+        { 'uri' => file_path, 'format' => 'json', 'name' => 'good-name' },
+        { 'uri' => http_url_two, 'format' => 'json', 'name' => 'bad-name' }
+      ]
+      report = build_report(
+        directives,
+        'name:good-name'
+      )
+
+      stub_request(:post, http_url_one)
+        .with(headers: { 'Content-Type' => 'application/json' }, body: report.to_json)
+        .to_return(status: 202)
+      stub_request(:post, http_url_two)
+        .with(headers: { 'Content-Type' => 'application/json' }, body: report.to_json)
+        .to_return(status: 202)
+
+      report.export_report
+
+      assert_requested(
+        :post,
+        http_url_one,
+        headers: { 'Content-Type' => 'application/json' },
+        body: report.to_json,
+        times: 1
+      )
+      assert_requested(
+        :post,
+        http_url_two,
+        headers: { 'Content-Type' => 'application/json' },
+        body: report.to_json,
+        times: 0
+      )
+      expect(File.exist?(file_path)).to eq(true)
+      remove_file(file_path)
+    end
+
+    it 'runs only yaml-formatted reports when `format:yaml` filter is provided' do
+      http_url_one = 'https://nerv.tk3/salus-report'
+      http_url_two = 'https://nerv.tk4/salus-report2'
+      file_path = './spec/fixtures/report/salus_report.json'
+      directives = [
+        { 'uri' => http_url_one, 'format' => 'yaml' },
+        { 'uri' => file_path, 'format' => 'json' },
+        { 'uri' => http_url_two, 'format' => 'yaml' }
+      ]
+      report = build_report(
+        directives,
+        'format:yaml'
+      )
+
+      stub_request(:post, http_url_one)
+        .with(headers: { 'Content-Type' => 'text/x-yaml' }, body: report.to_yaml)
+        .to_return(status: 202)
+      stub_request(:post, http_url_two)
+        .with(headers: { 'Content-Type' => 'text/x-yaml' }, body: report.to_yaml)
+        .to_return(status: 202)
+
+      report.export_report
+
+      assert_requested(
+        :post,
+        http_url_one,
+        headers: { 'Content-Type' => 'text/x-yaml' },
+        body: report.to_yaml,
+        times: 1
+      )
+      assert_requested(
+        :post,
+        http_url_two,
+        headers: { 'Content-Type' => 'text/x-yaml' },
+        body: report.to_yaml,
+        times: 1
+      )
+      expect(File.exist?(file_path)).to eq(false)
+    end
+
+    it 'runs only reports with `name` keys when `name:*` filter is provided' do
+      http_url_one = 'https://nerv.tk3/salus-report'
+      http_url_two = 'https://nerv.tk4/salus-report2'
+      file_path = './spec/fixtures/report/salus_report.json'
+      directives = [
+        { 'uri' => http_url_one, 'format' => 'yaml', 'name' => 'alpha' },
+        { 'uri' => http_url_two, 'format' => 'json', 'name' => 'alpha' },
+        { 'uri' => file_path, 'format' => 'yaml' }
+      ]
+      report = build_report(
+        directives,
+        'name:*'
+      )
+
+      stub_request(:post, http_url_one)
+        .with(headers: { 'Content-Type' => 'text/x-yaml' }, body: report.to_yaml)
+        .to_return(status: 202)
+      stub_request(:post, http_url_two)
+        .with(headers: { 'Content-Type' => 'application/json' }, body: report.to_json)
+        .to_return(status: 202)
+
+      report.export_report
+
+      assert_requested(
+        :post,
+        http_url_one,
+        headers: { 'Content-Type' => 'text/x-yaml' },
+        body: report.to_yaml,
+        times: 1
+      )
+      assert_requested(
+        :post,
+        http_url_two,
+        headers: { 'Content-Type' => 'application/json' },
+        body: report.to_json,
+        times: 1
+      )
+      expect(File.exist?(file_path)).to eq(false)
+    end
+  end
 end
