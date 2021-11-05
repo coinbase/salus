@@ -231,35 +231,36 @@ module Salus
       end
     end
 
-    def satisfies_filter?(directive)
-      return true if @report_filter == 'all'
-      return false if @report_filter == 'none'
-
-      # Split the filter string only by the first colon
-      recovered_values = @report_filter.split(':', 2)
-      filter_key = recovered_values[0]
-      filter_value = recovered_values[1]
-
-      if filter_key.nil? || filter_key == '' || filter_value.nil? || filter_value == ''
-        raise ExportReportError, 'Poorly formatted report filter found. ' \
-          'Filter key and pattern must be non-empty strings'
-      end
-
+    def satisfies_filter?(directive, filter_key, filter_value)
       directive.key?(filter_key) && (
-        directive[filter_key] == filter_value || directive[filter_key] == '*'
+        # rubocop:disable Style/MultipleComparison
+        directive[filter_key] == filter_value || filter_value == '*'
+        # rubocop:enable Style/MultipleComparison
       )
     end
 
     def export_report
-      @report_uris.each do |directive|
-        publish_report(directive) if satisfies_filter?(directive)
-      rescue StandardError => e
-        raise e if ENV['RUNNING_SALUS_TESTS']
+      return [] if @report_filter == 'none'
 
-        puts "Could not send Salus report: (#{e.class}: #{e.message})"
-        e = "Could not send Salus report. Exception: #{e}, Build info: #{builds}"
-        bugsnag_notify(e)
+      recovered_values = @report_filter.split(':', 2)
+      filter_key = recovered_values[0]
+      filter_value = recovered_values[1]
+      if @report_filter != 'all' && (filter_key.to_s == '' || filter_value.to_s == '')
+        raise ExportReportError, 'Poorly formatted report filter found. ' \
+          'Filter key and pattern must be non-empty strings'
       end
+
+      @report_uris.each do |directive|
+        if @report_filter == 'all' || satisfies_filter?(directive, filter_key, filter_value)
+          publish_report(directive)
+        end
+      end
+    rescue StandardError => e
+      raise e if ENV['RUNNING_SALUS_TESTS']
+
+      puts "Could not send Salus report: (#{e.class}: #{e.message})"
+      e = "Could not send Salus report. Exception: #{e}, Build info: #{builds}"
+      bugsnag_notify(e)
     end
 
     def safe_local_report_path?(path)

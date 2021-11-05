@@ -534,5 +534,45 @@ describe Salus::Report do
       )
       expect(File.exist?(file_path)).to eq(false)
     end
+
+    it 'runs only reports with `name` keys when `name:*` filter is provided' do
+      http_url_one = 'https://nerv.tk3/salus-report'
+      http_url_two = 'https://nerv.tk4/salus-report2'
+      file_path = './spec/fixtures/report/salus_report.json'
+      directives = [
+        { 'uri' => http_url_one, 'format' => 'yaml', 'name' => 'alpha' },
+        { 'uri' => http_url_two, 'format' => 'json', 'name' => 'alpha' },
+        { 'uri' => file_path, 'format' => 'yaml' }
+      ]
+      report = build_report(
+        directives,
+        'name:*'
+      )
+
+      stub_request(:post, http_url_one)
+        .with(headers: { 'Content-Type' => 'text/x-yaml' }, body: report.to_yaml)
+        .to_return(status: 202)
+      stub_request(:post, http_url_two)
+        .with(headers: { 'Content-Type' => 'application/json' }, body: report.to_json)
+        .to_return(status: 202)
+
+      report.export_report
+
+      assert_requested(
+        :post,
+        http_url_one,
+        headers: { 'Content-Type' => 'text/x-yaml' },
+        body: report.to_yaml,
+        times: 1
+      )
+      assert_requested(
+        :post,
+        http_url_two,
+        headers: { 'Content-Type' => 'application/json' },
+        body: report.to_json,
+        times: 1
+      )
+      expect(File.exist?(file_path)).to eq(false)
+    end
   end
 end
