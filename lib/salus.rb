@@ -36,6 +36,7 @@ module Salus
       use_colors: true,
       filter_sarif: "",
       sarif_diff_full: "",
+      git_diff: "",
       ignore_config_id: "",
       only: [],
       heartbeat: true
@@ -58,7 +59,7 @@ module Salus
                                        ignore_config_id: ignore_config_id,
                                        cli_scanners_to_run: only)
 
-      process_sarif_full_diff(processor, sarif_diff_full) unless sarif_diff_full.empty?
+      process_sarif_full_diff(processor, sarif_diff_full, git_diff) unless sarif_diff_full.empty?
 
       ### Scan Project ###
       # Scan project with Salus client.
@@ -78,9 +79,9 @@ module Salus
       system_exit(processor.passed? ? EXIT_SUCCESS : EXIT_FAILURE)
     end
 
-    def process_sarif_full_diff(processor, sarif_diff_full)
+    def process_sarif_full_diff(processor, sarif_diff_full, git_diff)
       begin
-        processor.create_full_sarif_diff(sarif_diff_full)
+        processor.create_full_sarif_diff(sarif_diff_full, git_diff)
       rescue StandardError => e
         puts "Failed to get sarif diff #{e.inspect}"
         system_exit(EXIT_FAILURE)

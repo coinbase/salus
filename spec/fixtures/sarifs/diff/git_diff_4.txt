@@ -1,0 +1,27 @@
+diff --git a/bad.go b/bad.go
+index 679e354..cb04c5d 100644
+--- a/bad.go
++++ b/bad.go
+@@ -4,7 +4,7 @@ import "fmt"
+ 
+ func main() {
+     username := "admin"
+-    var password = "f62e5bcda4fae4f82370da0c6f20697b8f8447ef"
++    var password = "f62e5bcda4fae4f82370da0c6f20697b8f8447ef"              
+ 
+     fmt.Println("Doing something with: ", username, password)
+ }
+diff --git a/hello.py b/hello.py
+new file mode 100644
+index 0000000..299f186
+--- /dev/null
++++ b/hello.py
+@@ -0,0 +1,5 @@
++import hello
++
++self.process = subprocess.Popen('/bin/echo', shell=True)
++foo()
++bar()
+diff --git a/requirements.txt b/requirements.txt
+new file mode 100644
+index 0000000..e69de29

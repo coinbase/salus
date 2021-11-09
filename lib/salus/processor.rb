@@ -113,28 +113,33 @@ module Salus
       end
     end
 
-    def create_full_sarif_diff(sarif_diff_full)
+    def create_full_sarif_diff(sarif_diff_full, git_diff)
       sarif_file_new = sarif_diff_full[0]
       sarif_file_old = sarif_diff_full[1]
-
-      puts "\nCreating full sarif diff report from #{sarif_file_new} and #{sarif_file_old}"
-
+      info = "\nCreating full sarif diff report from #{sarif_file_new} and #{sarif_file_old}"
+      info += " with git diff #{git_diff}" if git_diff != ''
+      puts info
       [sarif_file_new, sarif_file_old].each do |f|
         raise Exception, "sarif diff file name is empty #{f}" if f.nil? || f == ""
       end
 
       sarif_file_new = File.join(@repo_path, sarif_file_new)
       sarif_file_old = File.join(@repo_path, sarif_file_old)
+      git_diff = File.join(@repo_path, git_diff) if git_diff != ''
 
-      [sarif_file_new, sarif_file_old].each do |f|
+      files = [sarif_file_new, sarif_file_old]
+      files.push git_diff if git_diff != ''
+      # [sarif_file_new, sarif_file_old, git_diff].each do |f|
+      files.each do |f|
         if !Salus::Report.new(repo_path: @repo_path).safe_local_report_path?(f)
-          raise Exception, "sarif diff file path should not be outside working dir #{f}"
+          raise Exception, "sarif/git diff file path should not be outside working dir #{f}"
         end
       end
 
       sarif_new = JSON.parse(File.read(sarif_file_new))
       sarif_old = JSON.parse(File.read(sarif_file_old))
-      filtered_full_sarif = Sarif::BaseSarif.report_diff(sarif_new, sarif_old)
+      git_diff = File.read(git_diff) if git_diff != ''
+      filtered_full_sarif = Sarif::BaseSarif.report_diff(sarif_new, sarif_old, git_diff)
 
       @report.full_diff_sarif = filtered_full_sarif
     end

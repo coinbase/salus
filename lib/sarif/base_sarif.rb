@@ -166,9 +166,23 @@ module Sarif
       end
     end
 
-    def self.report_diff(sarif_new, sarif_old)
+    def self.new_lines_in_git_diff(git_diff)
+      lines_added = {}
+      git_diff.split("\n").each_with_index do |line, line_num|
+        if line.start_with?('+') && !line.start_with?('++')
+          line = line.split('+', 2)[1]
+          # lines_added.add(line)
+          lines_added[line] = [] if !lines_added[line]
+          lines_added[line].push line_num
+        end
+      end
+      lines_added
+    end
+
+    def self.report_diff(sarif_new, sarif_old, git_diff = '')
       old_scanner_info = {}
       delete_results = Set.new
+      lines_added = new_lines_in_git_diff(git_diff)
 
       sarif_old["runs"].each do |run|
         if run["results"].size.positive?
@@ -190,6 +204,37 @@ module Sarif
             delete_results.add result
             scanner_updated = true
           else
+            if git_diff != ''
+              locations = result['locations']
+              if locations && !locations.empty?
+                in_git_diff = locations.all? do |loc|
+                  if loc['physicalLocation'] && loc['physicalLocation']['region'] &&
+                      loc['physicalLocation']['region']['snippet'] && loc['physicalLocation']['region']['snippet']['text']
+                    snippet = loc['physicalLocation']['region']['snippet']['text']
+                    if snippet == ''
+                      false
+                    else
+                      adapter = "Sarif::#{scanner}Sarif"
+                      begin
+                        adapter_cls = Object.const_get(adapter)
+                        adapter_cls.snippet_in_git_diff?(snippet, lines_added)
+                      rescue NameError
+                        false
+                      end
+                    end
+                  else
+                    false
+                  end
+                end
+
+                if in_git_diff
+                  delete_results.add result
+                  scanner_updated = true
+                  next
+                end
+              end
+            end
+
             result["ruleIndex"] = rule_index
             rule_ids.add result['ruleId']
             rule_index += 1
