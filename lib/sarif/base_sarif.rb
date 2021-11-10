@@ -171,7 +171,6 @@ module Sarif
       git_diff.split("\n").each_with_index do |line, line_num|
         if line.start_with?('+') && !line.start_with?('++')
           line = line.split('+', 2)[1]
-          # lines_added.add(line)
           lines_added[line] = [] if !lines_added[line]
           lines_added[line].push line_num
         end
