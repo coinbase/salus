@@ -40,7 +40,8 @@ module Salus
                  default: []
     class_option :git_diff,
                  desc: 'Path to a git diff txt file. ' \
-                       'Filter out --sarif-diff-full results not included in git diff.' \
+                       'Filter out --sarif-diff-full results that are most likely ' \
+                       'not included in git diff.' \
                        'Can only be used with --sarif-diff-full. ',
                  type: :string,
                  default: ''
