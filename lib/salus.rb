@@ -78,7 +78,6 @@ module Salus
       # System exit with success or failure - useful for CI builds.
       system_exit(processor.passed? ? EXIT_SUCCESS : EXIT_FAILURE)
     end
-    # rubocop:enable Metrics/ParameterLists
 
     def process_sarif_full_diff(processor, sarif_diff_full, git_diff)
       begin
