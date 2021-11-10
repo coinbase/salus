@@ -206,32 +206,11 @@ module Sarif
           else
             if git_diff != ''
               locations = result['locations']
-              if locations && !locations.empty?
-                in_git_diff = locations.all? do |loc|
-                  if loc['physicalLocation'] && loc['physicalLocation']['region'] &&
-                      loc['physicalLocation']['region']['snippet'] && loc['physicalLocation']['region']['snippet']['text']
-                    snippet = loc['physicalLocation']['region']['snippet']['text']
-                    if snippet == ''
-                      false
-                    else
-                      adapter = "Sarif::#{scanner}Sarif"
-                      begin
-                        adapter_cls = Object.const_get(adapter)
-                        adapter_cls.snippet_in_git_diff?(snippet, lines_added)
-                      rescue NameError
-                        false
-                      end
-                    end
-                  else
-                    false
-                  end
-                end
-
-                if in_git_diff
-                  delete_results.add result
-                  scanner_updated = true
-                  next
-                end
+              if locations && !locations.empty? &&
+                  locations.all? { |loc| snippet_in_loc?(loc, scanner, lines_added) }
+                delete_results.add result
+                scanner_updated = true
+                next
               end
             end
 
@@ -252,6 +231,21 @@ module Sarif
       end
 
       sarif_new
+    end
+
+    def self.snippet_in_loc?(loc, scanner, lines_added)
+      snippet = loc&.dig('physicalLocation', 'region', 'snippet', 'text')
+      if snippet.to_s.empty?
+        false
+      else
+        adapter = "Sarif::#{scanner}Sarif"
+        begin
+          adapter_cls = Object.const_get(adapter)
+          adapter_cls.snippet_in_git_diff?(snippet, lines_added)
+        rescue NameError
+          false
+        end
+      end
     end
   end
 end
