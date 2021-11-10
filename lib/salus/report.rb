@@ -18,18 +18,20 @@ module Salus
     attr_accessor :full_diff_sarif, :report_uris
 
     def initialize(report_uris: [], builds: {}, project_name: nil, custom_info: nil, config: nil,
-                   repo_path: nil, filter_sarif: nil, ignore_config_id: nil)
-      @report_uris = report_uris     # where we will send this report
-      @builds = builds               # build hash, could have arbitrary keys
-      @project_name = project_name   # the project_name we are scanning
-      @scan_reports = []             # ScanReports for each scan run
-      @errors = []                   # errors from Salus execution
-      @custom_info = custom_info     # some additional info to send
-      @config = config               # the configuration for this run
-      @running_time = nil            # overall running time for the scan; see #record
-      @filter_sarif = filter_sarif   # Filter out results from this file
-      @repo_path = repo_path         # path to repo
+                   repo_path: nil, filter_sarif: nil, ignore_config_id: nil,
+                   report_filter: DEFAULT_REPORT_FILTER)
+      @report_uris = report_uris           # where we will send this report
+      @builds = builds                     # build hash, could have arbitrary keys
+      @project_name = project_name         # the project_name we are scanning
+      @scan_reports = []                   # ScanReports for each scan run
+      @errors = []                         # errors from Salus execution
+      @custom_info = custom_info           # some additional info to send
+      @config = config                     # the configuration for this run
+      @running_time = nil                  # overall running time for the scan; see #record
+      @filter_sarif = filter_sarif         # Filter out results from this file
+      @repo_path = repo_path               # path to repo
       @ignore_config_id = ignore_config_id # ignore id in salus config
+      @report_filter = report_filter       # filter reports that'll run based on their configuration
       @full_diff_sarif = nil
     end
 
@@ -229,16 +231,36 @@ module Salus
       end
     end
 
-    def export_report
-      @report_uris.each do |directive|
-        publish_report(directive)
-      rescue StandardError => e
-        raise e if ENV['RUNNING_SALUS_TESTS']
+    def satisfies_filter?(directive, filter_key, filter_value)
+      directive.key?(filter_key) && (
+        # rubocop:disable Style/MultipleComparison
+        directive[filter_key] == filter_value || filter_value == '*'
+        # rubocop:enable Style/MultipleComparison
+      )
+    end
 
-        puts "Could not send Salus report: (#{e.class}: #{e.message})"
-        e = "Could not send Salus report. Exception: #{e}, Build info: #{builds}"
-        bugsnag_notify(e)
+    def export_report
+      return [] if @report_filter == 'none'
+
+      recovered_values = @report_filter.split(':', 2)
+      filter_key = recovered_values[0]
+      filter_value = recovered_values[1]
+      if @report_filter != 'all' && (filter_key.to_s == '' || filter_value.to_s == '')
+        raise ExportReportError, 'Poorly formatted report filter found. ' \
+          'Filter key and pattern must be non-empty strings'
       end
+
+      @report_uris.each do |directive|
+        if @report_filter == 'all' || satisfies_filter?(directive, filter_key, filter_value)
+          publish_report(directive)
+        end
+      end
+    rescue StandardError => e
+      raise e if ENV['RUNNING_SALUS_TESTS']
+
+      puts "Could not send Salus report: (#{e.class}: #{e.message})"
+      e = "Could not send Salus report. Exception: #{e}, Build info: #{builds}"
+      bugsnag_notify(e)
     end
 
     def safe_local_report_path?(path)
