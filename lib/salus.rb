@@ -28,6 +28,10 @@ module Salus
   class << self
     include SalusBugsnag
 
+    # rubocop:disable Metrics/ParameterLists
+    # rubocopy says Avoid parameter lists longer than 10 parameters
+    # this is kind of a false positive from rubocop
+    # because this is a special arg set that acts like a hash
     def scan(
       config: nil,
       quiet: false,

@@ -182,14 +182,16 @@ describe Sarif::GosecSarif do
     context 'git diff support' do
       it 'should find code in git diff' do
         git_diff_file = 'spec/fixtures/sarifs/diff/git_diff_1.txt'
-        snippet = "6:     username := \"admin\"\n7:     var password = \"f62e5bcda4fae4f82370da0c6f20697b8f8447ef\"\n8: \n"
+        snippet = "6:     username := \"admin\"\n7:     var password = " \
+                  "\"f62e5bcda4fae4f82370da0c6f20697b8f8447ef\"\n8: \n"
         git_diff = File.read(git_diff_file)
         new_lines_in_git_diff = Sarif::BaseSarif.new_lines_in_git_diff(git_diff)
         r = Sarif::GosecSarif.snippet_in_git_diff?(snippet, new_lines_in_git_diff)
         expect(r).to be true
 
         git_diff_file = 'spec/fixtures/sarifs/diff/git_diff_2.txt'
-        snippet = "6:     username := \"admin\"\n7:     var password = \"f62e5bcda4fae4f82370da0c6f20697b8f8447ef\"\n8: \n"
+        snippet = "6:     username := \"admin\"\n7:     var password = " \
+                  "\"f62e5bcda4fae4f82370da0c6f20697b8f8447ef\"\n8: \n"
         git_diff = File.read(git_diff_file)
         new_lines_in_git_diff = Sarif::BaseSarif.new_lines_in_git_diff(git_diff)
         r = Sarif::GosecSarif.snippet_in_git_diff?(snippet, new_lines_in_git_diff)
