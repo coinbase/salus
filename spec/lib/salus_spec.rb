@@ -155,18 +155,23 @@ describe Salus::CLI do
           diff_file = 'diff_1_2.json'
           expect(File).to exist(diff_file)
           diff_sarif = JSON.parse(File.read(diff_file))
-          gosec_info = diff_sarif['runs'].select { |run| run['tool']['driver']['name'] == 'Gosec' }[0]
+          gosec_info = diff_sarif['runs'].select do |run|
+            run['tool']['driver']['name'] == 'Gosec'
+          end[0]
           expect(gosec_info['results'].size).to eq(1)
           expect(gosec_info['results'][0]['ruleId']).to eq('G101')
 
           # with --git-diff, Gosec passes
           diff_args = ['v2.json', 'v1.json']
           ENV['SALUS_CONFIGURATION'] = 'file:///salus_diff.yaml'
-          Salus.scan(quiet: true, repo_path: '.', sarif_diff_full: diff_args, git_diff: 'v1_diff.txt')
+          Salus.scan(quiet: true, repo_path: '.', sarif_diff_full: diff_args,
+                     git_diff: 'v1_diff.txt')
           diff_file = 'diff_1_2.json'
           expect(File).to exist(diff_file)
           diff_sarif = JSON.parse(File.read(diff_file))
-          gosec_info = diff_sarif['runs'].select { |run| run['tool']['driver']['name'] == 'Gosec' }[0]
+          gosec_info = diff_sarif['runs'].select do |run|
+            run['tool']['driver']['name'] == 'Gosec'
+          end[0]
           expect(gosec_info['invocations'][0]['executionSuccessful']).to be(true)
           expect(gosec_info['results']).to be_empty
         end
