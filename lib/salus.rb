@@ -13,7 +13,7 @@ require 'cyclonedx/report'
 require 'salus/report_request'
 
 module Salus
-  VERSION = '2.14.0'.freeze
+  VERSION = '2.15.0'.freeze
   DEFAULT_REPO_PATH = './repo'.freeze # This is inside the docker container at /home/repo.
   DEFAULT_REPORT_FILTER = 'all'.freeze
 
