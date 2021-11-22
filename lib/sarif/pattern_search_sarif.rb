@@ -86,5 +86,13 @@ module Sarif
         properties: { severity: "HIGH" }
       }
     end
+
+    def self.snippet_in_git_diff?(snippet, lines_added)
+      lines = snippet.split("\n")
+      lines.all? do |line|
+        line = line.split(':', 3)[2]
+        lines_added.keys.include?(line)
+      end
+    end
   end
 end

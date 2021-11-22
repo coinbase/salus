@@ -38,6 +38,13 @@ module Salus
                        'Filters out results of sarif_2.json from sarif_1.json.',
                  type: :array,
                  default: []
+    class_option :git_diff,
+                 desc: 'Path to a git diff txt file. ' \
+                       'Filter out --sarif-diff-full results that are most likely ' \
+                       'not included in git diff.' \
+                       'Can only be used with --sarif-diff-full. ',
+                 type: :string,
+                 default: ''
     class_option :ignore_config_id,
                  desc: 'Ignore id in salus config.',
                  type: :string,
@@ -65,6 +72,7 @@ module Salus
         use_colors: !options[:no_colors],
         filter_sarif: options[:filter_sarif],
         sarif_diff_full: options[:sarif_diff_full],
+        git_diff: options[:git_diff],
         ignore_config_id: options[:ignore_config_id],
         only: options[:only],
         reports: options[:reports]
