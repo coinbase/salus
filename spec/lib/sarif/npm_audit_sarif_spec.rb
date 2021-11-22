@@ -2,36 +2,46 @@ require_relative '../../spec_helper'
 require 'json'
 
 describe Sarif::NPMAuditSarif do
-  let(:vuln_1) { 1_004_708 } # was 39, 1004707
+  let(:stub_stdout_failure_2) do
+    JSON.parse(File.read('spec/fixtures/npm_audit/failure-2/stub_stdout.txt'))
+  end
+  let(:stub_stderr_failure_2) do
+    JSON.parse(File.read('spec/fixtures/npm_audit/failure-2/stub_stderr.txt'))
+  end
 
   describe '#parse_issue' do
     let(:scanner) { Salus::Scanners::NPMAudit.new(repository: repo, config: {}) }
 
-    before { scanner.run }
-
     context 'scan report with logged vulnerabilites' do
       let(:repo) { Salus::Repo.new('spec/fixtures/npm_audit/failure-2') }
       it 'parses information correctly' do
+        status = ProcessStatusDouble.new(1)
+        stub_ret = Salus::ShellResult.new(stub_stdout_failure_2, stub_stderr_failure_2, status)
+        allow(scanner).to receive(:run_shell).and_return(stub_ret)
+
+        scanner.run
+
         issues = scanner.report.to_h[:info][:stdout][:advisories].values
-        issue = issues.select { |i| i[:id] == vuln_1 }.first
+        issue = issues.first
         npm_sarif = Sarif::NPMAuditSarif.new(scanner.report, './')
         parsed_issue = npm_sarif.parse_issue(issue)
+
         expect(parsed_issue).to include(
-          id: vuln_1.to_s,
-          name: "Regular Expression Denial of Service in uglify-js",
+          id: "1005415",
+          name: "Prototype Pollution in merge",
           level: "HIGH",
-          messageStrings: { "cwe": { "text": "" },
-                            "package": { "text": "uglify-js" },
-                            "patched_versions": { "text": ">=2.6.0" },
-                            "recommendation": { "text": "Upgrade to version 2.6.0 or later" },
+          messageStrings: { "cwe": { "text": "CWE-915" },
+                            "package": { "text": "merge" },
+                            "patched_versions": { "text": ">=2.1.1" },
+                            "recommendation": { "text": "Upgrade to version 2.1.1 or later" },
                             "severity": { "text": "high" },
-                            "vulnerable_versions": { "text": "<2.6.0" } },
-          help_url: "https://github.com/advisories/GHSA-c9f4-xj24-8jqx",
+                            "vulnerable_versions": { "text": "<2.1.1" } },
+          help_url: "https://github.com/advisories/GHSA-7wpw-2hjm-89gp",
           uri: "package-lock.json",
           properties: { severity: "high" },
           suppressed: false
         )
-        expected_details = "Versions of `uglify-js` prior to 2.6.0 are affected by a regular"
+        expected_details = "All versions of package merge <2.1.1 are vulnerable to Prototype"
         expect(parsed_issue[:details]).to include(expected_details)
       end
     end
@@ -40,6 +50,12 @@ describe Sarif::NPMAuditSarif do
       let(:path) { 'spec/fixtures/npm_audit/failure-2' }
       let(:repo) { Salus::Repo.new(path) }
       it 'should be parsed once' do
+        status = ProcessStatusDouble.new(1)
+        stub_ret = Salus::ShellResult.new(stub_stdout_failure_2, stub_stderr_failure_2, status)
+        allow(scanner).to receive(:run_shell).and_return(stub_ret)
+
+        scanner.run
+
         issue = scanner.report.to_h[:info][:stdout][:advisories].values[0]
 
         npm_sarif = Sarif::NPMAuditSarif.new(scanner.report, path)
@@ -69,11 +85,11 @@ describe Sarif::NPMAuditSarif do
 
   describe '#sarif_report' do
     let(:scanner) { Salus::Scanners::NPMAudit.new(repository: repo, config: {}) }
-    before { scanner.run }
 
     context 'npm file with errors' do
       let(:repo) { Salus::Repo.new('spec/fixtures/npm_audit/failure') }
       it 'should generate error in report' do
+        scanner.run
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
         report_object = JSON.parse(report.to_sarif)['runs'][0]
@@ -84,6 +100,7 @@ describe Sarif::NPMAuditSarif do
     context 'npm file with no vulnerabilities' do
       let(:repo) { Salus::Repo.new('spec/fixtures/npm_audit/success') }
       it 'should generate an empty sarif report' do
+        scanner.run
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
         report_object = JSON.parse(report.to_sarif)['runs'][0]
@@ -95,22 +112,29 @@ describe Sarif::NPMAuditSarif do
     context 'npm project with vulnerabilities' do
       let(:repo) { Salus::Repo.new('spec/fixtures/npm_audit/failure-2') }
       it 'should generate the right results and rules' do
+        status = ProcessStatusDouble.new(1)
+        stub_ret = Salus::ShellResult.new(stub_stdout_failure_2, stub_stderr_failure_2, status)
+        allow(scanner).to receive(:run_shell).and_return(stub_ret)
+
+        scanner.run
+
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
         results = JSON.parse(report.to_sarif)["runs"][0]["results"]
-        result = results.select { |r| r['ruleId'] == vuln_1.to_s }.first
+        result = results.first
         rules = JSON.parse(report.to_sarif)["runs"][0]["tool"]["driver"]["rules"]
-        rule = rules.select { |r| r['id'] == vuln_1.to_s }.first
+        rule = rules.first
+
         # Check rule info
-        expect(rule['id']).to eq(vuln_1.to_s)
-        expect(rule['name']).to eq("Regular Expression Denial of Service in uglify-js")
-        expected = "Versions of `uglify-js` prior to 2.6.0 are affected by a regular "\
-                   "expression denial of service"
+        expect(rule['id']).to eq("1005415")
+        expect(rule['name']).to eq("Prototype Pollution in merge")
+        expected = "All versions of package merge <2.1.1 are vulnerable to Prototype " \
+                   "Pollution via _recursiveMerge ."
         expect(rule['fullDescription']['text']).to include(expected)
-        expect(rule['helpUri']).to eq("https://github.com/advisories/GHSA-c9f4-xj24-8jqx")
+        expect(rule['helpUri']).to eq("https://github.com/advisories/GHSA-7wpw-2hjm-89gp")
 
         # Check result info
-        expect(result['ruleId']).to eq(vuln_1.to_s)
+        expect(result['ruleId']).to eq("1005415")
         expect(result['level']).to eq('error')
       end
     end
