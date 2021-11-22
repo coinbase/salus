@@ -2,20 +2,34 @@ require_relative '../../spec_helper'
 require 'json'
 
 describe Sarif::YarnAuditSarif do
+  let(:stub_stdout_failure_2) do
+    File.read('spec/fixtures/yarn_audit/failure-2/stub_stdout.txt')
+  end
+  let(:stub_stderr_failure_2) { "" }
+  let(:stub_status_failure_2) { 26 }
+  let(:stub_stdout_failure_4) do
+    File.read('spec/fixtures/yarn_audit/failure-4/stub_stdout.txt')
+  end
+  let(:stub_stderr_failure_4) { "" }
+  let(:stub_status_failure_4) { 28 }
+
   describe '#parse_issue' do
     let(:scanner) { Salus::Scanners::YarnAudit.new(repository: repo, config: {}) }
     let(:error_id_fail_2) { "1002899" } # was 39 before the great yarn advisory reshuffling of '21
-    before { scanner.run }
 
     context 'scan report with logged vulnerabilites' do
       let(:path) { 'spec/fixtures/yarn_audit/failure-2' }
       let(:repo) { Salus::Repo.new(path) }
       it 'parses information correctly' do
+        status = ProcessStatusDouble.new(stub_status_failure_2)
+        stub_ret = Salus::ShellResult.new(stub_stdout_failure_2, stub_stderr_failure_2, status)
+        allow(scanner).to receive(:run_shell).and_return(stub_ret)
+        scanner.run
         issue = JSON.parse(scanner.report.to_h[:info][:stdout])[0]
         yarn_sarif = Sarif::YarnAuditSarif.new(scanner.report, path)
 
         expect(yarn_sarif.parse_issue(issue)).to include(
-          id: error_id_fail_2,
+          id: "1005415",
           name: "Prototype Pollution in merge",
           level: "HIGH",
           details: "Prototype Pollution in merge, Dependency of: merge",
@@ -26,7 +40,7 @@ describe Sarif::YarnAuditSarif do
             severity: { text: "high" }
           },
           uri: "yarn.lock",
-          help_url: "https://www.npmjs.com/advisories/#{error_id_fail_2}",
+          help_url: "https://www.npmjs.com/advisories/1005415",
           properties: { severity: "high" }
         )
       end
@@ -35,12 +49,12 @@ describe Sarif::YarnAuditSarif do
 
   describe '#sarif_report' do
     let(:scanner) { Salus::Scanners::YarnAudit.new(repository: repo, config: {}) }
-    before { scanner.run }
 
     context 'Yarn file with errors' do
       let(:path) { 'spec/fixtures/yarn_audit/failure-3' }
       let(:repo) { Salus::Repo.new(path) }
       it 'should generate error in report' do
+        scanner.run
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
         report_object = JSON.parse(report.to_sarif)['runs'][0]
@@ -56,6 +70,7 @@ describe Sarif::YarnAuditSarif do
     context 'Yarn file with no vulnerabilities' do
       let(:repo) { Salus::Repo.new('spec/fixtures/yarn_audit/success') }
       it 'should generate an empty sarif report' do
+        scanner.run
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
         report_object = JSON.parse(report.to_sarif)['runs'][0]
@@ -69,26 +84,25 @@ describe Sarif::YarnAuditSarif do
       let(:error_id_fail_4) { "1004708" } # was 39 before the great yarn advisory reshuffling of '21
 
       it 'should generate the right results and rules' do
+        status = ProcessStatusDouble.new(stub_status_failure_4)
+        stub_ret = Salus::ShellResult.new(stub_stdout_failure_4, stub_stderr_failure_4, status)
+        allow(scanner).to receive(:run_shell).and_return(stub_ret)
+        scanner.run
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
 
         parsed_json = JSON.parse(report.to_sarif)
-        result = parsed_json["runs"][0]["results"].select do |rule|
-          rule["ruleId"] == error_id_fail_4
-        end.first
-        rule = parsed_json["runs"][0]["tool"]["driver"]["rules"].select do |r|
-          r['id'] == error_id_fail_4
-        end.first
+        result = parsed_json["runs"][0]["results"].first
+        rule = parsed_json["runs"][0]["tool"]["driver"]["rules"].first
 
         # Check rule info
-        expect(rule['id']).to eq(error_id_fail_4)
-        expect(rule['name']).to eq("Regular Expression Denial of Service in uglify-js")
-        expect(rule['fullDescription']['text']).to eq("Regular Expression Denial "\
-          "of Service in uglify-js")
-        expect(rule['helpUri']).to eq("https://www.npmjs.com/advisories/#{error_id_fail_4}")
+        expect(rule['id']).to eq("1005365")
+        expect(rule['name']).to eq("Command Injection in lodash")
+        expect(rule['fullDescription']['text']).to eq("Command Injection in lodash")
+        expect(rule['helpUri']).to eq("https://www.npmjs.com/advisories/1005365")
 
         # Check result info
-        expect(result['ruleId']).to eq(error_id_fail_4)
+        expect(result['ruleId']).to eq("1005365")
         expect(result['ruleIndex']).to be >= 0 # liberal here to avoid hard coding the index
         expect(result['level']).to eq('error')
       end
@@ -98,6 +112,7 @@ describe Sarif::YarnAuditSarif do
       let(:path) { 'spec/fixtures/yarn_audit/failure-2' }
       let(:repo) { Salus::Repo.new(path) }
       it 'should generate all identified vulnerabilities' do
+        scanner.run
         issue = JSON.parse(scanner.report.to_h[:info][:stdout])[0]
         yarn_sarif = Sarif::YarnAuditSarif.new(scanner.report, path)
 

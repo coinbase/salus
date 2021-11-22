@@ -7,10 +7,19 @@ NODE_AUDIT_SCANNERS = [
 ].freeze
 
 describe Salus::Scanners::NodeAudit do
-  let(:vuln_1) { 1_004_708 } # was 39, then 1004707
-  let(:vuln_2) { 1_004_774 } # was 48, then 1004708
-  let(:vuln_3) { 1_002_899 } # was 722
-  let(:vuln_4) { 1_004_565 } # was 1666
+  let(:stub_npm_stdout) do
+    JSON.parse(File.read('spec/fixtures/npm_audit/success_with_exceptions/stub_stdout.txt'))
+  end
+  let(:stub_npm_stderr) do
+    JSON.parse(File.read('spec/fixtures/npm_audit/success_with_exceptions/stub_stderr.txt'))
+  end
+  let(:stub_npm_exit_status) { 1 }
+
+  let(:stub_yarn_stdout) do
+    File.read('spec/fixtures/yarn_audit/success_with_exceptions/stub_stdout.txt')
+  end
+  let(:stub_yarn_stderr) { "" }
+  let(:stub_yarn_exit_status) { 24 }
 
   # We will test all subclasses of NodeAudit the same for superclass methods like #run.
   # Public methods implemented in the subclass (#should_run?) can be tested in individual files.
@@ -31,20 +40,16 @@ describe Salus::Scanners::NodeAudit do
           expect(info.key?(:stdout)).to eq(true)
 
           if klass_str == 'NPMAudit'
-            expect(info).to include(
-              prod_advisories: [vuln_1.to_s, vuln_2.to_s],
-              dev_advisories: [],
-              unexcepted_prod_advisories: [vuln_1.to_s, vuln_2.to_s],
-              exceptions: [],
-              prod_exceptions: [],
-              dev_exceptions: [],
-              useless_exceptions: []
-            )
+            expect(info[:prod_advisories].size).to eq(2)
+            expect(info[:dev_advisories]).to be_empty
+            expect(info[:unexcepted_prod_advisories].size).to eq(2)
+            expect(info[:exceptions]).to be_empty
+            expect(info[:prod_exceptions]).to be_empty
+            expect(info[:dev_exceptions]).to be_empty
+            expect(info[:useless_exceptions]).to be_empty
           else # YarnAudit
-            expect(info).to include(
-              vulnerabilities: [vuln_1, vuln_2],
-              ignored_cves: []
-            )
+            expect(info[:vulnerabilities].size).to eq(2)
+            expect(info[:ignored_cves]).to be_empty
           end
         end
 
@@ -57,20 +62,16 @@ describe Salus::Scanners::NodeAudit do
           info = scanner.report.to_h.fetch(:info)
           expect(info.key?(:stdout)).to eq(true)
           if klass_str == 'NPMAudit'
-            expect(info).to include(
-              prod_advisories: [vuln_3.to_s, vuln_4.to_s, vuln_1.to_s, vuln_2.to_s],
-              dev_advisories: [],
-              unexcepted_prod_advisories: [vuln_3.to_s, vuln_4.to_s, vuln_1.to_s, vuln_2.to_s],
-              exceptions: [],
-              prod_exceptions: [],
-              dev_exceptions: [],
-              useless_exceptions: []
-            )
+            expect(info[:prod_advisories].size).to eq(4)
+            expect(info[:dev_advisories]).to be_empty
+            expect(info[:unexcepted_prod_advisories].size).to eq(4)
+            expect(info[:exceptions]).to be_empty
+            expect(info[:prod_exceptions]).to be_empty
+            expect(info[:dev_exceptions]).to be_empty
+            expect(info[:useless_exceptions]).to be_empty
           else # YarnAudit
-            expect(info).to include(
-              vulnerabilities: [vuln_3, vuln_4, vuln_1, vuln_2],
-              ignored_cves: []
-            )
+            expect(info[:vulnerabilities].size).to eq(4)
+            expect(info[:ignored_cves]).to be_empty
           end
         end
       end
@@ -108,6 +109,21 @@ describe Salus::Scanners::NodeAudit do
           scanner = klass_obj.new(
             repository: repo, config: config_file['scanner_configs'][klass_str]
           )
+
+          if klass_str == "NPMAudit"
+            stub_stdout = stub_npm_stdout
+            stub_stderr = stub_npm_stderr
+            stub_status = stub_npm_exit_status
+          elsif klass_str == "YarnAudit"
+            stub_stdout = stub_yarn_stdout
+            stub_stderr = stub_yarn_stderr
+            stub_status = stub_yarn_exit_status
+          end
+
+          process_status = ProcessStatusDouble.new(stub_status)
+          stub_shell_return = Salus::ShellResult.new(stub_stdout, stub_stderr, process_status)
+          allow(scanner).to receive(:run_shell).and_return(stub_shell_return)
+
           scanner.run
 
           expect(scanner.report.passed?).to eq(true)
@@ -115,11 +131,11 @@ describe Salus::Scanners::NodeAudit do
           if klass_str == 'NPMAudit'
             expect(info.key?(:stdout)).to eq(true)
             expect(info).to include(
-              prod_advisories: [vuln_1.to_s, vuln_2.to_s],
+              prod_advisories: %w[1006708 1006709],
               dev_advisories: [],
               unexcepted_prod_advisories: [],
-              exceptions: [vuln_1.to_s, vuln_2.to_s],
-              prod_exceptions: [vuln_1.to_s, vuln_2.to_s],
+              exceptions: %w[1006708 1006709],
+              prod_exceptions: %w[1006708 1006709],
               dev_exceptions: [],
               useless_exceptions: []
             )
@@ -127,8 +143,8 @@ describe Salus::Scanners::NodeAudit do
             # YarnAudit no longer displays vulns that have been whitelisted
             expect(info.key?(:stdout)).to eq(false)
             expect(info).to include(
-              ignored_cves: [vuln_1, vuln_2],
-              vulnerabilities: [vuln_1, vuln_2]
+              ignored_cves: [1_006_708, 1_006_709],
+              vulnerabilities: [1_006_708, 1_006_709]
             )
           end
         end
@@ -147,6 +163,21 @@ describe Salus::Scanners::NodeAudit do
           scanner = klass_obj.new(
             repository: repo, config: config_file['scanner_configs'][klass_str]
           )
+
+          if klass_str == "NPMAudit"
+            stub_stdout = stub_npm_stdout
+            stub_stderr = stub_npm_stderr
+            stub_status = stub_npm_exit_status
+          elsif klass_str == "YarnAudit"
+            stub_stdout = stub_yarn_stdout
+            stub_stderr = stub_yarn_stderr
+            stub_status = stub_yarn_exit_status
+          end
+
+          process_status = ProcessStatusDouble.new(stub_status)
+          stub_shell_return = Salus::ShellResult.new(stub_stdout, stub_stderr, process_status)
+          allow(scanner).to receive(:run_shell).and_return(stub_shell_return)
+
           scanner.run
           expect(scanner.report.passed?).to eq(true)
         end
@@ -172,6 +203,21 @@ describe Salus::Scanners::NodeAudit do
           scanner = klass_obj.new(
             repository: repo, config: config_file['scanner_configs'][klass_str]
           )
+
+          if klass_str == "NPMAudit"
+            stub_stdout = stub_npm_stdout
+            stub_stderr = stub_npm_stderr
+            stub_status = stub_npm_exit_status
+          elsif klass_str == "YarnAudit"
+            stub_stdout = stub_yarn_stdout
+            stub_stderr = stub_yarn_stderr
+            stub_status = stub_yarn_exit_status
+          end
+
+          process_status = ProcessStatusDouble.new(stub_status)
+          stub_shell_return = Salus::ShellResult.new(stub_stdout, stub_stderr, process_status)
+          allow(scanner).to receive(:run_shell).and_return(stub_shell_return)
+
           scanner.run
           expect(scanner.report.passed?).to eq(true)
         end
