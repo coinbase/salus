@@ -208,25 +208,25 @@ describe Sarif::BaseSarif do
     end
   end
 
-  describe 'passed?' do
-    it 'passed? should return false if enforced scanner failed' do
+  describe 'salus_passed?' do
+    it 'salus_passed? should return false if enforced scanner failed' do
       sarif_file = 'spec/fixtures/sarifs/diff/sarif_2.json'
       sarif = JSON.parse(File.read(sarif_file))
-      passed = Sarif::BaseSarif.passed?(sarif)
+      passed = Sarif::BaseSarif.salus_passed?(sarif)
       expect(passed).to be_falsey
     end
 
-    it 'passed? should return true if non-enforced scanner failed' do
+    it 'salus_passed? should return true if non-enforced scanner failed' do
       sarif_file = 'spec/fixtures/sarifs/diff/sarif_1_non_enforced.json'
       sarif = JSON.parse(File.read(sarif_file))
-      passed = Sarif::BaseSarif.passed?(sarif)
+      passed = Sarif::BaseSarif.salus_passed?(sarif)
       expect(passed).to be_truthy
     end
 
-    it 'passed? should return true if all scanners passed' do
+    it 'salus_passed? should return true if all scanners passed' do
       sarif_file = 'spec/fixtures/sarifs/diff/sarif_all_passed.json'
       sarif = JSON.parse(File.read(sarif_file))
-      passed = Sarif::BaseSarif.passed?(sarif)
+      passed = Sarif::BaseSarif.salus_passed?(sarif)
       expect(passed).to be_truthy
     end
   end

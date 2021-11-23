@@ -96,7 +96,7 @@ module Salus
       processor.report.report_uris.select! { |u| u['format'] == FULL_SARIF_DIFF_FORMAT }
       processor.export_report
 
-      if Sarif::BaseSarif.passed?(processor.report.full_diff_sarif)
+      if Sarif::BaseSarif.salus_passed?(processor.report.full_diff_sarif)
         system_exit(EXIT_SUCCESS)
       else
         system_exit(EXIT_FAILURE)
