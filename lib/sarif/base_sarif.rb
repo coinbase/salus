@@ -168,7 +168,7 @@ module Sarif
 
     def self.passed?(sarif)
       sarif['runs'].each do |run|
-        execution_succ = run['invocations'][0]['executionSuccessful']
+        execution_succ = run['invocations'].all? { |inv| inv['executionSuccessful'] }
         scanner_enforced = run['tool']['driver']['properties']['salusEnforced']
         return false if scanner_enforced && !execution_succ
       end
