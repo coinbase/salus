@@ -63,7 +63,9 @@ module Salus
                                        ignore_config_id: ignore_config_id,
                                        cli_scanners_to_run: only, report_filter: reports)
 
-      process_sarif_full_diff(processor, sarif_diff_full, git_diff) unless sarif_diff_full.empty?
+      unless sarif_diff_full.empty?
+        return process_sarif_full_diff(processor, sarif_diff_full, git_diff)
+      end
 
       ### Scan Project ###
       # Scan project with Salus client.
@@ -93,7 +95,12 @@ module Salus
 
       processor.report.report_uris.select! { |u| u['format'] == FULL_SARIF_DIFF_FORMAT }
       processor.export_report
-      system_exit(EXIT_SUCCESS)
+
+      if Sarif::BaseSarif.passed?(processor.report.full_diff_sarif)
+        system_exit(EXIT_SUCCESS)
+      else
+        system_exit(EXIT_FAILURE)
+      end
     end
 
     private

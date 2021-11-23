@@ -1,0 +1,318 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/schemas/sarif-schema-2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Brakeman",
+          "version": "4.10.0",
+          "informationUri": "https://github.com/presidentbeef/brakeman",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": true
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "BundleAudit",
+          "version": "0.8.0",
+          "informationUri": "https://github.com/rubysec/bundler-audit/",
+          "rules": [
+            {
+              "id": "CVE-2021-41098",
+              "name": "Improper Restriction of XML External Entity Reference (XXE) in Nokogiri on JRuby",
+              "fullDescription": {
+                "text": "### Severity\n\nThe Nokogiri maintainers have evaluated this as [**High Severity** 7.5 (CVSS3.0)](https://www.first.org/cvss/calculator/3.0#CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N/E:H/RL:O/RC:C/MAV:N/MAC:L) for JRuby users. (This security advisory does not apply to CRuby users.)\n\n### Impact\n\nIn Nokogiri v1.12.4 and earlier, **on JRuby only**, the SAX parser resolves external entities by default.\n\nUsers of Nokogiri on JRuby who parse untrusted documents using any of these classes are affected:\n\n- Nokogiri::XML::SAX::Parser\n- Nokogiri::HTML4::SAX::Parser or its alias Nokogiri::HTML::SAX::Parser\n- Nokogiri::XML::SAX::PushParser\n- Nokogiri::HTML4::SAX::PushParser or its alias Nokogiri::HTML::SAX::PushParser\n\n### Mitigation\n\nJRuby users should upgrade to Nokogiri v1.12.5 or later. There are no workarounds available for v1.12.4 or earlier.\n\nCRuby users are not affected."
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "nokogiri"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\">= 1.12.5\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Improper Restriction of XML External Entity Reference (XXE) in Nokogiri on JRuby"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "1.11.7"
+                }
+              },
+              "helpUri": "https://github.com/sparklemotion/nokogiri/security/advisories/GHSA-2rr5-8q37-2w7h",
+              "help": {
+                "text": "More info: https://github.com/sparklemotion/nokogiri/security/advisories/GHSA-2rr5-8q37-2w7h",
+                "markdown": "[More info](https://github.com/sparklemotion/nokogiri/security/advisories/GHSA-2rr5-8q37-2w7h)."
+              }
+            },
+            {
+              "id": "CVE-2021-41136",
+              "name": "Inconsistent Interpretation of HTTP Requests ('HTTP Request Smuggling') in puma",
+              "fullDescription": {
+                "text": "### Impact\n\nPrior to `puma` version 5.5.0, using `puma` with a proxy which forwards LF characters as line endings could allow HTTP request smuggling. A client could smuggle a request through a proxy, causing the proxy to send a response back to another unknown client.\n\nThis behavior (forwarding LF characters as line endings) is very uncommon amongst proxy servers, so we have graded the impact here as \"low\". Puma is only aware of a single proxy server which has this behavior.\n\nIf the proxy uses persistent connections and the client adds another request in via HTTP pipelining, the proxy may mistake it as the first request's body. Puma, however, would see it as two requests, and when processing the second request, send back a response that the proxy does not expect. If the proxy has reused the persistent connection to Puma to send another request for a different client, the second response from the first client will be sent to the second client.\n\n### Patches\n\nThis vulnerability was patched in Puma 5.5.1 and 4.3.9.\n\n### Workarounds\n\nThis vulnerability only affects Puma installations without any proxy in front.\n\nUse a proxy which does not forward LF characters as line endings.\n\nProxies which do not forward LF characters as line endings:\n\n* Nginx\n* Apache (>2.4.25)\n* Haproxy\n* Caddy\n* Traefik\n\n### Possible Breakage\n\nIf you are [dealing with legacy clients that want to send `LF` as a line ending](https://stackoverflow.com/questions/43574428/have-apache-accept-lf-vs-crlf-in-request-headers) in an HTTP header, this will cause those clients to receive a `400` error.\n\n### References\n\n* [HTTP Request Smuggling](https://portswigger.net/web-security/request-smuggling)\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "puma"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 4.3.9\", \">= 5.5.1\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Inconsistent Interpretation of HTTP Requests ('HTTP Request Smuggling') in puma"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "4.3.8"
+                }
+              },
+              "helpUri": "https://github.com/puma/puma/security/advisories/GHSA-48w2-rm65-62xx",
+              "help": {
+                "text": "More info: https://github.com/puma/puma/security/advisories/GHSA-48w2-rm65-62xx",
+                "markdown": "[More info](https://github.com/puma/puma/security/advisories/GHSA-48w2-rm65-62xx)."
+              }
+            }
+          ],
+          "properties": {
+            "salusEnforced": false
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+        {
+          "ruleId": "CVE-2021-41098",
+          "ruleIndex": 0,
+          "level": "note",
+          "message": {
+            "text": "### Severity\n\nThe Nokogiri maintainers have evaluated this as [**High Severity** 7.5 (CVSS3.0)](https://www.first.org/cvss/calculator/3.0#CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N/E:H/RL:O/RC:C/MAV:N/MAC:L) for JRuby users. (This security advisory does not apply to CRuby users.)\n\n### Impact\n\nIn Nokogiri v1.12.4 and earlier, **on JRuby only**, the SAX parser resolves external entities by default.\n\nUsers of Nokogiri on JRuby who parse untrusted documents using any of these classes are affected:\n\n- Nokogiri::XML::SAX::Parser\n- Nokogiri::HTML4::SAX::Parser or its alias Nokogiri::HTML::SAX::Parser\n- Nokogiri::XML::SAX::PushParser\n- Nokogiri::HTML4::SAX::PushParser or its alias Nokogiri::HTML::SAX::PushParser\n\n### Mitigation\n\nJRuby users should upgrade to Nokogiri v1.12.5 or later. There are no workarounds available for v1.12.4 or earlier.\n\nCRuby users are not affected."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2021-41136",
+          "ruleIndex": 1,
+          "level": "note",
+          "message": {
+            "text": "### Impact\n\nPrior to `puma` version 5.5.0, using `puma` with a proxy which forwards LF characters as line endings could allow HTTP request smuggling. A client could smuggle a request through a proxy, causing the proxy to send a response back to another unknown client.\n\nThis behavior (forwarding LF characters as line endings) is very uncommon amongst proxy servers, so we have graded the impact here as \"low\". Puma is only aware of a single proxy server which has this behavior.\n\nIf the proxy uses persistent connections and the client adds another request in via HTTP pipelining, the proxy may mistake it as the first request's body. Puma, however, would see it as two requests, and when processing the second request, send back a response that the proxy does not expect. If the proxy has reused the persistent connection to Puma to send another request for a different client, the second response from the first client will be sent to the second client.\n\n### Patches\n\nThis vulnerability was patched in Puma 5.5.1 and 4.3.9.\n\n### Workarounds\n\nThis vulnerability only affects Puma installations without any proxy in front.\n\nUse a proxy which does not forward LF characters as line endings.\n\nProxies which do not forward LF characters as line endings:\n\n* Nginx\n* Apache (>2.4.25)\n* Haproxy\n* Caddy\n* Traefik\n\n### Possible Breakage\n\nIf you are [dealing with legacy clients that want to send `LF` as a line ending](https://stackoverflow.com/questions/43574428/have-apache-accept-lf-vs-crlf-in-request-headers) in an HTTP header, this will cause those clients to receive a `400` error.\n\n### References\n\n* [HTTP Request Smuggling](https://portswigger.net/web-security/request-smuggling)\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        }
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": false
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "PatternSearch",
+          "version": "0.9.0",
+          "informationUri": "https://github.com/coinbase/salus/blob/master/docs/scanners/pattern_search.md",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": true
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "RepoNotEmpty",
+          "version": "",
+          "informationUri": "https://github.com/coinbase/salus/blob/master/docs/scanners/repository_not_blank.md",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": true
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "ReportRubyGems",
+          "version": "",
+          "informationUri": "https://github.com/coinbase/salus",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": false
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "toolExecutionNotifications": [
+            {
+              "descriptor": {
+                "id": "SAL001"
+              },
+              "message": {
+                "text": "SARIF reports are not available for this scanner"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Semgrep",
+          "version": "0.62.0",
+          "informationUri": "https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": true
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ]
+    }
+  ]
+}

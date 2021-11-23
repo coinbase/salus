@@ -122,12 +122,13 @@ describe Salus::CLI do
         Dir.chdir('spec/fixtures/sarifs/diff') do
           args = ['sarif_1.json', 'sarif_2.json']
           ENV['SALUS_CONFIGURATION'] = 'file:///salus_diff.yaml'
-          Salus.scan(quiet: true, repo_path: '.', sarif_diff_full: args)
+          exit_status = Salus.scan(quiet: true, repo_path: '.', sarif_diff_full: args)
           diff_file = 'diff_1_2.json'
           expect(File).to exist(diff_file)
           diff_sarif = JSON.parse(File.read(diff_file))
           expected_sarif = JSON.parse(File.read('sarif_1_2.json'))
           expect(expected_sarif).to eq(diff_sarif)
+          expect(exit_status).to eq(Salus::EXIT_SUCCESS) # no vuls in sarif
         end
       end
 
@@ -151,7 +152,7 @@ describe Salus::CLI do
           # without --git-diff, Gosec has a vul
           args = ['v2.json', 'v1.json']
           ENV['SALUS_CONFIGURATION'] = 'file:///salus_diff.yaml'
-          Salus.scan(quiet: true, repo_path: '.', sarif_diff_full: args)
+          exit_status = Salus.scan(quiet: true, repo_path: '.', sarif_diff_full: args)
           diff_file = 'diff_1_2.json'
           expect(File).to exist(diff_file)
           diff_sarif = JSON.parse(File.read(diff_file))
@@ -160,11 +161,12 @@ describe Salus::CLI do
           end[0]
           expect(gosec_info['results'].size).to eq(1)
           expect(gosec_info['results'][0]['ruleId']).to eq('G101')
+          expect(exit_status).to eq(Salus::EXIT_FAILURE)
 
           # with --git-diff, Gosec passes
           diff_args = ['v2.json', 'v1.json']
           ENV['SALUS_CONFIGURATION'] = 'file:///salus_diff.yaml'
-          Salus.scan(quiet: true, repo_path: '.', sarif_diff_full: diff_args,
+          exit_status = Salus.scan(quiet: true, repo_path: '.', sarif_diff_full: diff_args,
                      git_diff: 'v1_diff.txt')
           diff_file = 'diff_1_2.json'
           expect(File).to exist(diff_file)
@@ -174,6 +176,7 @@ describe Salus::CLI do
           end[0]
           expect(gosec_info['invocations'][0]['executionSuccessful']).to be(true)
           expect(gosec_info['results']).to be_empty
+          expect(exit_status).to eq(Salus::EXIT_SUCCESS)
         end
       end
     end

@@ -166,6 +166,15 @@ module Sarif
       end
     end
 
+    def self.passed?(sarif)
+      sarif['runs'].each do |run|
+        execution_succ = run['invocations'][0]['executionSuccessful']
+        scanner_enforced = run['tool']['driver']['properties']['salusEnforced']
+        return false if scanner_enforced && !execution_succ
+      end
+      true
+    end
+
     def self.new_lines_in_git_diff(git_diff)
       lines_added = {}
       git_diff.split("\n").each_with_index do |line, line_num|
