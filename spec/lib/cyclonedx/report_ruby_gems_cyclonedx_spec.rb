@@ -1,13 +1,13 @@
 require_relative '../../spec_helper'
 require 'json'
-
+require 'pry'
 describe Cyclonedx::ReportRubyGems do
   describe "#run" do
     it 'should report all the deps in the Gemfile if Gemfile.lock is absent in cyclonedx' do
       repo = Salus::Repo.new('spec/fixtures/report_ruby_gems/gemfile_only')
       scanner = Salus::Scanners::ReportRubyGems.new(repository: repo, config: {})
       scanner.run
-
+      binding.pry
       ruby_cyclonedx = Cyclonedx::ReportRubyGems.new(scanner.report)
       expect(ruby_cyclonedx.build_components_object).to match_array(
         [

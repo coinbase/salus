@@ -5,6 +5,7 @@ require 'salus/bugsnag'
 require 'shellwords'
 require 'salus/plugin_manager'
 require 'timeout'
+require 'thread'
 
 module Salus::Scanners
   # Super class for all scanner objects.
@@ -79,9 +80,9 @@ module Salus::Scanners
       salus_report.add_scan_report(@report, required: required)
 
       begin
-        @report.record do
+        #@report.record do
           Timeout.timeout(scanner_timeout) { run }
-        end
+        #end
 
         if @report.errors.any?
           pass_on_raise ? @report.pass : @report.fail
@@ -92,10 +93,10 @@ module Salus::Scanners
           message: error_message,
           error_class: ScannerTimeoutError
         }
-
-        pass_on_raise ? @report.pass : @report.fail
-
-        @report.error(timeout_error_data)
+        mutex.synchronize do
+          pass_on_raise ? @report.pass : @report.fail
+          @report.error(timeout_error_data)
+        end
         salus_report.error(timeout_error_data)
         bugsnag_notify(error_message)
 
@@ -107,11 +108,11 @@ module Salus::Scanners
           error_class: e.class,
           backtrace: e.backtrace.take(5)
         }
-
-        pass_on_raise ? @report.pass : @report.fail
-
+        mutex.synchronize do
+          pass_on_raise ? @report.pass : @report.fail
+        end
         # Record the error so that the Salus report captures the issue.
-        @report.error(error_data)
+        mutex.synchronize { @report.error(error_data) }
         salus_report.error(error_data)
 
         raise if reraise
@@ -131,28 +132,28 @@ module Salus::Scanners
 
     # Add a textual logline to the report. This is for humans
     def log(string)
-      @report.log(string)
+      mutex.synchronize { @report.log(string) }
     end
 
     # Tag the report as having completed successfully
     def report_success
-      @report.pass
+      mutex.synchronize { @report.pass }
     end
 
     # Tag the report as having failed
     # (ie. a vulnerability was found, the scanner errored out, etc)
     def report_failure
-      @report.fail
+      mutex.synchronize { @report.fail }
     end
 
     # Report information about this scan.
     def report_info(type, message)
-      @report.info(type, message)
+      mutex.synchronize { @report.info(type, message) }
     end
 
     # Report a scanner warning such as a possible misconfiguration
     def report_warn(type, message)
-      @report.warn(type, message)
+      mutex.synchronize { @report.warn(type, message) }
       Salus::PluginManager.send_event(:report_warn, { type: type, message: message })
       if @salus_report&.builds
         scanner = @report.scanner_name
@@ -163,18 +164,18 @@ module Salus::Scanners
 
     # Report the STDOUT from the scanner.
     def report_stdout(stdout)
-      @report.info(:stdout, stdout)
+      mutex.synchronize { @report.info(:stdout, stdout) } 
     end
 
     # Report the STDERR from the scanner.
     def report_stderr(stderr)
-      @report.info(:stderr, stderr)
+      mutex.synchronize { @report.info(:stderr, stderr) }
     end
 
     # Report an error in a scanner.
     def report_error(message, hsh = {})
       hsh[:message] = message
-      @report.error(hsh)
+      mutex.synchronize { @report.error(hsh) }
       if @salus_report&.builds
         message = "#{@report.scanner_name} error: #{message}, build: #{@salus_report.builds}"
       end
@@ -184,7 +185,7 @@ module Salus::Scanners
     # Report a dependency of the project
     def report_dependency(file, hsh = {})
       hsh = hsh.merge(dependency_file: file)
-      @report.dependency(hsh)
+      mutex.synchronize { @report.dependency(hsh) }
     end
 
     protected

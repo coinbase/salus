@@ -1,7 +1,11 @@
-FROM ruby:2.7.2@sha256:0fee695f3bf397bb521d8ced9e30963835fac44bc27f46393a5b91941c8a40aa as builder
+#FROM ruby:2.7.2@sha256:0fee695f3bf397bb521d8ced9e30963835fac44bc27f46393a5b91941c8a40aa as builder
+
+FROM jruby:9.3.1.0@sha256:2d97ab2568e56b2e6923b3f659de713d4c68344ca946689c2d83258c390eebb6 as builder
 MAINTAINER security@coinbase.com
 
+
 RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get install -y --no-install-recommends \
+  apt-utils \
   g++ \
   gcc \
   libc6-dev \
@@ -9,18 +13,14 @@ RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get inst
   pkg-config \
   curl \
   git  \
-  python \
   python3 \
-  python-pip \
   python3-pip \
-  python-setuptools \
   python3-setuptools \
-  python-dev \
   python3-dev \
-  libpython-dev \
   libpython3-dev \
   libicu-dev \
   cmake \
+  libssl-dev \
   pkg-config \
   wget
 
@@ -48,18 +48,14 @@ RUN curl -fsSL "$RUST_DOWNLOAD_URL" -o rust.tar.gz \
 # Install bandit, python static code scanner
 ENV BANDIT_VERSION 1.6.2
 
-RUN pip install wheel \
-  && pip3 install wheel \
-  && pip install --user bandit==${BANDIT_VERSION} \
-  && mv .local/bin/bandit .local/bin/bandit2 \
+RUN pip3 install wheel \
   && pip3 install --user bandit==${BANDIT_VERSION}
-
 
 ### Ruby
 # ruby gems
 COPY Gemfile Gemfile.lock /home/
 RUN cd /home \
-  && gem install bundler -v '2.2.19' \
+  && gem install bundler -v '2.2.14' \
   && gem update --system \
   && bundle install --deployment --no-cache --clean --with scanners \
   && bundle exec bundle audit update
@@ -109,7 +105,9 @@ RUN bundle install --deployment --without development:test
 
 
 
-FROM ruby:2.7.2-slim@sha256:b9eebc5a6956f1def4698fac0930e7a1398a50c4198313fe87af0402cab8d149
+#FROM ruby:2.7.2-slim@sha256:b9eebc5a6956f1def4698fac0930e7a1398a50c4198313fe87af0402cab8d149
+#FROM jruby:9.3.1.0@sha256:2d97ab2568e56b2e6923b3f659de713d4c68344ca946689c2d83258c390eebb6
+
 
 ENV PATH="/root/.cargo/bin:/root/.local/bin:${PATH}"
 
@@ -119,7 +117,6 @@ ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
 
 RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get install -y --no-install-recommends \
-  python-minimal \
   python-setuptools \
   python3-minimal \
   python3-setuptools \
@@ -150,16 +147,15 @@ RUN curl -fsSL "$NODE_DOWNLOAD_URL" -o node.tar.gz \
 
 ### All other tools
 ENV PIP_VERSION 18.1
-COPY --from=builder /root/go/bin/sift /usr/local/bin
-COPY --from=builder /root/gosec/gosec /usr/local/bin
-COPY --from=builder /usr/local/bin/cargo /usr/local/bin
-COPY --from=builder /root/vendor /home/vendor
-COPY --from=builder /root/.local /root/.local
-COPY --from=builder /root/.cargo /root/.cargo
-COPY --from=builder /usr/local/go /usr/local/go
+RUN cp /root/go/bin/sift /usr/local/bin
+RUN cp /root/gosec/gosec /usr/local/bin
+#RUN cp /usr/local/bin/cargo /usr/local/bin
+RUN cp -r /root/vendor /home/vendor
+#RUN cp /root/.local /root/.local
+#RUN cp /root/.cargo /root/.cargo
+#RUN cp /usr/local/go /usr/local/go
 RUN ln -sf /usr/local/go/bin/go /usr/local/bin
-RUN python -m easy_install pip==${PIP_VERSION} \
-  && python3 -m easy_install pip==${PIP_VERSION}
+#RUN python3 -m easy_install pip==${PIP_VERSION}
 
 
 ### Salus

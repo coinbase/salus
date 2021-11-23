@@ -1,18 +1,19 @@
 source 'https://rubygems.org'
 
-ruby '2.7.2'
+ruby '2.6.8'
 
 gem 'activemodel', '~> 6.1.3'
 gem 'activesupport', '~> 6.1.3'
 gem 'bugsnag', '~> 6.19.0'
-gem 'bundler', '= 2.2.19'
+gem 'bundler', '>= 2.2.14'
 gem 'faraday', '~> 1.3'
-gem 'github-linguist', '~> 7.13.0'
+#gem 'github-linguist', '~> 7.13.0'
 gem 'parser', '~> 3.0.0'
 gem 'rgl', '~> 0.5.7'
 gem 'safe_yaml', '~> 1.0'
 gem 'thor', '~> 1.1.0'
 gem 'toml', '~> 0.2.0'
+#gem 'charlock_holmes-jruby'
 
 group :scanners do
   gem 'brakeman', '4.10.0'
@@ -21,7 +22,8 @@ end
 
 group :test, :development do
   gem 'pry', '~> 0.10'
-  gem 'pry-byebug', '~> 3.4'
+  #gem 'pry-byebug', '~> 3.4'
+  gem 'ruby-debug'
 end
 
 group :test do
