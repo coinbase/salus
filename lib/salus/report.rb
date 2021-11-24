@@ -84,7 +84,6 @@ module Salus
       end
       # [Salus::ScanReport, boolean]
       #@scan_reports.map{|s| s[0].scanner_name}
-      binding.pry
       reports.values
     end
 

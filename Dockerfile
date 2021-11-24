@@ -161,6 +161,8 @@ RUN ln -sf /usr/local/go/bin/go /usr/local/bin
 RUN python -m easy_install pip==${PIP_VERSION} \
   && python3 -m easy_install pip==${PIP_VERSION}
 
+RUN curl -LO https://github.com/BurntSushi/ripgrep/releases/download/13.0.0/ripgrep_13.0.0_amd64.deb
+RUN dpkg -i ripgrep_13.0.0_amd64.deb
 
 ### Salus
 WORKDIR /home

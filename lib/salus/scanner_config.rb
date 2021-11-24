@@ -23,7 +23,7 @@ module Salus
 
 
     def matching_repos
-      binding.pry 
+      # TODO delete this
       return [Repo.new(@path_to_repo)]
     end
 

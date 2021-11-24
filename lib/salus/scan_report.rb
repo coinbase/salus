@@ -134,7 +134,6 @@ module Salus
       # TODO merge with another scan report
       @passed &= scan_report.passed?
       @running_time += scan_report.running_time
-      binding.pry
       @logs += scan_report.to_h[:logs]&.to_s
       
       #@info = {} #  hash [:stdout]
