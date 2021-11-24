@@ -1,6 +1,7 @@
 require 'uri'
 require 'salus/report'
 require 'salus/plugin_manager'
+require 'salus/repo_searcher'
 
 module Salus
   class Processor
@@ -82,7 +83,7 @@ module Salus
       content
     end
 
-    def scan_project
+    def scan_project_old
       repo = Repo.new(@repo_path)
 
       # Record overall running time of the scan
@@ -114,6 +115,52 @@ module Salus
         Salus::PluginManager.send_event(:scanners_ran, scanners_ran, @report)
       end
     end
+
+   def scan_project
+     puts "Scan project"
+      # @config.scanner_configs.first
+      # => ["Bandit", {"pass_on_raise"=>false, "scanner_timeout_s"=>0}]
+
+      # Record overall running time of the scan
+      @report.record do
+        # If we're running tests, re-raise any exceptions raised by a scanner
+        # (vs. just catching them and recording them in a real run)
+        reraise_exceptions = ENV.key?('RUNNING_SALUS_TESTS')
+        scanners_ran = []
+        Config::SCANNERS.each do |scanner_name, scanner_class|
+          config = @config.scanner_configs.fetch(scanner_name, {})
+          # @repo_path "spec/fixtures/processor/recursive"
+          # should_run? uses the repo to determine if it should run
+          RepoSearcher.new(@repo_path, config).matching_repos.each do |repo|
+            # TODO honor static_files
+
+            puts "Scan repo #{repo.path_to_repo} #{scanner_name}"
+            scanner = scanner_class.new(repository: repo, config: config)
+            #scanner.repository = repo
+            unless @config.scanner_active?(scanner_name) && scanner.should_run?
+              Salus::PluginManager.send_event(:skip_scanner, scanner_name)
+              next
+            end
+            scanners_ran << scanner
+            Salus::PluginManager.send_event(:run_scanner, scanner_name)
+
+            required = @config.enforced_scanners.include?(scanner_name)
+
+            scanner.run!(
+              salus_report: @report,
+              required: required,
+              pass_on_raise: @config.scanner_configs[scanner_name]['pass_on_raise'],
+              reraise: reraise_exceptions
+            )
+          end
+        end
+        Salus::PluginManager.send_event(:scanners_ran, scanners_ran, @report)
+      end
+
+      puts "scanned #{@report.to_h}"
+      #puts "scanned #{@report.to_s}"
+    end
+
 
     def create_full_sarif_diff(sarif_diff_full, git_diff)
       sarif_file_new = sarif_diff_full[0]

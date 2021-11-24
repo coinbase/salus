@@ -5,9 +5,9 @@ module Salus
   class ScanReport
     include Formatting
 
-    attr_reader :scanner_name, :running_time, :errors, :version
+    attr_reader :scanner_name, :running_time, :errors, :version, :repository
 
-    def initialize(scanner_name, custom_failure_message: nil)
+    def initialize(scanner_name, custom_failure_message: nil, repository:nil )
       @scanner_name = scanner_name
       @passed = nil
       @running_time = nil
@@ -16,6 +16,7 @@ module Salus
       @warn = {}
       @errors = []
       @custom_failure_message = custom_failure_message
+      @repository = repository
     end
 
     def add_version(scanner_version)
@@ -127,6 +128,20 @@ module Salus
       end
 
       output
+    end
+
+    def merge!(scan_report)
+      # TODO merge with another scan report
+      @passed &= scan_report.passed?
+      @running_time += scan_report.running_time
+      binding.pry
+      @logs += scan_report.to_h[:logs]&.to_s
+      
+      #@info = {} #  hash [:stdout]
+      #@warn = {} # hash
+      #@errors = [] # array
+      #@custom_failure_message = custom_failure_message
+      self
     end
 
     private

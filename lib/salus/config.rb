@@ -68,7 +68,6 @@ module Salus
 
       # Apply any config filters the user has defined
       final_config = apply_config_filters(final_config)
-
       # Parse and store configuration.
       @active_scanners   = all_none_some(SCANNERS.keys, final_config['active_scanners'])
       @enforced_scanners = all_none_some(SCANNERS.keys, final_config['enforced_scanners'])

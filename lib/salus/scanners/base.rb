@@ -23,7 +23,8 @@ module Salus::Scanners
       @config = config
       @report = Salus::ScanReport.new(
         name,
-        custom_failure_message: @config['failure_message']
+        custom_failure_message: @config['failure_message'],
+        repository: repository
       )
 
       version_number = version
@@ -38,6 +39,11 @@ module Salus::Scanners
       end
 
       @report.add_version(version_number)
+    end
+
+    def repos_to_scan
+      # repo = Repo.new(@repo_path)
+      [@repository]
     end
 
     def version

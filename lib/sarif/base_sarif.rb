@@ -46,6 +46,24 @@ module Sarif
       }
     end
 
+    def uriInfo
+      # @repo_path => "spec/fixtures/processor/recursive"
+      # #<Pathname:/Users/joshuaostrom/Documents/public-git/salus/spec/fixtures/processor/recursive>
+      # <Pathname:spec/fixtures/processor/recursive>
+      project_root = Pathname.new(base_path)
+      srcroot = Pathname.new(File.expand_path(@scan_report.repository.path_to_repo))
+      # The originalUriBaseIds info
+      {
+        "PROJECTROOT": {
+          "uri": "file://#{base_path}"
+        },
+        "SRCROOT": {
+          "uri": "#{srcroot.relative_path_from(project_root).to_s}",
+          "uriBaseId": "PROJECTROOT"
+        }
+      }
+    end
+
     # Retrieves result section for sarif report
     def build_result(parsed_issue)
       result = {
@@ -131,12 +149,14 @@ module Sarif
       # unique-ify the results
       results = results.each_with_object([]) { |h, result| result << h unless result.include?(h); }
 
+      # Salus::ScanReport
       invocation = build_invocations(@scan_report, supported)
       {
         "tool" => build_tool(rules: rules),
         "conversion" => build_conversion,
         "results" => results,
-        "invocations" => [invocation]
+        "invocations" => [invocation],
+        "originalUriBaseIds" => uriInfo
       }
     end
 

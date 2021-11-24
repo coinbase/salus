@@ -68,8 +68,29 @@ module Salus
       @errors << hsh
     end
 
+    def merged_reports
+      # todo we want flatten scan_reports by
+      # scanner
+      # @scan_reports << [scan_report, required]
+      return @scan_reports
+      
+      reports = {}
+      @scan_reports.each do |report, required|
+        if reports.key?(report.scanner_name)
+          puts "merge scanner_reports"
+          report = reports[report.scanner_name].first.merge!(report)
+        end
+        reports[report.scanner_name] = [report, required]
+      end
+      # [Salus::ScanReport, boolean]
+      #@scan_reports.map{|s| s[0].scanner_name}
+      binding.pry
+      reports.values
+    end
+
     def to_h
-      scans = @scan_reports.map { |report, _required| [report.scanner_name, report.to_h] }.to_h
+      # We flatten the scan_reports by scanner here
+      scans = merged_reports.map { |report, _required| [report.scanner_name, report.to_h] }.to_h
 
       report_hash = {
         version: VERSION,
@@ -92,7 +113,7 @@ module Salus
 
       # Sort scan reports required before optional, failed before passed,
       # and alphabetically by scanner name
-      scan_reports = @scan_reports.sort_by do |report, required|
+      scan_reports = merged_reports.sort_by do |report, required|
         [
           required ? 0 : 1,
           report.passed? ? 1 : 0,
