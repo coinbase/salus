@@ -183,36 +183,28 @@ describe Salus::Processor do
 
     it 'should recurse when configured' do
       path = 'spec/fixtures/processor/recursive'
-      path = '/Users/joshuaostrom/Documents/private-git/mrepo'
+      #path = '/Users/joshuaostrom/Documents/private-git/mrepo'
       processor = Salus::Processor.new(repo_path: path,
         cli_scanners_to_run: %w[Brakeman NPMAudit])
 
       processor.scan_project
       
-      puts processor.string_report(verbose: true, use_colors: true)
+      #puts processor.string_report(verbose: true, use_colors: true)
 
       processor.report.report_uris.reject! { |u| u['format'] == FULL_SARIF_DIFF_FORMAT }
       # Try to send Salus reports to remote server or local files.
-      processor.export_report
+      #processor.export_report
 
-      binding.pry
-      # System exit with success or failure - useful for CI builds.
-      processor.passed?
-
-
-
-      report_hsh = processor.report.to_h
-      #expect(report_hsh[:scans].keys).to eq(["Brakeman", "NPMAudit"])
       sarif = processor.report.to_sarif
       json = JSON.parse(sarif)
-      binding.pry
+
       # We should have multiple runs of Brakeman
       scanners = json['runs'].map{|run| run.dig('tool','driver','name')}.sort
-      #expect(scanners).to eq(['Brakeman', 'Brakeman', 'NPMAudit' ])
+      expect(scanners).to eq(['Brakeman', 'Brakeman', 'NPMAudit' ])
 
       # We should not have vendors here (excluded)
       scanned_dirs = json['runs'].map{|run| run.dig('originalUriBaseIds','SRCROOT','uri')}.uniq.sort
-      #expect(scanned_dirs).to eq(['.', 'project-two'])
+      expect(scanned_dirs).to eq(['.', 'project-two'])
     end
   end
 

@@ -41,10 +41,10 @@ module Salus::Scanners
       @report.add_version(version_number)
     end
 
-    def repos_to_scan
-      # repo = Repo.new(@repo_path)
-      [@repository]
-    end
+  #  def repos_to_scan
+  #    # repo = Repo.new(@repo_path)
+  #    [@repository]
+  #  end
 
     def version
       ''
@@ -194,6 +194,8 @@ module Salus::Scanners
     end
 
     protected
+
+
 
     def validate_bool_option(keyword, value)
       return true if %w[true false].include?(value.to_s.downcase)

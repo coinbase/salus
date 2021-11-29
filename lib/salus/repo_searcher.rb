@@ -1,3 +1,6 @@
+# Usage:  RepoSearcher.new(@repo_path, config).matching_repos.each do |repo|
+require 'salus/file_copier'
+
 
 module Salus
 
@@ -29,7 +32,15 @@ module Salus
     def matching_repos
       return [Repo.new(@path_to_repo)] unless recurse?
       dirs = static_directories + dynamic_directories
-      filter_out_exlcusions(dirs.uniq).map{ |repo| Repo.new(repo) }
+      # We want to copy over files we need to here and yield back the repo
+      
+      filter_out_exlcusions(dirs.uniq).map do |repo|
+        # If we have any static files in the config, copy them
+        # as needed
+        FileCopier.new.copy_files(File.expand_path(@path_to_repo), File.expand_path(repo), static_files) do
+          yield Repo.new(repo)
+        end
+      end
     end
 
     def recurse?
@@ -39,6 +50,11 @@ module Salus
     def static_directories
       dirs = @scanner_config.dig('recursion', 'directories') || []
       resolve_dirs(dirs)
+    end
+
+    def static_files
+      @static_files ||= @scanner_config.dig('static_files') || []
+      @static_files
     end
 
     def dynamic_directories
@@ -115,5 +131,6 @@ module Salus
     def resolve_dirs(dirs)
       dirs.map{ |dir| Pathname(@path_to_repo).join(dir).to_s }
     end
+
   end
 end

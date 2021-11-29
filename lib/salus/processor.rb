@@ -87,7 +87,9 @@ module Salus
       repo = Repo.new(@repo_path)
 
       # Record overall running time of the scan
-      @report.record do
+      # TODO replace the sequential scanning with concurrent scanning
+      
+      @report.record do # Pull the recording out
         # If we're running tests, re-raise any exceptions raised by a scanner
         # (vs. just catching them and recording them in a real run)
         reraise_exceptions = ENV.key?('RUNNING_SALUS_TESTS')
@@ -96,6 +98,7 @@ module Salus
           config = @config.scanner_configs.fetch(scanner_name, {})
 
           scanner = scanner_class.new(repository: repo, config: config)
+          # Don't we want to include enforced scanners here?
           unless @config.scanner_active?(scanner_name) && scanner.should_run?
             Salus::PluginManager.send_event(:skip_scanner, scanner_name)
             next
@@ -131,7 +134,7 @@ module Salus
           config = @config.scanner_configs.fetch(scanner_name, {})
           # @repo_path "spec/fixtures/processor/recursive"
           # should_run? uses the repo to determine if it should run
-          RepoSearcher.new(@repo_path, config).matching_repos.each do |repo|
+          RepoSearcher.new(@repo_path, config).matching_repos do |repo|
             # TODO honor static_files
 
             puts "Scan repo #{repo.path_to_repo} #{scanner_name}"
@@ -139,13 +142,14 @@ module Salus
             #scanner.repository = repo
             unless @config.scanner_active?(scanner_name) && scanner.should_run?
               Salus::PluginManager.send_event(:skip_scanner, scanner_name)
+              puts "Skipping #{scanner_name} #{@config.scanner_active?(scanner_name)} #{scanner.should_run?}"
               next
             end
             scanners_ran << scanner
             Salus::PluginManager.send_event(:run_scanner, scanner_name)
 
             required = @config.enforced_scanners.include?(scanner_name)
-
+            puts "############## #{scanner_name} required = #{required} ####################"
             scanner.run!(
               salus_report: @report,
               required: required,
@@ -157,7 +161,7 @@ module Salus
         Salus::PluginManager.send_event(:scanners_ran, scanners_ran, @report)
       end
 
-      puts "scanned #{@report.to_h}"
+      #puts "scanned #{@report.to_h}"
       #puts "scanned #{@report.to_s}"
     end
 
@@ -167,7 +171,7 @@ module Salus
       sarif_file_old = sarif_diff_full[1]
       info = "\nCreating full sarif diff report from #{sarif_file_new} and #{sarif_file_old}"
       info += " with git diff #{git_diff}" if git_diff != ''
-      puts info
+      #puts info
       [sarif_file_new, sarif_file_old].each do |f|
         raise Exception, "sarif diff file name is empty #{f}" if f.nil? || f == ""
       end

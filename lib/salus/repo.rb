@@ -60,10 +60,10 @@ module Salus
         instance_variable_get(cache_handle)
       end
     end
-
-    def self.repos_to_scan(scanner_config, repo_path)
-      return [Repo.new(repo_path)]
-    end
+#
+#    def self.repos_to_scan(scanner_config, repo_path)
+#      return [Repo.new(repo_path)]
+#    end
 
     def initialize(path_to_repo = nil)
       @path_to_repo = path_to_repo
