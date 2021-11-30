@@ -88,7 +88,7 @@ module Salus
 
       # Record overall running time of the scan
       # TODO replace the sequential scanning with concurrent scanning
-      
+
       @report.record do # Pull the recording out
         # If we're running tests, re-raise any exceptions raised by a scanner
         # (vs. just catching them and recording them in a real run)
@@ -119,8 +119,8 @@ module Salus
       end
     end
 
-   def scan_project
-     puts "Scan project"
+    def scan_project
+      puts "Scan project"
       # @config.scanner_configs.first
       # => ["Bandit", {"pass_on_raise"=>false, "scanner_timeout_s"=>0}]
 
@@ -135,11 +135,11 @@ module Salus
           # @repo_path "spec/fixtures/processor/recursive"
           # should_run? uses the repo to determine if it should run
           RepoSearcher.new(@repo_path, config).matching_repos do |repo|
-            # TODO honor static_files
+            # TODO: honor static_files
 
             puts "Scan repo #{repo.path_to_repo} #{scanner_name}"
             scanner = scanner_class.new(repository: repo, config: config)
-            #scanner.repository = repo
+            # scanner.repository = repo
             unless @config.scanner_active?(scanner_name) && scanner.should_run?
               Salus::PluginManager.send_event(:skip_scanner, scanner_name)
               puts "Skipping #{scanner_name} #{@config.scanner_active?(scanner_name)} #{scanner.should_run?}"
@@ -161,17 +161,16 @@ module Salus
         Salus::PluginManager.send_event(:scanners_ran, scanners_ran, @report)
       end
 
-      #puts "scanned #{@report.to_h}"
-      #puts "scanned #{@report.to_s}"
+      # puts "scanned #{@report.to_h}"
+      # puts "scanned #{@report.to_s}"
     end
-
 
     def create_full_sarif_diff(sarif_diff_full, git_diff)
       sarif_file_new = sarif_diff_full[0]
       sarif_file_old = sarif_diff_full[1]
       info = "\nCreating full sarif diff report from #{sarif_file_new} and #{sarif_file_old}"
       info += " with git diff #{git_diff}" if git_diff != ''
-      #puts info
+      # puts info
       [sarif_file_new, sarif_file_old].each do |f|
         raise Exception, "sarif diff file name is empty #{f}" if f.nil? || f == ""
       end

@@ -7,17 +7,17 @@ describe Salus::FileCopier do
     let(:destdir) { 'spec/fixtures/file_copier/dest' }
     let(:b_source) { File.join(basedir, 'b.txt') }
     let(:b_dest) { File.join(destdir, 'b.txt') }
-    
+
     it 'should ignore existing files' do
       expect(FileUtils).not_to receive(:cp)
-      copier.copy_files(basedir, destdir, ['a.txt'] ) do |files|
+      copier.copy_files(basedir, destdir, ['a.txt']) do |files|
         expect(files).to be_empty
       end
     end
 
     it 'should gracefully handle empty file list' do
       expect(FileUtils).not_to receive(:cp)
-      copier.copy_files(basedir, destdir, [] ) do |files|
+      copier.copy_files(basedir, destdir, []) do |files|
         expect(files).to be_empty
       end
     end
@@ -26,7 +26,7 @@ describe Salus::FileCopier do
       expect(FileUtils).to receive(:cp).with(b_source, b_dest)
       expect(File).to receive(:delete).with(b_dest)
 
-      copier.copy_files(basedir, destdir, ['a.txt', 'b.txt'] ) do |files|
+      copier.copy_files(basedir, destdir, ['a.txt', 'b.txt']) do |files|
         expect(files).to eq([b_dest])
       end
     end
@@ -34,24 +34,24 @@ describe Salus::FileCopier do
     it 'should clean up after itself' do
       expect(File.exist?(b_dest)).to be false
       expect(FileUtils).to receive(:cp).with(b_source, b_dest).and_call_original
-      copier.copy_files(basedir, destdir, ['b.txt'] ) do |files|
+      copier.copy_files(basedir, destdir, ['b.txt']) do |files|
         expect(files).to eq([b_dest])
         expect(File.exist?(b_dest)).to be true
       end
 
-     expect(File.exist?(b_dest)).to be false
+      expect(File.exist?(b_dest)).to be false
     end
 
     it 'should attempt to clean up when exceptions are thrown' do
       expect(File.exist?(b_dest)).to be false
       expect(FileUtils).to receive(:cp).with(b_source, b_dest).and_call_original
       begin
-        copier.copy_files(basedir, destdir, ['b.txt'] ) do |files|
+        copier.copy_files(basedir, destdir, ['b.txt']) do |files|
           expect(files).to eq([b_dest])
           expect(File.exist?(b_dest)).to be true
           raise 'foobar'
         end
-      rescue
+      rescue StandardError
       end
       expect(File.exist?(b_dest)).to be false
     end

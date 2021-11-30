@@ -1,9 +1,7 @@
 # Usage:  RepoSearcher.new(@repo_path, config).matching_repos.each do |repo|
 require 'salus/file_copier'
 
-
 module Salus
-
   ##
   # This class is used to search for directories to run salus against based
   # on the provided configuration
@@ -31,9 +29,10 @@ module Salus
     #
     def matching_repos
       return [Repo.new(@path_to_repo)] unless recurse?
+
       dirs = static_directories + dynamic_directories
       # We want to copy over files we need to here and yield back the repo
-      
+
       filter_out_exlcusions(dirs.uniq).map do |repo|
         # If we have any static files in the config, copy them
         # as needed
@@ -65,9 +64,11 @@ module Salus
 
     def filter_out_exlcusions(dirs)
       return [] if dirs.nil?
+
       exclusions = @scanner_config.dig('recursion', 'directory_exclusions') || []
-      exclusions.map!{ |dir| File.join(@path_to_repo.to_s, dir) }
+      exclusions.map! { |dir| File.join(@path_to_repo.to_s, dir) }
       return dirs if dirs.empty? || exclusions.empty?
+
       dirs.select { |dir| !dir.start_with?(*exclusions) }
     end
 
@@ -78,7 +79,6 @@ module Salus
     end
 
     def search_files_named_containing(filename, content)
-      #
       cmd = "rg --files-with-matches #{content} #{filename}"
       run_rg(cmd)
     end
@@ -95,13 +95,14 @@ module Salus
         data = `#{command}`
       end
       return [] if data == ""
+
       files = data.lines.map(&:strip)
       # files are all relative to @path_to_repo
       files
     end
-    
+
     def parent_dirs(files)
-      dirs = files.map{ |file| Pathname.new(file)&.parent&.to_s }
+      dirs = files.map { |file| Pathname.new(file)&.parent&.to_s }
       dirs.uniq
     end
 
@@ -112,11 +113,11 @@ module Salus
       if !filename.nil? && !content.nil?
         files = search_files_named_containing(filename, content)
       elsif !filename.empty?
-        files =  search_files_named(filename)
+        files = search_files_named(filename)
       elsif !content.empty?
         files = search_files_containing(content)
       end
-      return parent_dirs(files)
+      parent_dirs(files)
     end
 
     def directories_matching(rules)
@@ -129,8 +130,7 @@ module Salus
     end
 
     def resolve_dirs(dirs)
-      dirs.map{ |dir| Pathname(@path_to_repo).join(dir).to_s }
+      dirs.map { |dir| Pathname(@path_to_repo).join(dir).to_s }
     end
-
   end
 end
