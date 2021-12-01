@@ -11,27 +11,14 @@ describe Sarif::BaseSarif do
 
   describe 'uri_info' do
     it 'should populate SRCROOT' do
-# TODO
-=begin
+      repo_path = 'spec/fixtures/processor'
+      repo = Salus::Repo.new("#{repo_path}/recursive")
+      report = Salus::ScanReport.new("Unsupported_Scanner", repository: repo)
+      sarif = Sarif::BaseSarif.new(report, {}, repo_path)
+      info = sarif.uri_info
 
-    def uri_info
-      # @repo_path => "spec/fixtures/processor/recursive"
-      # #<Pathname:/Users/joshuaostrom/Documents/public-git/salus/spec/fixtures/processor/recursive>
-      # <Pathname:spec/fixtures/processor/recursive>
-      project_root = Pathname.new(base_path)
-      srcroot = Pathname.new(File.expand_path(@scan_report.repository.path_to_repo))
-      # The originalUriBaseIds info
-      {
-        "PROJECTROOT": {
-          "uri": "file://#{base_path}"
-        },
-        "SRCROOT": {
-          "uri": srcroot.relative_path_from(project_root).to_s,
-          "uriBaseId": "PROJECTROOT"
-        }
-      }
-    end
-=end
+      expect(info[:PROJECTROOT][:uri]).to end_with(repo_path)
+      expect(info[:SRCROOT]).to eq({ uri: "recursive", uriBaseId: "PROJECTROOT" })
     end
   end
 
@@ -213,7 +200,27 @@ describe Sarif::BaseSarif do
       end
 
       it 'includes originalUriBaseIds' do
-        # TODO
+        parsed_issue = {
+          id: 'SAL002',
+          name: "Golang Error",
+          level: "NOTE",
+          details: 'error',
+          start_line: 1,
+          start_column: 1,
+          uri: '',
+          help_url: "https://github.com/coinbase/salus/blob/master/docs/salus_reports.md",
+          code: ""
+        }
+        adapter = Sarif::GosecSarif.new(scan_report, path)
+        adapter.instance_variable_set(:@logs, [parsed_issue])
+        adapter.instance_variable_set(:@config, { "include_suppressed": true }.stringify_keys)
+        adapter.instance_variable_set(:@required, false)
+        runs_object = adapter.build_runs_object(true)
+
+        expect(runs_object.keys).to include("originalUriBaseIds")
+        base = runs_object["originalUriBaseIds"]
+        expect(base[:PROJECTROOT][:uri]).not_to be_empty
+        expect(base[:SRCROOT]).to eq({ uri: ".", uriBaseId: "PROJECTROOT" })
       end
 
       it 'results are not included for non enforced scanners when include_suppressed is false' do

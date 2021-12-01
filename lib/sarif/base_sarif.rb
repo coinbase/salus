@@ -24,7 +24,7 @@ module Sarif
       @uri = DEFAULT_URI
       @issues = Set.new
       @config = config
-      @repo_path = repo_path
+      @repo_path = repo_path || Dir.getwd # Fallback, we should make repo_path required
     end
 
     def base_path
@@ -47,18 +47,17 @@ module Sarif
     end
 
     def uri_info
-      # @repo_path => "spec/fixtures/processor/recursive"
-      # #<Pathname:/Users/joshuaostrom/Documents/public-git/salus/spec/fixtures/processor/recursive>
-      # <Pathname:spec/fixtures/processor/recursive>
-      project_root = Pathname.new(base_path)
-      srcroot = Pathname.new(File.expand_path(@scan_report.repository.path_to_repo))
+      project_root = Pathname.new(base_path.to_s)
+      srcroot = Pathname.new(File.expand_path(@scan_report.repository&.path_to_repo.to_s))
+      src_uri = srcroot.relative_path_from(project_root).to_s
+
       # The originalUriBaseIds info
       {
         "PROJECTROOT": {
           "uri": "file://#{base_path}"
         },
         "SRCROOT": {
-          "uri": srcroot.relative_path_from(project_root).to_s,
+          "uri": src_uri,
           "uriBaseId": "PROJECTROOT"
         }
       }
