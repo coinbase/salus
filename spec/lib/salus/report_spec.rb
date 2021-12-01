@@ -4,6 +4,28 @@ describe Salus::Report do
   let(:report) { build_report }
   let(:scan_reports) { (0...3).map { build_scan_report } }
 
+  describe '#to_s' do
+    it 'should merge runs from the same scanner' do
+      report = Salus::Report.new
+      passed_scan_reports = (0...5).each do |i|
+        scan_report = Salus::ScanReport.new('DerpScanner')
+        i == 0 ? scan_report.fail : scan_report.pass
+        report.add_scan_report(scan_report, required: true)
+      end
+
+      to_s = "==== Salus Scan v#{Salus::VERSION}\n\n" +
+        "==== DerpScanner: FAILED\n\n" +
+        "==== Salus Configuration Files Used:\n\n\n\n" +
+        "Overall scan status: FAILED\n\n" +
+        "┌─────────────┬──────────────┬──────────┬────────┐\n" +
+        "│ Scanner     │ Running Time │ Required │ Passed │\n" +
+        "├─────────────┼──────────────┼──────────┼────────┤\n" +
+        "│ DerpScanner │ 0s           │ yes      │ no     │\n" +
+        "└─────────────┴──────────────┴──────────┴────────┘"
+      expect(report.to_s).to eq(to_s)
+    end
+  end
+
   describe '#to_h and miscellaneous reporting methods' do
     it 'emits the expected reporting data via the #to_h method' do
       name = 'Neon Genesis Evangelion'
@@ -75,6 +97,23 @@ describe Salus::Report do
       expect(hsh.key?(:project_name)).to eq(false)
       expect(hsh.key?(:custom_info)).to eq(false)
       expect(hsh.key?(:config)).to eq(false)
+    end
+
+    it 'should merge multilpe scans from a given scanner, failing if any failed' do
+      report = Salus::Report.new
+      passed_scan_reports = (0...5).each do |i|
+        scan_report = Salus::ScanReport.new('DerpScanner')
+        i == 0 ? scan_report.fail : scan_report.pass
+        report.add_scan_report(scan_report, required: true)
+      end
+
+      to_h = { version: "2.15.0", passed: false,
+        scans: {
+          "DerpScanner" => { scanner_name: "DerpScanner", passed: false, warn: {}, info: {}, errors: [] }
+        },
+        errors: [] }
+
+      expect(report.to_h).to eq(to_h)
     end
   end
 
@@ -352,7 +391,25 @@ describe Salus::Report do
 
   describe 'merge_reports' do
     it 'should merge reports from the same scanner' do
-      # TODO
+      path = './spec/fixtures/non_existent_dir/salus_report.json'
+      report = Salus::Report.new(
+        report_uris: [{ 'uri' => path, 'format' => 'json' }],
+        project_name: 'eva00',
+        custom_info: 'test unit',
+        report_filter: nil
+      )
+
+      3.times do
+        scan_report = Salus::ScanReport.new('DerpScanner')
+        scan_report.info(:asdf, 'qwerty')
+        scan_report.fail
+        report.add_scan_report(scan_report, required: true)
+      end
+
+      5.times { report.error(message: 'derp') }
+
+      expect(report.instance_variable_get(:@scan_reports).size).to eq(3)
+      expect(report.merged_reports.size).to eq(1)
     end
   end
 

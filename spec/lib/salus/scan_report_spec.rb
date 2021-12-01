@@ -8,29 +8,28 @@ describe Salus::ScanReport do
 
   describe 'merge!' do
     let(:report_two) { Salus::ScanReport.new(scanner_name, custom_failure_message: failure_message_two) }
- 
+
     it 'should combine fields' do
-      report.record { sleep 0.01 } 
+      report.record { sleep 0.01 }
       report.log("foo")
       report.warn("sensor", "heat bump")
       report.info("data", "one")
       report.error({ 'Error' => 'Could not check all sectors' })
 
-      report_two.record { sleep 0.10 } 
+      report_two.record { sleep 0.10 }
       report_two.log("bar")
       report_two.warn("alarm", "entry")
       report_two.info("info", "two")
       report_two.error({ 'Error' => 'CVE' })
 
       report.merge!(report_two)
-      merged = {:scanner_name=>"T3 Check",
-                :passed=>true,
-                :running_time=>0.11,
-                :logs=>"foo\nbar",
-                :warn=>{"sensor"=>"heat bump", "alarm"=>"entry"},
-                :info=>{"data"=>"one", "info"=>"two"},
-                :errors=>[{"Error"=>"Could not check all sectors"}, {"Error"=>"CVE"}]
-      }
+      merged = { scanner_name: "T3 Check",
+                passed: true,
+                running_time: 0.11,
+                logs: "foo\nbar",
+                warn: { "sensor" => "heat bump", "alarm" => "entry" },
+                info: { "data" => "one", "info" => "two" },
+                errors: [{ "Error" => "Could not check all sectors" }, { "Error" => "CVE" }] }
       expect(report.to_h).to eq(merged)
     end
 

@@ -7,7 +7,7 @@ module Salus
 
   class FileCopier
     ##
-    # 
+    #
     #
 
     def copy_files(basedir, destdir, files)

@@ -69,21 +69,16 @@ module Salus
     end
 
     def merged_reports
-      # TODO: we want flatten scan_reports by
-      # scanner
-      # @scan_reports << [scan_report, required]
-      #return @scan_reports
-
       reports = {}
       @scan_reports.each do |report, required|
         if reports.key?(report.scanner_name)
-          puts "merge scanner_reports"
           report = reports[report.scanner_name].first.merge!(report)
         end
         reports[report.scanner_name] = [report, required]
       end
       # [Salus::ScanReport, boolean]
       # @scan_reports.map{|s| s[0].scanner_name}
+
       reports.values
     end
 
@@ -136,7 +131,7 @@ module Salus
         output += "\n\n==== Salus Configuration\n\n"
       else
         # Include some info on which configuration files were used
-        stringified_config = @config[:sources][:valid].join("\n")
+        stringified_config = @config&.dig(:sources, :valid)&.join("\n").to_s
         output += "\n\n==== Salus Configuration Files Used:\n\n"
       end
 
@@ -313,7 +308,7 @@ module Salus
 
         row = [
           scan_report.scanner_name,
-          "#{scan_report.running_time}s",
+          "#{scan_report.running_time || 0}s",
           required ? 'yes' : 'no',
           scan_report.passed? ? 'yes' : 'no'
         ]

@@ -11,8 +11,7 @@ describe Sarif::BaseSarif do
 
   describe 'uri_info' do
     it 'should populate SRCROOT' do
-
-      # TODO
+# TODO
 =begin
 
     def uri_info
@@ -33,9 +32,6 @@ describe Sarif::BaseSarif do
       }
     end
 =end
-
-
-
     end
   end
 
