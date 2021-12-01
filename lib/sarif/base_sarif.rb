@@ -46,7 +46,7 @@ module Sarif
       }
     end
 
-    def uriInfo
+    def uri_info
       # @repo_path => "spec/fixtures/processor/recursive"
       # #<Pathname:/Users/joshuaostrom/Documents/public-git/salus/spec/fixtures/processor/recursive>
       # <Pathname:spec/fixtures/processor/recursive>
@@ -58,7 +58,7 @@ module Sarif
           "uri": "file://#{base_path}"
         },
         "SRCROOT": {
-          "uri": "#{srcroot.relative_path_from(project_root).to_s}",
+          "uri": srcroot.relative_path_from(project_root).to_s,
           "uriBaseId": "PROJECTROOT"
         }
       }
@@ -156,7 +156,7 @@ module Sarif
         "conversion" => build_conversion,
         "results" => results,
         "invocations" => [invocation],
-        "originalUriBaseIds" => uriInfo
+        "originalUriBaseIds" => uri_info
       }
     end
 

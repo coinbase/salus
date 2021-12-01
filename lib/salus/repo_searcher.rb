@@ -1,6 +1,6 @@
 # Usage:  RepoSearcher.new(@repo_path, config).matching_repos.each do |repo|
 require 'salus/file_copier'
-
+require 'pry'
 module Salus
   ##
   # This class is used to search for directories to run salus against based
@@ -28,7 +28,7 @@ module Salus
     # @return [Salus::Repo]
     #
     def matching_repos
-      return [Repo.new(@path_to_repo)] unless recurse?
+      return yield Repo.new(@path_to_repo) unless recurse?
 
       dirs = static_directories + dynamic_directories
       # We want to copy over files we need to here and yield back the repo
@@ -36,7 +36,10 @@ module Salus
       filter_out_exlcusions(dirs.uniq).map do |repo|
         # If we have any static files in the config, copy them
         # as needed
-        FileCopier.new.copy_files(File.expand_path(@path_to_repo), File.expand_path(repo), static_files) do
+        dest_dir =  File.expand_path(repo)
+        next unless Dir.exist?(dest_dir)
+
+        FileCopier.new.copy_files(File.expand_path(@path_to_repo), dest_dir, static_files) do
           yield Repo.new(repo)
         end
       end
@@ -46,13 +49,15 @@ module Salus
       @scanner_config.key?('recursion')
     end
 
+    protected
+
     def static_directories
       dirs = @scanner_config.dig('recursion', 'directories') || []
       resolve_dirs(dirs)
     end
 
     def static_files
-      @static_files ||= @scanner_config.dig('static_files') || []
+      @static_files ||= @scanner_config.dig('recursion', 'static_files') || []
       @static_files
     end
 
@@ -79,7 +84,8 @@ module Salus
     end
 
     def search_files_named_containing(filename, content)
-      cmd = "rg --files-with-matches #{content} #{filename}"
+      # RUNNING rg --files-with-matches activesupport Gemfile.lock
+      cmd = "rg --files-with-matches #{content} --glob #{filename}"
       run_rg(cmd)
     end
 
@@ -90,6 +96,7 @@ module Salus
     end
 
     def run_rg(command)
+      puts "RUNNING #{command}"
       data = nil
       Dir.chdir(@path_to_repo) do
         data = `#{command}`
@@ -112,7 +119,7 @@ module Salus
       files = []
       if !filename.nil? && !content.nil?
         files = search_files_named_containing(filename, content)
-      elsif !filename.empty?
+      elsif filename.present?
         files = search_files_named(filename)
       elsif !content.empty?
         files = search_files_containing(content)

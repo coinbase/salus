@@ -69,11 +69,11 @@ module Salus
     end
 
     def merged_reports
-      # todo we want flatten scan_reports by
+      # TODO: we want flatten scan_reports by
       # scanner
       # @scan_reports << [scan_report, required]
       return @scan_reports
-      
+
       reports = {}
       @scan_reports.each do |report, required|
         if reports.key?(report.scanner_name)
@@ -83,7 +83,7 @@ module Salus
         reports[report.scanner_name] = [report, required]
       end
       # [Salus::ScanReport, boolean]
-      #@scan_reports.map{|s| s[0].scanner_name}
+      # @scan_reports.map{|s| s[0].scanner_name}
       reports.values
     end
 

@@ -135,8 +135,6 @@ module Salus
           # @repo_path "spec/fixtures/processor/recursive"
           # should_run? uses the repo to determine if it should run
           RepoSearcher.new(@repo_path, config).matching_repos do |repo|
-            # TODO: honor static_files
-
             puts "Scan repo #{repo.path_to_repo} #{scanner_name}"
             scanner = scanner_class.new(repository: repo, config: config)
             # scanner.repository = repo

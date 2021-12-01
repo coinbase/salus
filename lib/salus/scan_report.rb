@@ -7,7 +7,7 @@ module Salus
 
     attr_reader :scanner_name, :running_time, :errors, :version, :repository
 
-    def initialize(scanner_name, custom_failure_message: nil, repository:nil )
+    def initialize(scanner_name, custom_failure_message: nil, repository: nil)
       @scanner_name = scanner_name
       @passed = nil
       @running_time = nil
@@ -131,15 +131,15 @@ module Salus
     end
 
     def merge!(scan_report)
-      # TODO merge with another scan report
+      # TODO: merge with another scan report
       @passed &= scan_report.passed?
       @running_time += scan_report.running_time
       @logs += scan_report.to_h[:logs]&.to_s
-      
-      #@info = {} #  hash [:stdout]
-      #@warn = {} # hash
-      #@errors = [] # array
-      #@custom_failure_message = custom_failure_message
+
+      # @info = {} #  hash [:stdout]
+      # @warn = {} # hash
+      # @errors = [] # array
+      # @custom_failure_message = custom_failure_message
       self
     end
 

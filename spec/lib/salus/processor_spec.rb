@@ -183,7 +183,7 @@ describe Salus::Processor do
 
     it 'should recurse when configured' do
       path = 'spec/fixtures/processor/recursive'
-      # path = '/Users/joshuaostrom/Documents/private-git/mrepo'
+
       processor = Salus::Processor.new(repo_path: path,
         cli_scanners_to_run: %w[Brakeman NPMAudit])
 

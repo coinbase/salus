@@ -1,43 +1,37 @@
 require 'fileutils'
-require 'pry'
 
 module Salus
-
   ##
-  # This class is used to search for directories to run salus against based
-  # on the provided configuration
+  # This class is a utility class that can be used to copy files
+  # in a temporal fashion.  Directory copies are not yet supported.
 
-  class FileCopier    
-    # Note we support files not directories
+  class FileCopier
+    ##
+    # 
+    #
+
     def copy_files(basedir, destdir, files)
-      return yield [] if files.empty?  # basedir.nil? || destdir.nil? || files.nil? || 
+      return yield [] if files.empty?
 
       copied = []
       # We want to copy each file into our directory
       files.each do |file|
-        source = File.join(basedir, file) # "spec/fixtures/processor/recursive"
-        dest = File.join(destdir, file) # "spec/fixtures/processor/recursive"
-        # Could also File.symlink 
+        source = File.join(basedir, file)
+        dest = File.join(destdir, file)
         next if !File.exist?(source) || File.exist?(dest) || !File.exist?(destdir)
 
-        puts "Copy #{source} to #{dest}"
+        # Could also File.symlink but that will limit portability
         FileUtils.cp(source, dest)
-        #binding.pry
         copied << dest
       end
-      copied
+
       begin
-        puts "yielding to client code"
         yield copied
-        puts "back from yield"
       ensure
-        puts "Cleanup"
         copied.each do |file|
-          puts "Delete #{file}"
-          File.delete(file)# if File.exist?(file)
+          File.delete(file)
         end
       end
-
     end
   end
 end
