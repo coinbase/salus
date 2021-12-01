@@ -27,12 +27,16 @@ describe Salus::ScanReport do
       report.merge!(report_two)
       merged = { scanner_name: "T3 Check",
                 passed: true,
-                running_time: 0.11,
                 logs: "foo\nbar",
                 warn: { "sensor" => "heat bump", "alarm" => "entry" },
                 info: { "data" => "one", "info" => "two" },
                 errors: [{ "Error" => "Could not check all sectors" }, { "Error" => "CVE" }] }
-      expect(report.to_h).to eq(merged)
+
+      report_h = report.to_h
+      expect(report_h[:running_time]).to be > 0.1
+      # Delete the running time as it will vary slightly per run
+      report_h.delete(:running_time)
+      expect(report_h).to eq(merged)
     end
 
     it 'should apply the custom fail message' do

@@ -6,7 +6,7 @@ describe Salus::Report do
 
   describe '#to_s' do
     it 'should merge runs from the same scanner' do
-      report = Salus::Report.new(merge_by_scanner:true)
+      report = Salus::Report.new(merge_by_scanner: true)
       (0...5).each do |i|
         scan_report = Salus::ScanReport.new('DerpScanner')
         i == 0 ? scan_report.fail : scan_report.pass
@@ -100,7 +100,7 @@ describe Salus::Report do
     end
 
     it 'should merge multilpe scans from a given scanner, failing if any failed' do
-      report = Salus::Report.new(merge_by_scanner:true)
+      report = Salus::Report.new(merge_by_scanner: true)
       (0...5).each do |i|
         scan_report = Salus::ScanReport.new('DerpScanner')
         i == 0 ? scan_report.fail : scan_report.pass
@@ -423,7 +423,7 @@ describe Salus::Report do
         report_uris: [{ 'uri' => path, 'format' => 'json' }],
         project_name: 'eva00',
         custom_info: 'test unit',
-        report_filter: nil,
+        report_filter: nil
       )
 
       3.times do

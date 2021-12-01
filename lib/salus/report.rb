@@ -72,9 +72,10 @@ module Salus
     # We may have several scan reports from a given scanner.
     # This will typically be from recusive scannings.  We
     #
-    # @returns [[]] 
+    # @returns [[]]
     def merged_reports
       return @scan_reports unless @merge_by_scanner
+
       reports = {}
       @scan_reports.each do |report, required|
         if reports.key?(report.scanner_name)
