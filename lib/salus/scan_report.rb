@@ -5,7 +5,7 @@ module Salus
   class ScanReport
     include Formatting
 
-    attr_reader :scanner_name, :running_time, :errors, :version, :repository
+    attr_reader :scanner_name, :running_time, :errors, :version, :repository, :custom_failure_message
 
     def initialize(scanner_name, custom_failure_message: nil, repository: nil)
       @scanner_name = scanner_name
@@ -131,15 +131,28 @@ module Salus
     end
 
     def merge!(scan_report)
-      # TODO: merge with another scan report
-      @passed &= scan_report.passed?
-      @running_time += scan_report.running_time
-      @logs += scan_report.to_h[:logs]&.to_s
+      h = scan_report.to_h
 
-      # @info = {} #  hash [:stdout]
-      # @warn = {} # hash
-      # @errors = [] # array
-      # @custom_failure_message = custom_failure_message
+      raise 'Unable to merge scan reports from different scanners' if  @scanner_name != scan_report.scanner_name
+
+      if !@running_time.nil? || !scan_report.running_time.nil?
+        @running_time ||= 0
+        @running_time += scan_report.running_time || 0
+      end
+
+      if !@logs.nil? || h.key?(:logs)
+        @logs ||= ""
+        @logs += h[:logs]&.to_s
+      end
+
+      @passed &= scan_report.passed?
+      @warn.merge!(h[:warn]) if !@warn.empty? || !h[:warn].empty?
+      @info.merge!(h[:info]) if !@info.empty? || !h[:info].empty?
+      @errors += h[:errors]
+
+      if !scan_report.custom_failure_message.nil?
+        @custom_failure_message = scan_report.custom_failure_message
+      end
       self
     end
 

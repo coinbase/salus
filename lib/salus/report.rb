@@ -72,7 +72,7 @@ module Salus
       # TODO: we want flatten scan_reports by
       # scanner
       # @scan_reports << [scan_report, required]
-      return @scan_reports
+      #return @scan_reports
 
       reports = {}
       @scan_reports.each do |report, required|
