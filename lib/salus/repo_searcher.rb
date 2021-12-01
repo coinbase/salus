@@ -78,28 +78,21 @@ module Salus
     end
 
     def search_files_named(filename)
-      #  rg --files | rg package.json
-      cmd = "rg --files | rg #{filename}"
-      run_rg(cmd)
+      run_rg("rg", "--files", "-g", filename)
     end
 
     def search_files_named_containing(filename, content)
-      # RUNNING rg --files-with-matches activesupport Gemfile.lock
-      cmd = "rg --files-with-matches #{content} --glob #{filename}"
-      run_rg(cmd)
+      run_rg("rg", "--files-with-matches", content, "--glob", filename)
     end
 
     def search_files_containing(content)
-      #  rg -l foo
-      cmd = "rg -l #{content}"
-      run_rg(cmd)
+      run_rg("rg", "-l", content)
     end
 
-    def run_rg(command)
-      puts "RUNNING #{command}"
+    def run_rg(*args)
       data = nil
       Dir.chdir(@path_to_repo) do
-        data = `#{command}`
+        data = IO.popen(args).read
       end
       return [] if data == ""
 
@@ -117,11 +110,12 @@ module Salus
       filename = rule['filename']
       content = rule['content']
       files = []
-      if !filename.nil? && !content.nil?
+
+      if filename.present? && content.present?
         files = search_files_named_containing(filename, content)
       elsif filename.present?
         files = search_files_named(filename)
-      elsif !content.empty?
+      elsif content.present?
         files = search_files_containing(content)
       end
       parent_dirs(files)
