@@ -9,6 +9,36 @@ describe Sarif::BaseSarif do
     scan_report.add_version('1.1.1')
   end
 
+  describe 'uri_info' do
+    it 'should populate SRCROOT' do
+
+      # TODO
+=begin
+
+    def uri_info
+      # @repo_path => "spec/fixtures/processor/recursive"
+      # #<Pathname:/Users/joshuaostrom/Documents/public-git/salus/spec/fixtures/processor/recursive>
+      # <Pathname:spec/fixtures/processor/recursive>
+      project_root = Pathname.new(base_path)
+      srcroot = Pathname.new(File.expand_path(@scan_report.repository.path_to_repo))
+      # The originalUriBaseIds info
+      {
+        "PROJECTROOT": {
+          "uri": "file://#{base_path}"
+        },
+        "SRCROOT": {
+          "uri": srcroot.relative_path_from(project_root).to_s,
+          "uriBaseId": "PROJECTROOT"
+        }
+      }
+    end
+=end
+
+
+
+    end
+  end
+
   describe 'tool_info' do
     it 'returns the runs object for an unsupported scanner' do
       expect(base_sarif.build_tool).to include({ "driver":
@@ -184,6 +214,10 @@ describe Sarif::BaseSarif do
         adapter.instance_variable_set(:@required, true)
         runs_object = adapter.build_runs_object(true)
         expect(runs_object['tool'][:driver]['properties'][:salusEnforced]).to eq(true)
+      end
+
+      it 'includes originalUriBaseIds' do
+        # TODO
       end
 
       it 'results are not included for non enforced scanners when include_suppressed is false' do

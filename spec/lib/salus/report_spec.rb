@@ -350,6 +350,12 @@ describe Salus::Report do
     end
   end
 
+  describe 'merge_reports' do
+    it 'should merge reports from the same scanner' do
+      # TODO
+    end
+  end
+
   describe '#satisfies_filter' do
     def build_report(report_uris, filter)
       report = Salus::Report.new(

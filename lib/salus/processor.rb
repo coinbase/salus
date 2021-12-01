@@ -83,42 +83,6 @@ module Salus
       content
     end
 
-    def scan_project_old
-      repo = Repo.new(@repo_path)
-
-      # Record overall running time of the scan
-      # TODO replace the sequential scanning with concurrent scanning
-
-      @report.record do # Pull the recording out
-        # If we're running tests, re-raise any exceptions raised by a scanner
-        # (vs. just catching them and recording them in a real run)
-        reraise_exceptions = ENV.key?('RUNNING_SALUS_TESTS')
-        scanners_ran = []
-        Config::SCANNERS.each do |scanner_name, scanner_class|
-          config = @config.scanner_configs.fetch(scanner_name, {})
-
-          scanner = scanner_class.new(repository: repo, config: config)
-          # Don't we want to include enforced scanners here?
-          unless @config.scanner_active?(scanner_name) && scanner.should_run?
-            Salus::PluginManager.send_event(:skip_scanner, scanner_name)
-            next
-          end
-          scanners_ran << scanner
-          Salus::PluginManager.send_event(:run_scanner, scanner_name)
-
-          required = @config.enforced_scanners.include?(scanner_name)
-
-          scanner.run!(
-            salus_report: @report,
-            required: required,
-            pass_on_raise: @config.scanner_configs[scanner_name]['pass_on_raise'],
-            reraise: reraise_exceptions
-          )
-        end
-        Salus::PluginManager.send_event(:scanners_ran, scanners_ran, @report)
-      end
-    end
-
     def scan_project
       puts "Scan project"
       # @config.scanner_configs.first

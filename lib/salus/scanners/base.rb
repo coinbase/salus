@@ -41,11 +41,6 @@ module Salus::Scanners
       @report.add_version(version_number)
     end
 
-    #  def repos_to_scan
-    #    # repo = Repo.new(@repo_path)
-    #    [@repository]
-    #  end
-
     def version
       ''
     end
