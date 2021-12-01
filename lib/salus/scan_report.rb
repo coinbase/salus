@@ -5,7 +5,8 @@ module Salus
   class ScanReport
     include Formatting
 
-    attr_reader :scanner_name, :running_time, :errors, :version, :repository, :custom_failure_message
+    attr_reader :scanner_name, :running_time, :errors, :version, :repository,
+                :custom_failure_message
 
     def initialize(scanner_name, custom_failure_message: nil, repository: nil)
       @scanner_name = scanner_name
@@ -133,7 +134,9 @@ module Salus
     def merge!(scan_report)
       h = scan_report.to_h
 
-      raise 'Unable to merge scan reports from different scanners' if  @scanner_name != scan_report.scanner_name
+      if @scanner_name != scan_report.scanner_name
+        raise 'Unable to merge scan reports from different scanners'
+      end
 
       if !@running_time.nil? || !scan_report.running_time.nil?
         @running_time ||= 0

@@ -41,7 +41,7 @@ describe Salus::FileCopier do
 
       expect(File.exist?(b_dest)).to be false
     end
-
+    # rubocop:disable Lint/SuppressedException
     it 'should attempt to clean up when exceptions are thrown' do
       expect(File.exist?(b_dest)).to be false
       expect(FileUtils).to receive(:cp).with(b_source, b_dest).and_call_original
@@ -55,5 +55,6 @@ describe Salus::FileCopier do
       end
       expect(File.exist?(b_dest)).to be false
     end
+    # rubocop:enable Lint/SuppressedException
   end
 end

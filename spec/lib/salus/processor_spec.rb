@@ -203,7 +203,10 @@ describe Salus::Processor do
       expect(scanners).to eq(%w[Brakeman Brakeman NPMAudit])
 
       # We should not have vendors here (excluded)
-      scanned_dirs = json['runs'].map { |run| run.dig('originalUriBaseIds', 'SRCROOT', 'uri') }.uniq.sort
+      scanned_dirs = json['runs'].map do |run|
+        run.dig('originalUriBaseIds', 'SRCROOT', 'uri')
+      end.uniq.sort
+
       expect(scanned_dirs).to eq(['.', 'project-two'])
     end
   end

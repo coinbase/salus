@@ -84,10 +84,6 @@ module Salus
     end
 
     def scan_project
-      puts "Scan project"
-      # @config.scanner_configs.first
-      # => ["Bandit", {"pass_on_raise"=>false, "scanner_timeout_s"=>0}]
-
       # Record overall running time of the scan
       @report.record do
         # If we're running tests, re-raise any exceptions raised by a scanner
@@ -99,19 +95,17 @@ module Salus
           # @repo_path "spec/fixtures/processor/recursive"
           # should_run? uses the repo to determine if it should run
           RepoSearcher.new(@repo_path, config).matching_repos do |repo|
-            puts "Scan repo #{repo.path_to_repo} #{scanner_name}"
             scanner = scanner_class.new(repository: repo, config: config)
             # scanner.repository = repo
             unless @config.scanner_active?(scanner_name) && scanner.should_run?
               Salus::PluginManager.send_event(:skip_scanner, scanner_name)
-              puts "Skipping #{scanner_name} #{@config.scanner_active?(scanner_name)} #{scanner.should_run?}"
               next
             end
             scanners_ran << scanner
             Salus::PluginManager.send_event(:run_scanner, scanner_name)
 
             required = @config.enforced_scanners.include?(scanner_name)
-            puts "############## #{scanner_name} required = #{required} ####################"
+
             scanner.run!(
               salus_report: @report,
               required: required,
@@ -122,16 +116,13 @@ module Salus
         end
         Salus::PluginManager.send_event(:scanners_ran, scanners_ran, @report)
       end
-
-      # puts "scanned #{@report.to_h}"
-      # puts "scanned #{@report.to_s}"
     end
 
     def create_full_sarif_diff(sarif_diff_full, git_diff)
       sarif_file_new = sarif_diff_full[0]
       sarif_file_old = sarif_diff_full[1]
-      info = "\nCreating full sarif diff report from #{sarif_file_new} and #{sarif_file_old}"
-      info += " with git diff #{git_diff}" if git_diff != ''
+      # info = "\nCreating full sarif diff report from #{sarif_file_new} and #{sarif_file_old}"
+      # info += " with git diff #{git_diff}" if git_diff != ''
       # puts info
       [sarif_file_new, sarif_file_old].each do |f|
         raise Exception, "sarif diff file name is empty #{f}" if f.nil? || f == ""

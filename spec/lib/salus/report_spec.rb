@@ -7,20 +7,20 @@ describe Salus::Report do
   describe '#to_s' do
     it 'should merge runs from the same scanner' do
       report = Salus::Report.new
-      passed_scan_reports = (0...5).each do |i|
+      (0...5).each do |i|
         scan_report = Salus::ScanReport.new('DerpScanner')
         i == 0 ? scan_report.fail : scan_report.pass
         report.add_scan_report(scan_report, required: true)
       end
 
-      to_s = "==== Salus Scan v#{Salus::VERSION}\n\n" +
-        "==== DerpScanner: FAILED\n\n" +
-        "==== Salus Configuration Files Used:\n\n\n\n" +
-        "Overall scan status: FAILED\n\n" +
-        "┌─────────────┬──────────────┬──────────┬────────┐\n" +
-        "│ Scanner     │ Running Time │ Required │ Passed │\n" +
-        "├─────────────┼──────────────┼──────────┼────────┤\n" +
-        "│ DerpScanner │ 0s           │ yes      │ no     │\n" +
+      to_s = "==== Salus Scan v#{Salus::VERSION}\n\n" \
+        "==== DerpScanner: FAILED\n\n" \
+        "==== Salus Configuration Files Used:\n\n\n\n" \
+        "Overall scan status: FAILED\n\n" \
+        "┌─────────────┬──────────────┬──────────┬────────┐\n" \
+        "│ Scanner     │ Running Time │ Required │ Passed │\n" \
+        "├─────────────┼──────────────┼──────────┼────────┤\n" \
+        "│ DerpScanner │ 0s           │ yes      │ no     │\n" \
         "└─────────────┴──────────────┴──────────┴────────┘"
       expect(report.to_s).to eq(to_s)
     end
@@ -101,7 +101,7 @@ describe Salus::Report do
 
     it 'should merge multilpe scans from a given scanner, failing if any failed' do
       report = Salus::Report.new
-      passed_scan_reports = (0...5).each do |i|
+      (0...5).each do |i|
         scan_report = Salus::ScanReport.new('DerpScanner')
         i == 0 ? scan_report.fail : scan_report.pass
         report.add_scan_report(scan_report, required: true)
@@ -109,7 +109,11 @@ describe Salus::Report do
 
       to_h = { version: "2.15.0", passed: false,
         scans: {
-          "DerpScanner" => { scanner_name: "DerpScanner", passed: false, warn: {}, info: {}, errors: [] }
+          "DerpScanner" => { scanner_name: "DerpScanner",
+                             passed: false,
+                             warn: {},
+                             info: {},
+                             errors: [] }
         },
         errors: [] }
 

@@ -74,7 +74,7 @@ module Salus
       exclusions.map! { |dir| File.join(@path_to_repo.to_s, dir) }
       return dirs if dirs.empty? || exclusions.empty?
 
-      dirs.select { |dir| !dir.start_with?(*exclusions) }
+      dirs.reject { |dir| dir.start_with?(*exclusions) }
     end
 
     def search_files_named(filename)

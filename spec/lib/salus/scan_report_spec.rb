@@ -7,7 +7,9 @@ describe Salus::ScanReport do
   let(:report) { Salus::ScanReport.new(scanner_name, custom_failure_message: failure_message) }
 
   describe 'merge!' do
-    let(:report_two) { Salus::ScanReport.new(scanner_name, custom_failure_message: failure_message_two) }
+    let(:report_two) do
+      Salus::ScanReport.new(scanner_name, custom_failure_message: failure_message_two)
+    end
 
     it 'should combine fields' do
       report.record { sleep 0.01 }

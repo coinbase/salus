@@ -145,7 +145,8 @@ describe Salus::RepoSearcher do
 
       base = File.expand_path(repo_path)
       dest = File.expand_path("spec/fixtures/processor/recursive/project-two")
-      expect_any_instance_of(Salus::FileCopier).to receive(:copy_files).with(base, dest, ["Gemfile"]).and_call_original
+      expect_any_instance_of(Salus::FileCopier).to
+      receive(:copy_files).with(base, dest, ["Gemfile"]).and_call_original
 
       repos = []
       Salus::RepoSearcher.new(repo_path, config).matching_repos do |repo|
