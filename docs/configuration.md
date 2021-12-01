@@ -140,6 +140,22 @@ scanner_configs:
   BundleAudit:
     ignore:
       - CVE-XXXX-YYYY # irrelevant CVE which does not have a patch yet
+    recursion: # optional recusion settings.  
+      directory_exclusions: # directories to exclude when recursing
+        - vendor
+      directories: # directories to recurse into
+        - ./
+        - payments/lhv
+        - infra/sso/identity_provider
+      directories_matching: # dynamically identify directories to recurse into
+        - 
+          filename: "BUILD.bazel"
+          content: "bundle//:rails"
+        - 
+          filename: "package.json"
+      static_files: # files to copy from root directory to recused directories
+        - Gemfile
+        - Gemfile.lock
 ```
 
 Special configuration that exist for particular scanners is defined in the [scanners directory](/docs/scanners).

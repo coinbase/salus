@@ -12,7 +12,6 @@ require 'sarif/sarif_report'
 require 'cyclonedx/report'
 require 'salus/report_request'
 require 'salus/repo_searcher'
-# require 'salus/file_copier'
 
 module Salus
   VERSION = '2.15.0'.freeze
