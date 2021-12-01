@@ -1,6 +1,6 @@
 # Usage:  RepoSearcher.new(@repo_path, config).matching_repos.each do |repo|
 require 'salus/file_copier'
-require 'pry'
+
 module Salus
   ##
   # This class is used to search for directories to run salus against based

@@ -6,7 +6,7 @@ describe Salus::Report do
 
   describe '#to_s' do
     it 'should merge runs from the same scanner' do
-      report = Salus::Report.new
+      report = Salus::Report.new(merge_by_scanner:true)
       (0...5).each do |i|
         scan_report = Salus::ScanReport.new('DerpScanner')
         i == 0 ? scan_report.fail : scan_report.pass
@@ -100,7 +100,7 @@ describe Salus::Report do
     end
 
     it 'should merge multilpe scans from a given scanner, failing if any failed' do
-      report = Salus::Report.new
+      report = Salus::Report.new(merge_by_scanner:true)
       (0...5).each do |i|
         scan_report = Salus::ScanReport.new('DerpScanner')
         i == 0 ? scan_report.fail : scan_report.pass
@@ -394,13 +394,14 @@ describe Salus::Report do
   end
 
   describe 'merge_reports' do
-    it 'should merge reports from the same scanner' do
+    it 'should merge reports from the same scanner when configured' do
       path = './spec/fixtures/non_existent_dir/salus_report.json'
       report = Salus::Report.new(
         report_uris: [{ 'uri' => path, 'format' => 'json' }],
         project_name: 'eva00',
         custom_info: 'test unit',
-        report_filter: nil
+        report_filter: nil,
+        merge_by_scanner: true
       )
 
       3.times do
@@ -414,6 +415,28 @@ describe Salus::Report do
 
       expect(report.instance_variable_get(:@scan_reports).size).to eq(3)
       expect(report.merged_reports.size).to eq(1)
+    end
+
+    it 'should not merge reports from the same scanner by default' do
+      path = './spec/fixtures/non_existent_dir/salus_report.json'
+      report = Salus::Report.new(
+        report_uris: [{ 'uri' => path, 'format' => 'json' }],
+        project_name: 'eva00',
+        custom_info: 'test unit',
+        report_filter: nil,
+      )
+
+      3.times do
+        scan_report = Salus::ScanReport.new('DerpScanner')
+        scan_report.info(:asdf, 'qwerty')
+        scan_report.fail
+        report.add_scan_report(scan_report, required: true)
+      end
+
+      5.times { report.error(message: 'derp') }
+
+      expect(report.instance_variable_get(:@scan_reports).size).to eq(3)
+      expect(report.merged_reports.size).to eq(3)
     end
   end
 

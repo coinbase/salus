@@ -105,7 +105,7 @@ module Salus
             Salus::PluginManager.send_event(:run_scanner, scanner_name)
 
             required = @config.enforced_scanners.include?(scanner_name)
-
+            puts "Scanning #{scanner_name} on #{repo}"
             scanner.run!(
               salus_report: @report,
               required: required,

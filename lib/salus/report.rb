@@ -19,7 +19,7 @@ module Salus
 
     def initialize(report_uris: [], builds: {}, project_name: nil, custom_info: nil, config: nil,
                    repo_path: nil, filter_sarif: nil, ignore_config_id: nil,
-                   report_filter: DEFAULT_REPORT_FILTER)
+                   report_filter: DEFAULT_REPORT_FILTER, merge_by_scanner: false)
       @report_uris = report_uris           # where we will send this report
       @builds = builds                     # build hash, could have arbitrary keys
       @project_name = project_name         # the project_name we are scanning
@@ -33,6 +33,7 @@ module Salus
       @ignore_config_id = ignore_config_id # ignore id in salus config
       @report_filter = report_filter       # filter reports that'll run based on their configuration
       @full_diff_sarif = nil
+      @merge_by_scanner = merge_by_scanner
     end
 
     # Syntatical sugar to apply report hash filters
@@ -68,7 +69,12 @@ module Salus
       @errors << hsh
     end
 
+    # We may have several scan reports from a given scanner.
+    # This will typically be from recusive scannings.  We
+    #
+    # @returns [[]] 
     def merged_reports
+      return @scan_reports unless @merge_by_scanner
       reports = {}
       @scan_reports.each do |report, required|
         if reports.key?(report.scanner_name)
@@ -76,8 +82,6 @@ module Salus
         end
         reports[report.scanner_name] = [report, required]
       end
-      # [Salus::ScanReport, boolean]
-      # @scan_reports.map{|s| s[0].scanner_name}
 
       reports.values
     end
