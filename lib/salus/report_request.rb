@@ -8,11 +8,13 @@ module Salus
       'txt'  => 'text/plain',
       'sarif' => 'application/json',
       'sarif_diff' => 'application/json',
+      'sarif_diff_full' => 'application/json',
       'cyclonedx-json' => 'application/json'
     }.freeze
 
     FORMAT_SARIF_DIFF = "sarif_diff".freeze
     FORMAT_SARIF = "sarif".freeze
+    FORMAT_SARIF_DIFF_FULL = "sarif_diff_full".freeze
     SCANNER_TYPE_SARIF_DIFF = "salus_sarif_diff".freeze
     SCANNER_TYPE_SARIF = "salus_sarif".freeze
     SCANNER_TYPE_SALUS = "salus".freeze
@@ -43,7 +45,7 @@ module Salus
 
       def x_scanner_type(format)
         return SCANNER_TYPE_SARIF_DIFF if format == FORMAT_SARIF_DIFF
-        return SCANNER_TYPE_SARIF if format == FORMAT_SARIF
+        return SCANNER_TYPE_SARIF if [FORMAT_SARIF, FORMAT_SARIF_DIFF_FULL].include?(format)
 
         SCANNER_TYPE_SALUS
       end
