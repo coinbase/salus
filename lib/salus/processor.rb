@@ -131,7 +131,6 @@ module Salus
 
       files = [sarif_file_new, sarif_file_old]
       files.push git_diff if git_diff != ''
-      # [sarif_file_new, sarif_file_old, git_diff].each do |f|
       files.each do |f|
         if !Salus::Report.new(repo_path: @repo_path).safe_local_report_path?(f)
           raise Exception, "sarif/git diff file path should not be outside working dir #{f}"
