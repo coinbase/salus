@@ -1,6 +1,13 @@
 require_relative '../../spec_helper.rb'
 
 describe Salus::RepoSearcher do
+  describe 'dependencies' do
+    it 'should have access to ripgrep' do
+      version = IO.popen(["rg", "--version"]).read
+      expect(version).to start_with("ripgrep 13")
+    end
+  end
+
   describe 'matching_repos' do
     let(:repo_path) { 'spec/fixtures/processor/recursive' }
     let(:config) do
@@ -55,7 +62,6 @@ describe Salus::RepoSearcher do
     end
 
     it 'should support dynamic directories via content and filename' do
-      puts "Debugging Circle: content and filename"
       config = { "recursion" => {
         "directories" => [],
                 "directories_matching" => [{ "filename" => "Gemfile.lock",
@@ -78,7 +84,6 @@ describe Salus::RepoSearcher do
     end
 
     it 'should support dynamic directories via content only' do
-      puts "Debugging Circle: dynamic dirs via content"
       config = { "recursion" => {
         "directories" => [],
                 "directories_matching" => [{ "content" => "activesupport" }],
@@ -119,7 +124,6 @@ describe Salus::RepoSearcher do
     end
 
     it 'should  filter out exclusions' do
-      puts "Debugging Circle: filter exclusions"
       config = { "recursion" => {
         "directories" => [],
                 "directories_matching" => [{ "filename" => "Gemfile.lock",

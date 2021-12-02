@@ -28,22 +28,17 @@ module Salus
     # @return [Salus::Repo]
     #
     def matching_repos
-      puts "Debugging Circle: matching_repos #{path_to_repo}"
       return yield Repo.new(@path_to_repo) unless recurse?
 
       dirs = static_directories + dynamic_directories
       # We want to copy over files we need to here and yield back the repo
-      puts "Debugging Circle: filter_out_exlcusions"
       filter_out_exlcusions(dirs.uniq).map do |repo|
-        puts "Debugging Circle: repo #{repo}"
         # If we have any static files in the config, copy them
         # as needed
         dest_dir =  File.expand_path(repo)
-        puts "Debugging Circle: Dir.exist?(dest_dir) =  #{dest_dir}"
         next unless Dir.exist?(dest_dir)
-        puts "Debugging Circle: copy files"
+
         FileCopier.new.copy_files(File.expand_path(@path_to_repo), dest_dir, static_files) do
-          puts "Debugging Circle: copy files yield #{repo}"
           yield Repo.new(repo)
         end
       end
