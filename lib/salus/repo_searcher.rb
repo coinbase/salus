@@ -135,9 +135,9 @@ module Salus
     def run_rg(*args)
       data = nil
       Dir.chdir(@path_to_repo) do
-        puts "Debugging Circle: run_rg #{args}"
+        puts "Debugging Circle: run_rg #{args} from #{path_to_repo} dir == #{__dir__}"
         data = IO.popen(args).read
-        puts "Debugging Circle: run_rg returned #{data}"
+        puts "Debugging Circle: run_rg returned '#{data}'"
       end
       return [] if data == ""
 

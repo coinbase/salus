@@ -67,6 +67,7 @@ describe Salus::RepoSearcher do
       Salus::RepoSearcher.new(repo_path, config).matching_repos do |repo|
         repos << repo
       end
+
       expect(repos.size).to eq(3) # TODO
 
       dirs = ["spec/fixtures/processor/recursive",
