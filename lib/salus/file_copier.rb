@@ -17,6 +17,7 @@ module Salus
     # @param [Array] files An array of strings listing the filenames to copy
 
     def copy_files(basedir, destdir, files)
+      puts "Debugging Circle: copy_files(#{basedir}, #{destdir}, #{files})"
       return yield [] if files.empty?
 
       copied = []
@@ -25,6 +26,7 @@ module Salus
         source = File.join(basedir, file)
         dest = File.join(destdir, file)
         # No need to process this entry if we can't find it
+        puts "Debugging Circle: next if #{!File.exist?(source)} || #{File.exist?(dest)} || #{!File.exist?(destdir)}"
         next if !File.exist?(source) || File.exist?(dest) || !File.exist?(destdir)
 
         # Could also File.symlink but that will limit portability so we're
@@ -34,6 +36,7 @@ module Salus
       end
 
       begin
+        puts "Debugging Circle: yield #{copied}"
         yield copied
       ensure
         copied.each do |file|

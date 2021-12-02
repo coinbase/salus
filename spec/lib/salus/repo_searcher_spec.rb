@@ -55,6 +55,7 @@ describe Salus::RepoSearcher do
     end
 
     it 'should support dynamic directories via content and filename' do
+      puts "Debugging Circle: content and filename"
       config = { "recursion" => {
         "directories" => [],
                 "directories_matching" => [{ "filename" => "Gemfile.lock",
@@ -66,7 +67,7 @@ describe Salus::RepoSearcher do
       Salus::RepoSearcher.new(repo_path, config).matching_repos do |repo|
         repos << repo
       end
-      expect(repos.size).to eq(3)
+      expect(repos.size).to eq(3) # TODO
 
       dirs = ["spec/fixtures/processor/recursive",
               "spec/fixtures/processor/recursive/project-two",
@@ -76,6 +77,7 @@ describe Salus::RepoSearcher do
     end
 
     it 'should support dynamic directories via content only' do
+      puts "Debugging Circle: dynamic dirs via content"
       config = { "recursion" => {
         "directories" => [],
                 "directories_matching" => [{ "content" => "activesupport" }],
@@ -86,7 +88,7 @@ describe Salus::RepoSearcher do
       Salus::RepoSearcher.new(repo_path, config).matching_repos do |repo|
         repos << repo
       end
-      expect(repos.size).to eq(3)
+      expect(repos.size).to eq(3) # TODO
 
       dirs = ["spec/fixtures/processor/recursive",
               "spec/fixtures/processor/recursive/project-two",
@@ -116,6 +118,7 @@ describe Salus::RepoSearcher do
     end
 
     it 'should  filter out exclusions' do
+      puts "Debugging Circle: filter exclusions"
       config = { "recursion" => {
         "directories" => [],
                 "directories_matching" => [{ "filename" => "Gemfile.lock",
@@ -127,7 +130,7 @@ describe Salus::RepoSearcher do
       Salus::RepoSearcher.new(repo_path, config).matching_repos do |repo|
         repos << repo
       end
-      expect(repos.size).to eq(2)
+      expect(repos.size).to eq(2) # TODO
 
       dirs = ["spec/fixtures/processor/recursive",
               "spec/fixtures/processor/recursive/project-two"]
