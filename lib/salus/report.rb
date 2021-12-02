@@ -33,7 +33,7 @@ module Salus
       @ignore_config_id = ignore_config_id # ignore id in salus config
       @report_filter = report_filter       # filter reports that'll run based on their configuration
       @full_diff_sarif = nil
-      @merge_by_scanner = merge_by_scanner
+      @merge_by_scanner = merge_by_scanner # Flag to group to_h and to_s results by scanner
     end
 
     # Syntatical sugar to apply report hash filters
@@ -70,9 +70,11 @@ module Salus
     end
 
     # We may have several scan reports from a given scanner.
-    # This will typically be from recusive scannings.  We
+    # This will typically be from recusive scannings.  When
+    # @merge_by_scanner is true we will merge the ScanReports
+    # from a given scanner together.
     #
-    # @returns [[]]
+    # @returns [Array<ScanReport>]
     def merged_reports
       return @scan_reports unless @merge_by_scanner
 

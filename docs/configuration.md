@@ -141,19 +141,27 @@ scanner_configs:
     ignore:
       - CVE-XXXX-YYYY # irrelevant CVE which does not have a patch yet
     recursion: # optional recusion settings.  
-      directory_exclusions: # directories to exclude when recursing
+      directory_exclusions: # Directories to exclude when recursing.  
+      # Any matches that occur in the list of directory_exclusions
+      # will be ignored
         - vendor
-      directories: # directories to recurse into
+      directories: # Directories to recurse into.  When present,
+      # any directories that need to be scaned should explicity listed
         - ./
         - payments/lhv
         - infra/sso/identity_provider
-      directories_matching: # dynamically identify directories to recurse into
+      directories_matching: # Dynamically identify directories to recurse into.
+      # Each entry may have a combination of filename and or content.  Filename
+      # matches on the name of the file, while content matches on the content within
+      # the file.
         - 
           filename: "BUILD.bazel"
           content: "bundle//:rails"
         - 
           filename: "package.json"
-      static_files: # files to copy from root directory to recused directories
+      static_files: # Files to copy from root directory to recused directories
+      # This can be useful for mono repositories where a common file should be 
+      # copied to sub directories for proper scanning.
         - Gemfile
         - Gemfile.lock
 ```

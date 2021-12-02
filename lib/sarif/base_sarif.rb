@@ -46,6 +46,12 @@ module Sarif
       }
     end
 
+    ##
+    # Provide the originalUriBaseIds content hash.
+    # ProjectRoot will be the absolute path to the scanned project
+    # SrcRoot will be relative to the project root.
+    # @returns [Hash]
+    #
     def uri_info
       project_root = Pathname.new(base_path.to_s)
       srcroot = Pathname.new(File.expand_path(@scan_report.repository&.path_to_repo.to_s))

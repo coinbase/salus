@@ -92,11 +92,8 @@ module Salus
         scanners_ran = []
         Config::SCANNERS.each do |scanner_name, scanner_class|
           config = @config.scanner_configs.fetch(scanner_name, {})
-          # @repo_path "spec/fixtures/processor/recursive"
-          # should_run? uses the repo to determine if it should run
           RepoSearcher.new(@repo_path, config).matching_repos do |repo|
             scanner = scanner_class.new(repository: repo, config: config)
-            # scanner.repository = repo
             unless @config.scanner_active?(scanner_name) && scanner.should_run?
               Salus::PluginManager.send_event(:skip_scanner, scanner_name)
               next
@@ -105,7 +102,7 @@ module Salus
             Salus::PluginManager.send_event(:run_scanner, scanner_name)
 
             required = @config.enforced_scanners.include?(scanner_name)
-            puts "Scanning #{scanner_name} on #{repo}"
+
             scanner.run!(
               salus_report: @report,
               required: required,
@@ -121,9 +118,9 @@ module Salus
     def create_full_sarif_diff(sarif_diff_full, git_diff)
       sarif_file_new = sarif_diff_full[0]
       sarif_file_old = sarif_diff_full[1]
-      # info = "\nCreating full sarif diff report from #{sarif_file_new} and #{sarif_file_old}"
-      # info += " with git diff #{git_diff}" if git_diff != ''
-      # puts info
+      info = "\nCreating full sarif diff report from #{sarif_file_new} and #{sarif_file_old}"
+      info += " with git diff #{git_diff}" if git_diff != ''
+      puts info
       [sarif_file_new, sarif_file_old].each do |f|
         raise Exception, "sarif diff file name is empty #{f}" if f.nil? || f == ""
       end

@@ -17,7 +17,8 @@ module Salus
       @warn = {}
       @errors = []
       @custom_failure_message = custom_failure_message
-      @repository = repository
+      @repository = repository # Salus::Repo used to track what this scan report
+      # is being ran against.  Needed for recusive scanning
     end
 
     def add_version(scanner_version)
@@ -131,6 +132,14 @@ module Salus
       output
     end
 
+    ##
+    # Merge! will combine results from another scan report from the same scanner.
+    # Run times are summed.  Logs and errors are appedned.  Warn/info hashes are merged.
+    # Passed is logically ANDed.  If the scan_report passed to the method has a
+    # custom_failure_method that one is adopted.
+    #
+    # @param [Salus::ScanReport] scan_report The scan report to merge into self
+    # @returns [Salus::ScanReport]
     def merge!(scan_report)
       h = scan_report.to_h
 
