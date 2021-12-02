@@ -258,8 +258,8 @@ module Salus
     rescue StandardError => e
       raise e if ENV['RUNNING_SALUS_TESTS']
 
-      puts "Could not send Salus report: (#{e.class}: #{e.message})"
-      e = "Could not send Salus report. Exception: #{e}, Build info: #{builds}"
+      puts "Could not send Salus report: (#{e.class}: #{e.message}), #{e.backtrace}"
+      e = "Could not send Salus report. Exception: #{e}, Build info: #{builds}, #{e.backtrace}"
       bugsnag_notify(e)
     end
 
@@ -335,16 +335,22 @@ module Salus
       verbose = config['verbose']
       return report_body_hash(config, to_s(verbose: verbose)).to_s if config['format'] == 'txt'
 
-      body = report_body_hash(config, JSON.parse(to_json)) if config['format'] == 'json'
-      if config['format'] == 'sarif'
-        body = report_body_hash(config, JSON.parse(to_sarif(config['sarif_options'] || {})))
-      end
-      body = report_body_hash(config, JSON.parse(to_sarif_diff)) if config['format'] == 'sarif_diff'
-      if config['format'] == 'cyclonedx-json'
-        body = report_body_hash(config, JSON.parse(to_cyclonedx(config['cyclonedx_options'] || {})))
-      end
-      if %w[json sarif sarif_diff cyclonedx-json].include?(config['format'])
-        return JSON.pretty_generate(body)
+      body = case config['format']
+             when 'json'
+               to_json
+             when 'sarif'
+               to_sarif(config['sarif_options'] || {})
+             when 'sarif_diff'
+               to_sarif_diff
+             when 'sarif_diff_full'
+               to_full_sarif_diff
+             when 'cyclonedx-json'
+               to_cyclonedx(config['cyclonedx_options'] || {})
+             end
+
+      if %w[json sarif sarif_diff sarif_diff_full cyclonedx-json].include?(config['format'])
+        body = JSON.parse(body)
+        return JSON.pretty_generate(report_body_hash(config, body))
       end
 
       return YAML.dump(report_body_hash(config, to_h)) if config['format'] == 'yaml'
