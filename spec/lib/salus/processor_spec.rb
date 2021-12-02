@@ -189,11 +189,7 @@ describe Salus::Processor do
 
       processor.scan_project
 
-      # puts processor.string_report(verbose: true, use_colors: true)
-
       processor.report.report_uris.reject! { |u| u['format'] == FULL_SARIF_DIFF_FORMAT }
-      # Try to send Salus reports to remote server or local files.
-      # processor.export_report
 
       sarif = processor.report.to_sarif
       json = JSON.parse(sarif)
