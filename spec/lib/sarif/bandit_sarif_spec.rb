@@ -136,14 +136,21 @@ describe Sarif::BanditSarif do
         snippet = "2 \n3 self.process = subprocess.Popen('/bin/echo', shell=True)\n4 foo()\n"
         git_diff = File.read(git_diff_file)
         new_lines_in_git_diff = Sarif::BaseSarif.new_lines_in_git_diff(git_diff)
-        r = Sarif::BanditSarif.snippet_in_git_diff?(snippet, new_lines_in_git_diff)
+        r = Sarif::BanditSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
         expect(r).to be true
 
         git_diff_file = 'spec/fixtures/sarifs/diff/git_diff_5.txt'
         snippet = "2 \n3 self.process = subprocess.Popen('/bin/echo', shell=True)\n4 foo()\n"
         git_diff = File.read(git_diff_file)
         new_lines_in_git_diff = Sarif::BaseSarif.new_lines_in_git_diff(git_diff)
-        r = Sarif::BanditSarif.snippet_in_git_diff?(snippet, new_lines_in_git_diff)
+        r = Sarif::BanditSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
+        expect(r).to be true
+
+        git_diff_file = 'spec/fixtures/sarifs/diff/git_diff_5.txt'
+        snippet = "2 \n3 self.process = subprocess.Popen('/bin/echo', shell=True)\n4 baz()\n"
+        git_diff = File.read(git_diff_file)
+        new_lines_in_git_diff = Sarif::BaseSarif.new_lines_in_git_diff(git_diff)
+        r = Sarif::BanditSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
         expect(r).to be false
       end
     end

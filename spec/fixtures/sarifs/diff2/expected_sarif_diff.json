@@ -1,0 +1,390 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/schemas/sarif-schema-2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Bandit",
+          "version": "1.6.2",
+          "informationUri": "https://github.com/PyCQA/bandit",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": false
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "BundleAudit",
+          "version": "0.8.0",
+          "informationUri": "https://github.com/rubysec/bundler-audit/",
+          "rules": [
+            {
+              "id": "CVE-2021-41817",
+              "name": "Regular Expression Denial of Service Vulnerability of Date Parsing Methods",
+              "fullDescription": {
+                "text": "Date's parsing methods including `Date.parse` are using Regexps internally, some of\nwhich are vulnerable against regular expression denial of service. Applications and\nlibraries that apply such methods to untrusted input may be affected.\n\nThe fix limits the input length up to 128 bytes by default instead of changing the\nregexps. This is because Date gem uses many Regexps and it is possible that there are\nstill undiscovered vulnerable Regexps. For compatibility, it is allowed to remove the\nlimitation by explicitly passing `limit` keywords as `nil` like\n`Date.parse(str, limit: nil)`, but note that it may take a long time to parse.\n\nPlease update the date gem to version 3.2.1, 3.1.2, 3.0.2, and 2.0.1, or later.  You\ncan use `gem update date` to update it.  If you are using bundler, please add\n`gem \"date\", \">= 3.2.1\"` to your `Gemfile`."
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "date"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 2.0.1\", \"~> 3.0.2\", \"~> 3.1.2\", \">= 3.2.1\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Regular Expression Denial of Service Vulnerability of Date Parsing Methods"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "1.2.3"
+                }
+              },
+              "helpUri": "https://www.ruby-lang.org/en/news/2021/11/15/date-parsing-method-regexp-dos-cve-2021-41817/",
+              "help": {
+                "text": "More info: https://www.ruby-lang.org/en/news/2021/11/15/date-parsing-method-regexp-dos-cve-2021-41817/",
+                "markdown": "[More info](https://www.ruby-lang.org/en/news/2021/11/15/date-parsing-method-regexp-dos-cve-2021-41817/)."
+              }
+            }
+          ],
+          "properties": {
+            "salusEnforced": true
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+        {
+          "ruleId": "CVE-2021-41817",
+          "level": "note",
+          "message": {
+            "text": "Date's parsing methods including `Date.parse` are using Regexps internally, some of\nwhich are vulnerable against regular expression denial of service. Applications and\nlibraries that apply such methods to untrusted input may be affected.\n\nThe fix limits the input length up to 128 bytes by default instead of changing the\nregexps. This is because Date gem uses many Regexps and it is possible that there are\nstill undiscovered vulnerable Regexps. For compatibility, it is allowed to remove the\nlimitation by explicitly passing `limit` keywords as `nil` like\n`Date.parse(str, limit: nil)`, but note that it may take a long time to parse.\n\nPlease update the date gem to version 3.2.1, 3.1.2, 3.0.2, and 2.0.1, or later.  You\ncan use `gem update date` to update it.  If you are using bundler, please add\n`gem \"date\", \">= 3.2.1\"` to your `Gemfile`."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          },
+          "ruleIndex": 0
+        }
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": false
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "BundlerVerifier",
+          "version": "",
+          "informationUri": "https://github.com/coinbase/salus",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": false
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "toolExecutionNotifications": [
+            {
+              "descriptor": {
+                "id": "SAL001"
+              },
+              "message": {
+                "text": "SARIF reports are not available for this scanner"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Gosec",
+          "version": "2.7.0",
+          "informationUri": "https://github.com/securego/gosec",
+          "rules": [
+            {
+              "id": "G101",
+              "name": "CWE-798",
+              "fullDescription": {
+                "text": "Potential hardcoded credentials \nSeverity: HIGH\nConfidence: LOW\nCWE: https://cwe.mitre.org/data/definitions/798.html\n* Gosec flags all assignments where the left hand side variable name looks like a credential and right hand side is a string literal. This regex is used for checking credentials: `(?i)passwd|pass|password|pwd|secret|token` (Note ?i means case insensitive.)\n\nNote this vulnerability may be a false positive. Here are some false positive cases:\n* The variable does not represent a hard coded credential.\n* The vulnerable code will not be used in production (Ex. vulnerable code is only used during testing).\n* If you believe this is a false positive not covered by the above, please ping #ask-seceng"
+              },
+              "messageStrings": {
+                "severity": {
+                  "text": "HIGH"
+                },
+                "confidence": {
+                  "text": "LOW"
+                },
+                "cwe": {
+                  "text": "https://cwe.mitre.org/data/definitions/798.html"
+                }
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/798.html",
+              "help": {
+                "text": "More info: https://cwe.mitre.org/data/definitions/798.html",
+                "markdown": "[More info](https://cwe.mitre.org/data/definitions/798.html)."
+              }
+            }
+          ],
+          "properties": {
+            "salusEnforced": true
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+        {
+          "ruleId": "G101",
+          "level": "error",
+          "message": {
+            "text": "Potential hardcoded credentials \nSeverity: HIGH\nConfidence: LOW\nCWE: https://cwe.mitre.org/data/definitions/798.html"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "bad.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 7,
+                  "startColumn": 9,
+                  "snippet": {
+                    "text": "6:     username := \"admin\"\n7:     var password = \"f62e5bcda4fae4f82370da0c6f20697b8f8447efABCD\"              \n8: \n"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": "HIGH"
+          },
+          "ruleIndex": 0
+        }
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": false
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "PatternSearch",
+          "version": "0.9.0",
+          "informationUri": "https://github.com/coinbase/salus/blob/master/docs/scanners/pattern_search.md",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": true
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "RepoNotEmpty",
+          "version": "",
+          "informationUri": "https://github.com/coinbase/salus/blob/master/docs/scanners/repository_not_blank.md",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": true
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "ReportPythonModules",
+          "version": "",
+          "informationUri": "https://github.com/coinbase/salus",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": false
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "toolExecutionNotifications": [
+            {
+              "descriptor": {
+                "id": "SAL001"
+              },
+              "message": {
+                "text": "SARIF reports are not available for this scanner"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "ReportRubyGems",
+          "version": "",
+          "informationUri": "https://github.com/coinbase/salus",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": false
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "toolExecutionNotifications": [
+            {
+              "descriptor": {
+                "id": "SAL001"
+              },
+              "message": {
+                "text": "SARIF reports are not available for this scanner"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

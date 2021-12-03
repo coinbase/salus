@@ -61,11 +61,20 @@ module Sarif
       }
     end
 
-    def self.snippet_in_git_diff?(snippet, lines_added)
+    def self.snippet_possibly_in_git_diff?(snippet, lines_added)
+      # Bandit snippet looks like
+      #   "2 \n3 self.process = subprocess.Popen('/bin/echo', shell=True)\n4 foo()\n"
       lines = snippet.split("\n")
-      lines.all? do |line|
+      # using any? because snippet may include surrounding code that may not be in git diff
+      lines.any? do |line|
         line = line.split(' ', 2)[1]
-        lines_added.keys.include?(line)
+        if line.nil?
+          # maybe the line of code has some special pattern
+          # we'll just not deal with it and assume snippet may be in git diff
+          true
+        else
+          lines_added.keys.include?(line) && !line.strip.empty?
+        end
       end
     end
   end

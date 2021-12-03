@@ -147,7 +147,7 @@ describe Salus::CLI do
     end
 
     context 'With --sarif_diff_full and --git_diff' do
-      it 'Should filter out vulns from git diff' do
+      it 'Should still only output new vuls if --git-diff not used' do
         Dir.chdir('spec/fixtures/sarifs/diff') do
           # without --git-diff, Gosec has a vul
           args = ['v2.json', 'v1.json']
@@ -162,8 +162,12 @@ describe Salus::CLI do
           expect(gosec_info['results'].size).to eq(1)
           expect(gosec_info['results'][0]['ruleId']).to eq('G101')
           expect(exit_status).to eq(Salus::EXIT_FAILURE)
+        end
+      end
 
-          # with --git-diff, Gosec passes
+      it 'Should output new vuls that are in git diff' do
+        Dir.chdir('spec/fixtures/sarifs/diff') do
+          # with --git-diff, Gosec still fails because vul exists in git diff
           diff_args = ['v2.json', 'v1.json']
           ENV['SALUS_CONFIGURATION'] = 'file:///salus_diff.yaml'
           exit_status = Salus.scan(quiet: true, repo_path: '.', sarif_diff_full: diff_args,
@@ -174,9 +178,44 @@ describe Salus::CLI do
           gosec_info = diff_sarif['runs'].select do |run|
             run['tool']['driver']['name'] == 'Gosec'
           end[0]
-          expect(gosec_info['invocations'][0]['executionSuccessful']).to be(true)
-          expect(gosec_info['results']).to be_empty
-          expect(exit_status).to eq(Salus::EXIT_SUCCESS)
+          expect(gosec_info['invocations'][0]['executionSuccessful']).to be(false)
+          expect(gosec_info['results'].size).to eq(1)
+          expect(gosec_info['results'][0]['ruleId']).to eq('G101')
+          expect(exit_status).to eq(Salus::EXIT_FAILURE)
+        end
+      end
+
+      it 'Should work with vuls from different scanners' do
+        Dir.chdir('spec/fixtures/sarifs/diff2') do
+          # with --git-diff, Gosec still fails because vul exists in git diff
+          diff_args = ['report_sarif_pr.json', 'report_sarif_master.json']
+          ENV['SALUS_CONFIGURATION'] = 'file:///salus.yaml'
+          exit_status = Salus.scan(quiet: true, repo_path: '.', sarif_diff_full: diff_args,
+                     git_diff: 'git_diff_master_pr.txt')
+          diff_file = 'sarif_diff.json'
+          expect(File).to exist(diff_file)
+          diff_sarif = JSON.parse(File.read(diff_file))
+          expected_diff_sarif = JSON.parse(File.read('expected_sarif_diff.json'))
+          expect(diff_sarif).to eq(expected_diff_sarif)
+          expect(exit_status).to eq(Salus::EXIT_FAILURE)
+          remove_file(diff_file)
+        end
+      end
+
+      it 'Should not output vulns caused by added comment' do
+        Dir.chdir('spec/fixtures/sarifs/diff3') do
+          # with --git-diff, Gosec still fails because vul exists in git diff
+          diff_args = ['report_sarif_pr.json', 'report_sarif_master.json']
+          ENV['SALUS_CONFIGURATION'] = 'file:///salus.yaml'
+          exit_status = Salus.scan(quiet: true, repo_path: '.', sarif_diff_full: diff_args,
+                     git_diff: 'git_diff_master_pr.txt')
+          diff_file = 'sarif_diff.json'
+          expect(File).to exist(diff_file)
+          diff_sarif = JSON.parse(File.read(diff_file))
+          expected_diff_sarif = JSON.parse(File.read('expected_sarif_diff.json'))
+          expect(diff_sarif).to eq(expected_diff_sarif)
+          expect(exit_status).to eq(Salus::EXIT_FAILURE)
+          remove_file(diff_file)
         end
       end
     end
