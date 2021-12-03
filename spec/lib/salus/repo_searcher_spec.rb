@@ -9,6 +9,16 @@ describe Salus::RepoSearcher do
   end
 
   describe 'matching_repos' do
+    class IORead
+      def initialize(response)
+        @response = response
+      end
+
+      def read
+        @response
+      end
+    end
+
     let(:repo_path) { 'spec/fixtures/processor/recursive' }
     let(:config) do
       { "pass_on_raise" => false,
@@ -69,12 +79,19 @@ describe Salus::RepoSearcher do
                 "directory_exclusions" => [],
                 "static_files" => []
       } }
+
+      read = IORead.new(["Gemfile.lock",
+                         "vendor/Gemfile.lock",
+                         "project-two/Gemfile.lock"].join("\n"))
+      args = ["rg", "--files-with-matches", "activesupport", "--glob", "Gemfile.lock"]
+      expect(IO).to receive("popen").with(args).and_return(read)
+
       repos = []
       Salus::RepoSearcher.new(repo_path, config).matching_repos do |repo|
         repos << repo
       end
 
-      expect(repos.size).to eq(3) # TODO
+      expect(repos.size).to eq(3)
 
       dirs = ["spec/fixtures/processor/recursive",
               "spec/fixtures/processor/recursive/project-two",
@@ -90,11 +107,18 @@ describe Salus::RepoSearcher do
                 "directory_exclusions" => [],
                 "static_files" => []
       } }
+
+      read = IORead.new(["Gemfile.lock",
+                         "vendor/Gemfile.lock",
+                         "project-two/Gemfile.lock"].join("\n"))
+      args = ["rg", "-l", "activesupport"]
+      expect(IO).to receive("popen").with(args).and_return(read)
+
       repos = []
       Salus::RepoSearcher.new(repo_path, config).matching_repos do |repo|
         repos << repo
       end
-      expect(repos.size).to eq(3) # TODO
+      expect(repos.size).to eq(3)
 
       dirs = ["spec/fixtures/processor/recursive",
               "spec/fixtures/processor/recursive/project-two",
@@ -135,7 +159,14 @@ describe Salus::RepoSearcher do
       Salus::RepoSearcher.new(repo_path, config).matching_repos do |repo|
         repos << repo
       end
-      expect(repos.size).to eq(2) # TODO
+
+      read = IORead.new(["Gemfile.lock",
+                         "vendor/Gemfile.lock",
+                         "project-two/Gemfile.lock"].join("\n"))
+      args = ["rg", "--files-with-matches", "activesupport", "--glob", "Gemfile.lock"]
+      expect(IO).to receive("popen").with(args).and_return(read)
+
+      expect(repos.size).to eq(2)
 
       dirs = ["spec/fixtures/processor/recursive",
               "spec/fixtures/processor/recursive/project-two"]
