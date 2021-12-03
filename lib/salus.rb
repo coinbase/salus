@@ -99,6 +99,7 @@ module Salus
       if Sarif::BaseSarif.salus_passed?(processor.report.full_diff_sarif)
         system_exit(EXIT_SUCCESS)
       else
+        puts "- Sarif diff contains vulnerabilities"
         system_exit(EXIT_FAILURE)
       end
     end
