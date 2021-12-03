@@ -318,6 +318,7 @@ describe Salus::Report do
           'X-Scanner' => 'salus' }).to_return(status: 200, body: "", headers: {})
         expect { report.export_report }.not_to raise_error
       end
+
       it 'should make a call to send the sarif report for http URI' do
         url = 'https://nerv.tk3/salus-report'
         params = { 'salus_report_param_name' => 'report',
@@ -340,6 +341,36 @@ describe Salus::Report do
         ).to_return(status: 200, body: "", headers: {})
 
         expect(report).to receive(:to_sarif).with(options).and_call_original.twice
+        expect { report.export_report }.not_to raise_error
+      end
+
+      it 'should make a call to send the sarif_diff_full report for http URI' do
+        url = 'https://nerv.tk3/salus-report'
+        params = { 'salus_report_param_name' => 'report',
+          'additional_params' => { "foo" => "bar", "abc" => "def" } }
+        options = { 'foo' => 'bar' }
+        directive = { 'uri' => url, 'format' => 'sarif_diff_full', 'post' => params,
+                      'verbose': false, 'sarif_options' => options }
+        report = build_report(directive)
+        report.instance_variable_set(:@scan_reports, [])
+        content = { "version": "2.1.0",
+                    "$schema": "https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/" \
+                               "schemas/sarif-schema-2.1.0",
+                "runs": [] }
+        report.instance_variable_set(:@full_diff_sarif, content)
+
+        stub_request(:post, "https://nerv.tk3/salus-report").with(
+          body: "{\n  \"foo\": \"bar\",\n  \"abc\": \"def\",\n  \"report\": {\n    \"version\": "\
+          "\"2.1.0\",\n    \"$schema\": \"https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/"\
+          "schemas/sarif-schema-2.1.0\",\n    \"runs\": [\n\n    ]\n  }\n}",
+          headers: { 'Accept' => '*/*',
+            'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+            'Content-Type' => 'application/json',
+            'User-Agent' => 'Faraday v1.3.0',
+            'X-Scanner' => 'salus_sarif' }
+        ).to_return(status: 200, body: "", headers: {})
+
+        expect(report).to receive(:to_full_sarif_diff).and_call_original.twice
         expect { report.export_report }.not_to raise_error
       end
     end
@@ -389,6 +420,8 @@ describe Salus::Report do
         expect(report.x_scanner_type('json')).to eq('salus')
         expect(report.x_scanner_type('yaml')).to eq('salus')
         expect(report.x_scanner_type('sarif_diff')).to eq('salus_sarif_diff')
+        expect(report.x_scanner_type('sarif')).to eq('salus_sarif')
+        expect(report.x_scanner_type('sarif_diff_full')).to eq('salus_sarif')
       end
     end
   end
