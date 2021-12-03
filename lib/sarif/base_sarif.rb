@@ -214,7 +214,7 @@ module Sarif
           else
             if git_diff != ''
               locations = result['locations']
-              if has_adapter?(scanner) && locations && !locations.empty? &&
+              if has_sarif_adapter?(scanner) && locations && !locations.empty? &&
                   locations.all? do |loc|
                     # rubocop outputs false positive here
                     # rubocop:disable Lint/AssignmentInCondition
@@ -248,7 +248,7 @@ module Sarif
       sarif_new
     end
 
-    def self.has_adapter?(scanner)
+    def self.has_sarif_adapter?(scanner)
       adapter = "Sarif::#{scanner}Sarif"
       begin
         adapter_cls = Object.const_get(adapter)
