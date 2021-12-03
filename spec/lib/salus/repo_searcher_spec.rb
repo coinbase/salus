@@ -155,16 +155,17 @@ describe Salus::RepoSearcher do
                 "directory_exclusions" => ["vendor"],
                 "static_files" => []
       } }
-      repos = []
-      Salus::RepoSearcher.new(repo_path, config).matching_repos do |repo|
-        repos << repo
-      end
 
       read = IORead.new(["Gemfile.lock",
                          "vendor/Gemfile.lock",
                          "project-two/Gemfile.lock"].join("\n"))
       args = ["rg", "--files-with-matches", "activesupport", "--glob", "Gemfile.lock"]
       expect(IO).to receive("popen").with(args).and_return(read)
+
+      repos = []
+      Salus::RepoSearcher.new(repo_path, config).matching_repos do |repo|
+        repos << repo
+      end
 
       expect(repos.size).to eq(2)
 
