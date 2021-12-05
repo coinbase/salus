@@ -1,0 +1,148 @@
+diff --git a/Gemfile.lock b/Gemfile.lock
+index 9455bea..a04a218 100644
+--- a/Gemfile.lock
++++ b/Gemfile.lock
+@@ -32,7 +32,8 @@ GEM
+     concurrent-ruby (1.0.5)
+     erubis (2.7.0)
+     i18n (0.8.5)
+-    json (1.8.6)
++    json (1.8.66777
++    date (1.2.3)
+     mail (2.6.6)
+       mime-types (>= 1.16, < 4)
+     mime-types (3.1)
+diff --git a/Gemfile.lock.copy b/Gemfile.lock.copy
+new file mode 100644
+index 0000000..9455bea
+--- /dev/null
++++ b/Gemfile.lock.copy
+@@ -0,0 +1,83 @@
++GEM
++  remote: https://rubygems.org/
++  specs:
++    actionmailer (4.1.15)
++      actionpack (= 4.1.15)
++      actionview (= 4.1.15)
++      mail (~> 2.5, >= 2.5.4)
++    actionpack (4.1.15)
++      actionview (= 4.1.15)
++      activesupport (= 4.1.15)
++      rack (~> 1.5.2)
++      rack-test (~> 0.6.2)
++    actionview (4.1.15)
++      activesupport (= 4.1.15)
++      builder (~> 3.1)
++      erubis (~> 2.7.0)
++    activemodel (4.1.15)
++      activesupport (= 4.1.15)
++      builder (~> 3.1)
++    activerecord (4.1.15)
++      activemodel (= 4.1.15)
++      activesupport (= 4.1.15)
++      arel (~> 5.0.0)
++    activesupport (4.1.15)
++      i18n (~> 0.6, >= 0.6.9)
++      json (~> 1.7, >= 1.7.7)
++      minitest (~> 5.1)
++      thread_safe (~> 0.1)
++      tzinfo (~> 1.1)
++    arel (5.0.1.20140414130214)
++    builder (3.2.3)
++    concurrent-ruby (1.0.5)
++    erubis (2.7.0)
++    i18n (0.8.5)
++    json (1.8.6)
++    mail (2.6.6)
++      mime-types (>= 1.16, < 4)
++    mime-types (3.1)
++      mime-types-data (~> 3.2015)
++    mime-types-data (3.2016.0521)
++    minitest (5.10.2)
++    rack (1.5.5)
++    rack-test (0.6.3)
++      rack (>= 1.0)
++    rails (4.1.15)
++      actionmailer (= 4.1.15)
++      actionpack (= 4.1.15)
++      actionview (= 4.1.15)
++      activemodel (= 4.1.15)
++      activerecord (= 4.1.15)
++      activesupport (= 4.1.15)
++      bundler (>= 1.3.0, < 2.0)
++      railties (= 4.1.15)
++      sprockets-rails (~> 2.0)
++    railties (4.1.15)
++      actionpack (= 4.1.15)
++      activesupport (= 4.1.15)
++      rake (>= 0.8.7)
++      thor (>= 0.18.1, < 2.0)
++    rake (12.0.0)
++    sprockets (3.7.1)
++      concurrent-ruby (~> 1.0)
++      rack (> 1, < 3)
++    sprockets-rails (2.3.3)
++      actionpack (>= 3.0)
++      activesupport (>= 3.0)
++      sprockets (>= 2.8, < 4.0)
++    thor (0.19.4)
++    thread_safe (0.3.6)
++    tzinfo (1.2.3)
++      thread_safe (~> 0.1)
++
++PLATFORMS
++  ruby
++
++DEPENDENCIES
++  rails (= 4.1.15)
++
++RUBY VERSION
++   ruby 2.3.0p0
++
++BUNDLED WITH
++   1.15.1
+diff --git a/bad.go b/bad.go
+index cb04c5d..90f9ab1 100644
+--- a/bad.go
++++ b/bad.go
+@@ -1,10 +1,10 @@
+ package main
+ 
+ import "fmt"
+-
++// hello world
+ func main() {
+     username := "admin"
+-    var password = "f62e5bcda4fae4f82370da0c6f20697b8f8447ef"              
++    var password = "f62e5bcda4fae4f82370da0c6f20697b8f8447efABCD"              
+ 
+     fmt.Println("Doing something with: ", username, password)
+ }
+diff --git a/hello.py b/hello.py
+new file mode 100644
+index 0000000..063825b
+--- /dev/null
++++ b/hello.py
+@@ -0,0 +1,12 @@
++import hello
++
++if (x == x):
++    print "yes"
++else:
++    print "no"
++
++if true:    
++    if (y == y):
++        print "yes2"
++    else:
++        print "no2"
+diff --git a/hello2.py b/hello2.py
+new file mode 100644
+index 0000000..d33f9bc
+--- /dev/null
++++ b/hello2.py
+@@ -0,0 +1 @@
++foo(123)
+diff --git a/requirements.txt b/requirements.txt
+new file mode 100644
+index 0000000..e69de29

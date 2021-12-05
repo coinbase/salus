@@ -239,8 +239,15 @@ module Sarif
           else
             if git_diff != ''
               locations = result['locations']
-              if locations && !locations.empty? &&
-                  locations.all? { |loc| snippet_in_loc?(loc, scanner, lines_added) }
+              if has_sarif_adapter?(scanner) && locations && !locations.empty? &&
+                  locations.all? do |loc|
+                    # rubocop outputs false positive here
+                    # rubocop:disable Lint/AssignmentInCondition
+                    snippet = loc&.dig('physicalLocation', 'region', 'snippet', 'text')
+                    # rubocop:enable Lint/AssignmentInCondition
+                    !snippet.to_s.empty? &&
+                        !snippet_possibly_in_diff?(snippet, scanner, lines_added)
+                  end
                 delete_results.add result
                 scanner_updated = true
                 next
@@ -266,19 +273,20 @@ module Sarif
       sarif_new
     end
 
-    def self.snippet_in_loc?(loc, scanner, lines_added)
-      snippet = loc&.dig('physicalLocation', 'region', 'snippet', 'text')
-      if snippet.to_s.empty?
-        false
-      else
-        adapter = "Sarif::#{scanner}Sarif"
-        begin
-          adapter_cls = Object.const_get(adapter)
-          adapter_cls.snippet_in_git_diff?(snippet, lines_added)
-        rescue NameError
-          false
-        end
+    def self.has_sarif_adapter?(scanner)
+      adapter = "Sarif::#{scanner}Sarif"
+      begin
+        adapter_cls = Object.const_get(adapter)
+      rescue NameError
+        return false
       end
+      adapter_cls.respond_to?(:snippet_possibly_in_git_diff?)
+    end
+
+    def self.snippet_possibly_in_diff?(snippet, scanner, lines_added)
+      adapter = "Sarif::#{scanner}Sarif"
+      adapter_cls = Object.const_get(adapter)
+      adapter_cls.snippet_possibly_in_git_diff?(snippet, lines_added)
     end
   end
 end

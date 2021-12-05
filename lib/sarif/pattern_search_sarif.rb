@@ -87,11 +87,15 @@ module Sarif
       }
     end
 
-    def self.snippet_in_git_diff?(snippet, lines_added)
+    def self.snippet_possibly_in_git_diff?(snippet, lines_added)
       lines = snippet.split("\n")
       lines.all? do |line|
         line = line.split(':', 3)[2]
-        lines_added.keys.include?(line)
+        if line.nil?
+          true
+        else
+          lines_added.keys.include?(line)
+        end
       end
     end
   end
