@@ -106,6 +106,7 @@ module Salus
     def filter_safe_repos(dirs)
       validator = Salus::PathValidator.new(@path_to_repo)
       valid_dirs, invalid = dirs.partition { |dir| validator.local_to_base?(dir) }
+
       raise "Directory #{invalid.first} must be local to repo path" unless invalid.empty?
 
       valid_dirs

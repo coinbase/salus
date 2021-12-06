@@ -82,6 +82,22 @@ describe Salus::RepoSearcher do
       expect { Salus::RepoSearcher.new(repo_path, config).matching_repos }.to raise_error(err)
     end
 
+    it 'should allow relative references that resolve to repo path' do
+      config = { "recursion" => {
+        "directories" => ["project-two", "./"],
+                "directories_matching" => [],
+                "directory_exclusions" => [],
+                "static_files" => []
+      } }
+      repos = []
+      Salus::RepoSearcher.new(repo_path, config).matching_repos do |repo|
+        repos << repo
+      end
+
+      expect(repos.size).to eq(2)
+      expect(repos.first.path_to_repo).to eq("spec/fixtures/processor/recursive/project-two")
+    end
+
     it 'should support dynamic directories via content and filename' do
       config = { "recursion" => {
         "directories" => [],
