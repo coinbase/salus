@@ -30,7 +30,9 @@ module Salus
     def matching_repos
       return yield Repo.new(@path_to_repo) unless recurse?
 
-      dirs = static_directories + dynamic_directories
+      # Ensure we only scan directories that are descendants of @path_to_repo
+      dirs = filter_safe_repos(static_directories + dynamic_directories)
+
       # We want to copy over files we need to here and yield back the repo
       filter_out_exlcusions(dirs.uniq).map do |repo|
         # If we have any static files in the config, copy them
@@ -93,6 +95,20 @@ module Salus
       return dirs if dirs.empty? || exclusions.empty?
 
       dirs.reject { |dir| dir.start_with?(*exclusions) }
+    end
+
+    ##
+    # The method will raise if any params are found to not be subdirectories
+    # of repo_path.  This is to match the behavior in Salus::Report that raises
+    # on the presense of directory references outside the repo directory
+    # @param [Array<String>] List of directories to validate
+    # @return [Array<String>] List of directories that are subdirectores of repo_apth
+    def filter_safe_repos(dirs)
+      validator = Salus::PathValidator.new(@path_to_repo)
+      valid_dirs, invalid = dirs.partition { |dir| validator.local_to_base?(dir) }
+      raise "Directory #{invalid.first} must be local to repo path" unless invalid.empty?
+
+      valid_dirs
     end
 
     ##

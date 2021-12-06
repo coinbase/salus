@@ -286,18 +286,7 @@ module Salus
     end
 
     def safe_local_report_path?(path)
-      return true if @repo_path.nil?
-
-      path = Pathname.new(File.expand_path(path)).cleanpath.to_s
-      rpath = File.expand_path(@repo_path)
-
-      if !path.start_with?(rpath + "/") || path.include?("/.")
-        # the 2nd condition covers like abcd/.hidden_file or abcd/..filename
-        # which cleanpath does not do anything about
-        return false
-      end
-
-      true
+      Salus::PathValidator.new(@repo_path).local_to_base?(path)
     end
 
     private

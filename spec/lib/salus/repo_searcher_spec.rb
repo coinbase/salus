@@ -71,6 +71,17 @@ describe Salus::RepoSearcher do
       expect(repos.first.path_to_repo).to eq("spec/fixtures/processor/recursive/project-two")
     end
 
+    it 'should fitler out unsafe directories' do
+      config = { "recursion" => {
+        "directories" => ["project-two", "/etc/foo"],
+                "directories_matching" => [],
+                "directory_exclusions" => [],
+                "static_files" => []
+      } }
+      err = 'Directory /etc/foo must be local to repo path'
+      expect { Salus::RepoSearcher.new(repo_path, config).matching_repos }.to raise_error(err)
+    end
+
     it 'should support dynamic directories via content and filename' do
       config = { "recursion" => {
         "directories" => [],
