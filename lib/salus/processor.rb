@@ -73,11 +73,19 @@ module Salus
                   raise InvalidConfigSourceError, 'Unknown config file source.'
                 end
 
-      if !content.nil? && !YAML.safe_load(content).is_a?(Hash)
-        msg = "config source #{source_uri} content cannot be parsed as Hash. "\
+      begin
+        if !content.nil? && !YAML.safe_load(content).is_a?(Hash)
+          msg = "config source #{source_uri} content cannot be parsed as Hash. "\
               "Content: #{content.inspect}"
+          bugsnag_notify(msg)
+          content = nil
+        end
+      rescue Psych::SyntaxError
+        msg = "Salus config format is invalid yaml. "\
+              "You may check salus.yaml file for formatting issue."
+        puts "** Error **: #{msg}"
         bugsnag_notify(msg)
-        content = nil
+        exit(EXIT_FAILURE)
       end
 
       content
