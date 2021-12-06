@@ -35,6 +35,8 @@ module Sarif
       }
       # for each scanner report, run the appropriate converter
       @scan_reports.each do |scan_report|
+        # scan_report[0] Salus::ScanReport scan report
+        # scan_report[1] boolean required (enforced scanner)
         sarif_report["runs"] << converter(scan_report[0], scan_report[1])
       end
       report = JSON.pretty_generate(sarif_report)

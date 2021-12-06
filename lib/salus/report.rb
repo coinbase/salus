@@ -19,7 +19,7 @@ module Salus
 
     def initialize(report_uris: [], builds: {}, project_name: nil, custom_info: nil, config: nil,
                    repo_path: nil, filter_sarif: nil, ignore_config_id: nil,
-                   report_filter: DEFAULT_REPORT_FILTER)
+                   report_filter: DEFAULT_REPORT_FILTER, merge_by_scanner: false)
       @report_uris = report_uris           # where we will send this report
       @builds = builds                     # build hash, could have arbitrary keys
       @project_name = project_name         # the project_name we are scanning
@@ -33,6 +33,7 @@ module Salus
       @ignore_config_id = ignore_config_id # ignore id in salus config
       @report_filter = report_filter       # filter reports that'll run based on their configuration
       @full_diff_sarif = nil
+      @merge_by_scanner = merge_by_scanner # Flag to group to_h and to_s results by scanner
     end
 
     # Syntatical sugar to apply report hash filters
@@ -68,8 +69,29 @@ module Salus
       @errors << hsh
     end
 
+    # We may have several scan reports from a given scanner.
+    # This will typically be from recusive scannings.  When
+    # @merge_by_scanner is true we will merge the ScanReports
+    # from a given scanner together.
+    #
+    # @returns [Array<ScanReport>]
+    def merged_reports
+      return @scan_reports unless @merge_by_scanner
+
+      reports = {}
+      @scan_reports.each do |report, required|
+        if reports.key?(report.scanner_name)
+          report = reports[report.scanner_name].first.merge!(report)
+        end
+        reports[report.scanner_name] = [report, required]
+      end
+
+      reports.values
+    end
+
     def to_h
-      scans = @scan_reports.map { |report, _required| [report.scanner_name, report.to_h] }.to_h
+      # We flatten the scan_reports by scanner here
+      scans = merged_reports.map { |report, _required| [report.scanner_name, report.to_h] }.to_h
 
       report_hash = {
         version: VERSION,
@@ -92,7 +114,7 @@ module Salus
 
       # Sort scan reports required before optional, failed before passed,
       # and alphabetically by scanner name
-      scan_reports = @scan_reports.sort_by do |report, required|
+      scan_reports = merged_reports.sort_by do |report, required|
         [
           required ? 0 : 1,
           report.passed? ? 1 : 0,
@@ -116,7 +138,7 @@ module Salus
         output += "\n\n==== Salus Configuration\n\n"
       else
         # Include some info on which configuration files were used
-        stringified_config = @config[:sources][:valid].join("\n")
+        stringified_config = @config&.dig(:sources, :valid)&.join("\n").to_s
         output += "\n\n==== Salus Configuration Files Used:\n\n"
       end
 
@@ -264,18 +286,7 @@ module Salus
     end
 
     def safe_local_report_path?(path)
-      return true if @repo_path.nil?
-
-      path = Pathname.new(File.expand_path(path)).cleanpath.to_s
-      rpath = File.expand_path(@repo_path)
-
-      if !path.start_with?(rpath + "/") || path.include?("/.")
-        # the 2nd condition covers like abcd/.hidden_file or abcd/..filename
-        # which cleanpath does not do anything about
-        return false
-      end
-
-      true
+      Salus::PathValidator.new(@repo_path).local_to_base?(path)
     end
 
     private
@@ -293,7 +304,7 @@ module Salus
 
         row = [
           scan_report.scanner_name,
-          "#{scan_report.running_time}s",
+          "#{scan_report.running_time || 0}s",
           required ? 'yes' : 'no',
           scan_report.passed? ? 'yes' : 'no'
         ]

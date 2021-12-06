@@ -1,0 +1,22 @@
+---
+  project_name: EVA-01
+  custom_info: Purple unit
+  scanner_configs: 
+    Brakeman:
+      recursion: 
+        directory_exclusions: 
+          - vendor
+        directories: 
+          - ./
+          - payments/lhv
+          - infra/sso/identity_provider
+        directories_matching: 
+          - 
+            filename: "BUILD.bazel"
+            content: "bundle//:rails"
+          - 
+            filename: "package.json"
+      static_files: 
+        - Gemfile
+        - Gemfile.lock
+  

@@ -180,6 +180,31 @@ describe Salus::Processor do
       expect(report_hsh[:scans]['NPMAudit'][:info][:stdout][:actions].length).to be_positive
       expect(report_hsh[:scans]['NPMAudit'][:logs].length).to be_positive
     end
+
+    it 'should recurse when configured' do
+      path = 'spec/fixtures/processor/recursive'
+
+      processor = Salus::Processor.new(repo_path: path,
+        cli_scanners_to_run: %w[Brakeman NPMAudit])
+
+      processor.scan_project
+
+      processor.report.report_uris.reject! { |u| u['format'] == FULL_SARIF_DIFF_FORMAT }
+
+      sarif = processor.report.to_sarif
+      json = JSON.parse(sarif)
+
+      # We should have multiple runs of Brakeman
+      scanners = json['runs'].map { |run| run.dig('tool', 'driver', 'name') }.sort
+      expect(scanners).to eq(%w[Brakeman Brakeman NPMAudit])
+
+      # We should not have vendors here (excluded)
+      scanned_dirs = json['runs'].map do |run|
+        run.dig('originalUriBaseIds', 'SRCROOT', 'uri')
+      end.uniq.sort
+
+      expect(scanned_dirs).to eq(['.', 'project-two'])
+    end
   end
 
   describe '#passed?' do

@@ -9,6 +9,19 @@ describe Sarif::BaseSarif do
     scan_report.add_version('1.1.1')
   end
 
+  describe 'uri_info' do
+    it 'should populate SRCROOT' do
+      repo_path = 'spec/fixtures/processor'
+      repo = Salus::Repo.new("#{repo_path}/recursive")
+      report = Salus::ScanReport.new("Unsupported_Scanner", repository: repo)
+      sarif = Sarif::BaseSarif.new(report, {}, repo_path)
+      info = sarif.uri_info
+
+      expect(info[:PROJECTROOT][:uri]).to end_with(repo_path)
+      expect(info[:SRCROOT]).to eq({ uri: "recursive", uriBaseId: "PROJECTROOT" })
+    end
+  end
+
   describe 'tool_info' do
     it 'returns the runs object for an unsupported scanner' do
       expect(base_sarif.build_tool).to include({ "driver":
@@ -184,6 +197,30 @@ describe Sarif::BaseSarif do
         adapter.instance_variable_set(:@required, true)
         runs_object = adapter.build_runs_object(true)
         expect(runs_object['tool'][:driver]['properties'][:salusEnforced]).to eq(true)
+      end
+
+      it 'includes originalUriBaseIds' do
+        parsed_issue = {
+          id: 'SAL002',
+          name: "Golang Error",
+          level: "NOTE",
+          details: 'error',
+          start_line: 1,
+          start_column: 1,
+          uri: '',
+          help_url: "https://github.com/coinbase/salus/blob/master/docs/salus_reports.md",
+          code: ""
+        }
+        adapter = Sarif::GosecSarif.new(scan_report, path)
+        adapter.instance_variable_set(:@logs, [parsed_issue])
+        adapter.instance_variable_set(:@config, { "include_suppressed": true }.stringify_keys)
+        adapter.instance_variable_set(:@required, false)
+        runs_object = adapter.build_runs_object(true)
+
+        expect(runs_object.keys).to include("originalUriBaseIds")
+        base = runs_object["originalUriBaseIds"]
+        expect(base[:PROJECTROOT][:uri]).not_to be_empty
+        expect(base[:SRCROOT]).to eq({ uri: ".", uriBaseId: "PROJECTROOT" })
       end
 
       it 'results are not included for non enforced scanners when include_suppressed is false' do

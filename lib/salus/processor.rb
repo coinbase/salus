@@ -1,6 +1,7 @@
 require 'uri'
 require 'salus/report'
 require 'salus/plugin_manager'
+require 'salus/repo_searcher'
 
 module Salus
   class Processor
@@ -83,8 +84,6 @@ module Salus
     end
 
     def scan_project
-      repo = Repo.new(@repo_path)
-
       # Record overall running time of the scan
       @report.record do
         # If we're running tests, re-raise any exceptions raised by a scanner
@@ -93,23 +92,24 @@ module Salus
         scanners_ran = []
         Config::SCANNERS.each do |scanner_name, scanner_class|
           config = @config.scanner_configs.fetch(scanner_name, {})
+          RepoSearcher.new(@repo_path, config).matching_repos do |repo|
+            scanner = scanner_class.new(repository: repo, config: config)
+            unless @config.scanner_active?(scanner_name) && scanner.should_run?
+              Salus::PluginManager.send_event(:skip_scanner, scanner_name)
+              next
+            end
+            scanners_ran << scanner
+            Salus::PluginManager.send_event(:run_scanner, scanner_name)
 
-          scanner = scanner_class.new(repository: repo, config: config)
-          unless @config.scanner_active?(scanner_name) && scanner.should_run?
-            Salus::PluginManager.send_event(:skip_scanner, scanner_name)
-            next
+            required = @config.enforced_scanners.include?(scanner_name)
+
+            scanner.run!(
+              salus_report: @report,
+              required: required,
+              pass_on_raise: @config.scanner_configs[scanner_name]['pass_on_raise'],
+              reraise: reraise_exceptions
+            )
           end
-          scanners_ran << scanner
-          Salus::PluginManager.send_event(:run_scanner, scanner_name)
-
-          required = @config.enforced_scanners.include?(scanner_name)
-
-          scanner.run!(
-            salus_report: @report,
-            required: required,
-            pass_on_raise: @config.scanner_configs[scanner_name]['pass_on_raise'],
-            reraise: reraise_exceptions
-          )
         end
         Salus::PluginManager.send_event(:scanners_ran, scanners_ran, @report)
       end

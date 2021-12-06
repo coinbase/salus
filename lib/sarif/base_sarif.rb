@@ -24,7 +24,7 @@ module Sarif
       @uri = DEFAULT_URI
       @issues = Set.new
       @config = config
-      @repo_path = repo_path
+      @repo_path = repo_path || Dir.getwd # Fallback, we should make repo_path required
     end
 
     def base_path
@@ -42,6 +42,29 @@ module Sarif
           "properties" => {
             "salusEnforced": @required || false
           }
+        }
+      }
+    end
+
+    ##
+    # Provide the originalUriBaseIds content hash.
+    # ProjectRoot will be the absolute path to the scanned project
+    # SrcRoot will be relative to the project root.
+    # @returns [Hash]
+    #
+    def uri_info
+      project_root = Pathname.new(base_path.to_s)
+      srcroot = Pathname.new(File.expand_path(@scan_report.repository&.path_to_repo.to_s))
+      src_uri = srcroot.relative_path_from(project_root).to_s
+
+      # The originalUriBaseIds info
+      {
+        "PROJECTROOT": {
+          "uri": "file://#{base_path}"
+        },
+        "SRCROOT": {
+          "uri": src_uri,
+          "uriBaseId": "PROJECTROOT"
         }
       }
     end
@@ -131,12 +154,14 @@ module Sarif
       # unique-ify the results
       results = results.each_with_object([]) { |h, result| result << h unless result.include?(h); }
 
+      # Salus::ScanReport
       invocation = build_invocations(@scan_report, supported)
       {
         "tool" => build_tool(rules: rules),
         "conversion" => build_conversion,
         "results" => results,
-        "invocations" => [invocation]
+        "invocations" => [invocation],
+        "originalUriBaseIds" => uri_info
       }
     end
 

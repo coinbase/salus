@@ -11,6 +11,8 @@ require 'salus/plugin_manager'
 require 'sarif/sarif_report'
 require 'cyclonedx/report'
 require 'salus/report_request'
+require 'salus/repo_searcher'
+require 'salus/path_validator'
 
 module Salus
   VERSION = '2.15.0'.freeze
