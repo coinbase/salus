@@ -29,6 +29,20 @@ describe Salus::Scanners::NPMAudit do
     end
   end
 
+  describe '#audit_command_with_options' do
+    it 'should return default audit command if no options have been provided' do
+      repo = Salus::Repo.new("dir")
+      scanner = Salus::Scanners::NPMAudit.new(repository: repo, config: {})
+      expect(scanner.send(:audit_command_with_options)).to eql("npm audit --json")
+    end
+
+    it 'should return audit command with configured options' do
+      repo = Salus::Repo.new("dir")
+      scanner = Salus::Scanners::NPMAudit.new(repository: repo, config: { "production" => true })
+      expect(scanner.send(:audit_command_with_options)).to eql("npm audit --json --production")
+    end
+  end
+
   describe '#supported_languages' do
     context 'should return supported languages' do
       it 'should return javascript' do
