@@ -1,13 +1,18 @@
 require 'salus/scanners/base'
 
+
+
 # Report the use of any Ruby gems.
 
 module Salus::Scanners
   class ReportRubyGems < Base
     def run
-      # A lockfile is the most definitive source of truth for what will run
-      # in production. It also lists the dependencies of dependencies.
-      # We preference parsing the Gemfile.lock over the Gemfile.
+      begin
+        report_ruby_license() # spec to test if method is called
+      rescue StandardError => e
+        bugsnag_notify("error from running license finder: #{e.message}") #update error message to a better one
+      end 
+      
       if @repository.gemfile_lock_present?
         record_dependencies_from_gemfile_lock
       elsif @repository.gemfile_present?
@@ -19,6 +24,7 @@ module Salus::Scanners
     end
 
     def should_run?
+      #wrap report ruby licenses
       @repository.gemfile_present? || @repository.gemfile_lock_present?
     end
 
@@ -65,19 +71,92 @@ module Salus::Scanners
           # Gem uses the given source, otherwise Bundler has a default.
           source: gem.source.nil? ? Bundler.rubygems.sources.first.uri.to_s : gem.source.to_s,
 
-          dependency_file: 'Gemfile'
+          dependency_file: 'Gemfile',
+
         )
       end
     end
 
+    # Returns an array of license info
+    def find_licenses 
+      output = run_license_finder()
+      license_finder_parsed = output.split('approval:').last
+      # puts "this is licences-finder : #{license_finder_parsed}"
+      license_finder_hsh = JSON.parse(license_finder_parsed) 
+      license_finder_hsh["dependencies"]
+    end
+    
+    # Runs license_finder shell command
+    def run_license_finder() 
+      license_info = ""
+      Dir.chdir(@repository.path_to_repo) do
+        shell_return = `license_finder --format json`
+        license_info = shell_return
+      end
+      return license_info
+    end
+
+    # Captures license information of a given repository
+    def report_ruby_license
+      license_arr = find_licenses()
+      @opt_hsh = {}
+      license_arr.each do |dep|
+        puts dep["licenses"].inspect
+        @opt_hsh[[dep["name"],dep["version"]].to_s] = to_spdx(dep["licenses"])
+        puts "this is dep: #{@opt_hsh[[dep["name"],dep["version"]].to_s]}"
+      end
+    end
+    
+    # Dice coefficient = bigram overlap * 2 / (bigrams in a + bigrams in b)
+    def dice_coefficient(a, b)
+      a_bigrams = a.each_char.each_cons(2).to_a
+      b_bigrams = b.each_char.each_cons(2).to_a
+    
+      overlap = (a_bigrams & b_bigrams).size
+    
+      total = a_bigrams.size + b_bigrams.size
+      dice  = overlap * 2.0 / total
+      
+      dice
+    end
+
+    # Converts each license in an array of licenses to spdx formatted licenses
+    def to_spdx(licenses_arr)
+      licenses_arr.map{ |license| match_license(license)}
+    end 
+
+    # Compares reported license with spdx licenses and returns closest match 
+    def match_license(license)
+      spdx_schema = File.read("lib/cyclonedx/schema/spdx.schema.json") 
+      spdx_hsh = JSON.parse(spdx_schema)
+      spdx_licenses = spdx_hsh["enum"] #array of permitted SPDX formatted licenses
+      @matching_hsh = {}
+      spdx_licenses.each do |spdx_license|
+        coefficient  = dice_coefficient(license, spdx_license)
+        @matching_hsh[spdx_license] = coefficient
+      end 
+      puts"this is the match: #{largest_hash_key(@matching_hsh).inspect} done"
+      largest_hash_key(@matching_hsh)
+    end 
+
+
+    def largest_hash_key(hash)
+      hash.max_by{|k,v| v}[0]
+    end
+
+
     def record_ruby_gem(name:, version:, source:, dependency_file:)
-      report_dependency(
+      dep_hsh = report_dependency(
         dependency_file,
         type: 'gem',
         name: name,
         version: version,
-        source: source
+        source: source,
+        licenses: @opt_hsh[[name,version].to_s]
       )
-    end
+
+     
   end
 end
+end
+

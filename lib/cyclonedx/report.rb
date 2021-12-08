@@ -58,10 +58,11 @@ module Cyclonedx
 
     def self.validate_cyclonedx(cyclonedx_report)
       cyclonedx_string = JSON.pretty_generate(cyclonedx_report)
+      puts "\n\n\nthis is a test 8888388231823 ####\n\n\n"
+      puts cyclonedx_string
       path = File.expand_path("schema/bom-#{cyclonedx_report[:specVersion]}.schema.json", __dir__)
       schema = JSON.parse(File.read(path))
       return cyclonedx_report if JSON::Validator.validate(schema, cyclonedx_string)
-
       errors = JSON::Validator.fully_validate(schema, cyclonedx_string)
       raise CycloneDXInvalidFormatError, "Incorrect Cyclone Output: #{errors}"
     end

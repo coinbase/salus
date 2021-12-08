@@ -13,23 +13,24 @@ gem 'rgl', '~> 0.5.7'
 gem 'safe_yaml', '~> 1.0'
 gem 'thor', '~> 1.1.0'
 gem 'toml', '~> 0.2.0'
+gem 'license_finder'
 
 group :scanners do
   gem 'brakeman', '4.10.0'
   gem 'bundler-audit', '~> 0.8.0'
 end
 
-group :test, :development do
+#group :test, :development do
   gem 'pry', '~> 0.10'
   gem 'pry-byebug', '~> 3.4'
-end
+#end
 
-group :test do
+#group :test do
   gem 'rspec', '~> 3.10'
   gem 'rspec_junit_formatter'
   gem 'rubocop', '~> 0.93', require: false
   gem 'simplecov', '~> 0.21.2'
   gem 'webmock', '~> 3.12'
-end
+#end
 
 gem "json-schema", "~> 2.8"
