@@ -21,7 +21,6 @@ module Cyclonedx
       info[:dependencies].each do |dependency|
         components << parse_dependency(dependency)
       end
-      puts "this is components #{components}"
       components
     end
 
@@ -51,7 +50,7 @@ module Cyclonedx
 
     # takes an array of spdx formatted licenses and returns a hash conforming to CycloneDX format
     def get_license(dependency)
-      dependency[:licenses].map{|license| {"license"=>{"id"=>license}}}
+      dependency[:licenses].map{ |license| {"license"=>{"id"=>license}}}
     end 
 
     def build_properties(dependency)
