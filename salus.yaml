@@ -1,12 +1,9 @@
-scanner_configs:
-  Gosec:
-    exclude-dir:
-      - spec/fixtures/gosec/buildtags_goapp # cannot be correctly built by gosec at this time
-      - spec/fixtures/gosec/malformed_goapp # knowingly malformed anc can't be built
-      - spec/fixtures/gosec/nosec-tag
-      - spec/fixtures/gosec/multiple_vulns
-      - spec/fixtures/gosec/buildtags_goapp
-      - spec/fixtures/gosec/vulnerable_goapp
-      - spec/fixtures/gosec/multifolder_goapp
-      - spec/fixtures/gosec/recursive_vulnerable_goapp
-      - spec/fixtures/gosec/multi_goapps
+reports:
+  - uri: https://dependencytrack-dev.cbhq.net:8081/api/v1/bom
+    format: cyclonedx-json
+    put:
+    headers:
+      X-Api-Key: 'iACJ8IPQiSsoaJvukDIp6FLyokypT5zH'
+    cyclonedx_options:
+      spec_version: '1.2'
+      cyclonedx_project_name: 'securityEng/test'
