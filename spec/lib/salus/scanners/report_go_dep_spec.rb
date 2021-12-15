@@ -60,26 +60,8 @@ describe Salus::Scanners::ReportGoDep do
 
       dependencies = scanner.report.to_h.fetch(:info).fetch(:dependencies)
 
-      expect(dependencies[0..2]).to match_array(
+      expect(dependencies[0..1]).to match_array(
         [
-          {
-            dependency_file: 'go.sum',
-            type: 'golang',
-            namespace: 'github.cbhq.net/c3',
-            name: 'github.cbhq.net/c3/bls12-381',
-            reference: 'N/A for go.mod/go.sum dependencies',
-            checksum: 'H6qPVjeq1XbGuaFaFD9aIXh7ZBmFziVAQCNRhBw8XnU=',
-            version: "v0.0.0-20210114210818-577bfdc5cb9c"
-          },
-          {
-            dependency_file: 'go.sum',
-            type: 'golang',
-            namespace: 'github.cbhq.net/c3',
-            name: 'github.cbhq.net/c3/bls12-381',
-            reference: 'N/A for go.mod/go.sum dependencies',
-            checksum: 'GKWeplG/c6sSm2WEWBVzld/RnaaMxB/4U0hk5lbKWqc=',
-            version: "v0.0.0-20210114210818-577bfdc5cb9c"
-          },
           {
             dependency_file: 'go.sum',
             type: 'golang',
@@ -88,6 +70,15 @@ describe Salus::Scanners::ReportGoDep do
             reference: 'N/A for go.mod/go.sum dependencies',
             checksum: 'ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=',
             version: "v1.1.0"
+          },
+          {
+            "type": "golang",
+            "namespace": "github.com/davecgh",
+            "name": "github.com/davecgh/go-spew",
+            "reference": "N/A for go.mod/go.sum dependencies",
+            "version": "v1.1.0",
+            "checksum": "J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=",
+            "dependency_file": "go.sum"
           }
         ]
       )

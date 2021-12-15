@@ -9,33 +9,15 @@ describe Cyclonedx::ReportGoDep do
       scanner.run
 
       golang_cyclonedx = Cyclonedx::ReportGoDep.new(scanner.report)
-      expect(golang_cyclonedx.build_components_object[0..2]).to match_array(
+      expect(golang_cyclonedx.build_components_object[0..1]).to match_array(
         [
           {
-            "bom-ref": "pkg:golang/github.cbhq.net/c3/bls12-381@v0.0.0-20210114210818-577bfdc5cb9c",
+            "bom-ref": "pkg:golang/github.com/davecgh/go-spew@v1.1.0",
             "type": "library",
             "group": "",
-            "name": "github.cbhq.net/c3/bls12-381",
-            "version": "v0.0.0-20210114210818-577bfdc5cb9c",
-            "purl": "pkg:golang/github.cbhq.net/c3/bls12-381@v0.0.0-20210114210818-577bfdc5cb9c",
-            "properties": [
-              {
-                "key": "source",
-                "value": "N/A for go.mod/go.sum dependencies"
-              },
-              {
-                "key": "dependency_file",
-                "value": "go.sum"
-              }
-            ]
-          },
-          {
-            "bom-ref": "pkg:golang/github.cbhq.net/c3/bls12-381@v0.0.0-20210114210818-577bfdc5cb9c",
-            "type": "library",
-            "group": "",
-            "name": "github.cbhq.net/c3/bls12-381",
-            "version": "v0.0.0-20210114210818-577bfdc5cb9c",
-            "purl": "pkg:golang/github.cbhq.net/c3/bls12-381@v0.0.0-20210114210818-577bfdc5cb9c",
+            "name": "github.com/davecgh/go-spew",
+            "version": "v1.1.0",
+            "purl": "pkg:golang/github.com/davecgh/go-spew@v1.1.0",
             "properties": [
               {
                 "key": "source",
