@@ -18,6 +18,7 @@ module Salus::Scanners
       ignore = ignore_list
       scanner = Bundler::Audit::Scanner.new(@repository.path_to_repo)
       @vulns = []
+      @gemfile_lock_path = File.join(@repository.path_to_repo, 'Gemfile.lock')
       run_scanner(scanner, ignore)
 
       local_db_path = @config['local_db']
@@ -43,6 +44,18 @@ module Salus::Scanners
       scanner.scan(ignore: ignore) do |result|
         hash = serialize_vuln(result)
         @vulns.push(hash)
+
+        pattern = case hash[:type]
+                  when 'UnpatchedGem'
+                    hash[:name] + ' (' + hash[:version] + ')'
+                  when 'InsecureSource'
+                    hash[:source]
+                  end
+        if !pattern.nil?
+          line_in_gemfile_lock = `grep -n " #{pattern}" #{@gemfile_lock_path}`
+          line_no = line_in_gemfile_lock.split(':')[0]
+          hash[:line_number] = line_no.to_i if line_no.to_s.match(/^\d+$/)
+        end
 
         # TODO: we should tabulate these vulnerabilities in the same way
         # that we tabulate CVEs for Node packages - see NodeAudit scanner.

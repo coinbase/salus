@@ -23,6 +23,8 @@ module Sarif
                          "type": { "text": (issue[:type]).to_s },
                          "version": { "text": (issue[:version]).to_s } },
         properties: { 'severity': (issue[:cvss]).to_s },
+        start_line: issue[:line_number],
+        start_column: 1,
         uri: 'Gemfile.lock',
         help_url: issue[:url]
       }
