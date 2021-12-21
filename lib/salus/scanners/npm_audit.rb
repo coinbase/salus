@@ -58,7 +58,7 @@ module Salus::Scanners
 
       json[:advisories].each do |_id, vul_info|
         dep_name = vul_info[:module_name]
-        vul_version = vul_info[:findings].map { |v| v[:version] }.sort[0]
+        vul_version = vul_info[:findings].map { |v| v[:version] }.min
         vul_info[:line_number] = @deps[dep_name][vul_version] if @deps[dep_name][vul_version]
       end
     end
