@@ -43,19 +43,8 @@ module Salus::Scanners
     def run_scanner(scanner, ignore)
       scanner.scan(ignore: ignore) do |result|
         hash = serialize_vuln(result)
+        add_line_number(hash)
         @vulns.push(hash)
-
-        pattern = case hash[:type]
-                  when 'UnpatchedGem'
-                    hash[:name] + ' (' + hash[:version] + ')'
-                  when 'InsecureSource'
-                    hash[:source]
-                  end
-        if !pattern.nil?
-          line_in_gemfile_lock = `grep -n " #{pattern}" #{@gemfile_lock_path}`
-          line_no = line_in_gemfile_lock.split(':')[0]
-          hash[:line_number] = line_no.to_i if line_no.to_s.match(/^\d+$/)
-        end
 
         # TODO: we should tabulate these vulnerabilities in the same way
         # that we tabulate CVEs for Node packages - see NodeAudit scanner.
@@ -85,6 +74,20 @@ module Salus::Scanners
     end
 
     private
+
+    def add_line_number(hash)
+      pattern = case hash[:type]
+                when 'UnpatchedGem'
+                  hash[:name] + ' (' + hash[:version] + ')'
+                when 'InsecureSource'
+                  hash[:source]
+                end
+      if !pattern.nil?
+        line_in_gemfile_lock = `grep -n " #{pattern}" #{@gemfile_lock_path}`
+        line_no = line_in_gemfile_lock.split(':')[0]
+        hash[:line_number] = line_no.to_i if line_no.to_s.match(/^\d+$/)
+      end
+    end
 
     def ignore_list
       # We are deprecating this.  This will pull the list of CVEs from the ignore setting.
