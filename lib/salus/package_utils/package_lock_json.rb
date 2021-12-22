@@ -10,8 +10,12 @@ module Salus
 
       json[:advisories].each do |_id, vul_info|
         dep_name = vul_info[:module_name]
-        vul_version = vul_info[:findings].map { |v| v[:version] }.min
-        vul_info[:line_number] = @deps[dep_name][vul_version] if @deps[dep_name][vul_version]
+        if vul_info[:findings].all? { |v| Gem::Version.correct?(v[:version]) }
+          vul_version = vul_info[:findings].map { |v| Gem::Version.new(v[:version]) }.min.to_s
+          if !@deps.dig(dep_name, vul_version).to_s.nil?
+            vul_info[:line_number] = @deps[dep_name][vul_version]
+          end
+        end
       end
     end
 

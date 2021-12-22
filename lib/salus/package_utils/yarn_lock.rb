@@ -11,9 +11,12 @@ module Salus
         package = vul['Package']
         patched = vul['Patched in']
         if @dep_lines[package] && (patched.start_with?('>=') || patched == 'No patch available') &&
-            ['<=', '==', '!='].all? { |op| !patched.include?(op) }
-          min_version = @dep_lines[package].keys.min
-          vul['Line number'] = @dep_lines[package][min_version]
+            ['<=', '==', '!='].all? { |op| !patched.include?(op) } &&
+            @dep_lines[package].keys.all? { |k| Gem::Version.correct?(k) }
+          min_version = @dep_lines[package].keys.map { |k| Gem::Version.new(k) }.min.to_s
+          if !@dep_lines[package][min_version].to_s.nil?
+            vul['Line number'] = @dep_lines[package][min_version]
+          end
         end
       end
     end
