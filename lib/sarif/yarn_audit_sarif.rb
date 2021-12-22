@@ -32,6 +32,8 @@ module Sarif
                          "patched_versions": { "text": (issue['Patched in']).to_s },
                          "dependency_of": { "text": (issue['Dependency of']).to_s } },
         properties: { 'severity': (issue['Severity']).to_s },
+        start_line: issue['Line number'],
+        start_column: 1,
         uri: "yarn.lock",
         help_url: issue['More info']
       }

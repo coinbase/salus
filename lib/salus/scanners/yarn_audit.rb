@@ -1,3 +1,4 @@
+# coding: utf-8
 require 'json'
 require 'salus/scanners/node_audit'
 
@@ -46,6 +47,7 @@ module Salus::Scanners
         # vulns were all whitelisted
         return report_success if vulns.empty?
 
+        add_line_number(vulns)
         log(format_vulns(vulns))
         report_stdout(vulns.to_json)
         report_failure
@@ -63,6 +65,54 @@ module Salus::Scanners
     end
 
     private
+
+    def add_line_number(vulns)
+      @dep_lines = {}
+      parse_yarn_lock
+      vulns.each do |vul|
+        package = vul['Package']
+        patched = vul['Patched in']
+        if @dep_lines[package] && (patched.start_with?('>=') || patched == 'No patch available')
+          min_version = @dep_lines[package].keys.min
+          vul['Line number'] = @dep_lines[package][min_version]
+        end
+      end
+    end
+
+    def parse_yarn_lock
+      content = File.read('yarn.lock')
+      curr_dep_name = ""
+      version_prefix = "  \"version\" \""
+
+      # yarn.lock looks like
+      # "abcd@^7.0.0":
+      #    "version" "7.0.0"
+      # ...
+      # where "abcd@^7.0.0" and "version" could be with and without quotes
+
+      content.split("\n").each_with_index do |line, i|
+        if line.start_with?("\"") && line.include?("@") # Ex. "yargs@1.2.3":
+          at_index = if line.start_with?("\"@") # Ex. "@babel/abc@1.2.3":
+                       line[2..].index("@") + 2
+                     else
+                       line.index("@")
+                     end
+          curr_dep_name = line[1..at_index - 1]
+        elsif line.size.positive? && line[0].match(/\w/) && line.include?("@")
+          # like above but no quotes, Ex yargs@1.2.3
+          at_index = line.index("@")
+          curr_dep_name = line[0..at_index - 1]
+        elsif line.start_with?(version_prefix) && line.end_with?("\"") # Ex. "version" "1.2.3"
+          version = line[13..-2]
+          @dep_lines[curr_dep_name] = {} if @dep_lines[curr_dep_name].nil?
+          @dep_lines[curr_dep_name][version] = i + 1
+        elsif line.start_with?("  version \"") && line.end_with?("\"") # like above but w/o quotes
+          version = line[11..-2]
+          @dep_lines[curr_dep_name] = {} if @dep_lines[curr_dep_name].nil?
+          @dep_lines[curr_dep_name][version] = i + 1
+        end
+      end
+    end
 
     def parse_output(lines)
       vulns = Set.new

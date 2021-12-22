@@ -41,6 +41,8 @@ describe Sarif::YarnAuditSarif do
           },
           uri: "yarn.lock",
           help_url: "https://www.npmjs.com/advisories/1005415",
+          start_line: 21,
+          start_column: 1,
           properties: { severity: "high" }
         )
       end
@@ -105,6 +107,10 @@ describe Sarif::YarnAuditSarif do
         expect(result['ruleId']).to eq("1005365")
         expect(result['ruleIndex']).to be >= 0 # liberal here to avoid hard coding the index
         expect(result['level']).to eq('error')
+
+        region = result['locations'][0]['physicalLocation']['region']
+        expect(region['startLine']).to eq(21)
+        expect(region['startColumn']).to eq(1)
       end
     end
 
