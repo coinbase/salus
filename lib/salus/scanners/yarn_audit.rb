@@ -1,4 +1,3 @@
-# coding: utf-8
 require 'json'
 require 'salus/scanners/node_audit'
 
