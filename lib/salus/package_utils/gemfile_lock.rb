@@ -12,7 +12,7 @@ module Salus
                   cve[:source]
                 end
       if !pattern.nil?
-        line_in_gemfile_lock = `grep -n " #{pattern}" #{@path}`
+        line_in_gemfile_lock = IO.popen(["grep", "-n", pattern, @path]).read
         line_no = line_in_gemfile_lock.split(':')[0]
         cve[:line_number] = line_no.to_i if line_no.to_s.match(/^\d+$/)
       end
