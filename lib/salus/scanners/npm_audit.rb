@@ -32,7 +32,6 @@ module Salus::Scanners
     end
 
     def scan_for_cves
-      @deps = {}
       raw = run_shell(audit_command_with_options).stdout
       json = JSON.parse(raw, symbolize_names: true)
 
@@ -47,63 +46,12 @@ module Salus::Scanners
         raise message
       end
 
-      add_line_locs_to_advisories(json) if json[:advisories] && !json[:advisories].empty?
+      if json[:advisories] && !json[:advisories].empty?
+        Salus::PackageLockJson.new('package-lock.json').add_line_number(json)
+      end
       report_stdout(json)
 
       json.fetch(:advisories).values
-    end
-
-    def add_line_locs_to_advisories(json)
-      record_dep_locations
-
-      json[:advisories].each do |_id, vul_info|
-        dep_name = vul_info[:module_name]
-        vul_version = vul_info[:findings].map { |v| v[:version] }.min
-        vul_info[:line_number] = @deps[dep_name][vul_version] if @deps[dep_name][vul_version]
-      end
-    end
-
-    # Store line numbers of dependencies in @dep. Ex
-    # { "dep_name " =>
-    #    { "1.0.0" => 10   # version 1.0.0 => line 10
-    #      "2.0.0" => 20   # version 2.0.0 => line 20
-    #    }
-    # }
-    def record_dep_locations
-      content = File.read('package-lock.json')
-      data = JSON.parse(content)
-      get_dep_names(data)
-      curr_line = 0
-      lines = content.split("\n")
-      lines.each do |line|
-        line.strip!
-        # if line with dependency name, like
-        #   "math-random": {
-        start_chars = "\": {"
-        if line.end_with?(start_chars) && line.start_with?("\"")
-          quote_index2 = line[1..].index(start_chars)
-          dep_name = line[1..quote_index2]
-          # right now version is always one line below the dependency name, like
-          #    "math-random": {
-          #      "version": "1.2.3",
-          if @deps[dep_name] && lines[curr_line + 1]
-            next_line = lines[curr_line + 1].strip
-            if next_line.start_with?("\"version\": \"") && next_line.end_with?("\",")
-              version = next_line[12..-3].strip
-              @deps[dep_name][version] = curr_line + 2
-            end
-          end
-        end
-        curr_line += 1
-      end
-    end
-
-    # recursively store all dependency names as keys
-    def get_dep_names(data)
-      data['dependencies'].each do |name, dep_info|
-        @deps[name] = {}
-        get_dep_names(dep_info) if dep_info['dependencies']
-      end
     end
   end
 end
