@@ -375,7 +375,7 @@ describe Salus::Scanners::PatternSearch do
         )
       end
 
-      it '--exclude_filepaths should override --files' do
+      it '--exclude_filepaths should work with --files' do
         config_file = "#{repo_dir}/salus2.yaml"
         repo = Salus::Repo.new(repo_dir)
         configs = Salus::Config.new([File.read(config_file)]).scanner_configs['PatternSearch']
