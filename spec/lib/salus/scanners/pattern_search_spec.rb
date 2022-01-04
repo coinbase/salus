@@ -326,6 +326,73 @@ describe Salus::Scanners::PatternSearch do
       end
     end
 
+    context 'not_followed_within is used' do
+      let(:repo_dir) { "spec/fixtures/pattern_search/test_paths3" }
+      it 'not_followed_within should filter out files when possible' do
+        config_file = "#{repo_dir}/salus.yaml"
+        repo = Salus::Repo.new(repo_dir)
+        configs = Salus::Config.new([File.read(config_file)]).scanner_configs['PatternSearch']
+        scanner = Salus::Scanners::PatternSearch.new(repository: repo, config: configs)
+        scanner.run
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+        # In salus.yaml, "not_followed_within: 0:bye" filters out the "hello bye" in results
+        expect(info[:hits]).to eq([{ regex: 'hello',
+                                    forbidden: true,
+                                    required: false,
+                                    msg: '',
+                                    hit: 'test.txt:1:hello world' }])
+      end
+    end
+
+    context '--files is used' do
+      let(:repo_dir) { "spec/fixtures/pattern_search/test_paths4" }
+      it 'results should only include files matching --files' do
+        config_file = "#{repo_dir}/salus.yaml"
+        repo = Salus::Repo.new(repo_dir)
+        configs = Salus::Config.new([File.read(config_file)]).scanner_configs['PatternSearch']
+        scanner = Salus::Scanners::PatternSearch.new(repository: repo, config: configs)
+        scanner.run
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+        # results include only the file names matching "files" in salus.yaml
+        expect(info[:hits].size).to eq(2)
+        expect(info[:hits]).to include(
+          regex: 'hello',
+          forbidden: true,
+          required: false,
+          msg: '',
+          hit: 'test.txt:1:hello world'
+        )
+        expect(info[:hits]).to include(
+          regex: 'hello',
+          forbidden: true,
+          required: false,
+          msg: '',
+          hit: 'test.py:1:hello world'
+        )
+      end
+
+      it '--exclude_filepaths should work with --files' do
+        config_file = "#{repo_dir}/salus2.yaml"
+        repo = Salus::Repo.new(repo_dir)
+        configs = Salus::Config.new([File.read(config_file)]).scanner_configs['PatternSearch']
+        scanner = Salus::Scanners::PatternSearch.new(repository: repo, config: configs)
+        scanner.run
+        expect(scanner.report.passed?).to eq(false)
+
+        info = scanner.report.to_h.fetch(:info)
+        # salus config excludes txt
+        expect(info[:hits]).to eq([{ regex: 'hello',
+                                    forbidden: true,
+                                    required: false,
+                                    msg: '',
+                                    hit: 'test.py:1:hello world' }])
+      end
+    end
+
     context 'exclude filepaths are given' do
       let(:repo_dir) { "spec/fixtures/pattern_search/test_paths" }
 

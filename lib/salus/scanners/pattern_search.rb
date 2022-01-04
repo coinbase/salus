@@ -63,6 +63,13 @@ module Salus::Scanners
             *(match_include_extension_flags || global_include_extension_flags)
           ].compact
 
+          not_followed_within = match["not_followed_within"]
+          command_array += ['--not-followed-within', not_followed_within] if not_followed_within
+          files = match['files']
+          files&.each do |file|
+            command_array += ['--files', file]
+          end
+
           shell_return = run_shell(command_array)
           # Set defaults.
           match['forbidden'] ||= false
