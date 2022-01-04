@@ -16,3 +16,8 @@ uglify-js@1.2.3:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-1.2.3.tgz#3b0ce6631a28dcaa64302b893123b20876bdc536"
   integrity sha1-OwzmYxoo3KpkMCuJMSOyCHa9xTY=
+
+lodash@^4.17.14:
+  version "4.17.14"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.14.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
+  integrity sha512-cQKh8igo5QUhZ7lg38DYWAxMvjSAKG0A8wGSVimP07SIUEK2UO+arSRKbRZWtelMtN5V0Hkwh5ryOto/SshYIg==

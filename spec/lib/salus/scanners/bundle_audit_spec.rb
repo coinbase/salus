@@ -37,6 +37,7 @@ describe Salus::Scanners::BundleAudit do
         expect(vuln[:version]).to eq('4.1.15')
         expect(vuln[:cve]).to include('CVE-')
         expect(vuln[:cvss]).to eq(nil)
+        expect(vuln[:line_number]).to eq(8)
       end
     end
 
@@ -51,7 +52,7 @@ describe Salus::Scanners::BundleAudit do
         info = scanner.report.to_h.fetch(:info)
 
         expect(info[:vulnerabilities])
-          .to include(type: "InsecureSource", source: "http://rubygems.org/")
+          .to include(type: "InsecureSource", source: "http://rubygems.org/", line_number: 2)
       end
     end
 
@@ -122,6 +123,11 @@ describe Salus::Scanners::BundleAudit do
         expect(scanner.report.passed?).to eq(false)
         info = scanner.report.to_h.fetch(:info)
         expect(info[:ignored_cves]).to eq([])
+
+        vul = info[:vulnerabilities][0]
+        expect(vul[:name]).to eq('activesupport')
+        expect(vul[:version]).to eq('2.3.18')
+        expect(vul[:line_number]).to eq(4)
       end
 
       it 'should record success and report on the ignored CVEs' do

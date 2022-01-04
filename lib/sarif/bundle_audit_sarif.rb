@@ -26,6 +26,10 @@ module Sarif
         uri: 'Gemfile.lock',
         help_url: issue[:url]
       }
+      if issue[:line_number]
+        result[:start_line] = issue[:line_number]
+        result[:start_column] = 1
+      end
 
       if issue[:type] == "InsecureSource"
         result[:id] = issue[:type]

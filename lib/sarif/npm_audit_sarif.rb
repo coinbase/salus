@@ -24,7 +24,8 @@ module Sarif
 
       @results.push(id) if !@exceptions.include?(id)
       @issues.add(id)
-      {
+
+      parsed_issue = {
         id: id,
         name: issue[:title],
         level: issue[:severity].upcase,
@@ -40,6 +41,13 @@ module Sarif
         help_url: issue[:url],
         suppressed: @exceptions.include?(id)
       }
+
+      if issue[:line_number]
+        parsed_issue[:start_line] = issue[:line_number]
+        parsed_issue[:start_column] = 1
+      end
+
+      parsed_issue
     end
 
     def sarif_level(severity)

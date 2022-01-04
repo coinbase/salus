@@ -39,6 +39,8 @@ describe Sarif::NPMAuditSarif do
           help_url: "https://github.com/advisories/GHSA-7wpw-2hjm-89gp",
           uri: "package-lock.json",
           properties: { severity: "high" },
+          start_line: 23,
+          start_column: 1,
           suppressed: false
         )
         expected_details = "All versions of package merge <2.1.1 are vulnerable to Prototype"
@@ -95,6 +97,10 @@ describe Sarif::NPMAuditSarif do
         report_object = JSON.parse(report.to_sarif)['runs'][0]
         expect(report_object['results'].length).to eq(2)
         expect(report_object['invocations'][0]['executionSuccessful']).to eq(false)
+
+        region = report_object['results'][0]['locations'][0]['physicalLocation']['region']
+        expect(region['startLine']).to eq(18)
+        expect(region['startColumn']).to eq(1)
       end
     end
 
@@ -138,6 +144,10 @@ describe Sarif::NPMAuditSarif do
         # Check result info
         expect(result['ruleId']).to eq("1005415")
         expect(result['level']).to eq('error')
+
+        region = result['locations'][0]['physicalLocation']['region']
+        expect(region['startLine']).to eq(23)
+        expect(region['startColumn']).to eq(1)
       end
     end
 
