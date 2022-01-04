@@ -7,51 +7,49 @@ require 'tempfile'
 module Salus::Scanners
   class Brakeman < Base
     def run
-      Dir.chdir(@repository.path_to_repo) do
-        # Use JSON output since that will be the best for an API to receive and parse.
-        # We need CI=true envar to ensure brakeman doesn't use an interactive display
-        # for the report that it outputs.
-        shell_return = run_with_exceptions_applied
-        # From the Brakeman website:
-        #   Note all Brakeman output except reports are sent to stderr,
-        #   making it simple to redirect stdout to a file and just get the report.
-        #
-        # Brakeman has the following behavior that we will track:
-        #   - no vulns found - exit 0 and log to STDOUT
-        #   - vulns found    - exit 3 (warning) or 7 (error) and log to STDOUT
-        #   - exception      - exit 1 and log to STDERR
-        # Warnings_Found_Exit_Code = 3
+      # Use JSON output since that will be the best for an API to receive and parse.
+      # We need CI=true envar to ensure brakeman doesn't use an interactive display
+      # for the report that it outputs.
+      shell_return = run_with_exceptions_applied(@repository.path_to_repo)
+      # From the Brakeman website:
+      #   Note all Brakeman output except reports are sent to stderr,
+      #   making it simple to redirect stdout to a file and just get the report.
+      #
+      # Brakeman has the following behavior that we will track:
+      #   - no vulns found - exit 0 and log to STDOUT
+      #   - vulns found    - exit 3 (warning) or 7 (error) and log to STDOUT
+      #   - exception      - exit 1 and log to STDERR
+      # Warnings_Found_Exit_Code = 3
 
-        # Exit code returned when no Rails application is detected
-        # No_App_Found_Exit_Code = 4
+      # Exit code returned when no Rails application is detected
+      # No_App_Found_Exit_Code = 4
 
-        # Exit code returned when brakeman was outdated
-        # Not_Latest_Version_Exit_Code = 5
+      # Exit code returned when brakeman was outdated
+      # Not_Latest_Version_Exit_Code = 5
 
-        # Exit code returned when user requests non-existent checks
-        # Missing_Checks_Exit_Code = 6
+      # Exit code returned when user requests non-existent checks
+      # Missing_Checks_Exit_Code = 6
 
-        # Exit code returned when errors were found and the --exit-on-error
-        # option is set
-        # Errors_Found_Exit_Code = 7
+      # Exit code returned when errors were found and the --exit-on-error
+      # option is set
+      # Errors_Found_Exit_Code = 7
 
-        # Exit code returned when an ignored warning has no note and
-        # --ensure-ignore-notes is set
-        # Empty_Ignore_Note_Exit_Code = 8
+      # Exit code returned when an ignored warning has no note and
+      # --ensure-ignore-notes is set
+      # Empty_Ignore_Note_Exit_Code = 8
 
-        return report_success if shell_return&.success?
+      return report_success if shell_return&.success?
 
-        if shell_return&.status == 3 || shell_return&.status == 7
-          report_failure
-          report_stdout(shell_return.stdout)
-          log(shell_return.stdout)
-        else
-          report_error(
-            "brakeman exited with an unexpected exit status",
-            status: shell_return&.status
-          )
-          report_stderr(shell_return&.stderr)
-        end
+      if shell_return&.status == 3 || shell_return&.status == 7
+        report_failure
+        report_stdout(shell_return.stdout)
+        log(shell_return.stdout)
+      else
+        report_error(
+          "brakeman exited with an unexpected exit status",
+          status: shell_return&.status
+        )
+        report_stderr(shell_return&.stderr)
       end
     end
 
@@ -67,12 +65,12 @@ module Salus::Scanners
       ['ruby']
     end
 
-    def run_without_exceptions_applied
-      run_shell("brakeman #{config_options} -f json", env: { "CI" => "true" })
+    def run_without_exceptions_applied(path)
+      run_shell("brakeman #{config_options} -f json", env: { "CI" => "true" }, chdir: path)
     end
 
-    def run_with_exceptions_applied
-      return run_without_exceptions_applied unless needs_temporary_ignore?
+    def run_with_exceptions_applied(path)
+      return run_without_exceptions_applied(path) unless needs_temporary_ignore?
 
       # create a temporary file combining ignore file entries with any user supplied
       # entires if exceptions hash is being used.
@@ -88,11 +86,11 @@ module Salus::Scanners
                  else
                    config_options + " -i #{f.path} "
                  end
-          run_shell("brakeman #{opts} -f json", env: { "CI" => "true" })
+          run_shell("brakeman #{opts} -f json", env: { "CI" => "true" }, chdir: path)
         end
       rescue Errno::EROFS
         report_error("Read only filesystem, unable to apply exceptions")
-        run_without_exceptions_applied
+        run_without_exceptions_applied(path)
       end
     end
 

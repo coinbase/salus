@@ -32,6 +32,7 @@ module Salus::Scanners
     end
 
     def scan_for_cves
+      puts "NPMAudit scan_for_cves #{@repository&.path_to_repo}"
       raw = run_shell(audit_command_with_options).stdout
       json = JSON.parse(raw, symbolize_names: true)
 

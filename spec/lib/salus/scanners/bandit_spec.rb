@@ -155,6 +155,7 @@ describe Salus::Scanners::Bandit do
       end
 
       it 'and configfile says skip test_id B301' do
+        # spec/fixtures/python/python_project_vulns
         config_file = "#{py_dir}/salus_configs/config_file.yaml"
         configs = Salus::Config.new([File.read(config_file)]).scanner_configs['Bandit']
         scanner = Salus::Scanners::Bandit.new(repository: repo, config: configs)
@@ -491,7 +492,7 @@ describe Salus::Scanners::Bandit do
   describe '#version_valid?' do
     context 'scanner version is valid' do
       it 'should return true' do
-        repo = Salus::Repo.new("dir")
+        repo = Salus::Repo.new(py_dir)
         scanner = Salus::Scanners::Bandit.new(repository: repo, config: {})
         expect(scanner.version).to be_a_valid_version
       end

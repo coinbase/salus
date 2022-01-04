@@ -99,8 +99,8 @@ describe Salus::Scanners::Base do
       fake_process_status = instance_double('Process::Status')
       allow(fake_process_status).to receive(:success?).and_return(false)
       allow(fake_process_status).to receive(:exitstatus).and_return(255)
-
-      expect(Open3).to receive(:capture3).with({}, 'ls', stdin_data: '').and_return(
+      chdir = File.expand_path(repository.path_to_repo)
+      expect(Open3).to receive(:capture3).with({}, 'ls', stdin_data: '', chdir:chdir).and_return(
         [
           "file_a\nfile_b\nfile_c",
           'error string',

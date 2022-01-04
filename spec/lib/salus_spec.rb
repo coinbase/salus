@@ -222,17 +222,20 @@ describe Salus::CLI do
 
     context 'With --filter_sarif' do
       it 'Should ouput filtered vulnerabilities' do
-        Dir.chdir('spec/fixtures/gosec/multiple_vulns2') do
-          ENV['SALUS_CONFIGURATION'] = 'file:///salus.yaml'
-          Salus.scan(quiet: true, repo_path: '.', filter_sarif: 'filter.sarif')
-          diff_file = 'salus_sarif_diff.json' # filtered results
-          sarif_file = 'out.sarif' # full results
+        dir = 'spec/fixtures/gosec/multiple_vulns2'
+       # Dir.chdir('spec/fixtures/gosec/multiple_vulns2') do
+          ENV['SALUS_CONFIGURATION'] = "file:///salus.yaml"
+          Salus.scan(quiet: true, repo_path: dir, filter_sarif: "filter.sarif")
+          diff_file = "#{dir}/salus_sarif_diff.json" # filtered results
+          sarif_file = "#{dir}/out.sarif" # full results
           expect(File).to exist(diff_file)
           expect(File).to exist(sarif_file)
 
           data = JSON.parse(File.read(sarif_file))
+
           results = data['runs'][0]['results']
           rule_ids = results.map { |r| r['ruleId'] }.sort
+
           expect(rule_ids).to eq(%w[G101 G104 G401 G501])
 
           # filtered result file should include both new rules and project build info
@@ -245,7 +248,7 @@ describe Salus::CLI do
           expect(builds['org']).to eq('my_org')
           expect(builds['project']).to eq('my_repo')
           expect(builds['url']).to eq('http://buildkite/builds/123456')
-        end
+        #end
       end
     end
 

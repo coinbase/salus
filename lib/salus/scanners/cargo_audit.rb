@@ -16,46 +16,44 @@ module Salus::Scanners
     end
 
     def run
-      Dir.chdir(@repository.path_to_repo) do
-        shell_return = run_shell(command)
+      shell_return = run_shell(command, chdir:@repository.path_to_repo)
 
-        # Cargo Audit has the following behavior:
-        #
-        # - vulnerability NOT found:
-        #   - status: 0
-        #   - stderr: ""
-        #   - stdout: JSON Milestones, counts of crates scanned
-        #
-        # - vulnerability found:
-        #   - status: 1
-        #   - stderr: ""
-        #   - stdout: JSON detail of the vulnerability
-        #
-        # - warning found:
-        #   - status: 0
-        #   - stderr: ""
-        #   - stdout: JSON detail of the warning
-        #
-        # - Error running audit:
-        #   - status: 1
-        #   - stderr: String with details on the error preventing the run (not JSON)
-        #   - stdout: ""
+      # Cargo Audit has the following behavior:
+      #
+      # - vulnerability NOT found:
+      #   - status: 0
+      #   - stderr: ""
+      #   - stdout: JSON Milestones, counts of crates scanned
+      #
+      # - vulnerability found:
+      #   - status: 1
+      #   - stderr: ""
+      #   - stdout: JSON detail of the vulnerability
+      #
+      # - warning found:
+      #   - status: 0
+      #   - stderr: ""
+      #   - stdout: JSON detail of the warning
+      #
+      # - Error running audit:
+      #   - status: 1
+      #   - stderr: String with details on the error preventing the run (not JSON)
+      #   - stdout: ""
 
-        return report_success if shell_return.success? && !has_vulnerabilities?(shell_return.stdout)
+      return report_success if shell_return.success? && !has_vulnerabilities?(shell_return.stdout)
 
-        report_failure
+      report_failure
 
-        if shell_return.stderr.empty?
-          # shell_return.stdout will be JSON of the discovered vulnerabilities
-          report_stdout(shell_return.stdout)
-          log(prettify_json_string(shell_return.stdout))
-        else
-          report_error(
-            "cargo exited with an unexpected exit status",
-            status: shell_return.status
-          )
-          report_stderr(shell_return.stderr)
-        end
+      if shell_return.stderr.empty?
+        # shell_return.stdout will be JSON of the discovered vulnerabilities
+        report_stdout(shell_return.stdout)
+        log(prettify_json_string(shell_return.stdout))
+      else
+        report_error(
+          "cargo exited with an unexpected exit status",
+          status: shell_return.status
+        )
+        report_stderr(shell_return.stderr)
       end
     end
 

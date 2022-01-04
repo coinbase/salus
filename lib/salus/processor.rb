@@ -1,7 +1,11 @@
+
 require 'uri'
 require 'salus/report'
 require 'salus/plugin_manager'
 require 'salus/repo_searcher'
+require 'thread'
+require 'pry'
+
 
 module Salus
   class Processor
@@ -29,16 +33,20 @@ module Salus
 
       # Import each config file in order.
       configuration_sources.each do |source|
+        puts "Load config from #{source}"
         body = fetch_config_file(source, repo_path)
         if !body.nil?
           source_data << body
           valid_sources << source
+        else
+          puts "\n\nFailed to load #{source}\n\n"
         end
       end
 
       @config = Salus::Config.new(source_data, ignore_ids)
       @config.active_scanners = Set.new(cli_scanners_to_run) if !cli_scanners_to_run.empty?
-
+      
+      puts "\n\nACTIVE SCNNERS #{@config.active_scanners}\n\n"
       report_uris = interpolate_local_report_uris(@config.report_uris)
       sources = {
         sources: {
@@ -66,8 +74,10 @@ module Salus
       content = case uri.scheme
                 when Salus::Config::LOCAL_FILE_SCHEME_REGEX
                   location = "#{repo_path}/#{uri.host}#{uri.path}"
+                  puts "\n\nREAD CONFIG #{location}\n\n"
                   File.read(location) if Dir[location].any?
                 when Salus::Config::REMOTE_URI_SCHEME_REGEX
+                   puts "\n\nREAD CONFIG #{source_uri}\n\n"
                   Faraday.get(source_uri).body
                 else
                   raise InvalidConfigSourceError, 'Unknown config file source.'
@@ -91,34 +101,61 @@ module Salus
       content
     end
 
+
+#Running Brakeman
+#Running Brakeman
+#Running NPMAudit
+#Waiting for threads
+#Threads done
+
     def scan_project
       # Record overall running time of the scan
+
       @report.record do
         # If we're running tests, re-raise any exceptions raised by a scanner
         # (vs. just catching them and recording them in a real run)
         reraise_exceptions = ENV.key?('RUNNING_SALUS_TESTS')
         scanners_ran = []
+        threads = []
+        
+        mutex = Mutex.new
+        
         Config::SCANNERS.each do |scanner_name, scanner_class|
           config = @config.scanner_configs.fetch(scanner_name, {})
           RepoSearcher.new(@repo_path, config).matching_repos do |repo|
-            scanner = scanner_class.new(repository: repo, config: config)
-            unless @config.scanner_active?(scanner_name) && scanner.should_run?
-              Salus::PluginManager.send_event(:skip_scanner, scanner_name)
-              next
+            puts "Creating thread for #{scanner_name} #{repo.path_to_repo}"
+            threads << Thread.new do
+
+              scanner = scanner_class.new(repository: repo, config: config)
+
+              unless @config.scanner_active?(scanner_name) && scanner.should_run?
+                #puts "Skipping #{scanner_name}"
+                Salus::PluginManager.send_event(:skip_scanner, scanner_name)
+                next
+              end
+              # protect this
+              puts "Running #{scanner_name}"
+              Mutex.new.synchronize{ scanners_ran << scanner }
+              
+              Salus::PluginManager.send_event(:run_scanner, scanner_name)
+
+              required = @config.enforced_scanners.include?(scanner_name)
+            
+
+              # TODO we want to remove the need to pass the @report here
+              scanner.run!(
+                salus_report: @report,
+                required: required,
+                pass_on_raise: @config.scanner_configs[scanner_name]['pass_on_raise'],
+                reraise: reraise_exceptions
+              )
             end
-            scanners_ran << scanner
-            Salus::PluginManager.send_event(:run_scanner, scanner_name)
-
-            required = @config.enforced_scanners.include?(scanner_name)
-
-            scanner.run!(
-              salus_report: @report,
-              required: required,
-              pass_on_raise: @config.scanner_configs[scanner_name]['pass_on_raise'],
-              reraise: reraise_exceptions
-            )
           end
         end
+        puts "Waiting for threads"
+        threads.each(&:join)
+        puts "Threads done"
+
         Salus::PluginManager.send_event(:scanners_ran, scanners_ran, @report)
       end
     end

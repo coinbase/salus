@@ -16,40 +16,38 @@ module Salus::Scanners
     end
 
     def run
-      shell_return = Dir.chdir(@repository.path_to_repo) do
-        command = "#{AUDIT_COMMAND} #{scan_deps}"
-        shell_return = run_shell(command)
+      command = "#{AUDIT_COMMAND} #{scan_deps}"
+      shell_return = run_shell(command)
 
-        excpts = fetch_exception_ids.map(&:to_i)
-        report_info(:ignored_cves, excpts)
-        return report_success if shell_return.success?
+      excpts = fetch_exception_ids.map(&:to_i)
+      report_info(:ignored_cves, excpts)
+      return report_success if shell_return.success?
 
-        stdout_lines = shell_return.stdout.split("\n")
-        table_start_pos = stdout_lines.index { |l| l.start_with?("┌─") && l.end_with?("─┐") }
-        table_end_pos = stdout_lines.rindex { |l| l.start_with?("└─") && l.end_with?("─┘") }
+      stdout_lines = shell_return.stdout.split("\n")
+      table_start_pos = stdout_lines.index { |l| l.start_with?("┌─") && l.end_with?("─┐") }
+      table_end_pos = stdout_lines.rindex { |l| l.start_with?("└─") && l.end_with?("─┘") }
 
-        # if no table in output
-        if table_start_pos.nil? || table_end_pos.nil?
-          report_error(shell_return.stderr, status: shell_return.status)
-          report_stderr(shell_return.stderr)
-          return report_failure
-        end
-
-        table_lines = stdout_lines[table_start_pos..table_end_pos]
-        # lines contain 1 or more vuln tables
-
-        vulns = parse_output(table_lines)
-        vuln_ids = vulns.map { |v| v['ID'] }
-        report_info(:vulnerabilities, vuln_ids.uniq)
-
-        vulns.reject! { |v| excpts.include?(v['ID']) }
-        # vulns were all whitelisted
-        return report_success if vulns.empty?
-
-        log(format_vulns(vulns))
-        report_stdout(vulns.to_json)
-        report_failure
+      # if no table in output
+      if table_start_pos.nil? || table_end_pos.nil?
+        report_error(shell_return.stderr, status: shell_return.status)
+        report_stderr(shell_return.stderr)
+        return report_failure
       end
+
+      table_lines = stdout_lines[table_start_pos..table_end_pos]
+      # lines contain 1 or more vuln tables
+
+      vulns = parse_output(table_lines)
+      vuln_ids = vulns.map { |v| v['ID'] }
+      report_info(:vulnerabilities, vuln_ids.uniq)
+
+      vulns.reject! { |v| excpts.include?(v['ID']) }
+      # vulns were all whitelisted
+      return report_success if vulns.empty?
+
+      log(format_vulns(vulns))
+      report_stdout(vulns.to_json)
+      report_failure
     end
 
     def version

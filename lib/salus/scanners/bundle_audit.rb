@@ -1,14 +1,51 @@
 require 'bundler/audit/cli'
 require 'salus/scanners/base'
-
+require 'salus/thread_safe'
 # BundlerAudit scanner to check for CVEs in Ruby gems.
 # https://github.com/rubysec/bundler-audit
+
+
+# BundlerAudit is not threadsafe as it uses Dir.chdir
+# File.expand_path(File.join(Gem.user_home,'.local','share','ruby-advisory-db'))
+
+
+# Monkey patching Bundler::Audit::Database to make it threadsafe
+# We should open a fork or PR against the gem
+module Bundler
+  module Audit
+    class Database
+      def update!(options={})
+        if git?
+            command = %w(git pull)
+            command << '--quiet' if options[:quiet]
+            command << 'origin' << 'master'
+
+            unless system(*command, chdir:@path)
+              raise(UpdateFailed,"failed to update #{@path.inspect}")
+            end
+            return true
+        end
+      end
+
+      def last_updated_at
+        if git?
+            Time.parse(system(['git log --date=iso8601 --pretty="%cd" -1'], chdir:@path))
+        else
+          File.mtime(@path)
+        end
+      end  
+    end
+  end
+end 
+
+
 
 module Salus::Scanners
   class BundleAudit < Base
     class UnvalidGemVulnError < StandardError; end
 
     def run
+      #return
       # Ensure the DB is up to date
       unless Bundler::Audit::Database.update!(quiet: true)
         report_error("Error updating the bundler-audit DB!")

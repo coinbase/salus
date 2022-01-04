@@ -6,6 +6,8 @@ reports:
   - uri: file://salus_sarif_diff.json
     format: sarif_diff
 
+active_scanners:
+  - Gosec
 
 builds:
   url: "http://buildkite/builds/123456"
