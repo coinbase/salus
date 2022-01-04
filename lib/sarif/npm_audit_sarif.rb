@@ -20,6 +20,7 @@ module Sarif
     def parse_issue(issue)
       id = issue[:id].to_s
       return nil if @issues.include?(id)
+      return nil if @exceptions.include?(id)
 
       @results.push(id) if !@exceptions.include?(id)
       @issues.add(id)
@@ -56,10 +57,9 @@ module Sarif
       end
     end
 
-    # Excepted advisories in report should not lead to scanner failure
     def build_invocations(scan_report, supported)
       invocation = super(scan_report, supported)
-      invocation[:executionSuccessful] = @results.empty? || @scan_report.passed?
+      invocation[:executionSuccessful] = @results.empty?
       invocation
     end
   end

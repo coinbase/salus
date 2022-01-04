@@ -93,6 +93,7 @@ describe Sarif::NPMAuditSarif do
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
         report_object = JSON.parse(report.to_sarif)['runs'][0]
+        expect(report_object['results'].length()).to eq(2)
         expect(report_object['invocations'][0]['executionSuccessful']).to eq(false)
       end
     end
@@ -105,6 +106,7 @@ describe Sarif::NPMAuditSarif do
         report.add_scan_report(scanner.report, required: false)
         report_object = JSON.parse(report.to_sarif)['runs'][0]
 
+        expect(report_object['results'].length()).to eq(0)
         expect(report_object['invocations'][0]['executionSuccessful']).to eq(true)
       end
     end
@@ -152,6 +154,7 @@ describe Sarif::NPMAuditSarif do
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
         report_object = JSON.parse(report.to_sarif)['runs'][0]
+        expect(report_object['results'].length()).to eq(0)
         expect(report_object['invocations'][0]['executionSuccessful']).to eq(true)
       end
     end
