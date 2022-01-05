@@ -21,7 +21,7 @@ module Salus::Scanners
 
     def initialize(repository:, config:)
       @repository = repository
-      
+
       @config = config
       @report = Salus::ScanReport.new(
         name,
@@ -193,9 +193,7 @@ module Salus::Scanners
       hsh[:message] = message
       @report.error(hsh)
 
-      if @builds
-        message = "#{@report.scanner_name} error: #{message}, build: #{builds}"
-      end
+      message = "#{@report.scanner_name} error: #{message}, build: #{builds}" if @builds
       bugsnag_notify(message)
     end
 

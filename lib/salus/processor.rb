@@ -107,7 +107,6 @@ module Salus
         Config::SCANNERS.each do |scanner_name, scanner_class|
           config = @config.scanner_configs.fetch(scanner_name, {})
           RepoSearcher.new(@repo_path, config).matching_repos do |repo|
-
             threads << Thread.new do
               scanner = scanner_class.new(repository: repo, config: config)
 
@@ -129,7 +128,8 @@ module Salus
               # to the processor here:
               #  report.add_scan_report(scanner.report, required: required)
               #  scanner.report.errors.each { |error| @report.error(error) }
-              #  Salus::PluginManager.send_event(:scan_executed, { salus_report: @salus_report, scan_report: @report })
+              #  Salus::PluginManager.send_event(:scan_executed,
+              #           { salus_report: @salus_report, scan_report: @report })
 
               scanner.run!(
                 salus_report: @report, # Salus::Report
@@ -153,6 +153,7 @@ module Salus
       sarif_file_old = sarif_diff_full[1]
       info = "\nCreating full sarif diff report from #{sarif_file_new} and #{sarif_file_old}"
       info += " with git diff #{git_diff}" if git_diff != ''
+      puts info
 
       [sarif_file_new, sarif_file_old].each do |f|
         raise Exception, "sarif diff file name is empty #{f}" if f.nil? || f == ""
