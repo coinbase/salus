@@ -15,7 +15,7 @@ if ENV['BUGSNAG_API_KEY']
 
     config.set_endpoints(notify_endpoint, session_endpoint)
     config.api_key = ENV['BUGSNAG_API_KEY']
-    config.release_stage = 'production'
+    config.release_stage = ENV['SALUS_ENVIRONMENT']
     config.auto_capture_sessions = false
   end
 
