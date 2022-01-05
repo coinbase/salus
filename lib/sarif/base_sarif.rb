@@ -270,6 +270,16 @@ module Sarif
         end
       end
 
+      sarif_new["runs"].each do |run|
+        id_to_index = {}
+        ids = run["results"].map { |r| r['ruleId'] }.uniq
+        ids.each_with_index { |id, i| id_to_index[id] = i }
+
+        run["results"].each do |result|
+          result['ruleIndex'] = id_to_index[result['ruleId']]
+        end
+      end
+
       sarif_new
     end
 
