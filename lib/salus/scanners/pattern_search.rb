@@ -62,17 +62,24 @@ module Salus::Scanners
           *(match_include_extension_flags || global_include_extension_flags)
         ].compact
 
-        shell_return = run_shell(command_array)
-        # Set defaults.
-        match['forbidden'] ||= false
-        match['required'] ||= false
-        match['message'] ||= ''
-
-        if shell_return.success? # hit
-          if match['forbidden']
-            failure_messages << "\nForbidden pattern \"#{match['regex']}\" was found " \
-              "\n#{shell_return.stdout} - #{match['message']}"
+          not_followed_within = match["not_followed_within"]
+          command_array += ['--not-followed-within', not_followed_within] if not_followed_within
+          files = match['files']
+          files&.each do |file|
+            command_array += ['--files', file]
           end
+
+          shell_return = run_shell(command_array)
+          # Set defaults.
+          match['forbidden'] ||= false
+          match['required'] ||= false
+          match['message'] ||= ''
+
+          if shell_return.success? # hit
+            if match['forbidden']
+              failure_messages << "\nForbidden pattern \"#{match['regex']}\" was found " \
+                "\n#{shell_return.stdout} - #{match['message']}"
+            end
 
           hits = shell_return.stdout.encode(
             "utf-8",

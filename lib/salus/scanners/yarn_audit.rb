@@ -45,6 +45,7 @@ module Salus::Scanners
       # vulns were all whitelisted
       return report_success if vulns.empty?
 
+      Salus::YarnLock.new('yarn.lock').add_line_number(vulns)
       log(format_vulns(vulns))
       report_stdout(vulns.to_json)
       report_failure

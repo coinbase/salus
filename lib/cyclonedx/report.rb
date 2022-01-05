@@ -53,6 +53,8 @@ module Cyclonedx
               "with error message #{e.class}: #{e.message}"
         bugsnag_notify(msg)
       end
+
+      cyclonedx_report[:components].uniq!
       Cyclonedx::Report.validate_cyclonedx(cyclonedx_report)
     end
 

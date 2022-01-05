@@ -31,6 +31,16 @@ describe Cyclonedx::ReportRubyGems do
       expect(Cyclonedx::Report.validate_cyclonedx(report)).to eq(report)
     end
 
+    it 'succeeds if scan_reports contain duplicate reports' do
+      scanner = Salus::Scanners::ReportRubyGems.new(repository: repo, config: {})
+      scanner.run
+
+      # scanner.report has been provided 2 times to Cyclonedx::Report.new to simulate duplication
+      cyclonedx_reports = Cyclonedx::Report.new([[scanner.report, false], [scanner.report, false]],
+                                                { "spec_version" => "1.3" })
+      expect { cyclonedx_reports.to_cyclonedx }.not_to raise_error
+    end
+
     it 'fails if generated cyclonedx report is not valid' do
       path = File.expand_path('../..//fixtures/cyclonedx/invalid_report.json', __dir__)
       report = JSON.parse(File.read(path)).with_indifferent_access

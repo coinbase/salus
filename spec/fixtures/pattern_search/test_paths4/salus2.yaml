@@ -1,0 +1,11 @@
+scanner_configs:
+  PatternSearch:
+    matches:
+      - regex: hello
+        forbidden: true
+        not_followed_within: 0:bye
+        files:
+          - "*.txt"
+          - "*.py"
+        exclude_filepaths:
+          - test.txt

@@ -52,6 +52,7 @@ module Salus::Scanners
       ignore = ignore_list
       scanner = Bundler::Audit::Scanner.new(@repository.path_to_repo)
       @vulns = []
+      @gemfile_lock_path = File.join(@repository.path_to_repo, 'Gemfile.lock')
       run_scanner(scanner, ignore)
 
       local_db_path = @config['local_db']
@@ -76,6 +77,7 @@ module Salus::Scanners
     def run_scanner(scanner, ignore)
       scanner.scan(ignore: ignore) do |result|
         hash = serialize_vuln(result)
+        Salus::GemfileLock.new(@gemfile_lock_path).add_line_number(hash)
         @vulns.push(hash)
 
         # TODO: we should tabulate these vulnerabilities in the same way
