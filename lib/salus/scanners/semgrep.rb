@@ -36,7 +36,7 @@ module Salus::Scanners
       all_misses = []
       override_keys = %w[pattern language message]
 
-      #base_path = Dir.pwd
+      # base_path = Dir.pwd
       base_path = File.expand_path(@repository.path_to_repo)
 
       @config["matches"]&.each do |match|

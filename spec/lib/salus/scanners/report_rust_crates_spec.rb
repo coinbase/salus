@@ -121,7 +121,7 @@ describe Salus::Scanners::ReportRustCrates do
 
       # We will stub the lock file generate to keep our specs from needing to
       # hit the internet and pulldown the dependency graph
-      allow(scanner).to receive(:run_shell).with(/cargo tree/, chdir:nil) do
+      allow(scanner).to receive(:run_shell).with(/cargo tree/, chdir: nil) do
         existing_lock = 'spec/fixtures/report_rust_crates/lock_only/Cargo.lock'
         mock_lock = File.join(repo.path_to_repo, 'Cargo.lock')
         FileUtils.cp existing_lock, mock_lock
@@ -138,17 +138,11 @@ describe Salus::Scanners::ReportRustCrates do
       scanner = Salus::Scanners::ReportRustCrates.new(repository: repo, config: {})
 
       # Mock with an empty stub to prevent the .lock file from being generated
-      expect(scanner).to receive(:run_shell).with(/cargo tree/, chdir:nil)
+      expect(scanner).to receive(:run_shell).with(/cargo tree/, chdir: nil)
 
       msg = 'Rust .lock file missing.Check write premissions and Cargo version is at least 1.44'
       expect { scanner.run }.to raise_error(Salus::Scanners::ReportRustCrates::MissingRustLock,
                                             msg)
-
-      # expected Salus::Scanners::ReportRustCrates::MissingRustLock with "Rust .lock file missing.Check write premissions and Cargo version is at least 1.44", 
-      #got #<RSpec::Mocks::MockExpectationError: #<Salus::Scanners::ReportRustCrates:0x00007fcbd74aa2e0 @reposit...est-path 
-      #spec/fixtures/report_rust_crates/manifest_only/Cargo.toml",
-
-
     end
 
     it 'should report all deps in lock' do

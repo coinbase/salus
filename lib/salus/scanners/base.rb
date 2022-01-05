@@ -5,8 +5,6 @@ require 'salus/bugsnag'
 require 'shellwords'
 require 'salus/plugin_manager'
 require 'timeout'
-require 'thread'
-
 module Salus::Scanners
   # Super class for all scanner objects.
   class Base
@@ -18,8 +16,6 @@ module Salus::Scanners
     include Salus::SalusBugsnag
 
     attr_reader :report
-
-    
 
     def initialize(repository:, config:)
       @repository = repository
@@ -83,7 +79,6 @@ module Salus::Scanners
       puts "Run! #{self}"
       @salus_report = salus_report
       @mutex.synchronize { salus_report.add_scan_report(@report, required: required) }
-      
 
       begin
         @report.record do
@@ -131,15 +126,15 @@ module Salus::Scanners
     end
 
     # Runs a command on the terminal.
-    def run_shell(command, env: {}, stdin_data: '', chdir:File.expand_path(@repository&.path_to_repo))
-     
+    def run_shell(command, env: {}, stdin_data: '',
+                  chdir: File.expand_path(@repository&.path_to_repo))
       # If we're passed a string, convert it to an array before passing to capture3
       command = command.split unless command.is_a?(Array)
-      Salus::PluginManager.send_event(:run_shell, command, chdir:chdir)
+      Salus::PluginManager.send_event(:run_shell, command, chdir: chdir)
       #  chdir: '/some/directory'
       opts = { stdin_data: stdin_data }
       opts[:chdir] = chdir unless chdir.nil? || chdir == "."
- 
+
       pwd = `pwd`
       puts "Runniung shell #{command} with chdir of #{opts[:chdir]} from #{pwd}"
 
@@ -173,7 +168,7 @@ module Salus::Scanners
     def report_warn(type, message)
       @report.warn(type, message)
       Salus::PluginManager.send_event(:report_warn, { type: type, message: message })
-      @mutex.synchronize do 
+      @mutex.synchronize do
         if @salus_report&.builds
           scanner = @report.scanner_name
           message = "#{scanner} warning: #{type}, #{message}, build: #{@salus_report.builds}"
@@ -248,7 +243,7 @@ module Salus::Scanners
       false
     end
 
-    def validate_file_option(keyword, value, chdir:File.expand_path(@repository&.path_to_repo))
+    def validate_file_option(keyword, value, chdir: File.expand_path(@repository&.path_to_repo))
       if value.nil?
         report_warn(:scanner_misconfiguration, "Expecting file/dir defined by #{keyword} to be a"\
                                                 "location in the project repo but got empty "\

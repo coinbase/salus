@@ -1,11 +1,7 @@
-
 require 'uri'
 require 'salus/report'
 require 'salus/plugin_manager'
 require 'salus/repo_searcher'
-require 'thread'
-require 'pry'
-
 
 module Salus
   class Processor
@@ -45,7 +41,7 @@ module Salus
 
       @config = Salus::Config.new(source_data, ignore_ids)
       @config.active_scanners = Set.new(cli_scanners_to_run) if !cli_scanners_to_run.empty?
-      
+
       puts "\n\nACTIVE SCNNERS #{@config.active_scanners}\n\n"
       report_uris = interpolate_local_report_uris(@config.report_uris)
       sources = {
@@ -77,7 +73,7 @@ module Salus
                   puts "\n\nREAD CONFIG #{location}\n\n"
                   File.read(location) if Dir[location].any?
                 when Salus::Config::REMOTE_URI_SCHEME_REGEX
-                   puts "\n\nREAD CONFIG #{source_uri}\n\n"
+                  puts "\n\nREAD CONFIG #{source_uri}\n\n"
                   Faraday.get(source_uri).body
                 else
                   raise InvalidConfigSourceError, 'Unknown config file source.'
@@ -101,12 +97,11 @@ module Salus
       content
     end
 
-
-#Running Brakeman
-#Running Brakeman
-#Running NPMAudit
-#Waiting for threads
-#Threads done
+    # Running Brakeman
+    # Running Brakeman
+    # Running NPMAudit
+    # Waiting for threads
+    # Threads done
 
     def scan_project
       # Record overall running time of the scan
@@ -117,32 +112,28 @@ module Salus
         reraise_exceptions = ENV.key?('RUNNING_SALUS_TESTS')
         scanners_ran = []
         threads = []
-        
-        mutex = Mutex.new
-        
+
         Config::SCANNERS.each do |scanner_name, scanner_class|
           config = @config.scanner_configs.fetch(scanner_name, {})
           RepoSearcher.new(@repo_path, config).matching_repos do |repo|
             puts "Creating thread for #{scanner_name} #{repo.path_to_repo}"
             threads << Thread.new do
-
               scanner = scanner_class.new(repository: repo, config: config)
 
               unless @config.scanner_active?(scanner_name) && scanner.should_run?
-                #puts "Skipping #{scanner_name}"
+                # puts "Skipping #{scanner_name}"
                 Salus::PluginManager.send_event(:skip_scanner, scanner_name)
                 next
               end
               # protect this
               puts "Running #{scanner_name}"
-              Mutex.new.synchronize{ scanners_ran << scanner }
-              
+              Mutex.new.synchronize { scanners_ran << scanner }
+
               Salus::PluginManager.send_event(:run_scanner, scanner_name)
 
               required = @config.enforced_scanners.include?(scanner_name)
-            
 
-              # TODO we want to remove the need to pass the @report here
+              # TODO: we want to remove the need to pass the @report here
               scanner.run!(
                 salus_report: @report,
                 required: required,

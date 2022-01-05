@@ -16,7 +16,7 @@ module Salus::Scanners
     end
 
     def run
-      shell_return = run_shell(command, chdir:@repository.path_to_repo)
+      shell_return = run_shell(command, chdir: @repository.path_to_repo)
 
       # Cargo Audit has the following behavior:
       #

@@ -1,8 +1,6 @@
 require 'json'
 require 'salus/formatting'
 require 'salus/bugsnag'
-require 'thread'
-
 module Salus
   class Report
     include Formatting

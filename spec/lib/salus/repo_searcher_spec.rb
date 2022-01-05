@@ -111,7 +111,9 @@ describe Salus::RepoSearcher do
                          "vendor/Gemfile.lock",
                          "project-two/Gemfile.lock"].join("\n"))
       args = ["rg", "--files-with-matches", "activesupport", "--glob", "Gemfile.lock"]
-      expect(IO).to receive("popen").with(args, :chdir=>"spec/fixtures/processor/recursive").and_return(read)
+      expect(IO).to receive("popen").with(args,
+                                          chdir: "spec/fixtures/processor/recursive")
+        .and_return(read)
 
       repos = []
       Salus::RepoSearcher.new(repo_path, config).matching_repos do |repo|
@@ -138,8 +140,10 @@ describe Salus::RepoSearcher do
       read = IORead.new(["Gemfile.lock",
                          "vendor/Gemfile.lock",
                          "project-two/Gemfile.lock"].join("\n"))
-      args = ["rg", "-l", "activesupport"] 
-      expect(IO).to receive("popen").with(args, :chdir=>"spec/fixtures/processor/recursive" ).and_return(read)
+      args = ["rg", "-l", "activesupport"]
+      expect(IO).to receive("popen").with(args,
+                                          chdir: "spec/fixtures/processor/recursive")
+        .and_return(read)
 
       repos = []
       Salus::RepoSearcher.new(repo_path, config).matching_repos do |repo|
@@ -187,7 +191,9 @@ describe Salus::RepoSearcher do
                          "vendor/Gemfile.lock",
                          "project-two/Gemfile.lock"].join("\n"))
       args = ["rg", "--files-with-matches", "activesupport", "--glob", "Gemfile.lock"]
-      expect(IO).to receive("popen").with(args, :chdir=>"spec/fixtures/processor/recursive").and_return(read)
+      expect(IO).to receive("popen").with(args,
+                                          chdir: "spec/fixtures/processor/recursive")
+        .and_return(read)
 
       repos = []
       Salus::RepoSearcher.new(repo_path, config).matching_repos do |repo|

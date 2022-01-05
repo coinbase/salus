@@ -54,7 +54,7 @@ module Salus::Scanners
                  end
 
       cmd = "gosec #{config_options}-fmt=json ./..."
-      shell_return = run_shell(cmd, chdir:work_dir)
+      shell_return = run_shell(cmd, chdir: work_dir)
 
       # This produces no JSON output so must be checked before parsing stdout
       if shell_return.stdout.blank? && shell_return.stderr.include?('No packages found')

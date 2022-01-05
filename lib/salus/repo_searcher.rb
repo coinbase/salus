@@ -39,6 +39,7 @@ module Salus
         # as needed
         dest_dir =  File.expand_path(repo)
         next unless Dir.exist?(dest_dir)
+
         FileCopier.new.copy_files(File.expand_path(@path_to_repo), dest_dir, static_files) do
           yield Repo.new(repo)
         end
@@ -144,8 +145,7 @@ module Salus
     # @return [Array<String>] Relative path of files returned
     # from running the command.
     def run_rg(*args)
-      data = nil
-      data = IO.popen(args, chdir:@path_to_repo).read
+      data = IO.popen(args, chdir: @path_to_repo).read
       return [] if data == ""
 
       files = data.lines.map(&:strip)
