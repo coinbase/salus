@@ -162,6 +162,9 @@ module Salus
     def apply_default_scanner_config!
       SCANNERS.each_key do |scanner|
         @scanner_configs[scanner] ||= {}
+        if @scanner_configs[scanner].is_a? Array
+          bugsnag_notify("@scanner_configs[scanner] is Array: #{@scanner_configs[scanner].inspect}")
+        end
         @scanner_configs[scanner] = DEFAULT_SCANNER_CONFIG
           .dup
           .deep_merge!(@scanner_configs[scanner])
