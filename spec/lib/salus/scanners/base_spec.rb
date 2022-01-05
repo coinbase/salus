@@ -27,6 +27,7 @@ describe Salus::Scanners::Base do
       end.not_to raise_error
 
       salus_errors = salus_report.to_h[:errors]
+
       scanner_errors = salus_report.to_h[:scans]['BundleAudit'][:errors]
       expect(salus_errors).to eq(scanner_errors)
       expect(salus_errors.first).to include(

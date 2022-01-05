@@ -1,6 +1,6 @@
 require 'bundler/audit/cli'
 require 'salus/scanners/base'
-require 'salus/thread_safe'
+
 # BundlerAudit scanner to check for CVEs in Ruby gems.
 # https://github.com/rubysec/bundler-audit
 

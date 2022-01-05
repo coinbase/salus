@@ -17,9 +17,11 @@ module Salus::Scanners
 
     attr_reader :report
 
+    @@mutex = Mutex.new
+
     def initialize(repository:, config:)
       @repository = repository
-      @mutex = Mutex.new
+      
       @config = config
       @report = Salus::ScanReport.new(
         name,
@@ -75,10 +77,13 @@ module Salus::Scanners
     #   and also to pass/fail the scan if #run failed to do so
     # - catches any exceptions, appending them to both the scan report's error
     #   collection and the global salus scan's error collection
+
     def run!(salus_report:, required:, pass_on_raise:, reraise:)
-      puts "Run! #{self}"
-      @salus_report = salus_report
-      @mutex.synchronize { salus_report.add_scan_report(@report, required: required) }
+      @@mutex.synchronize do
+        @salus_report = salus_report
+        salus_report.add_scan_report(@report, required: required)
+        @builds = @salus_report&.builds
+      end
 
       begin
         @report.record do
@@ -97,8 +102,7 @@ module Salus::Scanners
 
         pass_on_raise ? @report.pass : @report.fail
 
-        @report.error(timeout_error_data)
-        salus_report.error(timeout_error_data)
+        record_error(timeout_error_data)
         bugsnag_notify(error_message)
 
         # Propagate this error if desired
@@ -113,12 +117,11 @@ module Salus::Scanners
         pass_on_raise ? @report.pass : @report.fail
 
         # Record the error so that the Salus report captures the issue.
-        @report.error(error_data)
-        salus_report.error(error_data)
+        record_error(error_data)
 
         raise if reraise
       ensure
-        @mutex.synchronize do
+        @@mutex.synchronize do
           Salus::PluginManager.send_event(:scan_executed, { salus_report: @salus_report,
                                                             scan_report: @report })
         end
@@ -168,11 +171,9 @@ module Salus::Scanners
     def report_warn(type, message)
       @report.warn(type, message)
       Salus::PluginManager.send_event(:report_warn, { type: type, message: message })
-      @mutex.synchronize do
-        if @salus_report&.builds
-          scanner = @report.scanner_name
-          message = "#{scanner} warning: #{type}, #{message}, build: #{@salus_report.builds}"
-        end
+      if @builds
+        scanner = @report.scanner_name
+        message = "#{scanner} warning: #{type}, #{message}, build: #{builds}"
       end
       bugsnag_notify(message)
     end
@@ -192,10 +193,8 @@ module Salus::Scanners
       hsh[:message] = message
       @report.error(hsh)
 
-      @mutex.synchronize do
-        if @salus_report&.builds
-          message = "#{@report.scanner_name} error: #{message}, build: #{@salus_report.builds}"
-        end
+      if @builds
+        message = "#{@report.scanner_name} error: #{message}, build: #{builds}"
       end
       bugsnag_notify(message)
     end
@@ -207,6 +206,11 @@ module Salus::Scanners
     end
 
     protected
+
+    def record_error(error)
+      @report.error(error)
+      @@mutex.synchronize { @salus_report.error(error) }
+    end
 
     def validate_bool_option(keyword, value)
       return true if %w[true false].include?(value.to_s.downcase)

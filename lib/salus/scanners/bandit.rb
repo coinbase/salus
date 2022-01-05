@@ -8,7 +8,7 @@ module Salus::Scanners
     def run
       # bandit compiled with python3
       copts = config_options
-      puts "Bandit RUN copts #{config_options}."
+
       shell_return = run_shell("bandit #{copts} -r -f json .")
 
       # if python3 couldn't parse files, then try bandit compiled with python2
@@ -94,7 +94,6 @@ module Salus::Scanners
                   'ignore-nosec': { type: :flag, prefix: '--' },
                   exclude: { type: :list_file, keyword: 'x' })
 
-      puts "Bandit Config Options Args #{args}"
       # To allow backwards compatability we are creating a composite
       # of the skips and exceptions blocks.  Eventually we should retire skips
       # in favor of the new exception support
