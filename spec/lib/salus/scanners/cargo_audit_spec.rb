@@ -1,45 +1,5 @@
 require_relative '../../../spec_helper.rb'
 
-RSpec::Matchers.define :pretty_json do
-  match do |actual|
-    JSON.pretty_generate(JSON.parse(actual)) == actual
-  end
-end
-
-RSpec::Matchers.define :json_with_keys do |keys|
-  match do |actual|
-    begin
-      json = JSON.parse(actual)
-    rescue JSON::ParserError
-      return false
-    end
-    (json.keys - keys).empty?
-  end
-end
-
-class ProcessStatusDouble
-  attr_accessor :exitstatus
-  def initialize(exitstatus)
-    @exitstatus = exitstatus
-  end
-
-  def success?
-    @exitstatus.zero?
-  end
-end
-
-class ShellResultDouble
-  def initialize(stdout, stderr, status)
-    @stdout = stdout
-    @stderr = stderr
-    @status = status
-  end
-
-  def shell_result
-    Salus::ShellResult.new(@stdout, @stderr, ProcessStatusDouble.new(@status))
-  end
-end
-
 describe Salus::Scanners::CargoAudit do
   describe '#should_run?' do
     it 'should return false in the absence of Cargo.lock' do
