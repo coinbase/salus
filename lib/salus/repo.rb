@@ -6,6 +6,7 @@ module Salus
       # Ruby
       { handle: :gemfile, filename: 'Gemfile' },
       { handle: :gemfile_lock, filename: 'Gemfile.lock' },
+      { handle: :ruby_version, filename: '.ruby-version' },
       # JS
       { handle: :package_json, filename: 'package.json' },
       { handle: :package_lock_json, filename: 'package-lock.json' },

@@ -1,0 +1,3 @@
+reports:
+  - uri: file://diff_3_4.json
+    format: sarif_diff_full
