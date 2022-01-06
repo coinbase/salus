@@ -64,6 +64,7 @@
       "Brakeman",
       "BundleAudit",
       "CargoAudit",
+      "GoVersionScanner",
       "Gosec",
       "NPMAudit",
       "PatternSearch",
@@ -73,6 +74,7 @@
       "ReportPythonModules",
       "ReportRubyGems",
       "ReportRustCrates",
+      "RubyVersionScanner",
       "Semgrep",
       "YarnAudit"
     ],
@@ -145,6 +147,14 @@
         "scanner_timeout_s": 0
       },
       "YarnAudit": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "GoVersionScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "RubyVersionScanner": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },

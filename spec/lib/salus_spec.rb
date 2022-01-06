@@ -144,6 +144,38 @@ describe Salus::CLI do
           end.to raise_error
         end
       end
+
+      it 'Vuls should have appropriate rule indexes' do
+        Dir.chdir('spec/fixtures/sarifs/diff') do
+          diff_args = ['v3.json', 'v4.json']
+          ENV['SALUS_CONFIGURATION'] = 'file:///salus_diff_3_4.yaml'
+          exit_status = Salus.scan(quiet: true, repo_path: '.', sarif_diff_full: diff_args)
+          diff_file = 'diff_3_4.json'
+          expect(File).to exist(diff_file)
+          diff_sarif = JSON.parse(File.read(diff_file))
+          gosec_info = diff_sarif['runs'].select do |run|
+            run['tool']['driver']['name'] == 'Gosec'
+          end[0]
+          expect(gosec_info['results'].size).to eq(2)
+          expect(gosec_info['results'][0]['ruleId']).to eq('G101')
+          expect(gosec_info['results'][1]['ruleId']).to eq('G101')
+
+          # same ruleIndex for same vul id
+          expect(gosec_info['results'][0]['ruleIndex']).to eq(0)
+          expect(gosec_info['results'][1]['ruleIndex']).to eq(0)
+          expect(exit_status).to eq(Salus::EXIT_FAILURE)
+
+          # different vul ids do not have the same ruleIndex
+          bundle_info = diff_sarif['runs'].select do |run|
+            run['tool']['driver']['name'] == 'BundleAudit'
+          end[0]
+          expect(bundle_info['results'].size).to eq(3)
+          rule_id = bundle_info['results'].map { |r| r['ruleId'] }
+          expect(rule_id.uniq.size).to eq(3)
+          rule_index = bundle_info['results'].map { |r| r['ruleIndex'] }
+          expect(rule_index).to eq([0, 1, 2])
+        end
+      end
     end
 
     context 'With --sarif_diff_full and --git_diff' do

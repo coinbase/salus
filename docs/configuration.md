@@ -12,13 +12,13 @@ The simplest way to provide custom configuration to Salus, is to put a `salus.ya
 docker run --rm -v $(pwd):/home/repo coinbase/salus --config file://tests/salus-config.yaml
 ```
 
-Salus also supports remote configuration files that can be fetched over HTTP. This is particularly useful for organization wide configurations that are centralize.
+Salus also supports remote configuration files that can be fetched over HTTP. This is particularly useful for organization wide configurations that are centralized.
 
 ```sh
 docker run --rm -v $(pwd):/home/repo coinbase/salus --config https://salus-config.internal.net/salus.yaml
 ```
 
-A third method of providing configuration URIs is via the environment variable `SALUS_CONFIGURATION`. If this envar is set, it will take precendence over the flag URI.
+A third method of providing configuration URIs is via the environment variable `SALUS_CONFIGURATION`. If this envar is set, it will take precedence over the flag URI.
 
 ### Cascading Configurations
 
@@ -51,15 +51,15 @@ custom_info: "PR-123"
 #
 # Each Hash must contain keys for `uri` and `format`.
 # URIs can point to either the local file system or remote HTTP destinations.
-# - Request paramters (optional) can be included for HTTP destinations with the `params` field
-#   - if the report parameter is included, the report paramater would contain the salus report
+# - Request parameters (optional) can be included for HTTP destinations with the `params` field
+#   - if the report parameter is included, the report parameter would contain the salus report
 #   - when `report` is not included in params, the salus report will be located in the body of the request sent
 # The available formats are `json`, `yaml`, `txt`, `sarif` and `cyclonedx-json`.
 # `verbose` is an optional key and defaults to false.
 # 
-# Each report hash can add post paramaters using the `post` key , 
-# - Salus reports can be sent as a report paramater by specifying the paramater name in `salus_report_param_name`
-# - additional post paramaters can be specified through the `additional_params` field
+# Each report hash can add post parameters using the `post` key , 
+# - Salus reports can be sent as a report parameter by specifying the parameter name in `salus_report_param_name`
+# - additional post parameters can be specified through the `additional_params` field
 #
 # Each report hash can also specify what http verb should be used (currently support `put` and `post` key),
 # and headers to set. 
@@ -146,7 +146,7 @@ scanner_configs:
       # will be ignored
         - vendor
       directories: # Directories to recurse into.  When present,
-      # any directories that need to be scaned should explicity listed
+      # any directories that need to be scanned should explicitly listed
         - ./
         - payments/lhv
         - infra/sso/identity_provider

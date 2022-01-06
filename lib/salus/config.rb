@@ -21,14 +21,19 @@ module Salus
 
     attr_accessor :active_scanners
 
+    ABSTRACT_SCANNERS = %i[Base NodeAudit LanguageVersion].freeze
+
     # Dynamically get all Scanner classes
-    ABSTRACT_SCANNERS = %i[Base NodeAudit].freeze
     SCANNERS = Salus::Scanners.constants
       .reject { |klass| ABSTRACT_SCANNERS.include?(klass) }
       .map { |klass| [klass.to_s, Salus::Scanners.const_get(klass)] }
-      .sort
-      .to_h
-      .freeze
+
+    # Dynamically get all Scanners for language version checking
+    LANGUAGE_VERSION_SCANNERS = Salus::Scanners::LanguageVersion.constants
+      .reject { |klass| ABSTRACT_SCANNERS.include?(klass) }
+      .map { |klass| [klass.to_s, Salus::Scanners::LanguageVersion.const_get(klass)] }
+
+    SCANNERS = (SCANNERS + LANGUAGE_VERSION_SCANNERS).sort.to_h.freeze
 
     # This is the base configuration file, and we merge all other configuration
     # provided into this file to create one final configuration.
@@ -162,6 +167,9 @@ module Salus
     def apply_default_scanner_config!
       SCANNERS.each_key do |scanner|
         @scanner_configs[scanner] ||= {}
+        if @scanner_configs[scanner].is_a? Array
+          bugsnag_notify("@scanner_configs[scanner] is Array: #{@scanner_configs[scanner].inspect}")
+        end
         @scanner_configs[scanner] = DEFAULT_SCANNER_CONFIG
           .dup
           .deep_merge!(@scanner_configs[scanner])
