@@ -16,7 +16,7 @@ if ENV['BUGSNAG_API_KEY']
     config.set_endpoints(notify_endpoint, session_endpoint)
     config.api_key = ENV['BUGSNAG_API_KEY']
     # Set the release stage to dev unless explicitly defined
-    config.release_stage = ENV['SALUS_ENVIRONMENT'] == nil ? 'development' : ENV['SALUS_ENVIRONMENT']
+    config.release_stage = ENV['SALUS_ENVIRONMENT'].nil? ? 'development' : ENV['SALUS_ENVIRONMENT']
     config.auto_capture_sessions = false
   end
 
