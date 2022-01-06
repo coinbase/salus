@@ -217,6 +217,7 @@ module Salus
         projectVersion: "1",
         bom: Base64.strict_encode64(JSON.generate(cyclonedx_bom))
       }
+      File.write("tolu_test.json", JSON.generate(cyclonedx_bom))
       JSON.pretty_generate(cyclonedx_report)
     rescue StandardError => e
       bugsnag_notify(e.class.to_s + " " + e.message + "\nBuild Info:" + @builds.to_s)

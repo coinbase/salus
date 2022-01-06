@@ -210,6 +210,7 @@ describe Salus::CLI do
           gosec_info = diff_sarif['runs'].select do |run|
             run['tool']['driver']['name'] == 'Gosec'
           end[0]
+
           expect(gosec_info['invocations'][0]['executionSuccessful']).to be(false)
           expect(gosec_info['results'].size).to eq(1)
           expect(gosec_info['results'][0]['ruleId']).to eq('G101')
@@ -248,6 +249,10 @@ describe Salus::CLI do
           expect(diff_sarif).to eq(expected_diff_sarif)
           expect(exit_status).to eq(Salus::EXIT_FAILURE)
           remove_file(diff_file)
+
+          expect(gosec_info['invocations'][0]['executionSuccessful']).to be(true)
+          expect(gosec_info['results']).to be_empty
+          expect(exit_status).to eq(Salus::EXIT_SUCCESS)
         end
       end
     end

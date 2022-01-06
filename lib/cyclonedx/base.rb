@@ -21,6 +21,7 @@ module Cyclonedx
       info[:dependencies].each do |dependency|
         components << parse_dependency(dependency)
       end
+      puts "this is components #{components}"
       components
     end
 
@@ -43,9 +44,15 @@ module Cyclonedx
         "group": "", # TODO: add group or domain name of the publisher
         "name": dependency[:name],
         "version": version_string(dependency),
-        "purl": package_url(dependency)
+        "purl": package_url(dependency),
+        "licenses": get_license(dependency)
       }
     end
+
+    # takes an array of spdx formatted licenses and returns a hash conforming to CycloneDX format
+    def get_license(dependency)
+      dependency[:licenses].map{|license| {"license"=>{"id"=>license}}}
+    end 
 
     def build_properties(dependency)
       [
@@ -77,5 +84,7 @@ module Cyclonedx
 
       dependency[:version]
     end
-  end
+  
+  end 
 end
+
