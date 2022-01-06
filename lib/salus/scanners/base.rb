@@ -137,13 +137,7 @@ module Salus::Scanners
       #  chdir: '/some/directory'
       opts = { stdin_data: stdin_data }
       opts[:chdir] = chdir unless chdir.nil? || chdir == "."
-
-      pwd = `pwd`
-      puts "Runniung shell #{command} with chdir of #{opts[:chdir]} from #{pwd}"
-
-      r = Salus::ShellResult.new(*Open3.capture3(env, *command, opts))
-      puts "GOT #{r.stdout}"
-      r
+      Salus::ShellResult.new(*Open3.capture3(env, *command, opts))
     end
 
     # Add a textual logline to the report. This is for humans

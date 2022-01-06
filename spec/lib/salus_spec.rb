@@ -255,7 +255,6 @@ describe Salus::CLI do
     context 'With --filter_sarif' do
       it 'Should ouput filtered vulnerabilities' do
         dir = 'spec/fixtures/gosec/multiple_vulns2'
-        # Dir.chdir('spec/fixtures/gosec/multiple_vulns2') do
         ENV['SALUS_CONFIGURATION'] = "file:///salus.yaml"
         Salus.scan(quiet: true, repo_path: dir, filter_sarif: "filter.sarif")
         diff_file = "#{dir}/salus_sarif_diff.json" # filtered results
@@ -280,7 +279,6 @@ describe Salus::CLI do
         expect(builds['org']).to eq('my_org')
         expect(builds['project']).to eq('my_repo')
         expect(builds['url']).to eq('http://buildkite/builds/123456')
-        # end
       end
     end
 
