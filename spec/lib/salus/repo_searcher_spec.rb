@@ -67,7 +67,6 @@ describe Salus::RepoSearcher do
         repos << repo
       end
       expect(repos.size).to eq(1)
-
       expect(repos.first.path_to_repo).to eq("spec/fixtures/processor/recursive/project-two")
     end
 
@@ -222,10 +221,11 @@ describe Salus::RepoSearcher do
         .to receive(:copy_files).with(base, dest, ["Gemfile"]).and_call_original
 
       repos = []
-      Salus::RepoSearcher.new(repo_path, config).matching_repos do |repo|
+      files = Salus::RepoSearcher.new(repo_path, config).matching_repos do |repo|
         repos << repo
       end
       expect(repos.size).to eq(1)
+      expect(files.size).to eq(1)
       expect(repos.first.path_to_repo).to eq("spec/fixtures/processor/recursive/project-two")
     end
   end

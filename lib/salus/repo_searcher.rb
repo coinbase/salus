@@ -15,9 +15,10 @@ module Salus
     # @param [String] path_to_repo The path to the directory to scan.
     # @param [Hash] scanner_config The settings for this scanner (from salus.yaml).
     #
-    def initialize(path_to_repo, scanner_config)
+    def initialize(path_to_repo, scanner_config, auto_cleanup = true)
       @path_to_repo = path_to_repo # "spec/fixtures/processor/recursive"
       @scanner_config = scanner_config # {"pass_on_raise"=>false, "scanner_timeout_s"=>0}
+      @auto_cleanup = auto_cleanup
     end
 
     ##
@@ -28,7 +29,11 @@ module Salus
     # @return [Salus::Repo]
     #
     def matching_repos
-      return yield Repo.new(@path_to_repo) unless recurse?
+      files_copied = []
+      unless recurse?
+        yield Repo.new(@path_to_repo)
+        return files_copied
+      end
 
       # Ensure we only scan directories that are descendants of @path_to_repo
       dirs = filter_safe_repos(static_directories + dynamic_directories)
@@ -38,12 +43,16 @@ module Salus
         # If we have any static files in the config, copy them
         # as needed
         dest_dir =  File.expand_path(repo)
+
         next unless Dir.exist?(dest_dir)
 
-        FileCopier.new.copy_files(File.expand_path(@path_to_repo), dest_dir, static_files) do
+        copied = FileCopier.new(auto_cleanup: @auto_cleanup)
+          .copy_files(File.expand_path(@path_to_repo), dest_dir, static_files) do
           yield Repo.new(repo)
         end
+        files_copied.append(copied) unless copied.empty? # copied.flatten.select{|c| !c.empty?})
       end
+      files_copied&.flatten&.uniq
     end
 
     protected

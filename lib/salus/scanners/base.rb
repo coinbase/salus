@@ -167,7 +167,7 @@ module Salus::Scanners
       Salus::PluginManager.send_event(:report_warn, { type: type, message: message })
       if @builds
         scanner = @report.scanner_name
-        message = "#{scanner} warning: #{type}, #{message}, build: #{builds}"
+        message = "#{scanner} warning: #{type}, #{message}, build: #{@builds}"
       end
       bugsnag_notify(message)
     end
@@ -187,7 +187,7 @@ module Salus::Scanners
       hsh[:message] = message
       @report.error(hsh)
 
-      message = "#{@report.scanner_name} error: #{message}, build: #{builds}" if @builds
+      message = "#{@report.scanner_name} error: #{message}, build: #{@builds}" if @builds
       bugsnag_notify(message)
     end
 

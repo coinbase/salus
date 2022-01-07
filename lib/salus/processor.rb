@@ -103,14 +103,23 @@ module Salus
         reraise_exceptions = ENV.key?('RUNNING_SALUS_TESTS')
         scanners_ran = []
         threads = []
+        files_copied = []
 
         Config::SCANNERS.each do |scanner_name, scanner_class|
           config = @config.scanner_configs.fetch(scanner_name, {})
-          RepoSearcher.new(@repo_path, config).matching_repos do |repo|
+
+          unless @config.scanner_active?(scanner_name)
+            Salus::PluginManager.send_event(:skip_scanner, scanner_name)
+            next
+          end
+
+          # We won't auto cleanup - we'll manually delete any copied fields after
+          # the various threads have finished
+          copied = RepoSearcher.new(@repo_path, config, false).matching_repos do |repo|
             threads << Thread.new do
               scanner = scanner_class.new(repository: repo, config: config)
 
-              unless @config.scanner_active?(scanner_name) && scanner.should_run?
+              unless scanner.should_run?
                 Salus::PluginManager.send_event(:skip_scanner, scanner_name)
                 next
               end
@@ -131,20 +140,29 @@ module Salus
               #  scanner.report.errors.each { |error| @report.error(error) }
               #  Salus::PluginManager.send_event(:scan_executed,
               #           { salus_report: @salus_report, scan_report: @report })
-
+              puts "Run scanner #{scanner_name} on #{@repo_path}"
               scanner.run!(
                 salus_report: @report, # Salus::Report
                 required: required,
                 pass_on_raise: @config.scanner_configs[scanner_name]['pass_on_raise'],
                 reraise: reraise_exceptions
               )
+              puts "#{scanner_name} has finished"
             end
           end
+
+          files_copied.append(copied) unless copied.empty?
         end
         threads.each(&:join)
-        puts "Scanning complete"
-
+        cleanup(files_copied)
         Salus::PluginManager.send_event(:scanners_ran, scanners_ran, @report)
+      end
+    end
+
+    def cleanup(files)
+      # Our threads have finished so we can go an cleanup any files we copied
+      files.uniq.each do |file|
+        File.delete(file)
       end
     end
 
