@@ -22,6 +22,9 @@ require "json"
 
 module Salus::Scanners
   class Semgrep < Base
+    # possible exit codes from
+    # https://github.com/returntocorp/semgrep/blob/9ac58092cb8ac02bb1f41f59808d4f03a5b8206e/semgrep/semgrep/util.py#L11-L18
+    SEMGREP_EXIT_CODES = (1..7).to_a
     # rubocop:disable Metrics/AbcSize
     def run
       global_exclude_flags = flag_list('--exclude', @config['exclude'])
@@ -114,8 +117,7 @@ module Salus::Scanners
             end
           end
 
-        # possible exit codes from https://github.com/returntocorp/semgrep/blob/9ac58092cb8ac02bb1f41f59808d4f03a5b8206e/semgrep/semgrep/util.py#L11-L18
-        elsif [1, 2, 3, 4, 5, 6, 7].include?(shell_return.status)
+        elsif SEMGREP_EXIT_CODES.include?(shell_return.status)
           if match['required']
             failure_messages << "Required #{user_message} was not found " \
               "- #{match['message']}"
