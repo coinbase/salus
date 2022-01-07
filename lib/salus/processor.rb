@@ -117,6 +117,7 @@ module Salus
 
               # Protect the append as each thread will be appending
               # to our scanners_ran array
+              puts "#{scanner_name} is scanning..."
               mutex.synchronize { scanners_ran << scanner }
 
               Salus::PluginManager.send_event(:run_scanner, scanner_name)
@@ -140,9 +141,8 @@ module Salus
             end
           end
         end
-        puts "Waiting for threads"
         threads.each(&:join)
-        puts "Threads done"
+        puts "Scanning complete"
 
         Salus::PluginManager.send_event(:scanners_ran, scanners_ran, @report)
       end
