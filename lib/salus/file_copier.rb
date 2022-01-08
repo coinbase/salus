@@ -22,7 +22,7 @@ module Salus
 
     def copy_files(basedir, destdir, files)
       if files.empty?
-        yield
+        yield []
         return []
       end
 

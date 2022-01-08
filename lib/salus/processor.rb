@@ -93,17 +93,51 @@ module Salus
       content
     end
 
+    def run_scanner(config, scanner_class, scanner_name)
+      threads = []
+      files_copied = []
+      reraise_exceptions = ENV.key?('RUNNING_SALUS_TESTS')
+
+      # We won't auto cleanup - we'll manually delete any copied fields after
+      # the various threads have finished
+      copied = RepoSearcher.new(@repo_path, config, false).matching_repos do |repo|
+        threads << Thread.new do
+          scanner = scanner_class.new(repository: repo, config: config)
+
+          unless scanner.should_run?
+            Salus::PluginManager.send_event(:skip_scanner, scanner_name)
+            next
+          end
+
+          # Protect the append as each thread will be appending to our scanners_ran array
+          puts "#{scanner_name} is scanning..."
+          @mutex.synchronize { @scanners_ran << scanner }
+
+          Salus::PluginManager.send_event(:run_scanner, scanner_name)
+
+          scanner.run!(
+            salus_report: @report, # Salus::Report
+            required: @config.enforced_scanners.include?(scanner_name),
+            pass_on_raise: @config.scanner_configs[scanner_name]['pass_on_raise'],
+            reraise: reraise_exceptions
+          )
+          puts "#{scanner_name} has finished"
+        end
+      end
+      files_copied.concat(copied) unless copied.empty?
+      [threads, files_copied]
+    end
+
     def scan_project
       # Record overall running time of the scan
-      mutex = Mutex.new
+      threads = []
+      files_copied = []
+      @scanners_ran = []
+      @mutex = Mutex.new
 
       @report.record do
         # If we're running tests, re-raise any exceptions raised by a scanner
         # (vs. just catching them and recording them in a real run)
-        reraise_exceptions = ENV.key?('RUNNING_SALUS_TESTS')
-        scanners_ran = []
-        threads = []
-        files_copied = []
 
         Config::SCANNERS.each do |scanner_name, scanner_class|
           config = @config.scanner_configs.fetch(scanner_name, {})
@@ -113,55 +147,22 @@ module Salus
             next
           end
 
-          # We won't auto cleanup - we'll manually delete any copied fields after
-          # the various threads have finished
-          copied = RepoSearcher.new(@repo_path, config, false).matching_repos do |repo|
-            threads << Thread.new do
-              scanner = scanner_class.new(repository: repo, config: config)
+          scanner_threads, copied = run_scanner(config, scanner_class, scanner_name)
 
-              unless scanner.should_run?
-                Salus::PluginManager.send_event(:skip_scanner, scanner_name)
-                next
-              end
-
-              # Protect the append as each thread will be appending
-              # to our scanners_ran array
-              puts "#{scanner_name} is scanning..."
-              mutex.synchronize { scanners_ran << scanner }
-
-              Salus::PluginManager.send_event(:run_scanner, scanner_name)
-
-              required = @config.enforced_scanners.include?(scanner_name)
-
-              # We could drop passing the salus_report here if we wanted to
-              # move the report.add_scan_report and report.add_error logic out from base
-              # to the processor here:
-              #  report.add_scan_report(scanner.report, required: required)
-              #  scanner.report.errors.each { |error| @report.error(error) }
-              #  Salus::PluginManager.send_event(:scan_executed,
-              #           { salus_report: @salus_report, scan_report: @report })
-              puts "Run scanner #{scanner_name} on #{@repo_path}"
-              scanner.run!(
-                salus_report: @report, # Salus::Report
-                required: required,
-                pass_on_raise: @config.scanner_configs[scanner_name]['pass_on_raise'],
-                reraise: reraise_exceptions
-              )
-              puts "#{scanner_name} has finished"
-            end
-          end
-
-          files_copied.append(copied) unless copied.empty?
+          threads.concat(scanner_threads)
+          files_copied.concat(copied)
         end
+
         threads.each(&:join)
-        cleanup(files_copied)
-        Salus::PluginManager.send_event(:scanners_ran, scanners_ran, @report)
+        cleanup(files_copied.uniq)
+
+        Salus::PluginManager.send_event(:scanners_ran, @scanners_ran, @report)
       end
     end
 
     def cleanup(files)
       # Our threads have finished so we can go an cleanup any files we copied
-      files.uniq.each do |file|
+      files.each do |file|
         File.delete(file)
       end
     end

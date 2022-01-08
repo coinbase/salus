@@ -50,9 +50,9 @@ module Salus
           .copy_files(File.expand_path(@path_to_repo), dest_dir, static_files) do
           yield Repo.new(repo)
         end
-        files_copied.append(copied) unless copied.empty? # copied.flatten.select{|c| !c.empty?})
+        files_copied.concat(copied) unless copied.empty?
       end
-      files_copied&.flatten&.uniq
+      files_copied&.uniq
     end
 
     protected
