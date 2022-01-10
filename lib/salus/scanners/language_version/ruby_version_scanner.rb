@@ -28,7 +28,7 @@ module Salus::Scanners::LanguageVersion
     # Following is an example for running 'cat .ruby-version':
     # 2.7.1
     def version_from_ruby_version_file
-      shell_return = run_command("cat .ruby-version")
+      shell_return = run_shell("cat .ruby-version")
       shell_return.nil? ? nil : shell_return.stdout
     end
 
@@ -37,7 +37,7 @@ module Salus::Scanners::LanguageVersion
     # cmd: grep -A 1 RUBY Gemfile.lock
     # output: "RUBY VERSION\n   ruby 2.7.2p83\n"
     def version_from_gem_lock_file
-      shell_return = run_command("grep -A 1 RUBY Gemfile.lock")
+      shell_return = run_shell("grep -A 1 RUBY Gemfile.lock")
       shell_return.nil? ? nil : shell_return.stdout.split("\n")[1].strip.split(" ")[1]
     end
 
@@ -45,14 +45,8 @@ module Salus::Scanners::LanguageVersion
     # Following is an example for running "cat Gemfile |  grep ^ruby | awk '{print $2}'":
     # '2.7.2'
     def version_from_gem_file
-      shell_return = run_command("grep ^ruby Gemfile")
+      shell_return = run_shell("grep ^ruby Gemfile")
       shell_return.nil? ? nil : shell_return.stdout.split(" ")[1].tr("\'", '')
-    end
-
-    def run_command(cmd)
-      Dir.chdir(@repository.path_to_repo) do
-        run_shell(cmd)
-      end
     end
 
     def ruby_project?

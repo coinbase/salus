@@ -28,99 +28,97 @@ module Salus::Scanners
       all_hits = []
       all_misses = []
 
-      Dir.chdir(@repository.path_to_repo) do
-        @config['matches']&.each do |match|
-          # Sift has the following behavior:
-          #   - if something found: return 0, report each hit to STDOUT - 1 per line.
-          #   - if nothing found:   return 1, no STDOUT or STDERR
-          #   - if error:           return 1, STDERR has the error
-          #   - if panic:           return 2, STDERR has the error
+      @config['matches']&.each do |match|
+        # Sift has the following behavior:
+        #   - if something found: return 0, report each hit to STDOUT - 1 per line.
+        #   - if nothing found:   return 1, no STDOUT or STDERR
+        #   - if error:           return 1, STDERR has the error
+        #   - if panic:           return 2, STDERR has the error
 
-          match_exclude_directory_flags = flag_list(
-            '--exclude-dirs', match['exclude_directory']
-          )
-          match_exclude_extension_flags = extension_flag('--exclude-ext', \
-                                                         match['exclude_extension'])
-          match_include_extension_flags = extension_flag('--ext', match['include_extension'])
+        match_exclude_directory_flags = flag_list(
+          '--exclude-dirs', match['exclude_directory']
+        )
+        match_exclude_extension_flags = extension_flag('--exclude-ext', \
+                                                       match['exclude_extension'])
+        match_include_extension_flags = extension_flag('--ext', match['include_extension'])
 
-          # --exclude_filepaths can be specified at the global level and match level
-          # if both are specified, they should be joined
-          ex_paths = match['exclude_filepaths'] || @config['exclude_filepaths']
-          exclude_filepath_pattern = filepath_pattern(ex_paths)
+        # --exclude_filepaths can be specified at the global level and match level
+        # if both are specified, they should be joined
+        ex_paths = match['exclude_filepaths'] || @config['exclude_filepaths']
+        exclude_filepath_pattern = filepath_pattern(ex_paths)
 
-          command_array = [
-            "sift",
-            "-n",
-            "-e",
-            match['regex'],
-            "--exclude-path",
-            exclude_filepath_pattern,
-            "--exclude-files",
-            "salus.yaml",
-            ".",
-            *(match_exclude_directory_flags || global_exclude_directory_flags),
-            *(match_exclude_extension_flags || global_exclude_extension_flags),
-            *(match_include_extension_flags || global_include_extension_flags)
-          ].compact
+        command_array = [
+          "sift",
+          "-n",
+          "-e",
+          match['regex'],
+          "--exclude-path",
+          exclude_filepath_pattern,
+          "--exclude-files",
+          "salus.yaml",
+          ".",
+          *(match_exclude_directory_flags || global_exclude_directory_flags),
+          *(match_exclude_extension_flags || global_exclude_extension_flags),
+          *(match_include_extension_flags || global_include_extension_flags)
+        ].compact
 
-          not_followed_within = match["not_followed_within"]
-          command_array += ['--not-followed-within', not_followed_within] if not_followed_within
-          files = match['files']
-          files&.each do |file|
-            command_array += ['--files', file]
+        not_followed_within = match["not_followed_within"]
+        command_array += ['--not-followed-within', not_followed_within] if not_followed_within
+        files = match['files']
+        files&.each do |file|
+          command_array += ['--files', file]
+        end
+
+        shell_return = run_shell(command_array)
+        # Set defaults.
+        match['forbidden'] ||= false
+        match['required'] ||= false
+        match['message'] ||= ''
+
+        if shell_return.success? # hit
+          if match['forbidden']
+            failure_messages << "\nForbidden pattern \"#{match['regex']}\" was found " \
+              "\n#{shell_return.stdout} - #{match['message']}"
           end
 
-          shell_return = run_shell(command_array)
-          # Set defaults.
-          match['forbidden'] ||= false
-          match['required'] ||= false
-          match['message'] ||= ''
+          hits = shell_return.stdout.encode(
+            "utf-8",
+            invalid: :replace,
+            undef: :replace
+          ).split("\n")
 
-          if shell_return.success? # hit
-            if match['forbidden']
-              failure_messages << "\nForbidden pattern \"#{match['regex']}\" was found " \
-                "\n#{shell_return.stdout} - #{match['message']}"
-            end
+          hits.each do |hit|
+            all_hits << {
+              regex: match['regex'],
+              forbidden: match['forbidden'],
+              required: match['required'],
+              msg: match['message'],
+              hit: hit
+            }
+          end
 
-            hits = shell_return.stdout.encode(
-              "utf-8",
-              invalid: :replace,
-              undef: :replace
-            ).split("\n")
-
-            hits.each do |hit|
-              all_hits << {
+        elsif [1, 2].include?(shell_return.status)
+          if shell_return.stderr.empty?
+            # If there were no hits, but the pattern was required add an error message.
+            if match['required']
+              failure_messages << "Required pattern \"#{match['regex']}\" was not found " \
+                "- #{match['message']}"
+              all_misses << {
                 regex: match['regex'],
                 forbidden: match['forbidden'],
                 required: match['required'],
-                msg: match['message'],
-                hit: hit
+                msg: match['message']
               }
             end
-
-          elsif [1, 2].include?(shell_return.status)
-            if shell_return.stderr.empty?
-              # If there were no hits, but the pattern was required add an error message.
-              if match['required']
-                failure_messages << "Required pattern \"#{match['regex']}\" was not found " \
-                  "- #{match['message']}"
-                all_misses << {
-                  regex: match['regex'],
-                  forbidden: match['forbidden'],
-                  required: match['required'],
-                  msg: match['message']
-                }
-              end
-            else
-              errors << { status: shell_return.status, stderr: shell_return.stderr }
-            end
           else
-            raise UnhandledExitStatusError,
-                  "Unknown exit status #{shell_return.status} from sift "\
-                    "(grep alternative).\n" \
-                    "STDOUT: #{shell_return.stdout}\n" \
-                    "STDERR: #{shell_return.stderr}"
+            errors << { status: shell_return.status, stderr: shell_return.stderr }
           end
+        else
+          raise UnhandledExitStatusError,
+                "Unknown exit status #{shell_return.status} from sift "\
+                  "(grep alternative).\n" \
+                  "STDOUT: #{shell_return.stdout}\n" \
+                  "STDERR: #{shell_return.stderr}"
         end
       end
 

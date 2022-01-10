@@ -2,13 +2,14 @@
 
 import json
 from sys import argv
-from os import chdir
+import os
 
 # When run with no arguments, enumerate the dependencies in
 # ./requirements.txt; given an argument, enumerate the dependencies listed in
 # the requirements.txt in that directory
+path = 'requirements.txt'
 if len(argv) > 1:
-    chdir(argv[1])
+    path = os.path.join(argv[1], 'requirements.txt')
 
 # Note this will break for pip 20.1+
 try: # for pip >= 10
@@ -16,7 +17,7 @@ try: # for pip >= 10
 except ImportError: # for pip <= 9.0.3
     from pip.req import parse_requirements
 
-deps = parse_requirements('requirements.txt', session="_")
+deps = parse_requirements(path, session="_")
 
 dependencies = {}
 

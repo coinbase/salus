@@ -27,10 +27,7 @@ module Salus::Scanners::LanguageVersion
     # "Go": "1.16",
     #  ...}
     def go_version
-      shell_return = Dir.chdir(@repository.path_to_repo) do
-        cmd = "go mod edit -json"
-        run_shell(cmd)
-      end
+      shell_return = run_shell("go mod edit -json")
 
       shell_return_json = JSON.parse(shell_return.stdout)
 

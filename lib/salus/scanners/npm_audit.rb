@@ -31,7 +31,7 @@ module Salus::Scanners
       command
     end
 
-    def scan_for_cves
+    def scan_for_cves(chdir: File.expand_path(@repository&.path_to_repo))
       raw = run_shell(audit_command_with_options).stdout
       json = JSON.parse(raw, symbolize_names: true)
 
@@ -47,7 +47,7 @@ module Salus::Scanners
       end
 
       if json[:advisories] && !json[:advisories].empty?
-        Salus::PackageLockJson.new('package-lock.json').add_line_number(json)
+        Salus::PackageLockJson.new(File.join(chdir, 'package-lock.json')).add_line_number(json)
       end
       report_stdout(json)
 

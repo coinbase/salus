@@ -783,7 +783,7 @@ describe Salus::Scanners::Semgrep do
   describe '#version_valid?' do
     context 'scanner version is valid' do
       it 'should return true' do
-        repo = Salus::Repo.new("dir")
+        repo = Salus::Repo.new("spec/fixtures/blank_repository")
         scanner = Salus::Scanners::Semgrep.new(repository: repo, config: {})
         expect(scanner.version).to be_a_valid_version
       end

@@ -390,7 +390,7 @@ describe Salus::Scanners::Gosec do
   describe '#version_valid?' do
     context 'scanner version is valid' do
       it 'should return true' do
-        repo = Salus::Repo.new("dir")
+        repo = Salus::Repo.new('spec/fixtures/gosec')
         scanner = Salus::Scanners::Gosec.new(repository: repo, config: {})
         expect(scanner.version).to be_a_valid_version
       end
