@@ -41,7 +41,7 @@ module Salus::Scanners
       # Cargo tree will generate the lock and return the list of dependencies
       # No point in coding two paths for dependencies so we'll just use
       # cargo tree's ability to generate the .lock file
-      run_shell("cargo tree --manifest-path #{manifest_path}") unless existing_lock
+      run_shell("cargo tree --manifest-path #{manifest_path}", chdir: nil) unless existing_lock
 
       yield
       # Cleanup after ourselves if we generated a lock file

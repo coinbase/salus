@@ -1,6 +1,5 @@
 require 'json'
 require 'salus/formatting'
-
 module Salus
   class ScanReport
     include Formatting

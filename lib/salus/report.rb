@@ -1,7 +1,6 @@
 require 'json'
 require 'salus/formatting'
 require 'salus/bugsnag'
-
 module Salus
   class Report
     include Formatting

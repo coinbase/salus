@@ -16,8 +16,15 @@ module Salus
     # copied to.
     # @param [Array] files An array of strings listing the filenames to copy
 
+    def initialize(auto_cleanup: true)
+      @auto_cleanup = auto_cleanup
+    end
+
     def copy_files(basedir, destdir, files)
-      return yield [] if files.empty?
+      if files.empty?
+        yield []
+        return []
+      end
 
       copied = []
       # We want to copy each file into our directory
@@ -37,9 +44,10 @@ module Salus
         yield copied
       ensure
         copied.each do |file|
-          File.delete(file)
+          File.delete(file) if @auto_cleanup
         end
       end
+      copied
     end
   end
 end

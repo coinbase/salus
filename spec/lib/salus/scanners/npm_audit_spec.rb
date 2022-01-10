@@ -22,7 +22,7 @@ describe Salus::Scanners::NPMAudit do
   describe '#version_valid?' do
     context 'scanner version is valid' do
       it 'should return true' do
-        repo = Salus::Repo.new("dir")
+        repo = Salus::Repo.new('spec/fixtures/npm_audit')
         scanner = Salus::Scanners::NPMAudit.new(repository: repo, config: {})
         expect(scanner.version).to be_a_valid_version
       end
@@ -31,13 +31,13 @@ describe Salus::Scanners::NPMAudit do
 
   describe '#audit_command_with_options' do
     it 'should return default audit command if no options have been provided' do
-      repo = Salus::Repo.new("dir")
+      repo = Salus::Repo.new('spec/fixtures/npm_audit')
       scanner = Salus::Scanners::NPMAudit.new(repository: repo, config: {})
       expect(scanner.send(:audit_command_with_options)).to eql("npm audit --json")
     end
 
     it 'should return audit command with configured options' do
-      repo = Salus::Repo.new("dir")
+      repo = Salus::Repo.new('spec/fixtures/npm_audit')
       scanner = Salus::Scanners::NPMAudit.new(repository: repo, config: { "production" => true })
       expect(scanner.send(:audit_command_with_options)).to eql("npm audit --json --production")
     end

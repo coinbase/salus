@@ -8,15 +8,9 @@
           - vendor
         directories: 
           - ./
-          - payments/lhv
-          - infra/sso/identity_provider
         directories_matching: 
           - 
-            filename: "BUILD.bazel"
-            content: "bundle//:rails"
-          - 
             filename: "package.json"
-      static_files: 
-        - Gemfile
-        - Gemfile.lock
-  
+        static_files:
+          - Gemfile
+          - Gemfile.lock

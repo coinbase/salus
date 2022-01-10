@@ -118,7 +118,7 @@ describe Salus::Scanners::YarnAudit do
   describe '#version_valid?' do
     context 'scanner version is valid' do
       it 'should return true' do
-        repo = Salus::Repo.new("dir")
+        repo = Salus::Repo.new('spec/fixtures/yarn_audit/success')
         scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
         expect(scanner.version).to be_a_valid_version
       end

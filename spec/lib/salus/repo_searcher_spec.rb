@@ -67,7 +67,6 @@ describe Salus::RepoSearcher do
         repos << repo
       end
       expect(repos.size).to eq(1)
-
       expect(repos.first.path_to_repo).to eq("spec/fixtures/processor/recursive/project-two")
     end
 
@@ -111,7 +110,9 @@ describe Salus::RepoSearcher do
                          "vendor/Gemfile.lock",
                          "project-two/Gemfile.lock"].join("\n"))
       args = ["rg", "--files-with-matches", "activesupport", "--glob", "Gemfile.lock"]
-      expect(IO).to receive("popen").with(args).and_return(read)
+      expect(IO).to receive("popen").with(args,
+                                          chdir: "spec/fixtures/processor/recursive")
+        .and_return(read)
 
       repos = []
       Salus::RepoSearcher.new(repo_path, config).matching_repos do |repo|
@@ -139,7 +140,9 @@ describe Salus::RepoSearcher do
                          "vendor/Gemfile.lock",
                          "project-two/Gemfile.lock"].join("\n"))
       args = ["rg", "-l", "activesupport"]
-      expect(IO).to receive("popen").with(args).and_return(read)
+      expect(IO).to receive("popen").with(args,
+                                          chdir: "spec/fixtures/processor/recursive")
+        .and_return(read)
 
       repos = []
       Salus::RepoSearcher.new(repo_path, config).matching_repos do |repo|
@@ -187,7 +190,9 @@ describe Salus::RepoSearcher do
                          "vendor/Gemfile.lock",
                          "project-two/Gemfile.lock"].join("\n"))
       args = ["rg", "--files-with-matches", "activesupport", "--glob", "Gemfile.lock"]
-      expect(IO).to receive("popen").with(args).and_return(read)
+      expect(IO).to receive("popen").with(args,
+                                          chdir: "spec/fixtures/processor/recursive")
+        .and_return(read)
 
       repos = []
       Salus::RepoSearcher.new(repo_path, config).matching_repos do |repo|
@@ -216,10 +221,11 @@ describe Salus::RepoSearcher do
         .to receive(:copy_files).with(base, dest, ["Gemfile"]).and_call_original
 
       repos = []
-      Salus::RepoSearcher.new(repo_path, config).matching_repos do |repo|
+      files = Salus::RepoSearcher.new(repo_path, config).matching_repos do |repo|
         repos << repo
       end
       expect(repos.size).to eq(1)
+      expect(files.size).to eq(1)
       expect(repos.first.path_to_repo).to eq("spec/fixtures/processor/recursive/project-two")
     end
   end

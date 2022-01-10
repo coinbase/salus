@@ -122,7 +122,6 @@ describe Salus::Processor do
     it 'should scan the project given by a particular path' do
       processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/explicit_path')
       processor.scan_project
-
       expect(processor.passed?).to eq(false)
 
       report_hsh = processor.report.to_h
