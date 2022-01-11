@@ -63,7 +63,7 @@ module Salus::Scanners
           version: gem.requirement.to_s,
 
           # Gem uses the given source, otherwise Bundler has a default.
-          source: gem.source.nil? ? Bundler.rubygems.sources.first.uri.to_s : gem.source.to_s,
+          source: gem.source.nil? ? Gem.sources.first.uri.to_s : gem.source.to_s,
 
           dependency_file: 'Gemfile'
         )

@@ -86,7 +86,7 @@ describe Cyclonedx::ReportRubyGems do
           "properties": [
             {
               "key": "source",
-              "value": "rubygems repository https://rubygems.org/ or installed locally"
+              "value": "locally installed gems"
             },
             {
               "key": "dependency_file",
@@ -104,7 +104,7 @@ describe Cyclonedx::ReportRubyGems do
           "properties": [
             {
               "key": "source",
-              "value": "rubygems repository https://rubygems.org/ or installed locally"
+              "value": "locally installed gems"
             },
             {
               "key": "dependency_file",
@@ -122,7 +122,7 @@ describe Cyclonedx::ReportRubyGems do
           "properties": [
             {
               "key": "source",
-              "value": "rubygems repository https://rubygems.org/ or installed locally"
+              "value": "locally installed gems"
             },
             {
               "key": "dependency_file",
@@ -140,7 +140,7 @@ describe Cyclonedx::ReportRubyGems do
           "properties": [
             {
               "key": "source",
-              "value": "rubygems repository https://rubygems.org/ or installed locally"
+              "value": "locally installed gems"
             },
             {
               "key": "dependency_file",
@@ -158,7 +158,7 @@ describe Cyclonedx::ReportRubyGems do
           "properties": [
             {
               "key": "source",
-              "value": "rubygems repository https://rubygems.org/ or installed locally"
+              "value": "locally installed gems"
             },
             {
               "key": "dependency_file",
@@ -205,7 +205,7 @@ describe Cyclonedx::ReportRubyGems do
           "properties": [
             {
               "key": "source",
-              "value": "rubygems repository https://cool_rubygems.org/ or installed locally"
+              "value": "locally installed gems"
             },
             {
               "key": "dependency_file",
@@ -223,7 +223,7 @@ describe Cyclonedx::ReportRubyGems do
           "properties": [
             {
               "key": "source",
-              "value": "rubygems repository https://cool_rubygems.org/ or installed locally"
+              "value": "locally installed gems"
             },
             {
               "key": "dependency_file",
@@ -241,7 +241,7 @@ describe Cyclonedx::ReportRubyGems do
           "properties": [
             {
               "key": "source",
-              "value": "rubygems repository https://rubygems.org/ or installed locally"
+              "value": "locally installed gems"
             },
             {
               "key": "dependency_file",
