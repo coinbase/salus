@@ -64,14 +64,14 @@ describe Salus::Scanners::ReportRubyGems do
           type: 'gem',
           name: 'actioncable',
           version: '5.1.2',
-          source: "rubygems repository https://rubygems.org/ or installed locally"
+          source: "locally installed gems"
         },
         {
           dependency_file: 'Gemfile.lock',
           type: 'gem',
           name: 'kibana_url',
           version: '1.0.1',
-          source: "rubygems repository https://rubygems.org/ or installed locally"
+          source: "locally installed gems"
         },
         dependency_file: 'Gemfile.lock',
         type: 'gem',
