@@ -47,7 +47,7 @@ Salus also parses dependency files and reports which libraries and versions are 
 
 Currently supported languages are:
 - Ruby
-- Node.js
+- Node.js (Javascript)
 - Python
 - Go
 - Rust
