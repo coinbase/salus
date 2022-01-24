@@ -3,6 +3,12 @@ require 'json'
 require 'json-schema'
 
 describe Cyclonedx::ReportRubyGems do
+  before do
+    allow_any_instance_of(Salus::Scanners::ReportRubyGems)
+      .to receive(:find_licenses_for)
+      .and_return(['MIT'])
+  end
+
   let(:scan_reports) { [] }
 
   describe "to_cyclonedx schema validation" do
@@ -67,7 +73,8 @@ describe Cyclonedx::ReportRubyGems do
           "group": "",
           "name": "actioncable",
           "version": "5.1.2",
-          "purl": "pkg:gem/actioncable@5.1.2"
+          "purl": "pkg:gem/actioncable@5.1.2",
+          "licenses": [{ "license" => { "id" => "MIT" } }]
         },
         {
           "bom-ref": "pkg:gem/actionmailer@5.1.2",
@@ -75,7 +82,8 @@ describe Cyclonedx::ReportRubyGems do
           "group": "",
           "name": "actionmailer",
           "version": "5.1.2",
-          "purl": "pkg:gem/actionmailer@5.1.2"
+          "purl": "pkg:gem/actionmailer@5.1.2",
+          "licenses": [{ "license" => { "id" => "MIT" } }]
         },
         {
           "bom-ref": "pkg:gem/actionpack@5.1.2",
@@ -83,7 +91,8 @@ describe Cyclonedx::ReportRubyGems do
           "group": "",
           "name": "actionpack",
           "version": "5.1.2",
-          "purl": "pkg:gem/actionpack@5.1.2"
+          "purl": "pkg:gem/actionpack@5.1.2",
+          "licenses": [{ "license" => { "id" => "MIT" } }]
         }
       ]
       expect(ruby_cyclonedx.build_components_object).to include(*expected)
@@ -100,6 +109,7 @@ describe Cyclonedx::ReportRubyGems do
           "bom-ref": "pkg:gem/actioncable@5.1.2",
           "type": "library",
           "group": "",
+          "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "actioncable",
           "version": "5.1.2",
           "purl": "pkg:gem/actioncable@5.1.2",
@@ -118,6 +128,7 @@ describe Cyclonedx::ReportRubyGems do
           "bom-ref": "pkg:gem/actionmailer@5.1.2",
           "type": "library",
           "group": "",
+          "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "actionmailer",
           "version": "5.1.2",
           "purl": "pkg:gem/actionmailer@5.1.2",
@@ -136,6 +147,7 @@ describe Cyclonedx::ReportRubyGems do
           "bom-ref": "pkg:gem/actionpack@5.1.2",
           "type": "library",
           "group": "",
+          "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "actionpack",
           "version": "5.1.2",
           "purl": "pkg:gem/actionpack@5.1.2",
