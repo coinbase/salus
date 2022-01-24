@@ -29,6 +29,12 @@ RSpec::Matchers.define :match_cyclonedx_report_json do |expected|
 end
 
 describe Salus::Processor do
+  before do
+    allow_any_instance_of(Salus::Scanners::ReportRubyGems)
+      .to receive(:find_licenses_for)
+      .and_return(['MIT'])
+  end
+
   describe '#initialize' do
     let(:config_file_path) { 'spec/fixtures/processor/repo/salus.yaml' }
     let(:config_file)      { File.read(config_file_path) }
