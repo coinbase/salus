@@ -1,4 +1,5 @@
 require 'json'
+require 'deepsort'
 require 'salus/formatting'
 require 'salus/bugsnag'
 module Salus
@@ -157,19 +158,27 @@ module Salus
       output
     end
 
-    def to_yaml
-      YAML.dump(to_h)
+    def to_yaml(sort = false)
+      sort ? YAML.dump(to_h.deep_sort) : YAML.dump(to_h)
     end
 
-    def to_json
-      JSON.pretty_generate(to_h)
+    def to_json(sort = false)
+      sort ? JSON.pretty_generate(to_h.deep_sort) : JSON.pretty_generate(to_h)
     end
 
-    def to_sarif(config = {})
+    def sort_json(report)
+      JSON.pretty_generate(JSON.parse(report).deep_sort)
+    end
+
+    def to_sarif(config = {}, sort = false)
       sarif_json = Sarif::SarifReport.new(@scan_reports, config, @repo_path).to_sarif
       # We will validate to ensure the applied filter
       # doesn't produce any invalid SARIF
-      Sarif::SarifReport.validate_sarif(apply_report_sarif_filters(sarif_json))
+      if sort
+        Sarif::SarifReport.validate_sarif(apply_report_sarif_filters(sort_json(sarif_json)))
+      else
+        Sarif::SarifReport.validate_sarif(apply_report_sarif_filters(sarif_json))
+      end
     rescue StandardError => e
       bugsnag_notify(e.class.to_s + " " + e.message + "\nBuild Info:" + @builds.to_s)
     end
@@ -208,14 +217,17 @@ module Salus
       JSON.pretty_generate(@full_diff_sarif)
     end
 
-    def to_cyclonedx(config = {})
+    def to_cyclonedx(config = {}, sort = false)
       cyclonedx_bom = Cyclonedx::Report.new(@scan_reports, config).to_cyclonedx
+      cyclonedx_bom = cyclonedx_bom.deep_sort if sort
+
       cyclonedx_report = {
         autoCreate: true,
         projectName: config['cyclonedx_project_name'] || "",
         projectVersion: "1",
         bom: Base64.strict_encode64(JSON.generate(cyclonedx_bom))
       }
+      cyclonedx_report = cyclonedx_report.deep_sort if sort
       JSON.pretty_generate(cyclonedx_report)
     rescue StandardError => e
       bugsnag_notify(e.class.to_s + " " + e.message + "\nBuild Info:" + @builds.to_s)
@@ -225,15 +237,16 @@ module Salus
       # First create the string for the report.
       uri = directive['uri']
       verbose = directive['verbose'] || false
+      sort = directive['sort'] || false
       # Now send this string to its destination.
       report_string = case directive['format']
                       when 'txt' then to_s(verbose: verbose)
-                      when 'json' then to_json
-                      when 'yaml' then to_yaml
-                      when 'sarif' then to_sarif(directive['sarif_options'] || {})
+                      when 'json' then to_json(sort)
+                      when 'yaml' then to_yaml(sort)
+                      when 'sarif' then to_sarif(directive['sarif_options'] || {}, sort)
                       when 'sarif_diff' then to_sarif_diff
                       when 'sarif_diff_full' then to_full_sarif_diff
-                      when 'cyclonedx-json' then to_cyclonedx(directive['cyclonedx_options'] || {})
+                      when 'cyclonedx-json' then to_cyclonedx(directive['cyclonedx_options'] || {}, sort)
                       else
                         raise ExportReportError, "unknown report format #{directive['format']}"
                       end
@@ -345,11 +358,12 @@ module Salus
       verbose = config['verbose']
       return report_body_hash(config, to_s(verbose: verbose)).to_s if config['format'] == 'txt'
 
+      sort = config['sort']
       body = case config['format']
              when 'json'
-               to_json
+               to_json(sort)
              when 'sarif'
-               to_sarif(config['sarif_options'] || {})
+               to_sarif(config['sarif_options'] || {}, sort)
              when 'sarif_diff'
                to_sarif_diff
              when 'sarif_diff_full'
