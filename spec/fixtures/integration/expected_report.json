@@ -91,6 +91,10 @@
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
+      "ReportPomXml": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
       "ReportPythonModules": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0

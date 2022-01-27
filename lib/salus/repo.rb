@@ -30,7 +30,9 @@ module Salus
       { handle: :cargo_lock, filename: 'Cargo.lock' },
       # Mobile Scanners
       { handle: :android_app, filename: '.apk', wildcard: true },
-      { handle: :ios_app, filename: '.ipa', wildcard: true }
+      { handle: :ios_app, filename: '.ipa', wildcard: true },
+      # Java
+      { handle: :pom_xml, filename: 'pom.xml' }
     ].freeze
 
     # Define file checkers.
