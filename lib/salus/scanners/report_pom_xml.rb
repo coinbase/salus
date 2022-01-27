@@ -12,16 +12,25 @@ module Salus::Scanners
         return
       end
 
-      dependencies = JSON.parse(shell_return.stdout)
+      dependencies = nil
+      begin
+        dependencies = JSON.parse(shell_return.stdout)
+      rescue JSON::ParserError
+        err_msg = "Could not parse JSON returned by bin/parse_pom_xml's stdout!"
+        report_stderr(err_msg)
+        report_error(err_msg)
+      end
 
       dependencies.each do |dependency|
         group_id = dependency['group_id']
         artifact_id = dependency['artifact_id']
         version = dependency['version']
+        report_error('No group ID found for a dependency!') if group_id.nil?
+        report_error('No artifact ID found for a dependency!') if artifact_id.nil?
         report_dependency(
           'pom.xml',
           type: 'maven',
-          name: "#{group_id}.#{artifact_id}",
+          name: "#{group_id}/#{artifact_id}",
           version: version.nil? ? 'unknown' : version
         )
       end

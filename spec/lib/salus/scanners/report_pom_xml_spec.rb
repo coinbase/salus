@@ -9,42 +9,10 @@ describe Salus::Scanners::ReportPomXml do
     end
 
     it 'should return true if pom.xml is present' do
-      repo = Salus::Repo.new('spec/fixtures/report_pom_xml')
+      repo = Salus::Repo.new('spec/fixtures/report_pom_xml/normal')
       scanner = Salus::Scanners::ReportPomXml.new(repository: repo, config: {})
       expect(scanner.should_run?).to eq(true)
     end
-  end
-
-  it 'should report modules from pom.xml' do
-    repo = Salus::Repo.new('spec/fixtures/report_pom_xml')
-    scanner = Salus::Scanners::ReportPomXml.new(repository: repo, config: {})
-
-    scanner.run
-
-    dependencies = scanner.report.to_h.fetch(:info).fetch(:dependencies)
-
-    expect(dependencies).to match_array(
-      [
-        {
-          dependency_file: 'pom.xml',
-            name: 'org.apache.kafka.connect-api',
-            version: 'unknown',
-            type: 'maven'
-        },
-        {
-          dependency_file: 'pom.xml',
-        name: 'org.apache.kafka.connect-json',
-        version: 'unknown',
-        type: 'maven'
-        },
-        {
-          dependency_file: 'pom.xml',
-            name: 'junit.junit',
-            version: '1.1.1',
-            type: 'maven'
-        }
-      ]
-    )
   end
 
   describe '#version_valid?' do
@@ -64,5 +32,87 @@ describe Salus::Scanners::ReportPomXml do
         expect(langs).to eq(['java'])
       end
     end
+  end
+
+  it 'should report modules from pom.xml' do
+    repo = Salus::Repo.new('spec/fixtures/report_pom_xml/normal')
+    scanner = Salus::Scanners::ReportPomXml.new(repository: repo, config: {})
+
+    scanner.run
+
+    dependencies = scanner.report.to_h.fetch(:info).fetch(:dependencies)
+
+    expect(dependencies).to match_array(
+      [
+        {
+          dependency_file: 'pom.xml',
+            name: 'org.apache.kafka/connect-api',
+            version: 'unknown',
+            type: 'maven'
+        },
+        {
+          dependency_file: 'pom.xml',
+        name: 'org.apache.kafka/connect-json',
+        version: 'unknown',
+        type: 'maven'
+        },
+        {
+          dependency_file: 'pom.xml',
+            name: 'junit/junit',
+            version: '1.1.1',
+            type: 'maven'
+        }
+      ]
+    )
+  end
+
+  it 'should report an error when a dependency is missing required values' do
+    repo = Salus::Repo.new('spec/fixtures/report_pom_xml/missing_required_values')
+    scanner = Salus::Scanners::ReportPomXml.new(repository: repo, config: {})
+
+    scanner.run
+
+    dependencies = scanner.report.to_h.fetch(:info).fetch(:dependencies)
+
+    errs = scanner.report.to_h.fetch(:errors)
+    expect(errs.size).to eq(1)
+    expect(errs[0][:message]).to eq('No artifact ID found for a dependency!')
+
+    expect(dependencies).to match_array(
+      [
+        {
+          dependency_file: 'pom.xml',
+            name: 'org.apache.kafka/connect-api',
+            version: 'unknown',
+            type: 'maven'
+        },
+        {
+          dependency_file: 'pom.xml',
+        name: 'org.apache.kafka/connect-json',
+        version: 'unknown',
+        type: 'maven'
+        },
+        {
+          dependency_file: 'pom.xml',
+            name: 'junit/',
+            version: 'unknown',
+            type: 'maven'
+        }
+      ]
+    )
+  end
+
+  it 'should report an error when an unparseable file is found' do
+    repo = Salus::Repo.new('spec/fixtures/report_pom_xml/bad_pom_cant_parse')
+    scanner = Salus::Scanners::ReportPomXml.new(repository: repo, config: {})
+
+    scanner.run
+
+    errs = scanner.report.to_h.fetch(:errors)
+    expect(errs.size).to eq(1)
+    expect(errs[0][:message]).to eq('Errors:
+12:11: FATAL: Opening and ending tag mismatch: dependency line 11 and project
+12:11: FATAL: Premature end of data in tag dependencies line 5
+')
   end
 end

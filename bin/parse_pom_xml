@@ -4,49 +4,36 @@
 # to stdout using its pom.xml project file
 
 require 'json'
+require 'nokogiri'
 
-dependencies_regex = %r{
-    <dependencies>
-        [\s\S]*
-    <\/dependencies>
-}x
+parsed_file = nil
+begin
+  parsed_file = Nokogiri::XML(File.read(ARGV[0]))
+rescue StandardError
+  warn 'Unable to read and parse pom.xml file'
+  exit(1)
+end
 
-dependency_metadata_regex = %r{
-    <dependency>\s*
-        <groupId>
-            (?<groupId>\S+)
-        <\/groupId>\s*
-        <artifactId>
-            (?<artifactId>\S+)
-        <\/artifactId>\s*
-        (<version>
-            (?<version>\S+)
-        <\/version>\s*)?
-        (<scope>
-            (?<scope>\S+)
-        <\/scope>\s*)?
-        (<type>
-            (?<type>\S+)
-        <\/type>\s*)?
-    <\/dependency>
-}x
-
-dependency_lists = File.read(ARGV[0]).scan(dependencies_regex)
+if parsed_file.errors.size.positive?
+  err_msgs = 'Errors:
+'
+  parsed_file.errors.each { |err| err_msgs += "#{err}\n" }
+  warn err_msgs
+  exit(1)
+end
 
 dependencies = []
 
-# Get contents within <dependencies> tags
-dependency_lists.each do |dependency_list|
-  # Parse individual <dependency> entries
-  dependency_list.scan(dependency_metadata_regex).each do |dependency_properties|
-    dependency_hash = {}
-    dependency_hash[:group_id] = dependency_properties[0]
-    dependency_hash[:artifact_id] = dependency_properties[1]
-    dependency_hash[:version] = dependency_properties[2]
-    dependency_hash[:scope] = dependency_properties[3]
-    dependency_hash[:type] = dependency_properties[4]
-    dependencies.append(dependency_hash)
-  end
+# Parse contents within each <dependency> tag
+parsed_file.css('dependency').each do |dependency|
+  group_id = dependency.at('groupId')
+  artifact_id = dependency.at('artifactId')
+  version = dependency.at('version')
+  dependency_hash = {}
+  dependency_hash[:group_id] = group_id.nil? ? nil : group_id.children.to_s
+  dependency_hash[:artifact_id] = artifact_id.nil? ? nil : artifact_id.children.to_s
+  dependency_hash[:version] = version.nil? ? nil : version.children.to_s
+  dependencies.append(dependency_hash)
 end
 
 puts dependencies.to_json
