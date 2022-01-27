@@ -239,6 +239,7 @@ module Salus
       verbose = directive['verbose'] || false
       sort = directive['sort'] || false
       # Now send this string to its destination.
+      cyclonedx_options = directive['cyclonedx_options'] || {}
       report_string = case directive['format']
                       when 'txt' then to_s(verbose: verbose)
                       when 'json' then to_json(sort)
@@ -246,7 +247,7 @@ module Salus
                       when 'sarif' then to_sarif(directive['sarif_options'] || {}, sort)
                       when 'sarif_diff' then to_sarif_diff
                       when 'sarif_diff_full' then to_full_sarif_diff
-                      when 'cyclonedx-json' then to_cyclonedx(directive['cyclonedx_options'] || {}, sort)
+                      when 'cyclonedx-json' then to_cyclonedx(cyclonedx_options, sort)
                       else
                         raise ExportReportError, "unknown report format #{directive['format']}"
                       end
