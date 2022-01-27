@@ -4,6 +4,8 @@ require 'salus/scanners/base'
 
 module Salus::Scanners
   class ReportPomXml < Base
+    UNKNOWN_VERSION = 'unknown'.freeze
+
     def run
       shell_return = run_shell("bin/parse_pom_xml #{@repository.path_to_repo}/pom.xml", chdir: nil)
 
@@ -24,14 +26,13 @@ module Salus::Scanners
       dependencies.each do |dependency|
         group_id = dependency['group_id']
         artifact_id = dependency['artifact_id']
-        version = dependency['version']
         report_error('No group ID found for a dependency!') if group_id.nil?
         report_error('No artifact ID found for a dependency!') if artifact_id.nil?
         report_dependency(
           'pom.xml',
           type: 'maven',
           name: "#{group_id}/#{artifact_id}",
-          version: version.nil? ? 'unknown' : version
+          version: dependency['version'].nil? ? UNKNOWN_VERSION : dependency['version']
         )
       end
     end

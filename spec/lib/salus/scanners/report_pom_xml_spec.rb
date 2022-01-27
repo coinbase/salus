@@ -47,13 +47,13 @@ describe Salus::Scanners::ReportPomXml do
         {
           dependency_file: 'pom.xml',
             name: 'org.apache.kafka/connect-api',
-            version: 'unknown',
+            version: described_class::UNKNOWN_VERSION.to_s,
             type: 'maven'
         },
         {
           dependency_file: 'pom.xml',
         name: 'org.apache.kafka/connect-json',
-        version: 'unknown',
+        version: described_class::UNKNOWN_VERSION.to_s,
         type: 'maven'
         },
         {
@@ -83,19 +83,19 @@ describe Salus::Scanners::ReportPomXml do
         {
           dependency_file: 'pom.xml',
             name: 'org.apache.kafka/connect-api',
-            version: 'unknown',
+            version: described_class::UNKNOWN_VERSION.to_s,
             type: 'maven'
         },
         {
           dependency_file: 'pom.xml',
         name: 'org.apache.kafka/connect-json',
-        version: 'unknown',
+        version: described_class::UNKNOWN_VERSION.to_s,
         type: 'maven'
         },
         {
           dependency_file: 'pom.xml',
             name: 'junit/',
-            version: 'unknown',
+            version: described_class::UNKNOWN_VERSION.to_s,
             type: 'maven'
         }
       ]
@@ -112,7 +112,7 @@ describe Salus::Scanners::ReportPomXml do
     expect(errs.size).to eq(1)
     expect(errs[0][:message]).to eq('Errors:
 12:11: FATAL: Opening and ending tag mismatch: dependency line 11 and project
-12:11: FATAL: Premature end of data in tag dependencies line 5
+13:1: FATAL: Premature end of data in tag dependencies line 5
 ')
   end
 end

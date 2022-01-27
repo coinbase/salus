@@ -16,7 +16,7 @@ describe Cyclonedx::ReportPomXml do
             type: "library",
             group: "",
             name: "org.apache.kafka/connect-api",
-            version: "unknown",
+            version: Salus::Scanners::ReportPomXml::UNKNOWN_VERSION.to_s,
             purl: "pkg:maven/org.apache.kafka/connect-api",
             properties: [
               { key: "source", value: "" },
@@ -28,7 +28,7 @@ describe Cyclonedx::ReportPomXml do
             type: "library",
             group: "",
             name: "org.apache.kafka/connect-json",
-            version: "unknown",
+            version: Salus::Scanners::ReportPomXml::UNKNOWN_VERSION.to_s,
             purl: "pkg:maven/org.apache.kafka/connect-json",
             properties: [
               { key: "source", value: "" },
