@@ -13,7 +13,7 @@
       },
       "passed": true,
       "scanner_name": "Bandit",
-      "version": "1.7.1",
+      "version": "1.6.2",
       "warn": {
       }
     },
@@ -53,19 +53,29 @@
           }
         ]
       },
-      "logs": " (warn)\n\t\n\nRequired pattern \"1 == $X\" was not found - Useless equality test.",
+      "logs": "Could not parse unparsable_py.py as python (warn)\n\t/home/spec/fixtures/semgrep/invalid/unparsable_py.py:3-3\n\nRequired pattern \"1 == $X\" was not found - Useless equality test.",
       "passed": false,
       "scanner_name": "Semgrep",
-      "version": "0.79.0",
+      "version": "0.62.0",
       "warn": {
         "semgrep_non_fatal": [
           {
             "level": "warn",
-            "message": "",
+            "message": "Could not parse unparsable_py.py as python",
             "spans": [
-
+              {
+                "end": {
+                  "col": 12,
+                  "line": 3
+                },
+                "file": "/home/spec/fixtures/semgrep/invalid/unparsable_py.py",
+                "start": {
+                  "col": 12,
+                  "line": 3
+                }
+              }
             ],
-            "type": "Syntax error"
+            "type": "SourceParseError"
           }
         ]
       }
