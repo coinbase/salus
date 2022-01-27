@@ -325,7 +325,7 @@ describe Salus::Report do
           'additional_params' => { "foo" => "bar", "abc" => "def" } }
         options = { 'foo' => 'bar' }
         directive = { 'uri' => url, 'format' => 'sarif', 'post' => params,
-                      'verbose': false, 'sarif_options' => options }
+                      'verbose': false, 'sarif_options' => options, 'sort' => false }
         report = build_report(directive)
         report.instance_variable_set(:@scan_reports, [])
 
@@ -340,7 +340,7 @@ describe Salus::Report do
             'X-Scanner' => 'salus_sarif' }
         ).to_return(status: 200, body: "", headers: {})
 
-        expect(report).to receive(:to_sarif).with(options).and_call_original.twice
+        expect(report).to receive(:to_sarif).with(options, false).and_call_original.twice
         expect { report.export_report }.not_to raise_error
       end
 
@@ -696,6 +696,82 @@ describe Salus::Report do
         times: 1
       )
       expect(File.exist?(file_path)).to eq(false)
+    end
+  end
+
+  describe '#sort_output' do
+    before :all do
+      @reports = build_report
+    end
+
+    def build_report
+      report = Salus::Report.new(project_name: 'Neon genesis')
+      config = {
+        "matches" => [
+          {
+            "pattern" => "1 == $X",
+            "language" => "python",
+            "message" => "Useless equality test.",
+            "required" => true
+          }
+        ]
+      }
+      repo = Salus::Repo.new("spec/fixtures/semgrep")
+      scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
+      scanner.run
+
+      report.add_scan_report(scanner.report, required: true)
+
+      path2 = Salus::Repo.new('spec/fixtures/bundle_audit/no_cves')
+      scanner = Salus::Scanners::BundleAudit.new(repository: path2, config: {})
+      scanner.run
+      report.add_scan_report(scanner.report, required: false)
+
+      path = Salus::Repo.new('spec/fixtures/python/python_project_no_vulns')
+      scanner = Salus::Scanners::Bandit.new(repository: path, config: {})
+      scanner.run
+      report.add_scan_report(scanner.report, required: false)
+      report
+    end
+
+    context 'sort option given in directive' do
+      let(:results_dir) { 'spec/fixtures/sorted_results' }
+      it 'should deepsort json output format' do
+        expected_result = JSON.parse(File.read("#{results_dir}/sorted_json.json"))
+        sorted_json = JSON.parse(report.to_json(true))
+        expect(expected_result).to eq(sorted_json)
+      end
+
+      it 'should deepsort sarif output' do
+        expected_result = JSON.parse(File.read("#{results_dir}/sorted_sarif.json"))
+        sorted_sarif = JSON.parse(report.to_sarif({}, true))
+        sorted_sarif['runs'].each do |result|
+          # PROJECTROOT was taken out because it has the users local directory in the result json
+          # This could cause tests to fail, when run on different machines
+          result['originalUriBaseIds'].delete('PROJECTROOT')
+        end
+        expect(expected_result).to eq(sorted_sarif)
+      end
+
+      it 'should deepsort YAML output' do
+        expected_yaml = YAML.load_file("#{results_dir}/sorted_yaml.yml")
+        expect(expected_yaml).to eq(YAML.safe_load(report.to_yaml(true)))
+      end
+
+      it 'should deepsort cyclonedx output' do
+        cyclonedx = JSON.parse(report.to_cyclonedx({}, true))
+        bom = JSON.parse(Base64.strict_decode64(cyclonedx['bom']))
+        bom['serialNumber'] = '' # serial number changes with each run
+        cyclonedx['bom'] = '' # encoding for bom changes with each run
+
+        # Check Cyclonedx output is sorted
+        expected_cyclone = JSON.parse(File.read("#{results_dir}/sorted_cyclonedx.json"))
+        expect(expected_cyclone).to eq(cyclonedx)
+
+        # Check cyclondx bom is also sorted
+        expected_cyclone_bom = JSON.parse(File.read("#{results_dir}/sorted_bom.json"))
+        expect(expected_cyclone_bom).to eq(bom)
+      end
     end
   end
 end
