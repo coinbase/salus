@@ -159,7 +159,7 @@ module Salus
     end
 
     def to_yaml(sort = false)
-      res = sort ?  to_h.deep_sort : to_h
+      res = sort ? to_h.deep_sort : to_h
       YAML.dump(res)
     end
 
@@ -239,6 +239,7 @@ module Salus
       uri = directive['uri']
       verbose = directive['verbose'] || false
       sort = directive['sort'] || false
+      cyclonedx_options = directive['cyclonedx_options'] || {}
       # Now send this string to its destination.
       report_string = case directive['format']
                       when 'txt' then to_s(verbose: verbose)
@@ -247,7 +248,7 @@ module Salus
                       when 'sarif' then to_sarif(directive['sarif_options'] || {}, sort)
                       when 'sarif_diff' then to_sarif_diff
                       when 'sarif_diff_full' then to_full_sarif_diff
-                      when 'cyclonedx-json' then to_cyclonedx(directive['cyclonedx_options'] || {}, sort)
+                      when 'cyclonedx-json' then to_cyclonedx(cyclonedx_options, sort)
                       else
                         raise ExportReportError, "unknown report format #{directive['format']}"
                       end
