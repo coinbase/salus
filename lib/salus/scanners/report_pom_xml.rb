@@ -4,7 +4,7 @@ require 'salus/scanners/base'
 
 module Salus::Scanners
   class ReportPomXml < Base
-    UNKNOWN_VERSION = 'unknown'.freeze
+    UNKNOWN_VERSION = ''.freeze
 
     def run
       shell_return = run_shell("bin/parse_pom_xml #{@repository.path_to_repo}/pom.xml", chdir: nil)
@@ -21,6 +21,7 @@ module Salus::Scanners
         err_msg = "Could not parse JSON returned by bin/parse_pom_xml's stdout!"
         report_stderr(err_msg)
         report_error(err_msg)
+        return
       end
 
       dependencies.each do |dependency|
@@ -31,7 +32,7 @@ module Salus::Scanners
         report_dependency(
           'pom.xml',
           type: 'maven',
-          name: "#{group_id}/#{artifact_id}",
+          name: artifact_id.nil? ? group_id : "#{group_id}/#{artifact_id}",
           version: dependency['version'].nil? ? UNKNOWN_VERSION : dependency['version']
         )
       end
