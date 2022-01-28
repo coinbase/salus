@@ -50,5 +50,17 @@ describe Cyclonedx::ReportPomXml do
         ]
       )
     end
+
+    it 'should produce valid CycloneDX under normal conditions' do
+      repo = Salus::Repo.new('spec/fixtures/report_pom_xml/normal')
+  
+      scanner = Salus::Scanners::ReportPomXml.new(repository: repo, config: {})
+      scanner.run
+
+      cyclonedx_report = Cyclonedx::Report.new([[scanner.report, false]],
+                                                { "spec_version" => "1.3" })
+  
+      expect { Cyclonedx::Report.validate_cyclonedx(cyclonedx_report.to_cyclonedx) }.not_to raise_error
+    end
   end
 end
