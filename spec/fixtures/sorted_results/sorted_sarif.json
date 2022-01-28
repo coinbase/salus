@@ -39,20 +39,20 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "",
+                  "uri": "/home/spec/fixtures/semgrep/invalid/unparsable_py.py",
                   "uriBaseId": "%SRCROOT%"
                 },
                 "region": {
-                  "startColumn": 1,
-                  "startLine": 1
+                  "startColumn": 12,
+                  "startLine": 3
                 }
               }
             }
           ],
           "message": {
-            "text": ""
+            "text": "Could not parse unparsable_py.py as python"
           },
-          "ruleId": "Syntax error",
+          "ruleId": "SourceParseError",
           "ruleIndex": 0
         }
       ],
@@ -66,17 +66,17 @@
           "rules": [
             {
               "fullDescription": {
-                "text": ""
+                "text": "Could not parse unparsable_py.py as python"
               },
               "help": {
                 "markdown": "[More info](https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md).",
                 "text": "More info: https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md"
               },
               "helpUri": "https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md",
-              "id": "Syntax error",
+              "id": "SourceParseError",
               "messageStrings": {
               },
-              "name": "Syntax error"
+              "name": "SourceParseError"
             },
             {
               "fullDescription": {
@@ -93,7 +93,7 @@
               "name": "Required Pattern Not Found"
             }
           ],
-          "version": "0.79.0"
+          "version": "0.62.0"
         }
       }
     },
@@ -167,7 +167,7 @@
           "rules": [
 
           ],
-          "version": "1.7.1"
+          "version": "1.6.2"
         }
       }
     }
