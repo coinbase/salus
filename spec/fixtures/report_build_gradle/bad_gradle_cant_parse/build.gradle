@@ -1,0 +1,8 @@
+buildscript {
+    dependencies {
+        classpath 'com.android.tools.buil'
+    }
+}
+
+dependencies {
+}
