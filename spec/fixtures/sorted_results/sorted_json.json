@@ -1,0 +1,75 @@
+{
+  "errors": [
+
+  ],
+  "passed": false,
+  "project_name": "Neon genesis",
+  "scans": {
+    "Bandit": {
+      "errors": [
+
+      ],
+      "info": {
+      },
+      "passed": true,
+      "scanner_name": "Bandit",
+      "version": "1.7.1",
+      "warn": {
+      }
+    },
+    "BundleAudit": {
+      "errors": [
+
+      ],
+      "info": {
+        "ignored_cves": [
+
+        ],
+        "vulnerabilities": [
+
+        ]
+      },
+      "passed": true,
+      "scanner_name": "BundleAudit",
+      "version": "0.8.0",
+      "warn": {
+      }
+    },
+    "Semgrep": {
+      "errors": [
+
+      ],
+      "info": {
+        "hits": [
+
+        ],
+        "misses": [
+          {
+            "config": null,
+            "forbidden": false,
+            "msg": "Useless equality test.",
+            "pattern": "1 == $X",
+            "required": true
+          }
+        ]
+      },
+      "logs": " (warn)\n\t\n\nRequired pattern \"1 == $X\" was not found - Useless equality test.",
+      "passed": false,
+      "scanner_name": "Semgrep",
+      "version": "0.79.0",
+      "warn": {
+        "semgrep_non_fatal": [
+          {
+            "level": "warn",
+            "message": "",
+            "spans": [
+
+            ],
+            "type": "Syntax error"
+          }
+        ]
+      }
+    }
+  },
+  "version": "2.17.0"
+}
