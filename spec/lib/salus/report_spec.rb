@@ -737,7 +737,6 @@ describe Salus::Report do
     context 'sort option given in directive' do
       let(:results_dir) { 'spec/fixtures/sorted_results' }
       it 'should deepsort json output format' do
-        puts report.to_json(true)
         expected_result = JSON.parse(File.read("#{results_dir}/sorted_json.json"))
         sorted_json = JSON.parse(report.to_json(true))
         expect(expected_result).to eq(sorted_json)
@@ -745,7 +744,6 @@ describe Salus::Report do
 
       it 'should deepsort sarif output' do
         expected_result = JSON.parse(File.read("#{results_dir}/sorted_sarif.json"))
-        puts report.to_sarif({}, true)
         sorted_sarif = JSON.parse(report.to_sarif({}, true))
         sorted_sarif['runs'].each do |result|
           # PROJECTROOT was taken out because it has the users local directory in the result json
@@ -757,7 +755,6 @@ describe Salus::Report do
 
       it 'should deepsort YAML output' do
         expected_yaml = YAML.load_file("#{results_dir}/sorted_yaml.yml")
-        puts report.to_yaml(true)
         expect(expected_yaml).to eq(YAML.safe_load(report.to_yaml(true)))
       end
 
