@@ -69,6 +69,7 @@
       "NPMAudit",
       "PatternSearch",
       "RepoNotEmpty",
+      "ReportBuildGradle",
       "ReportGoDep",
       "ReportNodeModules",
       "ReportPomXml",
@@ -120,6 +121,10 @@
         "scanner_timeout_s": 0
       },
       "RepoNotEmpty": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportBuildGradle": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
