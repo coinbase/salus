@@ -94,7 +94,7 @@ describe Salus::Scanners::ReportPomXml do
         },
         {
           dependency_file: 'pom.xml',
-            name: 'junit/',
+            name: 'junit',
             version: described_class::UNKNOWN_VERSION.to_s,
             type: 'maven'
         }
