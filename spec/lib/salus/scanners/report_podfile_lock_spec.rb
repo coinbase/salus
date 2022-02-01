@@ -29,7 +29,7 @@ describe Salus::Scanners::ReportPodfileLock do
     context 'should return supported languages' do
       it 'should return expected langs' do
         langs = Salus::Scanners::ReportPodfileLock.supported_languages
-        expect(langs).to eq(['swift', 'objective-c'])
+        expect(langs).to eq(%w[swift objective-c])
       end
     end
   end

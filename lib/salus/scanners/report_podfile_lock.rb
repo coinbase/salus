@@ -4,9 +4,9 @@ require 'salus/scanners/base'
 
 module Salus::Scanners
   class ReportPodfileLock < Base
-
     def run
-      shell_return = run_shell("bin/parse_podfile_lock #{@repository.path_to_repo}/Podfile.lock", chdir: nil)
+      shell_return =
+        run_shell("bin/parse_podfile_lock #{@repository.path_to_repo}/Podfile.lock", chdir: nil)
 
       if !shell_return.success?
         report_error(shell_return.stderr)
@@ -40,7 +40,7 @@ module Salus::Scanners
     end
 
     def self.supported_languages
-      ['swift', 'objective-c']
+      %w[swift objective-c]
     end
   end
 end

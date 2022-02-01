@@ -34,7 +34,7 @@ module Salus
       # Java
       { handle: :pom_xml, filename: 'pom.xml' },
       # Apple Ecosystem (macOS, iOS, etc)
-      { handle: :podfile_lock, filename: 'Podfile.lock'}
+      { handle: :podfile_lock, filename: 'Podfile.lock' }
     ].freeze
 
     # Define file checkers.
