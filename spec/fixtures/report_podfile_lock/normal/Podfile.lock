@@ -1,0 +1,10 @@
+PODS:
+  - boost-for-react-native (1.63.0)
+  - CocoaAsyncSocket (= 7.6.5)
+
+DEPENDENCIES:
+  - Flipper (= 0.87.0)
+
+PODFILE CHECKSUM: 000000
+
+COCOAPODS: 1.10.1

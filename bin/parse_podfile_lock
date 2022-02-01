@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+
+require 'json'
+
+dependency_metadata_regex = /-\s(?<pod>.*?)\s\((=|(~>))?\s?(?<version>(\d*\.?)+)\)/
+
+podfile_lock_text = ''
+begin
+  podfile_lock_text = File.read(ARGV[0])
+rescue StandardError
+  warn 'Unable to read Podfile.lock file'
+  exit(1)
+end
+
+dependencies = []
+# Parse individual dependency entry
+podfile_lock_text.scan(dependency_metadata_regex).each do |dependency_properties|
+  dependency_hash = {}
+  dependency_hash[:pod] = dependency_properties[0]
+  dependency_hash[:version] = dependency_properties[1]
+  dependencies.append(dependency_hash)
+end
+
+if dependencies.empty?
+  warn 'Could not parse dependencies from Podfile.lock file'
+  exit(1)
+end
+
+puts dependencies.to_json
