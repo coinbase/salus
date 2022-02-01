@@ -1,4 +1,5 @@
 require 'json'
+require 'deepsort'
 require 'salus/formatting'
 require 'salus/bugsnag'
 module Salus
@@ -158,17 +159,18 @@ module Salus
     end
 
     def to_yaml
-      YAML.dump(to_h)
+      YAML.dump(to_h.deep_sort)
     end
 
     def to_json
-      JSON.pretty_generate(to_h)
+      JSON.pretty_generate(to_h.deep_sort)
     end
 
     def to_sarif(config = {})
       sarif_json = Sarif::SarifReport.new(@scan_reports, config, @repo_path).to_sarif
       # We will validate to ensure the applied filter
       # doesn't produce any invalid SARIF
+      sarif_json = JSON.pretty_generate(JSON.parse(sarif_json).deep_sort)
       Sarif::SarifReport.validate_sarif(apply_report_sarif_filters(sarif_json))
     rescue StandardError => e
       bugsnag_notify(e.class.to_s + " " + e.message + "\nBuild Info:" + @builds.to_s)
@@ -210,12 +212,15 @@ module Salus
 
     def to_cyclonedx(config = {})
       cyclonedx_bom = Cyclonedx::Report.new(@scan_reports, config).to_cyclonedx
+      cyclonedx_bom = cyclonedx_bom.deep_sort 
+
       cyclonedx_report = {
         autoCreate: true,
         projectName: config['cyclonedx_project_name'] || "",
         projectVersion: "1",
         bom: Base64.strict_encode64(JSON.generate(cyclonedx_bom))
       }
+      cyclonedx_report = cyclonedx_report.deep_sort 
       JSON.pretty_generate(cyclonedx_report)
     rescue StandardError => e
       bugsnag_notify(e.class.to_s + " " + e.message + "\nBuild Info:" + @builds.to_s)
