@@ -88,7 +88,7 @@ describe Salus::Report do
       end
       expect(report).to receive(:apply_report_sarif_filters)
       sarif = report.to_sarif
-      expect(sarif).to eq('{"version":"2.1.0","$schema":"foo","runs":[]}')
+      expect(sarif).to eq('{"$schema":"foo","runs":[],"version":"2.1.0"}')
     end
 
     it 'does not include project_name/custom_info/config if not given' do
