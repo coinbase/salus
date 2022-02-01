@@ -212,7 +212,7 @@ module Salus
 
     def to_cyclonedx(config = {})
       cyclonedx_bom = Cyclonedx::Report.new(@scan_reports, config).to_cyclonedx
-      cyclonedx_bom = cyclonedx_bom.deep_sort 
+      cyclonedx_bom = cyclonedx_bom.deep_sort
 
       cyclonedx_report = {
         autoCreate: true,
@@ -220,7 +220,7 @@ module Salus
         projectVersion: "1",
         bom: Base64.strict_encode64(JSON.generate(cyclonedx_bom))
       }
-      cyclonedx_report = cyclonedx_report.deep_sort 
+      cyclonedx_report = cyclonedx_report.deep_sort
       JSON.pretty_generate(cyclonedx_report)
     rescue StandardError => e
       bugsnag_notify(e.class.to_s + " " + e.message + "\nBuild Info:" + @builds.to_s)
