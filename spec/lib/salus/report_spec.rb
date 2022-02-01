@@ -762,18 +762,18 @@ describe Salus::Report do
       end
 
       it 'should deepsort cyclonedx output' do
-        cyclonedx = JSON.parse(report.to_cyclonedx({}, true))
+        cyclonedx = JSON.parse(report.to_cyclonedx)
         bom = JSON.parse(Base64.strict_decode64(cyclonedx['bom']))
         bom['serialNumber'] = '' # serial number changes with each run
         cyclonedx['bom'] = '' # encoding for bom changes with each run
 
         # Check Cyclonedx output is sorted
         expected_cyclone = File.read("#{results_dir}/sorted_cyclonedx.json")
-        expect(expected_cyclone).to eq(cyclonedx)
+        expect(expected_cyclone).to eq(JSON.pretty_generate(cyclonedx))
 
         # Check cyclondx bom is also sorted
         expected_cyclone_bom = File.read("#{results_dir}/sorted_bom.json")
-        expect(expected_cyclone_bom).to eq(bom)
+        expect(expected_cyclone_bom).to eq(JSON.pretty_generate(bom))
       end
     end
   end
