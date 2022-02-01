@@ -1,5 +1,5 @@
 {
-  "version": "2.16.0",
+  "version": "2.17.0",
   "passed": true,
   "running_time": 0.0,
   "scans": {
@@ -71,6 +71,7 @@
       "RepoNotEmpty",
       "ReportGoDep",
       "ReportNodeModules",
+      "ReportPomXml",
       "ReportPythonModules",
       "ReportRubyGems",
       "ReportRustCrates",
@@ -127,6 +128,10 @@
         "scanner_timeout_s": 0
       },
       "ReportNodeModules": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportPomXml": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
