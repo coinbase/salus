@@ -14,3 +14,10 @@ Dir.entries(File.expand_path('scanners/language_version', __dir__)).sort.each do
 
   require "salus/scanners/language_version/#{filename}"
 end
+
+Dir.entries(File.expand_path('scanners/package_version', __dir__)).sort.each do |filename|
+  next if ['.', '..'].include?(filename) # don't include FS pointers
+  next unless /\.rb\z/.match?(filename)  # only include ruby files
+
+  require "salus/scanners/package_version/#{filename}"
+end

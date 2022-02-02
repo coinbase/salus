@@ -14,6 +14,11 @@ Dir.entries(File.expand_path('./language_version', __dir__)).sort.each do |filen
   require_relative "language_version/#{filename}"
 end
 
+Dir.entries(File.expand_path('./package_version', __dir__)).sort.each do |filename|
+  next unless /_sarif.rb\z/.match?(filename) && !filename.eql?('base_sarif.rb')
+
+  require_relative "package_version/#{filename}"
+end
 module Sarif
   # Class for generating sarif reports
   class SarifReport
@@ -53,6 +58,7 @@ module Sarif
       path = File.expand_path('schema/sarif-schema.json', __dir__)
       schema = JSON.parse(File.read(path))
 
+      puts sarif_string
       return sarif_string if JSON::Validator.validate(schema, sarif_string)
 
       errors = JSON::Validator.fully_validate(schema, sarif_string)
