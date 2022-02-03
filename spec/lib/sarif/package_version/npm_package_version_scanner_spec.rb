@@ -52,7 +52,10 @@ describe Sarif::NPMPackageScannerSarif do
 
       report = Salus::Report.new(project_name: "Neon Genesis")
       report.add_scan_report(scanner.report, required: false)
-      puts report.to_sarif
+      sarif = JSON.parse(report.to_sarif)
+      expect(sarif['runs'][0]['results'][0]['message']).to include(
+        { "text" => "Package package-not-here was not found in the package-lock.json" }
+      )
     end
   end
 end
