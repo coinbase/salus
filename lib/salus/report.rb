@@ -171,8 +171,6 @@ module Salus
       # doesn't produce any invalid SARIF
       Sarif::SarifReport.validate_sarif(apply_report_sarif_filters(sarif_json))
     rescue StandardError => e
-      puts e.message
-      # puts e.backtrace
       bugsnag_notify(e.class.to_s + " " + e.message + "\nBuild Info:" + @builds.to_s)
     end
 
