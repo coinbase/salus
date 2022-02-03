@@ -69,7 +69,7 @@
       "NPMAudit",
       "PatternSearch",
       "RepoNotEmpty",
-      "ReportBuildGradle",
+      "ReportGradleDeps",
       "ReportGoDep",
       "ReportNodeModules",
       "ReportPomXml",
@@ -124,7 +124,7 @@
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
-      "ReportBuildGradle": {
+      "ReportGradleDeps": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },

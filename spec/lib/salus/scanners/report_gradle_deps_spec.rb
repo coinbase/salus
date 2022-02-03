@@ -1,16 +1,16 @@
 require_relative '../../../spec_helper.rb'
 
-describe Salus::Scanners::ReportBuildGradle do
+describe Salus::Scanners::ReportGradleDeps, :focus do
   describe '#should_run?' do
     it 'should return false in the absence of build.gradle' do
       repo = Salus::Repo.new('spec/fixtures/blank_repository')
-      scanner = Salus::Scanners::ReportBuildGradle.new(repository: repo, config: {})
+      scanner = Salus::Scanners::ReportGradleDeps.new(repository: repo, config: {})
       expect(scanner.should_run?).to eq(false)
     end
 
     it 'should return true if build.gradle is present' do
       repo = Salus::Repo.new('spec/fixtures/report_build_gradle/normal')
-      scanner = Salus::Scanners::ReportBuildGradle.new(repository: repo, config: {})
+      scanner = Salus::Scanners::ReportGradleDeps.new(repository: repo, config: {})
       expect(scanner.should_run?).to eq(true)
     end
   end
@@ -19,7 +19,7 @@ describe Salus::Scanners::ReportBuildGradle do
     context 'scanner version is valid' do
       it 'should return true' do
         repo = Salus::Repo.new("dir")
-        scanner = Salus::Scanners::ReportBuildGradle.new(repository: repo, config: {})
+        scanner = Salus::Scanners::ReportGradleDeps.new(repository: repo, config: {})
         expect(scanner.version).to eq('')
       end
     end
@@ -28,7 +28,7 @@ describe Salus::Scanners::ReportBuildGradle do
   describe '#supported_languages' do
     context 'should return supported languages' do
       it 'should return expected langs' do
-        langs = Salus::Scanners::ReportBuildGradle.supported_languages
+        langs = Salus::Scanners::ReportGradleDeps.supported_languages
         expect(langs).to eq(['java'])
       end
     end
@@ -36,7 +36,7 @@ describe Salus::Scanners::ReportBuildGradle do
 
   it 'should report modules from build.gradle' do
     repo = Salus::Repo.new('spec/fixtures/report_build_gradle/normal')
-    scanner = Salus::Scanners::ReportBuildGradle.new(repository: repo, config: {})
+    scanner = Salus::Scanners::ReportGradleDeps.new(repository: repo, config: {})
 
     scanner.run
 
@@ -80,7 +80,7 @@ describe Salus::Scanners::ReportBuildGradle do
 
   it 'should report an error when a file with no parseable dependencies is found' do
     repo = Salus::Repo.new('spec/fixtures/report_build_gradle/bad_gradle_cant_parse')
-    scanner = Salus::Scanners::ReportBuildGradle.new(repository: repo, config: {})
+    scanner = Salus::Scanners::ReportGradleDeps.new(repository: repo, config: {})
 
     scanner.run
 

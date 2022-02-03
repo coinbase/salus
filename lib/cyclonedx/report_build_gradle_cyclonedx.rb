@@ -1,5 +1,5 @@
 module Cyclonedx
-  class ReportBuildGradle < Base
+  class ReportGradleDeps < Base
     TYPE = "gradle".freeze
     UNLOCKED_DEPENDENCY_FILE = "build.gradle".freeze
 

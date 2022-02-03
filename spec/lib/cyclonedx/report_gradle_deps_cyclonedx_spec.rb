@@ -1,14 +1,14 @@
 require_relative '../../spec_helper'
 require 'json'
 
-describe Cyclonedx::ReportBuildGradle do
+describe Cyclonedx::ReportGradleDeps do
   describe "#run" do
     it 'should report all the deps in the build.gradle' do
       repo = Salus::Repo.new('spec/fixtures/report_build_gradle/normal')
-      scanner = Salus::Scanners::ReportBuildGradle.new(repository: repo, config: {})
+      scanner = Salus::Scanners::ReportGradleDeps.new(repository: repo, config: {})
       scanner.run
 
-      gradle_cyclonedx = Cyclonedx::ReportBuildGradle.new(scanner.report)
+      gradle_cyclonedx = Cyclonedx::ReportGradleDeps.new(scanner.report)
       expect(gradle_cyclonedx.build_components_object).to match_array(
         [
           {
@@ -78,7 +78,7 @@ describe Cyclonedx::ReportBuildGradle do
     it 'should produce valid CycloneDX under normal conditions' do
       repo = Salus::Repo.new('spec/fixtures/report_build_gradle/normal')
 
-      scanner = Salus::Scanners::ReportBuildGradle.new(repository: repo, config: {})
+      scanner = Salus::Scanners::ReportGradleDeps.new(repository: repo, config: {})
       scanner.run
 
       cyclonedx_report = Cyclonedx::Report.new([[scanner.report, false]],
