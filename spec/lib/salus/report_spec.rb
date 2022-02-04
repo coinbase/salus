@@ -251,21 +251,24 @@ describe Salus::Report do
                       'post' => params }
         report = build_report(directive)
 
-        stub_request(:post, "https://nerv.tk3/salus-report").with(body: "{\n  \"foo\": \"bar\",\n"\
-          "  \"abc\": \"def\",\n  \"report\": {\n    \"version\": \"2.17.0\",\n    \"project_nam"\
-          "e\": \"eva00\",\n    \"passed\": false,\n    \"scans\": {\n      \"DerpScanner\": {\n "\
-          "       \"scanner_name\": \"DerpScanner\",\n        \"passed\": false,\n        \"warn"\
-          "\": {\n        },\n        \"info\": {\n          \"asdf\": \"qwerty\"\n        },\n "\
-          "       \"errors\": [\n\n        ]\n      }\n    },\n    \"errors\": [\n      {\n      "\
-          "  \"message\": \"derp\"\n      },\n      {\n        \"message\": \"derp\"\n      },\n "\
-          "     {\n        \"message\": \"derp\"\n      },\n      {\n        \"message\": \"derp"\
-          "\"\n      },\n      {\n        \"message\": \"derp\"\n      }\n    ],\n    \"custom_"\
-          "info\": \"test unit\"\n  }\n}",
+        stub_request(:post, "https://nerv.tk3/salus-report")
+          .with(
+            body: "{\n  \"foo\": \"bar\",\n  \"abc\": \"def\",\n  \"report\": {\n    "\
+           "\"custom_info\": \"test unit\",\n    \"errors\": [\n      {\n        "\
+           "\"message\": \"derp\"\n      },\n      {\n        \"message\": \"derp\"\n      },\n"\
+           "      {\n        \"message\": \"derp\"\n      },\n      {\n        \"message\": "\
+           "\"derp\"\n      },\n      {\n        \"message\": \"derp\"\n      }\n    ],\n    "\
+           "\"passed\": false,\n    \"project_name\": \"eva00\",\n    \"scans\": {\n      "\
+           "\"DerpScanner\": {\n        \"errors\": [\n\n        ],\n        \"info\": {\n     "\
+           "     \"asdf\": \"qwerty\"\n        },\n        \"passed\": false,\n        "\
+           "\"scanner_name\": \"DerpScanner\",\n        \"warn\": {\n        }\n      }\n    "\
+           "},\n    \"version\": \"2.17.0\"\n  }\n}",
            headers: { 'Accept' => '*/*',
-        'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-        'Content-Type' => 'application/json',
-        'User-Agent' => 'Faraday v1.3.0',
-        'X-Scanner' => 'salus' }).to_return(status: 200, body: "", headers: {})
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Content-Type' => 'application/json',
+          'User-Agent' => 'Faraday v1.3.0',
+          'X-Scanner' => 'salus' }
+          ).to_return(status: 200, body: "", headers: {})
 
         expect { report.export_report }.not_to raise_error
       end
@@ -277,18 +280,19 @@ describe Salus::Report do
         directive = { 'uri' => url, 'format' => 'yaml', 'post' => params }
         report = build_report(directive)
 
-        stub_request(:post, "https://nerv.tk3/salus-report").with(body: "---\nfoo: bar\nabc: def\n"\
-          "report:\n  :version: 2.17.0\n  :project_name: eva00\n  :passed: false\n  :scans:\n    "\
-          "DerpScanner:\n      :scanner_name: DerpScanner\n      :passed: false\n      :warn: {}\n"\
-          "      :info:\n        :asdf: qwerty\n      :errors: []\n  :errors:\n  - :message: derp"\
-          "\n  - :message: derp\n  - :message: derp\n  - :message: derp\n  - :message: derp\n  "\
-          ":custom_info: test unit\n",
+        stub_request(:post, "https://nerv.tk3/salus-report")
+          .with(
+            body: "---\nfoo: bar\nabc: def\nreport:\n  custom_info: test unit\n  errors:\n  - "\
+           "message: derp\n  - message: derp\n  - message: derp\n  - message: derp\n  - message:"\
+           " derp\n  passed: false\n  project_name: eva00\n  scans:\n    DerpScanner:\n      "\
+           "errors: []\n      info:\n        asdf: qwerty\n      passed: false\n      "\
+           "scanner_name: DerpScanner\n      warn: {}\n  version: 2.17.0\n",
            headers: { 'Accept' => '*/*',
-            'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-            'Content-Type' => 'text/x-yaml',
-            'User-Agent' => 'Faraday v1.3.0',
-            'X-Scanner' => 'salus' }).to_return(status: 200, body: "", headers: {})
-
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Content-Type' => 'text/x-yaml',
+          'User-Agent' => 'Faraday v1.3.0',
+          'X-Scanner' => 'salus' }
+          ).to_return(status: 200, body: "", headers: {})
         expect { report.export_report }.not_to raise_error
       end
 
@@ -329,16 +333,17 @@ describe Salus::Report do
         report = build_report(directive)
         report.instance_variable_set(:@scan_reports, [])
 
-        stub_request(:post, "https://nerv.tk3/salus-report").with(
-          body: "{\n  \"foo\": \"bar\",\n  \"abc\": \"def\",\n  \"report\": {\n    \"version\": "\
-          "\"2.1.0\",\n    \"$schema\": \"https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/"\
-          "schemas/sarif-schema-2.1.0\",\n    \"runs\": [\n\n    ]\n  }\n}",
-          headers: { 'Accept' => '*/*',
-            'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-            'Content-Type' => 'application/json',
-            'User-Agent' => 'Faraday v1.3.0',
-            'X-Scanner' => 'salus_sarif' }
-        ).to_return(status: 200, body: "", headers: {})
+        stub_request(:post, "https://nerv.tk3/salus-report")
+          .with(
+            body: "{\n  \"foo\": \"bar\",\n  \"abc\": \"def\",\n  \"report\": {\n    \"$schema\":"\
+            " \"https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/schemas/sarif-schema-2.1.0"\
+            "\",\n    \"runs\": [\n\n    ],\n    \"version\": \"2.1.0\"\n  }\n}",
+            headers: { 'Accept' => '*/*',
+              'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+              'Content-Type' => 'application/json',
+              'User-Agent' => 'Faraday v1.3.0',
+              'X-Scanner' => 'salus_sarif' }
+          ).to_return(status: 200, body: "", headers: {})
 
         expect(report).to receive(:to_sarif).with(options).and_call_original.twice
         expect { report.export_report }.not_to raise_error
