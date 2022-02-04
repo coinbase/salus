@@ -368,7 +368,10 @@ module Salus
         return JSON.pretty_generate(report_body_hash(config, body))
       end
 
-      return YAML.dump(report_body_hash(config, to_h)) if config['format'] == 'yaml'
+      # When creating a report body for yaml #to_yaml is not called
+      # This sorts the hash before the report is generated
+      body = to_h.deep_stringify_keys.deep_sort
+      return YAML.dump(report_body_hash(config, body)) if config['format'] == 'yaml'
 
       raise ExportReportError, "unknown report format #{directive['format']}"
     end
