@@ -39,18 +39,17 @@ module Salus::Scanners::GithubAdvisory
     end
 
     def fetch_advisories(max_pages = GITHUB_API_MAX_PAGES, page_size = GITHUB_API_PAGE_SIZE)
-      all_vulnerabilities = []
+      all_vulnerabilities_found = []
       variables = { "first" => page_size }
       max_pages.times do |_page_num|
         page = send_request(ecosystem_query, variables)
-        vulnerabilities_this_page = page["data"]["securityVulnerabilities"]["nodes"]
-        all_vulnerabilities += vulnerabilities_this_page
-
+        vulnerabilities_per_page = page["data"]["securityVulnerabilities"]["nodes"]
+        all_vulnerabilities_found += vulnerabilities_per_page
         break unless page["data"]["securityVulnerabilities"]["pageInfo"]["hasNextPage"] == true
 
         variables["after"] = page["data"]["securityVulnerabilities"]["pageInfo"]["endCursor"]
       end
-      all_vulnerabilities
+      all_vulnerabilities_found
     rescue StandardError => e
       report_error("Github Adviory failed: #{e}")
     rescue ApiTooManyRequestsError
