@@ -159,11 +159,11 @@ module Salus
     end
 
     def to_yaml
-      YAML.dump(to_h.deep_sort)
+      YAML.dump(to_h.deep_stringify_keys.deep_sort)
     end
 
     def to_json
-      JSON.pretty_generate(to_h.deep_sort)
+      JSON.pretty_generate(to_h.deep_stringify_keys.deep_sort)
     end
 
     def to_sarif(config = {})
