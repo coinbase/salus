@@ -19,6 +19,8 @@ module Salus::Scanners::GithubAdvisory
                           PIP_ADVISORY_QUERY
                         elsif @repository.pom_xml_present?
                           MAVEN_ADVISORY_QUERY
+                        elsif @repository.gemfile_present? || @repository.gemfile_lock_present?
+                          RUBYGEMS_ADVISORY_QUERY
                         end
     end
 
@@ -27,7 +29,6 @@ module Salus::Scanners::GithubAdvisory
     end
 
     def should_run?
-      # TODO: Should we report error if key not present vs silently not run scanner.
       ENV['GITHUB_ADVISORY_API_KEY'] || false
     end
 
@@ -44,11 +45,14 @@ module Salus::Scanners::GithubAdvisory
       variables = { "first" => GITHUB_API_PAGE_SIZE }
       GITHUB_API_MAX_PAGES.times do
         response = send_request(github_query, variables)
-        vulnerabilities_per_page = response["data"]["securityVulnerabilities"]["nodes"]
+        vulnerabilities_per_page = response.dig("data", "securityVulnerabilities", "nodes")
         all_vulnerabilities_found += vulnerabilities_per_page
-        break unless response["data"]["securityVulnerabilities"]["pageInfo"]["hasNextPage"] == true
+        unless response.dig("data", "securityVulnerabilities", "pageInfo", "hasNextPage") == true
+          break
+        end
 
-        variables["after"] = response["data"]["securityVulnerabilities"]["pageInfo"]["endCursor"]
+        variables['after'] = response.dig("data", "securityVulnerabilities",
+                                          "pageInfo", "endCursor")
       end
       all_vulnerabilities_found
     rescue StandardError => e
@@ -230,5 +234,45 @@ module Salus::Scanners::GithubAdvisory
         }
         }
     MAVEN_QUERY
+    RUBYGEMS_ADVISORY_QUERY = <<-RUBYGEMS_QUERY.freeze
+        query($first: Int, $after: String) {
+        securityVulnerabilities(first: $first, after: $after, ecosystem:RUBYGEMS) {
+            pageInfo {
+            endCursor
+            hasNextPage
+            hasPreviousPage
+            startCursor
+            }
+            nodes {
+            package {
+                name
+                ecosystem
+            }
+            vulnerableVersionRange
+            firstPatchedVersion {
+                identifier
+            }
+            advisory {
+                identifiers {
+                type
+                value
+                }
+                summary
+                description
+                severity
+                cvss {
+                score
+                vectorString
+                }
+                references {
+                url
+                }
+                publishedAt
+                withdrawnAt
+            }
+            }
+        }
+        }
+    RUBYGEMS_QUERY
   end
 end
