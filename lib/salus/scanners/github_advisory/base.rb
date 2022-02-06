@@ -12,14 +12,14 @@ module Salus::Scanners::GithubAdvisory
     GITHUB_API_MAX_PAGES = 100
     GITHUB_API_PAGE_SIZE = 100
 
-    def ecosystem_query
-      @ecosystem_query ||= if @repository.go_sum_present? || @repository.go_mod_present?
-                             GO_ADVISORY_QUERY
-                           elsif @repository.requirements_txt_present?
-                             PIP_ADVISORY_QUERY
-                           elsif @repository.pom_xml_present?
-                             MAVEN_ADVISORY_QUERY
-                           end
+    def github_query
+      @github_query ||= if @repository.go_sum_present? || @repository.go_mod_present?
+                          GO_ADVISORY_QUERY
+                        elsif @repository.requirements_txt_present?
+                          PIP_ADVISORY_QUERY
+                        elsif @repository.pom_xml_present?
+                          MAVEN_ADVISORY_QUERY
+                        end
     end
 
     def github_advisories
@@ -27,7 +27,8 @@ module Salus::Scanners::GithubAdvisory
     end
 
     def should_run?
-      # TODO: Add check if github api key set in environment variable or not.
+      # TODO: Should we report error if key not present vs silently not run scanner.
+      ENV['GITHUB_ADVISORY_API_KEY'] || false
     end
 
     def run
@@ -38,16 +39,16 @@ module Salus::Scanners::GithubAdvisory
       self.class.name.sub('Salus::Scanners::GithubAdvisory::', '')
     end
 
-    def fetch_advisories(max_pages = GITHUB_API_MAX_PAGES, page_size = GITHUB_API_PAGE_SIZE)
+    def fetch_advisories
       all_vulnerabilities_found = []
-      variables = { "first" => page_size }
-      max_pages.times do |_page_num|
-        page = send_request(ecosystem_query, variables)
-        vulnerabilities_per_page = page["data"]["securityVulnerabilities"]["nodes"]
+      variables = { "first" => GITHUB_API_PAGE_SIZE }
+      GITHUB_API_MAX_PAGES.times do
+        response = send_request(github_query, variables)
+        vulnerabilities_per_page = response["data"]["securityVulnerabilities"]["nodes"]
         all_vulnerabilities_found += vulnerabilities_per_page
-        break unless page["data"]["securityVulnerabilities"]["pageInfo"]["hasNextPage"] == true
+        break unless response["data"]["securityVulnerabilities"]["pageInfo"]["hasNextPage"] == true
 
-        variables["after"] = page["data"]["securityVulnerabilities"]["pageInfo"]["endCursor"]
+        variables["after"] = response["data"]["securityVulnerabilities"]["pageInfo"]["endCursor"]
       end
       all_vulnerabilities_found
     rescue StandardError => e
@@ -73,8 +74,7 @@ module Salus::Scanners::GithubAdvisory
           conn_builder.adapter adapter
           conn_builder.headers = {
             "Content-Type" => "application/json",
-            # TODO: Read github api key from environment variable.
-            "Authorization" => "token "
+            "Authorization" => "token " + ENV['GITHUB_ADVISORY_API_KEY']
           }
         end
       end
@@ -112,124 +112,122 @@ module Salus::Scanners::GithubAdvisory
 
     GO_ADVISORY_QUERY = <<-GO_QUERY.freeze
         query($first: Int, $after: String) {
-          securityVulnerabilities(first: $first, after: $after, ecosystem:GO) {
+        securityVulnerabilities(first: $first, after: $after, ecosystem:GO) {
             pageInfo {
-              endCursor
-              hasNextPage
-              hasPreviousPage
-              startCursor
+            endCursor
+            hasNextPage
+            hasPreviousPage
+            startCursor
             }
             nodes {
-              vulnerableVersionRange
-              package {
+            package {
                 name
                 ecosystem
-              }
-              firstPatchedVersion {
+            }
+            vulnerableVersionRange
+            firstPatchedVersion {
                 identifier
-              }
-              advisory {
+            }
+            advisory {
+                identifiers {
+                type
+                value
+                }
                 summary
                 description
                 severity
-                publishedAt
-                withdrawnAt
-                identifiers {
-                    type
-                    value
-                  }
                 cvss {
-                  score
-                  vectorString
+                score
+                vectorString
                 }
                 references {
-                  url
+                url
                 }
-              }
+                publishedAt
+                withdrawnAt
             }
-          }
+            }
+        }
         }
     GO_QUERY
-
     PIP_ADVISORY_QUERY = <<-PIP_QUERY.freeze
         query($first: Int, $after: String) {
-          securityVulnerabilities(first: $first, after: $after, ecosystem:GO) {
+        securityVulnerabilities(first: $first, after: $after, ecosystem:PIP) {
             pageInfo {
-              endCursor
-              hasNextPage
-              hasPreviousPage
-              startCursor
+            endCursor
+            hasNextPage
+            hasPreviousPage
+            startCursor
             }
             nodes {
-              vulnerableVersionRange
-              package {
+            package {
                 name
                 ecosystem
-              }
-              firstPatchedVersion {
+            }
+            vulnerableVersionRange
+            firstPatchedVersion {
                 identifier
-              }
-              advisory {
+            }
+            advisory {
+                identifiers {
+                type
+                value
+                }
                 summary
                 description
                 severity
-                publishedAt
-                withdrawnAt
-                identifiers {
-                    type
-                    value
-                  }
                 cvss {
-                  score
-                  vectorString
+                score
+                vectorString
                 }
                 references {
-                  url
+                url
                 }
-              }
+                publishedAt
+                withdrawnAt
             }
-          }
+            }
+        }
         }
     PIP_QUERY
-
     MAVEN_ADVISORY_QUERY = <<-MAVEN_QUERY.freeze
         query($first: Int, $after: String) {
-          securityVulnerabilities(first: $first, after: $after, ecosystem:MAVEN) {
+        securityVulnerabilities(first: $first, after: $after, ecosystem:MAVEN) {
             pageInfo {
-              endCursor
-              hasNextPage
-              hasPreviousPage
-              startCursor
+            endCursor
+            hasNextPage
+            hasPreviousPage
+            startCursor
             }
             nodes {
-              vulnerableVersionRange
-              package {
+            package {
                 name
                 ecosystem
-              }
-              firstPatchedVersion {
+            }
+            vulnerableVersionRange
+            firstPatchedVersion {
                 identifier
-              }
-              advisory {
+            }
+            advisory {
+                identifiers {
+                type
+                value
+                }
                 summary
                 description
                 severity
-                publishedAt
-                withdrawnAt
-                identifiers {
-                  type
-                  value
-                }
                 cvss {
-                  score
-                  vectorString
+                score
+                vectorString
                 }
                 references {
-                  url
+                url
                 }
-              }
+                publishedAt
+                withdrawnAt
             }
-          }
+            }
+        }
         }
     MAVEN_QUERY
   end
