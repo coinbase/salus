@@ -29,7 +29,11 @@ module Salus::Scanners::GithubAdvisory
     end
 
     def should_run?
-      ENV['GITHUB_ADVISORY_API_KEY'] || false
+      ENV['GITHUB_ADVISORY_API_KEY'] && run_github_advisory_scan?
+    end
+
+    def run_github_advisory_scan?
+      raise NoMethodError
     end
 
     def run
@@ -41,6 +45,7 @@ module Salus::Scanners::GithubAdvisory
     end
 
     def fetch_advisories
+      # Handle paginating over Github API
       all_vulnerabilities_found = []
       variables = { "first" => GITHUB_API_PAGE_SIZE }
       GITHUB_API_MAX_PAGES.times do
@@ -70,9 +75,8 @@ module Salus::Scanners::GithubAdvisory
       end
     end
 
-    private
-
     def github_api(adapter = :net_http)
+      # Hold connection adapter
       @github_api ||= begin
         Faraday.new do |conn_builder|
           conn_builder.adapter adapter
