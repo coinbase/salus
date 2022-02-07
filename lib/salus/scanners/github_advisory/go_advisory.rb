@@ -12,7 +12,7 @@ module Salus::Scanners::GithubAdvisory
       @repository.go_mod_present? || @repository.go_sum_present?
     end
 
-    def find_repo_dependencies
+    def find_dependencies
       # Find map of dependencies and versions used by the project
       all_dependencies = []
       chosen_dependencies = {}
@@ -90,7 +90,7 @@ module Salus::Scanners::GithubAdvisory
     def run
       results = []
       # Find dependencies from the project
-      dependencies = find_repo_dependencies
+      dependencies = find_dependencies
       if dependencies.empty?
         msg = "Failed to parse any dependencies from the project."
         return report_error("GoGithubAdvisory: #{msg}")
