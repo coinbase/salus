@@ -4,6 +4,8 @@ require 'salus/scanners/base'
 
 module Salus::Scanners
   class ReportPodfileLock < Base
+    class ReportPodfileLockError < StandardError; end
+
     def run
       shell_return =
         run_shell("bin/parse_podfile_lock #{@repository.path_to_repo}/Podfile.lock", chdir: nil)
@@ -13,25 +15,24 @@ module Salus::Scanners
         return
       end
 
-      dependencies = nil
       begin
         dependencies = JSON.parse(shell_return.stdout)
-      rescue JSON::ParserError
+
+        raise ReportPodfileLockError if dependencies.nil?
+
+        dependencies.each do |dependency|
+          report_dependency(
+            'Podfile.lock',
+            type: 'cocoa',
+            name: dependency['pod'],
+            version: dependency['version']
+          )
+        end
+      rescue ReportPodfileLockError, JSON::ParserError
         err_msg = "Could not parse JSON returned by bin/parse_podfile_lock's stdout!"
         report_stderr(err_msg)
         report_error(err_msg)
-        return
-      end
-
-      dependencies.each do |dependency|
-        pod = dependency['pod']
-        version = dependency['version']
-        report_dependency(
-          'Podfile.lock',
-          type: 'cocoa',
-          name: pod,
-          version: version
-        )
+        nil
       end
     end
 
