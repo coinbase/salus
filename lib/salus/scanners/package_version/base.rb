@@ -13,7 +13,7 @@ module Salus::Scanners::PackageVersion
       # gather all package versions specified in scanner_config
       package_versions = @config['package_versions']
 
-      # for each package in there, check if any violoations exist
+      # for each package in there, check if any violations exist
       package_versions.each do |name, specified_version|
         min_version = SemVersion.new(specified_version['min_version'])
         max_version = SemVersion.new(specified_version['max_version'])
