@@ -9,11 +9,11 @@ module Salus::Scanners::GithubAdvisory
     end
 
     def run_github_advisory_scan?
-      @repository.go_mod_present? || @repository.go_sum_present?
+      @repository.go_mod_present? && @repository.go_sum_present?
     end
 
     def find_dependencies
-      # Find map of dependencies and versions used by the project
+      # Return a map of dependency name and versions used by the project
       all_dependencies = []
       chosen_dependencies = {}
 
@@ -74,12 +74,11 @@ module Salus::Scanners::GithubAdvisory
       # If multiple versions of dependencies are found then pick the max version to mimic MVS
       # https://go.dev/ref/mod#go-mod-graph, https://go.dev/ref/mod#minimal-version-selection
       all_dependencies.each do |deps|
-        # lib = deps["namespace"] + "/" + deps["name"]
         lib = deps[:name]
         version = deps[:version].to_s.gsub('v', '').gsub('+incompatible', '')
         if chosen_dependencies.key?(lib)
-          temp_v = chosen_dependencies[lib]
-          chosen_dependencies[lib] = version if SemVersion.new(version) > SemVersion.new(temp_v)
+          temp = chosen_dependencies[lib]
+          chosen_dependencies[lib] = version if SemVersion.new(version) > SemVersion.new(temp)
         else
           chosen_dependencies[lib] = version
         end
@@ -106,6 +105,7 @@ module Salus::Scanners::GithubAdvisory
           package_matches.each do |m|
             version_match_found = false
             version_ranges = m.dig("vulnerableVersionRange").split(', ')
+            # Version Ranges can have 2 formats: > x.x OR > x.x, < x.y
             if version_ranges.length == 1
               version_match_found = SemDependency.new('', version_ranges[0]).match?('', version)
             elsif version_ranges.length == 2
@@ -122,7 +122,7 @@ module Salus::Scanners::GithubAdvisory
                   "Severity": m.dig("advisory", "severity") || "Not Found",
                   "ID": m["advisory"]["identifiers"][0]["value"] || "Not Found",
                   "References": m.dig("advisory", "references").collect { |p| p["url"].to_s },
-                  "Source": "Github Advisory"
+                  "Source": "RUN go mod graph OR Check go.sum"
                              })
             end
           end
@@ -131,12 +131,12 @@ module Salus::Scanners::GithubAdvisory
 
       # Report scanner status
       if results.any?
-        results.append({
-                         "NOTE": "Affected packages were found using - \n" \
-                         "1. 'go mod graph' results OR" \
-                         "\n2. 'go.sum' file." \
-                       })
-        log(format_vulns(results))
+        # results.append({
+        #                  "NOTE": "Affected packages were found using - \n" \
+        #                  "1. 'go mod graph' results OR" \
+        #                  "\n2. 'go.sum' file." \
+        #                })
+        log(JSON.pretty_generate(results))
         report_failure
       else
         report_success
