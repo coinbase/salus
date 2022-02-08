@@ -21,7 +21,6 @@ module Salus
 
     attr_accessor :active_scanners
 
-
     ABSTRACT_SCANNERS = %i[Base NodeAudit LanguageVersion PackageVersion].freeze
 
     PACKAGE_VERSION_SCANNERS = Salus::Scanners::PackageVersion.constants
