@@ -281,18 +281,16 @@ describe Salus::Report do
         report = build_report(directive)
 
         stub_request(:post, "https://nerv.tk3/salus-report")
-          .with(
-            body: "---\nfoo: bar\nabc: def\nreport:\n  custom_info: test unit\n  errors:\n  - "\
-           "message: derp\n  - message: derp\n  - message: derp\n  - message: derp\n  - message:"\
-           " derp\n  passed: false\n  project_name: eva00\n  scans:\n    DerpScanner:\n      "\
-           "errors: []\n      info:\n        asdf: qwerty\n      passed: false\n      "\
-           "scanner_name: DerpScanner\n      warn: {}\n  version: 2.17.0\n",
+          .with(body: "---\nfoo: bar\nabc: def\nreport:\n  :custom_info: test unit\n  :errors:\n  "\
+            "- :message: derp\n  - :message: derp\n  - :message: derp\n  - :message: derp\n  - "\
+            ":message: derp\n  :passed: false\n  :project_name: eva00\n  :scans:\n    DerpScanner:"\
+            "\n      :errors: []\n      :info:\n        :asdf: qwerty\n      :passed: false\n     "\
+            " :scanner_name: DerpScanner\n      :warn: {}\n  :version: 2.17.0\n",
            headers: { 'Accept' => '*/*',
           'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
           'Content-Type' => 'text/x-yaml',
           'User-Agent' => 'Faraday v1.3.0',
-          'X-Scanner' => 'salus' }
-          ).to_return(status: 200, body: "", headers: {})
+          'X-Scanner' => 'salus' }).to_return(status: 200, body: "", headers: {})
         expect { report.export_report }.not_to raise_error
       end
 

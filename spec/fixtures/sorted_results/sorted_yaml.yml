@@ -1,49 +1,49 @@
-errors: []
-passed: false
-project_name: Neon genesis
-scans:
+:errors: []
+:passed: false
+:project_name: Neon genesis
+:scans:
   Bandit:
-    errors: []
-    info: {}
-    passed: true
-    scanner_name: Bandit
-    version: 1.6.2
-    warn: {}
+    :errors: []
+    :info: {}
+    :passed: true
+    :scanner_name: Bandit
+    :version: 1.6.2
+    :warn: {}
   BundleAudit:
-    errors: []
-    info:
-      ignored_cves: []
-      vulnerabilities: []
-    passed: true
-    scanner_name: BundleAudit
-    version: 0.8.0
-    warn: {}
+    :errors: []
+    :info:
+      :ignored_cves: []
+      :vulnerabilities: []
+    :passed: true
+    :scanner_name: BundleAudit
+    :version: 0.8.0
+    :warn: {}
   Semgrep:
-    errors: []
-    info:
-      hits: []
-      misses:
-      - config: 
-        forbidden: false
-        msg: Useless equality test.
-        pattern: 1 == $X
-        required: true
-    logs: "Could not parse unparsable_py.py as python (warn)\n\t/home/spec/fixtures/semgrep/invalid/unparsable_py.py:3-3\n\nRequired
+    :errors: []
+    :info:
+      :hits: []
+      :misses:
+      - :config: 
+        :forbidden: false
+        :msg: Useless equality test.
+        :pattern: 1 == $X
+        :required: true
+    :logs: "Could not parse unparsable_py.py as python (warn)\n\t/home/spec/fixtures/semgrep/invalid/unparsable_py.py:3-3\n\nRequired
       pattern \"1 == $X\" was not found - Useless equality test."
-    passed: false
-    scanner_name: Semgrep
-    version: 0.62.0
-    warn:
-      semgrep_non_fatal:
-      - level: warn
-        message: Could not parse unparsable_py.py as python
-        spans:
-        - end:
+    :passed: false
+    :scanner_name: Semgrep
+    :version: 0.62.0
+    :warn:
+      :semgrep_non_fatal:
+      - :level: warn
+        :message: Could not parse unparsable_py.py as python
+        :spans:
+        - :end:
             col: 12
             line: 3
-          file: "/home/spec/fixtures/semgrep/invalid/unparsable_py.py"
-          start:
+          :file: "/home/spec/fixtures/semgrep/invalid/unparsable_py.py"
+          :start:
             col: 12
             line: 3
-        type: SourceParseError
-version: 2.17.0
+        :type: SourceParseError
+:version: 2.17.0

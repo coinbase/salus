@@ -2,6 +2,27 @@ require 'json'
 require 'deepsort'
 require 'salus/formatting'
 require 'salus/bugsnag'
+
+class Symbol
+  alias old :<=>
+  def <=>(other)
+    if other.is_a? String
+      inspect <=> other
+    else
+      old other
+    end
+  end
+end
+class String
+  alias old :<=>
+  def <=>(other)
+    if other.is_a? Symbol
+      old other.inspect
+    else
+      old other
+    end
+  end
+end
 module Salus
   class Report
     include Formatting
@@ -159,11 +180,11 @@ module Salus
     end
 
     def to_yaml
-      YAML.dump(to_h.deep_stringify_keys.deep_sort)
+      YAML.dump(to_h.deep_sort)
     end
 
     def to_json
-      JSON.pretty_generate(to_h.deep_stringify_keys.deep_sort)
+      JSON.pretty_generate(to_h.deep_sort)
     end
 
     def to_sarif(config = {})
@@ -370,7 +391,7 @@ module Salus
 
       # When creating a report body for yaml #to_yaml is not called
       # This sorts the hash before the report is generated
-      body = to_h.deep_stringify_keys.deep_sort
+      body = to_h.deep_sort
       return YAML.dump(report_body_hash(config, body)) if config['format'] == 'yaml'
 
       raise ExportReportError, "unknown report format #{directive['format']}"
