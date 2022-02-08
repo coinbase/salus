@@ -43,9 +43,7 @@ module Cyclonedx
         "group": "", # TODO: add group or domain name of the publisher
         "name": dependency[:name],
         "version": version_string(dependency),
-        "purl": package_url(dependency),
-        "scope": dependency[:scope] || "required" # Add scope if available:
-        # https://cyclonedx.org/docs/1.3/json/#components_items_scope
+        "purl": package_url(dependency)
       }
     end
 
