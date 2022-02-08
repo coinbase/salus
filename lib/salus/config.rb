@@ -32,12 +32,8 @@ module Salus
     OTHER_SCANNERS = Salus::Scanners.constants
       .reject { |klass| ABSTRACT_SCANNERS.include?(klass) }
       .map { |klass| [klass.to_s, Salus::Scanners.const_get(klass)] }
-    
-    GITHUB_ADVISORY_SCANNERS = Salus::Scanners::GithubAdvisory.constants
-      .reject { |klass| ABSTRACT_SCANNERS.include?(klass) }
-      .map { |klass| [klass.to_s, Salus::Scanners::GithubAdvisory.const_get(klass)] }
 
-    SCANNERS = (LANGUAGE_VERSION_SCANNERS + OTHER_SCANNERS + GITHUB_ADVISORY_SCANNERS).sort.to_h.freeze
+    SCANNERS = (LANGUAGE_VERSION_SCANNERS + OTHER_SCANNERS).sort.to_h.freeze
 
     # This is the base configuration file, and we merge all other configuration
     # provided into this file to create one final configuration.
