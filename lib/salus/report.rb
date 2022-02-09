@@ -196,9 +196,15 @@ module Salus
 
     def to_sarif(config = {})
       sarif_json = Sarif::SarifReport.new(@scan_reports, config, @repo_path).to_sarif
+      begin
+        sorted_sarif = JSON.parse(sarif_json).deep_sort
+      rescue StandardError => e
+        bugsnag_notify(e.inspect + "\n" + e.message + "\nResult String: " + to_h.to_s)
+        sorted_sarif = JSON.parse(sarif_json)
+      end
       # We will validate to ensure the applied filter
       # doesn't produce any invalid SARIF
-      sarif_json = JSON.pretty_generate(JSON.parse(sarif_json).deep_sort)
+      sarif_json = JSON.pretty_generate(sorted_sarif)
       Sarif::SarifReport.validate_sarif(apply_report_sarif_filters(sarif_json))
     rescue StandardError => e
       bugsnag_notify(e.class.to_s + " " + e.message + "\nBuild Info:" + @builds.to_s)
@@ -240,16 +246,26 @@ module Salus
 
     def to_cyclonedx(config = {})
       cyclonedx_bom = Cyclonedx::Report.new(@scan_reports, config).to_cyclonedx
-      cyclonedx_bom = cyclonedx_bom.deep_sort
+      begin
+        sorted_cyclonedx_bom = cyclonedx_bom.deep_sort
+      rescue StandardError => e
+        bugsnag_notify(e.inspect + "\n" + e.message + "\nResult String: " + to_h.to_s)
+        sorted_cyclonedx_bom = cyclonedx_bom
+      end
 
       cyclonedx_report = {
         autoCreate: true,
         projectName: config['cyclonedx_project_name'] || "",
         projectVersion: "1",
-        bom: Base64.strict_encode64(JSON.generate(cyclonedx_bom))
+        bom: Base64.strict_encode64(JSON.generate(sorted_cyclonedx_bom))
       }
-      cyclonedx_report = cyclonedx_report.deep_sort
-      JSON.pretty_generate(cyclonedx_report)
+      begin
+        sorted_cyclonedx_report = cyclonedx_report.deep_sort
+      rescue StandardError => e
+        bugsnag_notify(e.inspect + "\n" + e.message + "\nResult String: " + to_h.to_s)
+        sorted_cyclonedx_report = cyclonedx_report
+      end
+      JSON.pretty_generate(sorted_cyclonedx_report)
     rescue StandardError => e
       bugsnag_notify(e.class.to_s + " " + e.message + "\nBuild Info:" + @builds.to_s)
     end
