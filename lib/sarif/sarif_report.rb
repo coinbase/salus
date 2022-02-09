@@ -2,18 +2,14 @@ require 'json'
 require 'json-schema'
 require_relative './base_sarif'
 
-Dir.entries(File.expand_path('./', __dir__)).sort.each do |filename|
-  next unless /_sarif.rb\z/.match?(filename) && !filename.eql?('base_sarif.rb')
+paths = ['./', 'language_version', 'package_version']
+paths.each do |path|
+  Dir.entries(File.expand_path(path, __dir__)).sort.each do |filename|
+    next unless /_sarif.rb\z/.match?(filename) && !filename.eql?('base_sarif.rb')
 
-  require_relative filename
+    require_relative "#{path}/#{filename}"
+  end
 end
-
-Dir.entries(File.expand_path('./language_version', __dir__)).sort.each do |filename|
-  next unless /_sarif.rb\z/.match?(filename) && !filename.eql?('base_sarif.rb')
-
-  require_relative "language_version/#{filename}"
-end
-
 module Sarif
   # Class for generating sarif reports
   class SarifReport
