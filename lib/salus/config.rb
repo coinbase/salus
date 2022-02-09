@@ -21,8 +21,11 @@ module Salus
 
     attr_accessor :active_scanners
 
-    ABSTRACT_SCANNERS = %i[Base NodeAudit LanguageVersion].freeze
+    ABSTRACT_SCANNERS = %i[Base NodeAudit LanguageVersion PackageVersion].freeze
 
+    PACKAGE_VERSION_SCANNERS = Salus::Scanners::PackageVersion.constants
+      .reject { |klass| ABSTRACT_SCANNERS.include?(klass) }
+      .map { |klass| [klass.to_s, Salus::Scanners::PackageVersion.const_get(klass)] }
     # Dynamically get all Scanners for language version checking
     LANGUAGE_VERSION_SCANNERS = Salus::Scanners::LanguageVersion.constants
       .reject { |klass| ABSTRACT_SCANNERS.include?(klass) }
@@ -33,7 +36,8 @@ module Salus
       .reject { |klass| ABSTRACT_SCANNERS.include?(klass) }
       .map { |klass| [klass.to_s, Salus::Scanners.const_get(klass)] }
 
-    SCANNERS = (LANGUAGE_VERSION_SCANNERS + OTHER_SCANNERS).sort.to_h.freeze
+    SCANNERS = (PACKAGE_VERSION_SCANNERS + LANGUAGE_VERSION_SCANNERS + OTHER_SCANNERS).sort.to_h
+      .freeze
 
     # This is the base configuration file, and we merge all other configuration
     # provided into this file to create one final configuration.
