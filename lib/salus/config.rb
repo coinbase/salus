@@ -40,7 +40,8 @@ module Salus
       .reject { |klass| ABSTRACT_SCANNERS.include?(klass) }
       .map { |klass| [klass.to_s, Salus::Scanners.const_get(klass)] }
 
-    SCANNERS = (GITHUB_ADVISORY_SCANNERS + PACKAGE_VERSION_SCANNERS + LANGUAGE_VERSION_SCANNERS + OTHER_SCANNERS).sort.to_h
+    SCANNERS = (GITHUB_ADVISORY_SCANNERS + PACKAGE_VERSION_SCANNERS +
+      LANGUAGE_VERSION_SCANNERS + OTHER_SCANNERS).sort.to_h
       .freeze
 
     # This is the base configuration file, and we merge all other configuration
