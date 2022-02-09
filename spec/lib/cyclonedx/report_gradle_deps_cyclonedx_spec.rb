@@ -4,79 +4,73 @@ require 'json'
 describe Cyclonedx::ReportGradleDeps do
   describe "#run" do
     it 'should report all the deps in the build.gradle' do
-      repo = Salus::Repo.new('spec/fixtures/report_build_gradle/normal')
+      repo = Salus::Repo.new('spec/fixtures/report_gradle_deps/normal')
       scanner = Salus::Scanners::ReportGradleDeps.new(repository: repo, config: {})
       scanner.run
 
       gradle_cyclonedx = Cyclonedx::ReportGradleDeps.new(scanner.report)
-      expect(gradle_cyclonedx.build_components_object).to match_array(
-        [
+      components_object = gradle_cyclonedx.build_components_object
+      expect(components_object.size).to eq(61)
+      expect(components_object).to include(
           {
-            "bom-ref": "pkg:gradle/com.android.tools.build/gradle",
-            type: "library",
-            group: "",
-            name: "com.android.tools.build/gradle",
-            version: '3.5.3',
-            purl: "pkg:gradle/com.android.tools.build/gradle",
-            properties: [
-              { key: "source", value: "" },
-              { key: "dependency_file", value: "build.gradle" }
+            :"bom-ref"=>"pkg:gradle/org.apache.kafka/connect-transforms",
+            :type=>"library",
+            :group=>"",
+            :name=>"org.apache.kafka/connect-transforms",
+            :version=>"2.6.2",
+            :purl=>"pkg:gradle/org.apache.kafka/connect-transforms",
+            :properties=>[
+              {
+                :key=>"source",
+                :value=>""
+              }, 
+              {
+                :key=>"dependency_file",
+                :value=>"build.gradle"
+              }
             ]
           },
           {
-            "bom-ref": "pkg:gradle/com.facebook.react/react-native",
-            type: "library",
-            group: "",
-            name: "com.facebook.react/react-native",
-            version: '+',
-            purl: "pkg:gradle/com.facebook.react/react-native",
-            properties: [
-              { key: "source", value: "" },
-              { key: "dependency_file", value: "build.gradle" }
+            :"bom-ref"=>"pkg:gradle/org.apache.kafka/connect-api",
+            :type=>"library",
+            :group=>"",
+            :name=>"org.apache.kafka/connect-api",
+            :version=>"2.6.2",
+            :purl=>"pkg:gradle/org.apache.kafka/connect-api",
+            :properties=> [
+              {
+                :key=>"source",
+                :value=>""
+              },
+              {
+                :key=>"dependency_file",
+                :value=>"build.gradle"
+              }
             ]
           },
           {
-            "bom-ref": "pkg:gradle/androidx.work/work-runtime",
-            type: "library",
-            group: "",
-            name: "androidx.work/work-runtime",
-            version: "2.4.0",
-            purl: "pkg:gradle/androidx.work/work-runtime",
-            properties: [
-              { key: "source", value: "" },
-              { key: "dependency_file", value: "build.gradle" }
-            ]
-          },
-          {
-            "bom-ref": "pkg:gradle/androidx.security/security-crypto",
-            type: "library",
-            group: "",
-            name: "androidx.security/security-crypto",
-            version: "1.0.0",
-            purl: "pkg:gradle/androidx.security/security-crypto",
-            properties: [
-              { key: "source", value: "" },
-              { key: "dependency_file", value: "build.gradle" }
-            ]
-          },
-          {
-            "bom-ref": "pkg:gradle/com.google.code.gson/gson",
-            type: "library",
-            group: "",
-            name: "com.google.code.gson/gson",
-            version: "2.8.8",
-            purl: "pkg:gradle/com.google.code.gson/gson",
-            properties: [
-              { key: "source", value: "" },
-              { key: "dependency_file", value: "build.gradle" }
+            :"bom-ref"=>"pkg:gradle/org.apache.kafka/kafka-clients",
+            :type=>"library",
+            :group=>"",
+            :name=>"org.apache.kafka/kafka-clients",
+            :version=>"2.6.2",
+            :purl=>"pkg:gradle/org.apache.kafka/kafka-clients",
+            :properties=>[
+              {
+                :key=>"source",
+                :value=>""
+              },
+              {
+                :key=>"dependency_file",
+                :value=>"build.gradle"
+              }
             ]
           }
-        ]
       )
     end
 
     it 'should produce valid CycloneDX under normal conditions' do
-      repo = Salus::Repo.new('spec/fixtures/report_build_gradle/normal')
+      repo = Salus::Repo.new('spec/fixtures/report_gradle_deps/normal')
 
       scanner = Salus::Scanners::ReportGradleDeps.new(repository: repo, config: {})
       scanner.run

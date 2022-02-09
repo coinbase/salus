@@ -1,6 +1,6 @@
 require_relative '../../../spec_helper.rb'
 
-describe Salus::Scanners::ReportGradleDeps, :focus do
+describe Salus::Scanners::ReportGradleDeps do
   describe '#should_run?' do
     it 'should return false in the absence of build.gradle' do
       repo = Salus::Repo.new('spec/fixtures/blank_repository')
@@ -9,7 +9,7 @@ describe Salus::Scanners::ReportGradleDeps, :focus do
     end
 
     it 'should return true if build.gradle is present' do
-      repo = Salus::Repo.new('spec/fixtures/report_build_gradle/normal')
+      repo = Salus::Repo.new('spec/fixtures/report_gradle_deps/normal')
       scanner = Salus::Scanners::ReportGradleDeps.new(repository: repo, config: {})
       expect(scanner.should_run?).to eq(true)
     end
@@ -35,58 +35,47 @@ describe Salus::Scanners::ReportGradleDeps, :focus do
   end
 
   it 'should report modules from build.gradle' do
-    repo = Salus::Repo.new('spec/fixtures/report_build_gradle/normal')
+    repo = Salus::Repo.new('spec/fixtures/report_gradle_deps/normal')
     scanner = Salus::Scanners::ReportGradleDeps.new(repository: repo, config: {})
 
     scanner.run
-
     dependencies = scanner.report.to_h.fetch(:info).fetch(:dependencies)
 
-    expect(dependencies).to match_array(
-      [
-        {
-          dependency_file: 'build.gradle',
-            name: 'com.android.tools.build/gradle',
-            version: '3.5.3',
-            type: 'gradle'
-        },
-        {
-          dependency_file: 'build.gradle',
-        name: 'com.facebook.react/react-native',
-        version: '+',
-        type: 'gradle'
-        },
-        {
-          dependency_file: 'build.gradle',
-            name: 'androidx.work/work-runtime',
-            version: '2.4.0',
-            type: 'gradle'
-        },
-        {
-          dependency_file: 'build.gradle',
-            name: 'androidx.security/security-crypto',
-            version: '1.0.0',
-            type: 'gradle'
-        },
-        {
-          dependency_file: 'build.gradle',
-            name: 'com.google.code.gson/gson',
-            version: '2.8.8',
-            type: 'gradle'
-        }
-      ]
+    expect(dependencies.size).to eq(61)
+    expect(dependencies).to include(
+      {
+        dependency_file: "build.gradle",
+        name: "org.apache.kafka/connect-transforms",
+        type: "gradle",
+        version: "2.6.2"
+      },
+      {
+        dependency_file: "build.gradle",
+        name: "org.apache.kafka/connect-api",
+        type: "gradle",
+        version: "2.6.2"
+      },
+      {
+        dependency_file: "build.gradle",
+        name: "org.apache.kafka/kafka-clients",
+        type: "gradle",
+        version: "2.6.2"
+      }
     )
   end
 
   it 'should report an error when a file with no parseable dependencies is found' do
-    repo = Salus::Repo.new('spec/fixtures/report_build_gradle/bad_gradle_cant_parse')
+    repo = Salus::Repo.new('spec/fixtures/report_gradle_deps/bad_gradle_cant_parse')
     scanner = Salus::Scanners::ReportGradleDeps.new(repository: repo, config: {})
 
     scanner.run
 
     errs = scanner.report.to_h.fetch(:errors)
     expect(errs.size).to eq(1)
-    expect(errs[0][:message]).to eq('Could not parse dependencies from build.gradle file
-')
+    # Gradle includes time values (which won't be consistent) and a lot of whitespace and text
+    # in this message, so the following line asserts String inclusion rather than equality
+    expect(errs[0][:message].include?("
+Could not compile build file "\
+"'/home/spec/fixtures/report_gradle_deps/bad_gradle_cant_parse/build.gradle'"))
   end
 end

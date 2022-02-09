@@ -22,9 +22,20 @@ RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get inst
   libicu-dev \
   cmake \
   pkg-config \
-  sdk 
+  wget \
+  unzip
 
 WORKDIR /root
+
+### JDK
+RUN wget https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz -P /tmp
+RUN tar xvf /tmp/openjdk-17.0.2_linux-x64_bin.tar.gz -C /
+
+### Gradle
+RUN wget https://services.gradle.org/distributions/gradle-7.3.3-bin.zip -P /tmp
+RUN unzip -d /opt/gradle /tmp/gradle-*.zip
+ENV GRADLE_HOME="/opt/gradle/gradle-7.3.3"
+ENV PATH="${GRADLE_HOME}/bin:${PATH}"
 
 ### Rust
 ENV RUST_VERSION 1.53.0
@@ -113,31 +124,6 @@ RUN dpkg -i ripgrep_13.0.0_amd64.deb
 
 FROM ruby:2.7.2-slim@sha256:b9eebc5a6956f1def4698fac0930e7a1398a50c4198313fe87af0402cab8d149
 
-# Gradle - Used for discovering Gradle project dependencies
-
-# [1] The following block uses Aptitude to get Gradle's dependencies 
-# and downloads Gradle directly before being unzipped and added to PATH for installation
-# It fails at one of the `apt-get` commands immediately below this line or further down the Dockerfile, citing an "exit code: 100"
-# RUN apt-get -y update && apt-get upgrade -y --no-install-recommends && apt-get install -y wget \
-#   unzip \
-#   openjdk-11-jdk
-# RUN wget https://services.gradle.org/distributions/gradle-7.3.3-bin.zip -P /tmp
-# RUN unzip -d /opt/gradle /tmp/gradle-*.zip
-# ENV GRADLE_HOME="/opt/gradle/gradle-7.3.3"
-# ENV PATH="${GRADLE_HOME}/bin:${PATH}"
-
-# [2] The following line uses Aptitude to download and install Gradle directly.
-# It also fails citing "exit code: 100"
-# RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt install -y gradle
-
-# [3] The following block uses Aptitude, curl, and bash to install SDKManager (sdkman.io). 
-# Despite following the suggested install commands, the `sdk` command on its last line 
-# fails, because the command cannot be found
-# RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get install -y curl unzip zip && curl -s "https://get.sdkman.io" | /bin/sh
-# RUN chmod +x "${HOME}/.sdkman/bin/sdkman-init.sh"
-# RUN /bin/sh -c "${HOME}/.sdkman/bin/sdkman-init.sh"
-# RUN /bin/sh -c "sdk install gradle 7.3.3"
-
 ENV PATH="/root/.cargo/bin:/root/.local/bin:${PATH}"
 
 # Required so that Brakeman doesn't run into encoding
@@ -176,7 +162,8 @@ RUN curl -fsSL "$NODE_DOWNLOAD_URL" -o node.tar.gz \
   && rm -rf /node.tar.gz package.json yarn.lock /tmp/* ~/.npm
 
 
-### All other tools
+### Copy tools built in the previous
+### `builder` stage into this image
 ENV PIP_VERSION 18.1
 COPY --from=builder /root/go/bin/sift /usr/local/bin
 COPY --from=builder /root/gosec/gosec /usr/local/bin
@@ -186,6 +173,10 @@ COPY --from=builder /root/.local /root/.local
 COPY --from=builder /root/.cargo /root/.cargo
 COPY --from=builder /usr/local/go /usr/local/go
 COPY --from=builder /usr/bin/rg /usr/bin/rg
+COPY --from=builder /jdk-17.0.2 /jdk-17.0.2
+ENV JAVA_HOME /jdk-17.0.2
+COPY --from=builder /opt/gradle/gradle-7.3.3 /opt/gradle/gradle-7.3.3
+ENV PATH="/opt/gradle/gradle-7.3.3/bin:${PATH}"
 RUN ln -sf /usr/local/go/bin/go /usr/local/bin
 RUN python -m easy_install pip==${PIP_VERSION} \
   && python3 -m easy_install pip==${PIP_VERSION}

@@ -4,14 +4,7 @@ require 'json'
 
 dependency_metadata_regex = /-\s(?<group_id>.+):(?<artifact_id>.+):(?<version>.+)/
 
-# Gradle will scan the entire project to discover dependencies
-# using a build.gradle at the project root, so the 
-# working directory of this script MUST contain a build.gradle 
-# gradle_stdout = `gradle dependencies`
-
-# For debugging
-puts `which gradle`
-exit()
+gradle_stdout = `gradle dependencies`
 
 dependencies = []
 
