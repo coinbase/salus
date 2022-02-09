@@ -131,12 +131,7 @@ module Salus::Scanners::GithubAdvisory
 
       # Report scanner status
       if results.any?
-        # results.append({
-        #                  "NOTE": "Affected packages were found using - \n" \
-        #                  "1. 'go mod graph' results OR" \
-        #                  "\n2. 'go.sum' file." \
-        #                })
-        log(JSON.pretty_generate(results))
+        log(format_vulns(results))
         report_failure
       else
         report_success
