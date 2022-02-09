@@ -702,7 +702,7 @@ describe Salus::Report do
     end
   end
 
-  describe '#sort_output' do
+  describe '#deep_sort' do
     before :all do
       @reports = build_report
     end
@@ -737,7 +737,7 @@ describe Salus::Report do
       report
     end
 
-    context 'sort option given in directive' do
+    context 'for salus outputs' do
       let(:results_dir) { 'spec/fixtures/sorted_results' }
       it 'should deepsort json output format' do
         expected_result = File.read("#{results_dir}/sorted_json.json")

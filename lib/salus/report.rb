@@ -3,23 +3,24 @@ require 'deepsort'
 require 'salus/formatting'
 require 'salus/bugsnag'
 
+# Adding aliases to prevent deep_sort from failing when comparing symbols and strings
 class Symbol
-  alias old :<=>
+  alias old_salus_compare <=>
   def <=>(other)
     if other.is_a? String
       inspect <=> other
     else
-      old other
+      old_salus_compare other
     end
   end
 end
 class String
-  alias old :<=>
+  alias old_salus_compare <=>
   def <=>(other)
     if other.is_a? Symbol
-      old other.inspect
+      old_salus_compare other.inspect
     else
-      old other
+      old_salus_compare other
     end
   end
 end
@@ -181,10 +182,16 @@ module Salus
 
     def to_yaml
       YAML.dump(to_h.deep_sort)
+    rescue StandardError => e
+      bugsnag_notify(e.inspect + "\n" + e.message + "\nResult String: " + to_h.to_s)
+      YAML.dump(to_h)
     end
 
     def to_json
       JSON.pretty_generate(to_h.deep_sort)
+    rescue StandardError => e
+      bugsnag_notify(e.inspect + "\n" + e.message + "\nResult String: " + to_h.to_s)
+      JSON.pretty_generate(to_h)
     end
 
     def to_sarif(config = {})
@@ -391,7 +398,12 @@ module Salus
 
       # When creating a report body for yaml #to_yaml is not called
       # This sorts the hash before the report is generated
-      body = to_h.deep_sort
+      begin
+        body = to_h.deep_sort
+      rescue StandardError => e
+        bugsnag_notify(e.inspect + "\n" + e.message + "\nResult String: " + to_h.to_s)
+        body = to_h
+      end
       return YAML.dump(report_body_hash(config, body)) if config['format'] == 'yaml'
 
       raise ExportReportError, "unknown report format #{directive['format']}"
