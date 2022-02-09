@@ -3,8 +3,6 @@ require 'json'
 
 module Salus::Scanners::GithubAdvisory
   class Base < Salus::Scanners::Base
-    class SemVersion < Gem::Version; end
-    class SemDependency < Gem::Dependency; end
     class ApiTooManyRequestsError < StandardError; end
 
     MAX_RETRIES_FOR_GITHUB_API = 2
@@ -21,11 +19,6 @@ module Salus::Scanners::GithubAdvisory
                           MAVEN_ADVISORY_QUERY
                         elsif @repository.gemfile_present? || @repository.gemfile_lock_present?
                           RUBYGEMS_ADVISORY_QUERY
-                        elsif @repository.yarn_lock_present? ||
-                            @repository.package_lock_json_present? ||
-                            @repository.bower_json_present? ||
-                            @repository.package_json_present?
-                          NPM_ADVISORY_QUERY
                         end
     end
 
@@ -64,7 +57,6 @@ module Salus::Scanners::GithubAdvisory
         variables['after'] = response.dig("data", "securityVulnerabilities",
                                           "pageInfo", "endCursor")
       end
-      puts all_vulnerabilities_found.length
       all_vulnerabilities_found
     rescue StandardError => e
       report_error("Github Adviory failed: #{e}")
@@ -284,45 +276,5 @@ module Salus::Scanners::GithubAdvisory
         }
         }
     RUBYGEMS_QUERY
-    NPM_ADVISORY_QUERY = <<-NPM_QUERY.freeze
-        query($first: Int, $after: String) {
-        securityVulnerabilities(first: $first, after: $after, ecosystem:NPM) {
-            pageInfo {
-            endCursor
-            hasNextPage
-            hasPreviousPage
-            startCursor
-            }
-            nodes {
-            package {
-                name
-                ecosystem
-            }
-            vulnerableVersionRange
-            firstPatchedVersion {
-                identifier
-            }
-            advisory {
-                identifiers {
-                type
-                value
-                }
-                summary
-                description
-                severity
-                cvss {
-                score
-                vectorString
-                }
-                references {
-                url
-                }
-                publishedAt
-                withdrawnAt
-            }
-            }
-        }
-        }
-    NPM_QUERY
   end
 end

@@ -21,7 +21,11 @@ module Salus
 
     attr_accessor :active_scanners
 
-    ABSTRACT_SCANNERS = %i[Base NodeAudit LanguageVersion PackageVersion GithubAdvisory].freeze
+    ABSTRACT_SCANNERS = %i[Base GithubAdvisory NodeAudit LanguageVersion PackageVersion].freeze
+
+    GITHUB_ADVISORY_SCANNERS = Salus::Scanners::GithubAdvisory.constants
+      .reject { |klass| ABSTRACT_SCANNERS.include?(klass) }
+      .map { |klass| [klass.to_s, Salus::Scanners::GithubAdvisory.const_get(klass)] }
 
     PACKAGE_VERSION_SCANNERS = Salus::Scanners::PackageVersion.constants
       .reject { |klass| ABSTRACT_SCANNERS.include?(klass) }
@@ -31,17 +35,12 @@ module Salus
       .reject { |klass| ABSTRACT_SCANNERS.include?(klass) }
       .map { |klass| [klass.to_s, Salus::Scanners::LanguageVersion.const_get(klass)] }
 
-    GITHUB_ADVISORY_SCANNERS = Salus::Scanners::GithubAdvisory.constants
-      .reject { |klass| ABSTRACT_SCANNERS.include?(klass) }
-      .map { |klass| [klass.to_s, Salus::Scanners::GithubAdvisory.const_get(klass)] }
-
     # Dynamically get all other Scanner classes
     OTHER_SCANNERS = Salus::Scanners.constants
       .reject { |klass| ABSTRACT_SCANNERS.include?(klass) }
       .map { |klass| [klass.to_s, Salus::Scanners.const_get(klass)] }
 
-    SCANNERS = (PACKAGE_VERSION_SCANNERS + LANGUAGE_VERSION_SCANNERS +
-        GITHUB_ADVISORY_SCANNERS + OTHER_SCANNERS).sort.to_h
+    SCANNERS = (GITHUB_ADVISORY_SCANNERS + PACKAGE_VERSION_SCANNERS + LANGUAGE_VERSION_SCANNERS + OTHER_SCANNERS).sort.to_h
       .freeze
 
     # This is the base configuration file, and we merge all other configuration

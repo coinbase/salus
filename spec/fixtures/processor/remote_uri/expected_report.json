@@ -64,6 +64,7 @@
       "Brakeman",
       "BundleAudit",
       "CargoAudit",
+      "GoGithubAdvisory",
       "GoVersionScanner",
       "Gosec",
       "NPMAudit",
@@ -105,6 +106,10 @@
         "scanner_timeout_s": 0
       },
       "CargoAudit": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "GoGithubAdvisory": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },

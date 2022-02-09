@@ -3,13 +3,17 @@ require 'salus/scanners/github_advisory/base'
 module Salus::Scanners::GithubAdvisory
   class GoGithubAdvisory < Base
     class SemVersion < Gem::Version; end
+    class SemDependency < Gem::Dependency; end
+
+    EMPTY_STRING = "Not Found".freeze
+    SOURCE_STRING = "Github Advisory".freeze
 
     def self.supported_languages
       %w[go]
     end
 
     def run_github_advisory_scan?
-      @repository.go_mod_present? && @repository.go_sum_present?
+      @repository.go_mod_present? || @repository.go_sum_present?
     end
 
     def find_dependencies
@@ -39,11 +43,11 @@ module Salus::Scanners::GithubAdvisory
             direct, indirect = line.split(" ")
             all_dependencies.append({
                                       "name": direct.split("@")[0].to_s,
-                                "version": direct.split("@")[1].to_s
+                                      "version": direct.split("@")[1].to_s
                                     })
             all_dependencies.append({
                                       "name": indirect.split("@")[0].to_s,
-                                "version": indirect.split("@")[1].to_s
+                                      "version": indirect.split("@")[1].to_s
                                     })
           end
         end
@@ -114,15 +118,19 @@ module Salus::Scanners::GithubAdvisory
             end
             if version_match_found
               results.append({
-                               "Package": m.dig("package", "name"),
-                  "Vulnerable Version": m.dig("vulnerableVersionRange") || "Not Found",
-                  "Version Detected": version,
-                  "Patched Versions": m.dig("firstPatchedVersion", "identifier") || "Not Found",
-                  "Summary": m.dig("advisory", "summary") || "Not Found",
-                  "Severity": m.dig("advisory", "severity") || "Not Found",
-                  "ID": m["advisory"]["identifiers"][0]["value"] || "Not Found",
-                  "References": m.dig("advisory", "references").collect { |p| p["url"].to_s },
-                  "Source": "RUN go mod graph OR Check go.sum"
+                               "Package": m.dig("package", "name").to_s,
+                                "Vulnerable Version": m.dig("vulnerableVersionRange").to_s ||
+                                  EMPTY_STRING,
+                                "Version Detected": version.to_s,
+                                "Patched Versions": m.dig("firstPatchedVersion",
+                                                          "identifier").to_s || EMPTY_STRING,
+                                "Summary": m.dig("advisory", "summary").to_s || EMPTY_STRING,
+                                "Severity": m.dig("advisory", "severity").to_s || EMPTY_STRING,
+                                "ID": m["advisory"]["identifiers"][0]["value"].to_s || EMPTY_STRING,
+                                "References": m.dig("advisory", "references").collect do |p|
+                                                p["url"].to_s
+                                              end .join(", "),
+                                "Source": SOURCE_STRING
                              })
             end
           end
