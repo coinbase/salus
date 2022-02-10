@@ -129,7 +129,7 @@ module Salus::Scanners::GithubAdvisory
                                 "ID": m["advisory"]["identifiers"][0]["value"].to_s || EMPTY_STRING,
                                 "References": m.dig("advisory", "references").collect do |p|
                                                 p["url"].to_s
-                                              end .join(", "),
+                                              end [-1],
                                 "Source": SOURCE_STRING
                              })
             end
@@ -140,6 +140,7 @@ module Salus::Scanners::GithubAdvisory
       # Report scanner status
       if results.any?
         log(format_vulns(results))
+        report_stdout(results.to_json)
         report_failure
       else
         report_success

@@ -2,7 +2,7 @@ require 'json'
 require 'json-schema'
 require_relative './base_sarif'
 
-paths = ['./', 'language_version', 'package_version']
+paths = ['./', 'language_version', 'package_version', 'github_advisory']
 paths.each do |path|
   Dir.entries(File.expand_path(path, __dir__)).sort.each do |filename|
     next unless /_sarif.rb\z/.match?(filename) && !filename.eql?('base_sarif.rb')

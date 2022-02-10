@@ -19,6 +19,8 @@ module Salus::Scanners::GithubAdvisory
                           MAVEN_ADVISORY_QUERY
                         elsif @repository.gemfile_present? || @repository.gemfile_lock_present?
                           RUBYGEMS_ADVISORY_QUERY
+                        else
+                          ALL_ADVISORY_QUERY
                         end
     end
 
@@ -45,10 +47,22 @@ module Salus::Scanners::GithubAdvisory
     def fetch_advisories
       # Handle paginating over Github API
       all_vulnerabilities_found = []
+      # Exclude exception ids from Github API Results
+      exception_ids = fetch_exception_ids
+
       variables = { "first" => GITHUB_API_PAGE_SIZE }
       GITHUB_API_MAX_PAGES.times do
         response = send_request(github_query, variables)
         vulnerabilities_per_page = response.dig("data", "securityVulnerabilities", "nodes")
+
+        vulnerabilities_per_page.delete_if do |vulns|
+          identifiers_found = vulns.dig("advisory", "identifiers").collect do |p|
+            p["value"].to_s
+          end
+          intersection = identifiers_found & exception_ids
+          true if intersection.length.positive?
+        end
+
         all_vulnerabilities_found += vulnerabilities_per_page
         unless response.dig("data", "securityVulnerabilities", "pageInfo", "hasNextPage") == true
           break
@@ -276,5 +290,45 @@ module Salus::Scanners::GithubAdvisory
         }
         }
     RUBYGEMS_QUERY
+    ALL_ADVISORY_QUERY = <<-ALL_QUERY.freeze
+        query($first: Int, $after: String) {
+        securityVulnerabilities(first: $first, after: $after) {
+            pageInfo {
+            endCursor
+            hasNextPage
+            hasPreviousPage
+            startCursor
+            }
+            nodes {
+            package {
+                name
+                ecosystem
+            }
+            vulnerableVersionRange
+            firstPatchedVersion {
+                identifier
+            }
+            advisory {
+                identifiers {
+                type
+                value
+                }
+                summary
+                description
+                severity
+                cvss {
+                score
+                vectorString
+                }
+                references {
+                url
+                }
+                publishedAt
+                withdrawnAt
+            }
+            }
+        }
+        }
+    ALL_QUERY
   end
 end
