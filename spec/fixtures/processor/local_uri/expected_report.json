@@ -72,6 +72,7 @@
       "RepoNotEmpty",
       "ReportGoDep",
       "ReportNodeModules",
+      "ReportPackageResolved",
       "ReportPomXml",
       "ReportPythonModules",
       "ReportRubyGems",
@@ -133,6 +134,10 @@
         "scanner_timeout_s": 0
       },
       "ReportNodeModules": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportPackageResolved": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },

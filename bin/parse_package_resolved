@@ -1,0 +1,37 @@
+#!/usr/bin/env ruby
+
+require 'json'
+
+package_resolved_text = ''
+begin
+  package_resolved_text = File.read(ARGV[0])
+rescue StandardError
+  warn 'Unable to read Package.resolved file'
+  exit(1)
+end
+
+resolved_object = nil
+begin
+  resolved_object = JSON.parse(package_resolved_text)
+rescue JSON::ParserError
+  warn 'Unable to parse Package.resolved JSON'
+  exit(1)
+end
+
+pinned_dependencies = resolved_object['object']['pins']
+
+dependencies = []
+
+pinned_dependencies.each do |pinned_dep|
+  dependency_hash = {}
+  dependency_hash[:package] = pinned_dep['package']
+  dependency_hash[:version] = pinned_dep['state']['version']
+  dependencies.append(dependency_hash)
+end
+
+if dependencies.empty?
+  warn 'Could not parse dependencies from Package.resolved file'
+  exit(1)
+end
+
+puts dependencies.to_json

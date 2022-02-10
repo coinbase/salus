@@ -1,0 +1,34 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Cryptor",
+        "repositoryURL": "https://github.com/Kitura/BlueCryptor.git",
+        "state": {
+          "branch": null,
+          "revision": "88fc6e132f41ece53e49acc0e4f67b0331c15b90",
+          "version": "2.0.1"
+        }
+      },
+      {
+        "package": "CryptorECC",
+        "repositoryURL": "https://github.com/Kitura/BlueECC.git",
+        "state": {
+          "branch": null,
+          "revision": "baf6ed3fc1a622675f0041b4aff7c02dd1a93818",
+          "version": "1.2.200"
+        }
+      },
+      {
+        "package": "CryptorRSA",
+        "repositoryURL": "https://github.com/Kitura/BlueRSA.git",
+        "state": {
+          "branch": null,
+          "revision": "440f78db26d8bb073f29590f1c7bd31004da09ae",
+          "version": "1.0.201"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
