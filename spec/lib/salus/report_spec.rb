@@ -88,7 +88,7 @@ describe Salus::Report do
       end
       expect(report).to receive(:apply_report_sarif_filters)
       sarif = report.to_sarif
-      expect(sarif).to eq('{"version":"2.1.0","$schema":"foo","runs":[]}')
+      expect(sarif).to eq('{"$schema":"foo","runs":[],"version":"2.1.0"}')
     end
 
     it 'does not include project_name/custom_info/config if not given' do
@@ -251,21 +251,24 @@ describe Salus::Report do
                       'post' => params }
         report = build_report(directive)
 
-        stub_request(:post, "https://nerv.tk3/salus-report").with(body: "{\n  \"foo\": \"bar\",\n"\
-          "  \"abc\": \"def\",\n  \"report\": {\n    \"version\": \"2.17.0\",\n    \"project_nam"\
-          "e\": \"eva00\",\n    \"passed\": false,\n    \"scans\": {\n      \"DerpScanner\": {\n "\
-          "       \"scanner_name\": \"DerpScanner\",\n        \"passed\": false,\n        \"warn"\
-          "\": {\n        },\n        \"info\": {\n          \"asdf\": \"qwerty\"\n        },\n "\
-          "       \"errors\": [\n\n        ]\n      }\n    },\n    \"errors\": [\n      {\n      "\
-          "  \"message\": \"derp\"\n      },\n      {\n        \"message\": \"derp\"\n      },\n "\
-          "     {\n        \"message\": \"derp\"\n      },\n      {\n        \"message\": \"derp"\
-          "\"\n      },\n      {\n        \"message\": \"derp\"\n      }\n    ],\n    \"custom_"\
-          "info\": \"test unit\"\n  }\n}",
+        stub_request(:post, "https://nerv.tk3/salus-report")
+          .with(
+            body: "{\n  \"foo\": \"bar\",\n  \"abc\": \"def\",\n  \"report\": {\n    "\
+           "\"custom_info\": \"test unit\",\n    \"errors\": [\n      {\n        "\
+           "\"message\": \"derp\"\n      },\n      {\n        \"message\": \"derp\"\n      },\n"\
+           "      {\n        \"message\": \"derp\"\n      },\n      {\n        \"message\": "\
+           "\"derp\"\n      },\n      {\n        \"message\": \"derp\"\n      }\n    ],\n    "\
+           "\"passed\": false,\n    \"project_name\": \"eva00\",\n    \"scans\": {\n      "\
+           "\"DerpScanner\": {\n        \"errors\": [\n\n        ],\n        \"info\": {\n     "\
+           "     \"asdf\": \"qwerty\"\n        },\n        \"passed\": false,\n        "\
+           "\"scanner_name\": \"DerpScanner\",\n        \"warn\": {\n        }\n      }\n    "\
+           "},\n    \"version\": \"2.17.0\"\n  }\n}",
            headers: { 'Accept' => '*/*',
-        'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-        'Content-Type' => 'application/json',
-        'User-Agent' => 'Faraday v1.3.0',
-        'X-Scanner' => 'salus' }).to_return(status: 200, body: "", headers: {})
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Content-Type' => 'application/json',
+          'User-Agent' => 'Faraday v1.3.0',
+          'X-Scanner' => 'salus' }
+          ).to_return(status: 200, body: "", headers: {})
 
         expect { report.export_report }.not_to raise_error
       end
@@ -277,18 +280,17 @@ describe Salus::Report do
         directive = { 'uri' => url, 'format' => 'yaml', 'post' => params }
         report = build_report(directive)
 
-        stub_request(:post, "https://nerv.tk3/salus-report").with(body: "---\nfoo: bar\nabc: def\n"\
-          "report:\n  :version: 2.17.0\n  :project_name: eva00\n  :passed: false\n  :scans:\n    "\
-          "DerpScanner:\n      :scanner_name: DerpScanner\n      :passed: false\n      :warn: {}\n"\
-          "      :info:\n        :asdf: qwerty\n      :errors: []\n  :errors:\n  - :message: derp"\
-          "\n  - :message: derp\n  - :message: derp\n  - :message: derp\n  - :message: derp\n  "\
-          ":custom_info: test unit\n",
+        stub_request(:post, "https://nerv.tk3/salus-report")
+          .with(body: "---\nfoo: bar\nabc: def\nreport:\n  :custom_info: test unit\n  :errors:\n  "\
+            "- :message: derp\n  - :message: derp\n  - :message: derp\n  - :message: derp\n  - "\
+            ":message: derp\n  :passed: false\n  :project_name: eva00\n  :scans:\n    DerpScanner:"\
+            "\n      :errors: []\n      :info:\n        :asdf: qwerty\n      :passed: false\n     "\
+            " :scanner_name: DerpScanner\n      :warn: {}\n  :version: 2.17.0\n",
            headers: { 'Accept' => '*/*',
-            'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-            'Content-Type' => 'text/x-yaml',
-            'User-Agent' => 'Faraday v1.3.0',
-            'X-Scanner' => 'salus' }).to_return(status: 200, body: "", headers: {})
-
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Content-Type' => 'text/x-yaml',
+          'User-Agent' => 'Faraday v1.3.0',
+          'X-Scanner' => 'salus' }).to_return(status: 200, body: "", headers: {})
         expect { report.export_report }.not_to raise_error
       end
 
@@ -329,16 +331,17 @@ describe Salus::Report do
         report = build_report(directive)
         report.instance_variable_set(:@scan_reports, [])
 
-        stub_request(:post, "https://nerv.tk3/salus-report").with(
-          body: "{\n  \"foo\": \"bar\",\n  \"abc\": \"def\",\n  \"report\": {\n    \"version\": "\
-          "\"2.1.0\",\n    \"$schema\": \"https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/"\
-          "schemas/sarif-schema-2.1.0\",\n    \"runs\": [\n\n    ]\n  }\n}",
-          headers: { 'Accept' => '*/*',
-            'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-            'Content-Type' => 'application/json',
-            'User-Agent' => 'Faraday v1.3.0',
-            'X-Scanner' => 'salus_sarif' }
-        ).to_return(status: 200, body: "", headers: {})
+        stub_request(:post, "https://nerv.tk3/salus-report")
+          .with(
+            body: "{\n  \"foo\": \"bar\",\n  \"abc\": \"def\",\n  \"report\": {\n    \"$schema\":"\
+            " \"https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/schemas/sarif-schema-2.1.0"\
+            "\",\n    \"runs\": [\n\n    ],\n    \"version\": \"2.1.0\"\n  }\n}",
+            headers: { 'Accept' => '*/*',
+              'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+              'Content-Type' => 'application/json',
+              'User-Agent' => 'Faraday v1.3.0',
+              'X-Scanner' => 'salus_sarif' }
+          ).to_return(status: 200, body: "", headers: {})
 
         expect(report).to receive(:to_sarif).with(options).and_call_original.twice
         expect { report.export_report }.not_to raise_error
@@ -696,6 +699,85 @@ describe Salus::Report do
         times: 1
       )
       expect(File.exist?(file_path)).to eq(false)
+    end
+  end
+
+  describe '#deep_sort' do
+    before :all do
+      @reports = build_report
+    end
+
+    def build_report
+      report = Salus::Report.new(project_name: 'Neon genesis')
+      config = {
+        "matches" => [
+          {
+            "pattern" => "1 == $X",
+            "language" => "python",
+            "message" => "Useless equality test.",
+            "required" => true
+          }
+        ]
+      }
+      repo = Salus::Repo.new("spec/fixtures/semgrep")
+      scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
+      scanner.run
+
+      report.add_scan_report(scanner.report, required: true)
+
+      path2 = Salus::Repo.new('spec/fixtures/bundle_audit/no_cves')
+      scanner = Salus::Scanners::BundleAudit.new(repository: path2, config: {})
+      scanner.run
+      report.add_scan_report(scanner.report, required: false)
+
+      path = Salus::Repo.new('spec/fixtures/python/python_project_no_vulns')
+      scanner = Salus::Scanners::Bandit.new(repository: path, config: {})
+      scanner.run
+      report.add_scan_report(scanner.report, required: false)
+      report
+    end
+
+    context 'for salus outputs' do
+      let(:results_dir) { 'spec/fixtures/sorted_results' }
+      it 'should deepsort json output format' do
+        expected_result = File.read("#{results_dir}/sorted_json.json")
+        sorted_json = report.to_json
+        expect(expected_result).to eq(sorted_json)
+      end
+
+      it 'should deepsort sarif output' do
+        expected_result = File.read("#{results_dir}/sorted_sarif.json")
+        sorted_sarif = JSON.parse(report.to_sarif)
+        sorted_sarif['runs'].each do |result|
+          # PROJECTROOT was taken out because it has the users local directory in the result json
+          # This could cause tests to fail, when run on different machines
+          result['originalUriBaseIds'].delete('PROJECTROOT')
+        end
+        expect(expected_result).to eq(JSON.pretty_generate(sorted_sarif))
+      end
+
+      it 'should deepsort YAML output' do
+        expected_yaml = File.read("#{results_dir}/sorted_yaml.yml")
+        expected_yaml.slice!("---\n")
+        result = report.to_yaml
+        result.slice!("---\n")
+        expect(expected_yaml).to eq(result)
+      end
+
+      it 'should deepsort cyclonedx output' do
+        cyclonedx = JSON.parse(report.to_cyclonedx)
+        bom = JSON.parse(Base64.strict_decode64(cyclonedx['bom']))
+        bom['serialNumber'] = '' # serial number changes with each run
+        cyclonedx['bom'] = '' # encoding for bom changes with each run
+
+        # Check Cyclonedx output is sorted
+        expected_cyclone = File.read("#{results_dir}/sorted_cyclonedx.json")
+        expect(expected_cyclone).to eq(JSON.pretty_generate(cyclonedx))
+
+        # Check cyclondx bom is also sorted
+        expected_cyclone_bom = File.read("#{results_dir}/sorted_bom.json")
+        expect(expected_cyclone_bom).to eq(JSON.pretty_generate(bom))
+      end
     end
   end
 end

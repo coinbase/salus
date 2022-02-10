@@ -45,8 +45,8 @@ describe Sarif::SarifReport do
       body = JSON.parse(report.to_sarif)
       report1 = body['runs'][0]['tool']
       report2 = body['runs'][1]['tool']
-      expect(report1["driver"]['name']).to eq('Unsupported_Scanner')
-      expect(report2['driver']['name']).to eq('Neon_Scanner')
+      expect(report1['driver']['name']).to eq('Neon_Scanner')
+      expect(report2["driver"]['name']).to eq('Unsupported_Scanner')
     end
   end
 end
