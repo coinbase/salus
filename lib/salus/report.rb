@@ -1,6 +1,29 @@
 require 'json'
+require 'deepsort'
 require 'salus/formatting'
 require 'salus/bugsnag'
+
+# Adding aliases to prevent deep_sort from failing when comparing symbols and strings
+class Symbol
+  alias old_salus_compare <=>
+  def <=>(other)
+    if other.is_a? String
+      inspect <=> other
+    else
+      old_salus_compare other
+    end
+  end
+end
+class String
+  alias old_salus_compare <=>
+  def <=>(other)
+    if other.is_a? Symbol
+      old_salus_compare other.inspect
+    else
+      old_salus_compare other
+    end
+  end
+end
 module Salus
   class Report
     include Formatting
@@ -158,17 +181,30 @@ module Salus
     end
 
     def to_yaml
+      YAML.dump(to_h.deep_sort)
+    rescue StandardError => e
+      bugsnag_notify(e.inspect + "\n" + e.message + "\nResult String: " + to_h.to_s)
       YAML.dump(to_h)
     end
 
     def to_json
+      JSON.pretty_generate(to_h.deep_sort)
+    rescue StandardError => e
+      bugsnag_notify(e.inspect + "\n" + e.message + "\nResult String: " + to_h.to_s)
       JSON.pretty_generate(to_h)
     end
 
     def to_sarif(config = {})
       sarif_json = Sarif::SarifReport.new(@scan_reports, config, @repo_path).to_sarif
+      begin
+        sorted_sarif = JSON.parse(sarif_json).deep_sort
+      rescue StandardError => e
+        bugsnag_notify(e.inspect + "\n" + e.message + "\nResult String: " + to_h.to_s)
+        sorted_sarif = JSON.parse(sarif_json)
+      end
       # We will validate to ensure the applied filter
       # doesn't produce any invalid SARIF
+      sarif_json = JSON.pretty_generate(sorted_sarif)
       Sarif::SarifReport.validate_sarif(apply_report_sarif_filters(sarif_json))
     rescue StandardError => e
       bugsnag_notify(e.class.to_s + " " + e.message + "\nBuild Info:" + @builds.to_s)
@@ -210,13 +246,26 @@ module Salus
 
     def to_cyclonedx(config = {})
       cyclonedx_bom = Cyclonedx::Report.new(@scan_reports, config).to_cyclonedx
+      begin
+        sorted_cyclonedx_bom = cyclonedx_bom.deep_sort
+      rescue StandardError => e
+        bugsnag_notify(e.inspect + "\n" + e.message + "\nResult String: " + to_h.to_s)
+        sorted_cyclonedx_bom = cyclonedx_bom
+      end
+
       cyclonedx_report = {
         autoCreate: true,
         projectName: config['cyclonedx_project_name'] || "",
         projectVersion: "1",
-        bom: Base64.strict_encode64(JSON.generate(cyclonedx_bom))
+        bom: Base64.strict_encode64(JSON.generate(sorted_cyclonedx_bom))
       }
-      JSON.pretty_generate(cyclonedx_report)
+      begin
+        sorted_cyclonedx_report = cyclonedx_report.deep_sort
+      rescue StandardError => e
+        bugsnag_notify(e.inspect + "\n" + e.message + "\nResult String: " + to_h.to_s)
+        sorted_cyclonedx_report = cyclonedx_report
+      end
+      JSON.pretty_generate(sorted_cyclonedx_report)
     rescue StandardError => e
       bugsnag_notify(e.class.to_s + " " + e.message + "\nBuild Info:" + @builds.to_s)
     end
@@ -363,7 +412,15 @@ module Salus
         return JSON.pretty_generate(report_body_hash(config, body))
       end
 
-      return YAML.dump(report_body_hash(config, to_h)) if config['format'] == 'yaml'
+      # When creating a report body for yaml #to_yaml is not called
+      # This sorts the hash before the report is generated
+      begin
+        body = to_h.deep_sort
+      rescue StandardError => e
+        bugsnag_notify(e.inspect + "\n" + e.message + "\nResult String: " + to_h.to_s)
+        body = to_h
+      end
+      return YAML.dump(report_body_hash(config, body)) if config['format'] == 'yaml'
 
       raise ExportReportError, "unknown report format #{directive['format']}"
     end
