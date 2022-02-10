@@ -7,3 +7,6 @@ scanner_configs:
       uglify-js:
         min_version: '0.6.3'
         max_version: '0.10.3'
+
+enforced_scanners:
+  - RepoNotEmpty
