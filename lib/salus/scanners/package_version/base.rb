@@ -11,7 +11,7 @@ module Salus::Scanners::PackageVersion
 
     def run
       # gather all package versions specified in scanner_config
-      package_versions = @config['package_versions']
+      package_versions = @config['package_versions'] || []
 
       # for each package in there, check if any violations exist
       package_versions.each do |name, specified_version|
