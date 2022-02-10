@@ -226,7 +226,7 @@ describe Salus::Processor do
     end
   end
 
-  describe '#export_report', :focus do
+  describe '#export_report' do
     context 'remote URI' do
       let(:expected_report) do
         File.read('spec/fixtures/processor/remote_uri/expected_report.json').strip
