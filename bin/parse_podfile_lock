@@ -5,9 +5,8 @@ require 'yaml'
 
 dependency_metadata_regex = /(?<pod>.*?)\s\((=|(~>))?\s?(?<version>(\d*\.?)+)\)/
 
-podfile_lock = nil
-begin
-  podfile_lock = YAML.safe_load(File.read(ARGV[0]))
+podfile_lock = begin
+  YAML.safe_load(File.read(ARGV[0]))
 rescue SyntaxError, Psych::SyntaxError
   warn 'Unable to parse Podfile.lock file'
   exit(1)
@@ -20,14 +19,7 @@ end
 
 dependencies = []
 # Parse individual dependency entry
-podfile_lock['PODS'].each do |dependency_entry|
-  dependency_properties = dependency_metadata_regex.match(dependency_entry)
-  dependency_hash = {}
-  dependency_hash[:pod] = dependency_properties[:pod]
-  dependency_hash[:version] = dependency_properties[:version]
-  dependencies.append(dependency_hash)
-end
-podfile_lock['DEPENDENCIES'].each do |dependency_entry|
+(podfile_lock['PODS'] + podfile_lock['DEPENDENCIES']).each do |dependency_entry|
   dependency_properties = dependency_metadata_regex.match(dependency_entry)
   dependency_hash = {}
   dependency_hash[:pod] = dependency_properties[:pod]
