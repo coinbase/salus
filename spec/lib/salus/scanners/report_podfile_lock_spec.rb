@@ -53,13 +53,13 @@ describe Salus::Scanners::ReportPodfileLock do
         {
           dependency_file: 'Podfile.lock',
         name: 'CocoaAsyncSocket',
-        version: '7.6.5',
+        version: '= 7.6.5',
         type: 'cocoa'
         },
         {
           dependency_file: 'Podfile.lock',
             name: 'Flipper',
-            version: '0.87.0',
+            version: '= 0.87.0',
             type: 'cocoa'
         }
       ]

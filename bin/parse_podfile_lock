@@ -20,10 +20,10 @@ end
 dependencies = []
 # Parse individual dependency entry
 (podfile_lock['PODS'] + podfile_lock['DEPENDENCIES']).each do |dependency_entry|
-  dependency_properties = dependency_metadata_regex.match(dependency_entry)
+  dependency_properties = dependency_entry.split(' (')
   dependency_hash = {}
-  dependency_hash[:pod] = dependency_properties[:pod]
-  dependency_hash[:version] = dependency_properties[:version]
+  dependency_hash[:pod] = dependency_properties[0]
+  dependency_hash[:version] = dependency_properties[1].delete_suffix(')')
   dependencies.append(dependency_hash)
 end
 
