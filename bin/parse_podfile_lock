@@ -7,7 +7,7 @@ dependency_metadata_regex = /(?<pod>.*?)\s\((=|(~>))?\s?(?<version>(\d*\.?)+)\)/
 
 podfile_lock = nil
 begin
-  podfile_lock = YAML.load(File.read(ARGV[0]))
+  podfile_lock = YAML.safe_load(File.read(ARGV[0]))
 rescue SyntaxError, Psych::SyntaxError
   warn 'Unable to parse Podfile.lock file'
   exit(1)
