@@ -3,13 +3,11 @@
 require 'json'
 require 'yaml'
 
-dependency_metadata_regex = /(?<pod>.*?)\s\((=|(~>))?\s?(?<version>(\d*\.?)+)\)/
-
 podfile_lock = begin
   YAML.safe_load(File.read(ARGV[0]))
-rescue SyntaxError, Psych::SyntaxError
-  warn 'Unable to parse Podfile.lock file'
-  exit(1)
+               rescue SyntaxError, Psych::SyntaxError
+                 warn 'Unable to parse Podfile.lock file'
+                 exit(1)
 end
 
 if podfile_lock['PODS'].nil? || podfile_lock['DEPENDENCIES'].nil?
