@@ -4,7 +4,6 @@ require 'salus/scanners/base'
 
 module Salus::Scanners
   class ReportGradleDeps < Base
-    UNKNOWN_VERSION = ''.freeze
 
     def run
       shell_return = run_shell("/home/bin/parse_gradle_deps")
@@ -14,13 +13,13 @@ module Salus::Scanners
         return
       end
 
-      dependencies = nil
       begin
         dependencies = JSON.parse(shell_return.stdout)
       rescue JSON::ParserError
         err_msg = "Could not parse JSON returned by /home/bin/parse_gradle_deps's stdout!"
         report_stderr(err_msg)
         report_error(err_msg)
+        return
       end
 
       dependencies.each do |dependency|
