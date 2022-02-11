@@ -74,19 +74,19 @@ describe Salus::Scanners::ReportPodfileLock do
 
     errs = scanner.report.to_h.fetch(:errors)
     expect(errs.size).to eq(1)
-    expect(errs[0][:message]).to eq('Could not parse dependencies from Podfile.lock file
+    expect(errs[0][:message]).to eq('Unable to parse Podfile.lock file
 ')
   end
 
-  it 'should report an error when an invalid Podfile.lock is scanned' do
-    repo = Salus::Repo.new('spec/fixtures/report_podfile_lock/bad_podfile_nil_value')
+  it 'should report an error when an unparseable file is found' do
+    repo = Salus::Repo.new('spec/fixtures/report_podfile_lock/empty_podfile_values')
     scanner = Salus::Scanners::ReportPodfileLock.new(repository: repo, config: {})
 
     scanner.run
 
     errs = scanner.report.to_h.fetch(:errors)
     expect(errs.size).to eq(1)
-    expect(errs[0][:message]).to eq('Could not parse dependencies from Podfile.lock file
+    expect(errs[0][:message]).to eq('"PODS" or "DEPENDENCIES" key not found in Podfile.lock!
 ')
   end
 end
