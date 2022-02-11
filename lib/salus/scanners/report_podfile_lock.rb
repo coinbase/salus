@@ -32,7 +32,6 @@ module Salus::Scanners
         err_msg = "Could not parse JSON returned by bin/parse_podfile_lock's stdout!"
         report_stderr(err_msg)
         report_error(err_msg)
-        nil
       end
     end
 
