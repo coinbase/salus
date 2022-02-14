@@ -35,6 +35,7 @@ module Salus
       { handle: :ios_app, filename: '.ipa', wildcard: true },
       # Java
       { handle: :pom_xml, filename: 'pom.xml' },
+      { handle: :build_gradle, filename: 'build.gradle' }
       # Swift
       { handle: :package_resolved, filename: 'Package.resolved' }
     ].freeze
