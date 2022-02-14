@@ -5,7 +5,7 @@ require 'yaml'
 
 podfile_lock = begin
   YAML.safe_load(File.read(ARGV[0]))
-               rescue SyntaxError, Psych::SyntaxError
+               rescue StandardError
                  warn 'Unable to parse Podfile.lock file'
                  exit(1)
 end
