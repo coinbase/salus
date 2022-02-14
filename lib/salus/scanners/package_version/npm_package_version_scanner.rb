@@ -32,11 +32,6 @@ module Salus::Scanners::PackageVersion
           report_error(error_msg)
           @passed = false
         end
-      else
-        # dependency not present in project
-        error_msg = "Package #{package_name} was not found in the package-lock.json"
-        report_error(error_msg)
-        @passed = false
       end
     end
 
