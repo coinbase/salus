@@ -21,16 +21,6 @@ describe Salus::Scanners::PackageVersion::NPMPackageScanner do
 
   describe '#run' do
     context 'package-lock file present' do
-      it 'should fail when specified package is not present in the repository' do
-        repo = Salus::Repo.new('spec/fixtures/blank_repository')
-        scanner = Salus::Scanners::PackageVersion::NPMPackageScanner.new(repository: repo,
-        config: scanner_config)
-        scanner.run
-        message = scanner.report.to_h[:errors][0][:message]
-        expect(scanner.report.passed?).to eq(false)
-        expect(message).to eq("Package mobx was not found in the package-lock.json")
-      end
-
       it 'should fail when package in repo does not fall within the specified package range' do
         repo = Salus::Repo.new('spec/fixtures/npm_audit/failure')
         scanner = Salus::Scanners::PackageVersion::NPMPackageScanner.new(repository: repo,
@@ -58,6 +48,16 @@ describe Salus::Scanners::PackageVersion::NPMPackageScanner do
         config = scanner_config
         config['package_versions']['mobx']['min_version'] = '3.6.0'
         config['package_versions']['uglify-js']['max_version'] = '1.3.4'
+        scanner = Salus::Scanners::PackageVersion::NPMPackageScanner.new(repository: repo,
+          config: config)
+        scanner.run
+        expect(scanner.report.passed?).to eq(true)
+      end
+
+      it 'should pass when package-lock file exists and nothing is configured for any package' do
+        repo = Salus::Repo.new('spec/fixtures/npm_audit/failure')
+        config = config_file
+        config['scanner_configs']["NPMPackageScanner"] = []
         scanner = Salus::Scanners::PackageVersion::NPMPackageScanner.new(repository: repo,
           config: config)
         scanner.run
