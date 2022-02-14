@@ -20,8 +20,8 @@ dependencies = []
 (podfile_lock['PODS'] + podfile_lock['DEPENDENCIES']).each do |dependency_entry|
   dependency_properties = dependency_entry.split(' (')
   dependency_hash = {}
-  dependency_hash[:pod] = dependency_properties[0]
-  dependency_hash[:version] = dependency_properties[1].delete_suffix(')')
+  dependency_hash[:pod] = dependency_properties[0].strip
+  dependency_hash[:version] = dependency_properties[1].delete_suffix(')').strip
   dependencies.append(dependency_hash)
 end
 
