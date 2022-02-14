@@ -12,6 +12,8 @@ module Salus::Scanners
     class InvalidScannerInvocationError < StandardError; end
     class ConfigFormatError < StandardError; end
     class ScannerTimeoutError < StandardError; end
+    # Default unknown version for dependency scanners
+    UNKNOWN_VERSION = ''.freeze
 
     include Salus::SalusBugsnag
 
