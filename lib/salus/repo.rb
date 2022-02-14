@@ -35,6 +35,7 @@ module Salus
       { handle: :ios_app, filename: '.ipa', wildcard: true },
       # Java
       { handle: :pom_xml, filename: 'pom.xml' },
+      { handle: :build_gradle, filename: 'build.gradle' },
       # Apple Ecosystem (macOS, iOS, etc)
       { handle: :podfile_lock, filename: 'Podfile.lock' }
     ].freeze

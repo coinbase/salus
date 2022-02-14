@@ -22,10 +22,20 @@ RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get inst
   libicu-dev \
   cmake \
   pkg-config \
-  wget
+  wget \
+  unzip
 
 WORKDIR /root
 
+### JDK
+RUN wget https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz -P /tmp
+RUN tar xvf /tmp/openjdk-17.0.2_linux-x64_bin.tar.gz -C /
+
+### Gradle
+RUN wget https://services.gradle.org/distributions/gradle-7.3.3-bin.zip -P /tmp
+RUN unzip -d /opt/gradle /tmp/gradle-*.zip
+ENV GRADLE_HOME="/opt/gradle/gradle-7.3.3"
+ENV PATH="${GRADLE_HOME}/bin:${PATH}"
 
 ### Rust
 ENV RUST_VERSION 1.53.0
@@ -111,6 +121,7 @@ RUN bundle install --deployment --without development:test
 RUN curl -LO https://github.com/BurntSushi/ripgrep/releases/download/13.0.0/ripgrep_13.0.0_amd64.deb
 RUN dpkg -i ripgrep_13.0.0_amd64.deb
 
+
 FROM ruby:2.7.2-slim@sha256:b9eebc5a6956f1def4698fac0930e7a1398a50c4198313fe87af0402cab8d149
 
 ENV PATH="/root/.cargo/bin:/root/.local/bin:${PATH}"
@@ -128,6 +139,7 @@ RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get inst
   curl \
   git \
   && rm -rf /var/lib/apt/lists/*
+
 
 
 ### JS + Node
@@ -150,7 +162,8 @@ RUN curl -fsSL "$NODE_DOWNLOAD_URL" -o node.tar.gz \
   && rm -rf /node.tar.gz package.json yarn.lock /tmp/* ~/.npm
 
 
-### All other tools
+### Copy tools built in the previous
+### `builder` stage into this image
 ENV PIP_VERSION 18.1
 COPY --from=builder /root/go/bin/sift /usr/local/bin
 COPY --from=builder /root/gosec/gosec /usr/local/bin
@@ -160,6 +173,10 @@ COPY --from=builder /root/.local /root/.local
 COPY --from=builder /root/.cargo /root/.cargo
 COPY --from=builder /usr/local/go /usr/local/go
 COPY --from=builder /usr/bin/rg /usr/bin/rg
+COPY --from=builder /jdk-17.0.2 /jdk-17.0.2
+ENV JAVA_HOME /jdk-17.0.2
+COPY --from=builder /opt/gradle/gradle-7.3.3 /opt/gradle/gradle-7.3.3
+ENV PATH="/opt/gradle/gradle-7.3.3/bin:${PATH}"
 RUN ln -sf /usr/local/go/bin/go /usr/local/bin
 RUN python -m easy_install pip==${PIP_VERSION} \
   && python3 -m easy_install pip==${PIP_VERSION}
