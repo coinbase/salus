@@ -8,8 +8,8 @@ describe Cyclonedx::ReportSwiftDeps do
       scanner = Salus::Scanners::ReportSwiftDeps.new(repository: repo, config: {})
       scanner.run
 
-      maven_cyclonedx = Cyclonedx::ReportSwiftDeps.new(scanner.report)
-      expect(maven_cyclonedx.build_components_object).to match_array(
+      swift_cyclonedx = Cyclonedx::ReportSwiftDeps.new(scanner.report)
+      expect(swift_cyclonedx.build_components_object).to match_array(
         [
           {
             "bom-ref": "pkg:swift/Cryptor",
@@ -82,7 +82,7 @@ describe Cyclonedx::ReportSwiftDeps do
       expect { Cyclonedx::Report.validate_cyclonedx(cyclonedx_report_hash) }.not_to raise_error
     end
 
-    it 'should produce valid CycloneDX when the Package.resolved is unparseable' do
+    it 'should produce valid CycloneDX when an unparseable file is found' do
       repo = Salus::Repo.new('spec/fixtures/report_swift_deps/bad_file_cant_parse')
 
       scanner = Salus::Scanners::ReportSwiftDeps.new(repository: repo, config: {})
