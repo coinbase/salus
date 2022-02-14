@@ -3,8 +3,8 @@ require 'salus/scanners/base'
 # Report Swift usage
 
 module Salus::Scanners
-  class ReportPackageResolved < Base
-    class ReportPackageResolvedError < StandardError; end
+  class ReportSwiftDeps < Base
+    class ReportSwiftDepsError < StandardError; end
 
     def run
       shell_return =
@@ -21,7 +21,7 @@ module Salus::Scanners
       begin
         dependencies = JSON.parse(shell_return.stdout)
 
-        raise ReportPackageResolvedError if dependencies.nil?
+        raise ReportSwiftDepsError if dependencies.nil?
 
         dependencies.each do |dependency|
           report_dependency(
@@ -31,11 +31,10 @@ module Salus::Scanners
             version: dependency['version']
           )
         end
-      rescue ReportPackageResolvedError, JSON::ParserError
+      rescue ReportSwiftDepsError, JSON::ParserError
         err_msg = "Could not parse JSON returned by bin/parse_package_resolved's stdout!"
         report_stderr(err_msg)
         report_error(err_msg)
-        nil
       end
     end
 

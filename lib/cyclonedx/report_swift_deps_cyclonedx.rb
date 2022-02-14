@@ -1,5 +1,5 @@
 module Cyclonedx
-  class ReportPackageResolved < Base
+  class ReportSwiftDeps < Base
     TYPE = "swift".freeze
     UNLOCKED_DEPENDENCY_FILE = "Package.resolved".freeze
 

@@ -72,7 +72,7 @@
       "RepoNotEmpty",
       "ReportGoDep",
       "ReportNodeModules",
-      "ReportPackageResolved",
+      "ReportSwiftDeps",
       "ReportPomXml",
       "ReportPythonModules",
       "ReportRubyGems",
@@ -137,7 +137,7 @@
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
-      "ReportPackageResolved": {
+      "ReportSwiftDeps": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },

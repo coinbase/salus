@@ -17,7 +17,7 @@ resolved_object = begin
                     exit(1)
 end
 
-pinned_dependencies = if resolved_object.key?('object') && resolved_object['object'].key?('pins')
+pinned_dependencies = if resolved_object.dig('object', 'pins')
                         resolved_object['object']['pins']
                       else
                         warn 'Package.resolved does not have "object" or "pins" property'
@@ -27,7 +27,7 @@ pinned_dependencies = if resolved_object.key?('object') && resolved_object['obje
 dependencies = []
 
 pinned_dependencies.each do |pinned_dep|
-  if pinned_dep.key?('package') && pinned_dep.key?('state') && pinned_dep['state'].key?('version')
+  if pinned_dep.dig('package') && pinned_dep.dig('state', 'version')
     dependency_hash = {}
     dependency_hash[:package] = pinned_dep['package']
     dependency_hash[:version] = pinned_dep['state']['version']

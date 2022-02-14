@@ -1,14 +1,14 @@
 require_relative '../../spec_helper'
 require 'json'
 
-describe Cyclonedx::ReportPackageResolved do
+describe Cyclonedx::ReportSwiftDeps do
   describe "#run" do
     it 'should report all the deps in the Package.resolved' do
-      repo = Salus::Repo.new('spec/fixtures/report_package_resolved/normal')
-      scanner = Salus::Scanners::ReportPackageResolved.new(repository: repo, config: {})
+      repo = Salus::Repo.new('spec/fixtures/report_swift_deps/normal')
+      scanner = Salus::Scanners::ReportSwiftDeps.new(repository: repo, config: {})
       scanner.run
 
-      maven_cyclonedx = Cyclonedx::ReportPackageResolved.new(scanner.report)
+      maven_cyclonedx = Cyclonedx::ReportSwiftDeps.new(scanner.report)
       expect(maven_cyclonedx.build_components_object).to match_array(
         [
           {
@@ -70,9 +70,22 @@ describe Cyclonedx::ReportPackageResolved do
     end
 
     it 'should produce valid CycloneDX under normal conditions' do
-      repo = Salus::Repo.new('spec/fixtures/report_package_resolved/normal')
+      repo = Salus::Repo.new('spec/fixtures/report_swift_deps/normal')
 
-      scanner = Salus::Scanners::ReportPackageResolved.new(repository: repo, config: {})
+      scanner = Salus::Scanners::ReportSwiftDeps.new(repository: repo, config: {})
+      scanner.run
+
+      cyclonedx_report = Cyclonedx::Report.new([[scanner.report, false]],
+                                               { "spec_version" => "1.3" })
+      cyclonedx_report_hash = cyclonedx_report.to_cyclonedx
+
+      expect { Cyclonedx::Report.validate_cyclonedx(cyclonedx_report_hash) }.not_to raise_error
+    end
+
+    it 'should produce valid CycloneDX when the Package.resolved is unparseable' do
+      repo = Salus::Repo.new('spec/fixtures/report_swift_deps/bad_file_cant_parse')
+
+      scanner = Salus::Scanners::ReportSwiftDeps.new(repository: repo, config: {})
       scanner.run
 
       cyclonedx_report = Cyclonedx::Report.new([[scanner.report, false]],

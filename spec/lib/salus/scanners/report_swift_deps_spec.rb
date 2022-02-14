@@ -1,16 +1,16 @@
 require_relative '../../../spec_helper.rb'
 
-describe Salus::Scanners::ReportPackageResolved do
+describe Salus::Scanners::ReportSwiftDeps do
   describe '#should_run?' do
     it 'should return false in the absence of Package.resolved' do
       repo = Salus::Repo.new('spec/fixtures/blank_repository')
-      scanner = Salus::Scanners::ReportPackageResolved.new(repository: repo, config: {})
+      scanner = Salus::Scanners::ReportSwiftDeps.new(repository: repo, config: {})
       expect(scanner.should_run?).to eq(false)
     end
 
     it 'should return true if Package.resolved is present' do
-      repo = Salus::Repo.new('spec/fixtures/report_package_resolved/normal')
-      scanner = Salus::Scanners::ReportPackageResolved.new(repository: repo, config: {})
+      repo = Salus::Repo.new('spec/fixtures/report_swift_deps/normal')
+      scanner = Salus::Scanners::ReportSwiftDeps.new(repository: repo, config: {})
       expect(scanner.should_run?).to eq(true)
     end
   end
@@ -19,7 +19,7 @@ describe Salus::Scanners::ReportPackageResolved do
     context 'scanner version is valid' do
       it 'should return true' do
         repo = Salus::Repo.new("dir")
-        scanner = Salus::Scanners::ReportPackageResolved.new(repository: repo, config: {})
+        scanner = Salus::Scanners::ReportSwiftDeps.new(repository: repo, config: {})
         expect(scanner.version).to eq('')
       end
     end
@@ -28,15 +28,15 @@ describe Salus::Scanners::ReportPackageResolved do
   describe '#supported_languages' do
     context 'should return supported languages' do
       it 'should return expected langs' do
-        langs = Salus::Scanners::ReportPackageResolved.supported_languages
+        langs = Salus::Scanners::ReportSwiftDeps.supported_languages
         expect(langs).to eq(%w[swift])
       end
     end
   end
 
   it 'should report modules from Package.resolved' do
-    repo = Salus::Repo.new('spec/fixtures/report_package_resolved/normal')
-    scanner = Salus::Scanners::ReportPackageResolved.new(repository: repo, config: {})
+    repo = Salus::Repo.new('spec/fixtures/report_swift_deps/normal')
+    scanner = Salus::Scanners::ReportSwiftDeps.new(repository: repo, config: {})
 
     scanner.run
 
@@ -67,8 +67,8 @@ describe Salus::Scanners::ReportPackageResolved do
   end
 
   it 'should report an error when an unparseable file is found' do
-    repo = Salus::Repo.new('spec/fixtures/report_package_resolved/bad_file_cant_parse')
-    scanner = Salus::Scanners::ReportPackageResolved.new(repository: repo, config: {})
+    repo = Salus::Repo.new('spec/fixtures/report_swift_deps/bad_file_cant_parse')
+    scanner = Salus::Scanners::ReportSwiftDeps.new(repository: repo, config: {})
 
     scanner.run
 
