@@ -162,19 +162,11 @@
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
-<<<<<<< HEAD
       "ReportSwiftDeps": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
-      "Semgrep": {
-        "pass_on_raise": false,
-        "scanner_timeout_s": 0
-      },
-      "YarnAudit": {
-=======
       "RubyVersionScanner": {
->>>>>>> d5962c66091061848fbc784851433a3e63faa5bb
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
