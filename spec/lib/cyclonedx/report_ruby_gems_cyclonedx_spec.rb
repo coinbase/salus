@@ -22,21 +22,21 @@ describe Cyclonedx::ReportRubyGems do
             "licenses": [{ "license" => { "id" => "MIT" } }],
             "name": "kibana_url",
             "version": "~> 1.0",
-            "purl": "pkg:gem/kibana_url",
+            "purl": "pkg:gem/kibana_url"
           },
           {
             "type": "library",
             "licenses": [{ "license" => { "id" => "MIT" } }],
             "name": "rails",
             "version": ">= 0",
-            "purl": "pkg:gem/rails",
+            "purl": "pkg:gem/rails"
           },
           {
             "type": "library",
             "licenses": [{ "license" => { "id" => "MIT" } }],
             "name": "master_lock",
             "version": ">= 0",
-            "purl": "pkg:gem/master_lock",
+            "purl": "pkg:gem/master_lock"
           }
         ]
       )
@@ -54,42 +54,42 @@ describe Cyclonedx::ReportRubyGems do
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "actioncable",
           "version": "5.1.2",
-          "purl": "pkg:gem/actioncable@5.1.2",
+          "purl": "pkg:gem/actioncable@5.1.2"
         },
         {
           "type": "library",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "actionmailer",
           "version": "5.1.2",
-          "purl": "pkg:gem/actionmailer@5.1.2",
+          "purl": "pkg:gem/actionmailer@5.1.2"
         },
         {
           "type": "library",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "actionpack",
           "version": "5.1.2",
-          "purl": "pkg:gem/actionpack@5.1.2",
+          "purl": "pkg:gem/actionpack@5.1.2"
         },
         {
           "type": "library",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "nio4r",
           "version": "2.1.0",
-          "purl": "pkg:gem/nio4r@2.1.0",
+          "purl": "pkg:gem/nio4r@2.1.0"
         },
         {
           "type": "library",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "kibana_url",
           "version": "1.0.1",
-          "purl": "pkg:gem/kibana_url@1.0.1",
+          "purl": "pkg:gem/kibana_url@1.0.1"
         },
         {
           "type": "library",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "master_lock",
           "version": "0.9.1",
-          "purl": "pkg:gem/master_lock@0.9.1",
+          "purl": "pkg:gem/master_lock@0.9.1"
         }
       ]
       expect(ruby_cyclonedx.build_components_object).to include(*expected)
@@ -107,21 +107,21 @@ describe Cyclonedx::ReportRubyGems do
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "dep1",
           "version": "0.0.47",
-          "purl": "pkg:gem/dep1@0.0.47",
+          "purl": "pkg:gem/dep1@0.0.47"
         },
         {
           "type": "library",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "dep2",
           "version": "0.15.3",
-          "purl": "pkg:gem/dep2@0.15.3",
+          "purl": "pkg:gem/dep2@0.15.3"
         },
         {
           "type": "library",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "minitest",
           "version": "5.14.4",
-          "purl": "pkg:gem/minitest@5.14.4",
+          "purl": "pkg:gem/minitest@5.14.4"
         }
       ]
       expect(ruby_cyclonedx.build_components_object).to include(*expected)

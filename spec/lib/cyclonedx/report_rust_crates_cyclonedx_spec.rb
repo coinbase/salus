@@ -15,19 +15,19 @@ describe Cyclonedx::ReportRustCrates do
             "type": "library",
             "name": "autocfg",
             "version": "0.1.7",
-            "purl": "pkg:cargo/autocfg@0.1.7",
+            "purl": "pkg:cargo/autocfg@0.1.7"
           },
           {
             "type": "library",
             "name": "bitflags",
             "version": "1.2.1",
-            "purl": "pkg:cargo/bitflags@1.2.1",
+            "purl": "pkg:cargo/bitflags@1.2.1"
           },
           {
             "type": "library",
             "name": "cloudabi",
             "version": "0.0.3",
-            "purl": "pkg:cargo/cloudabi@0.0.3",
+            "purl": "pkg:cargo/cloudabi@0.0.3"
           }
         ]
       )
@@ -53,19 +53,19 @@ describe Cyclonedx::ReportRustCrates do
           "type": "library",
           "name": "autocfg",
           "version": "0.1.7",
-          "purl": "pkg:cargo/autocfg@0.1.7",
+          "purl": "pkg:cargo/autocfg@0.1.7"
         },
         {
-            "type": "library",
+          "type": "library",
             "name": "bitflags",
             "version": "1.2.1",
-            "purl": "pkg:cargo/bitflags@1.2.1",
+            "purl": "pkg:cargo/bitflags@1.2.1"
         },
         {
-            "type": "library",
+          "type": "library",
             "name": "cloudabi",
             "version": "0.0.3",
-            "purl": "pkg:cargo/cloudabi@0.0.3",
+            "purl": "pkg:cargo/cloudabi@0.0.3"
         }
       ]
       expect(rust_cyclonedx.build_components_object).to include(*expected)
@@ -84,19 +84,19 @@ describe Cyclonedx::ReportRustCrates do
             "type": "library",
             "name": "autocfg",
             "version": "0.1.7",
-            "purl": "pkg:cargo/autocfg@0.1.7",
+            "purl": "pkg:cargo/autocfg@0.1.7"
           },
           {
             "type": "library",
             "name": "bitflags",
             "version": "1.2.1",
-            "purl": "pkg:cargo/bitflags@1.2.1",
+            "purl": "pkg:cargo/bitflags@1.2.1"
           },
           {
             "type": "library",
             "name": "cloudabi",
             "version": "0.0.3",
-            "purl": "pkg:cargo/cloudabi@0.0.3",
+            "purl": "pkg:cargo/cloudabi@0.0.3"
           }
         ]
       )

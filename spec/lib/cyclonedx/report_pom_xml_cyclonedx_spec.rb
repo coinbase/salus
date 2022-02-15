@@ -15,19 +15,19 @@ describe Cyclonedx::ReportPomXml do
             type: "library",
             name: "org.apache.kafka/connect-api",
             version: Salus::Scanners::ReportPomXml::UNKNOWN_VERSION.to_s,
-            purl: "pkg:maven/org.apache.kafka/connect-api",
+            purl: "pkg:maven/org.apache.kafka/connect-api"
           },
           {
             type: "library",
             name: "org.apache.kafka/connect-json",
             version: Salus::Scanners::ReportPomXml::UNKNOWN_VERSION.to_s,
-            purl: "pkg:maven/org.apache.kafka/connect-json",
+            purl: "pkg:maven/org.apache.kafka/connect-json"
           },
           {
             type: "library",
             name: "junit/junit",
             version: "1.1.1",
-            purl: "pkg:maven/junit/junit",
+            purl: "pkg:maven/junit/junit"
           }
         ]
       )

@@ -16,19 +16,19 @@ describe Cyclonedx::ReportGradleDeps do
           type: "library",
           name: "org.apache.kafka/connect-transforms",
           version: "2.6.2",
-          purl: "pkg:gradle/org.apache.kafka/connect-transforms",
+          purl: "pkg:gradle/org.apache.kafka/connect-transforms"
         },
         {
           type: "library",
           name: "org.apache.kafka/connect-api",
           version: "2.6.2",
-          purl: "pkg:gradle/org.apache.kafka/connect-api",
+          purl: "pkg:gradle/org.apache.kafka/connect-api"
         },
         {
           type: "library",
           name: "org.apache.kafka/kafka-clients",
           version: "2.6.2",
-          purl: "pkg:gradle/org.apache.kafka/kafka-clients",
+          purl: "pkg:gradle/org.apache.kafka/kafka-clients"
         }
       )
     end

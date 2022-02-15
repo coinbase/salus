@@ -14,19 +14,19 @@ describe Cyclonedx::ReportPythonModules do
           "type": "library",
           "name": "requests",
           "version": ">=2.5",
-          "purl": "pkg:pypi/requests",
+          "purl": "pkg:pypi/requests"
         },
         {
-            "type": "library",
+          "type": "library",
             "name": "six",
             "version": ">=1.9",
-            "purl": "pkg:pypi/six",
+            "purl": "pkg:pypi/six"
         },
         {
-            "type": "library",
+          "type": "library",
             "name": "pycryptodome",
             "version": ">=3.4.11",
-            "purl": "pkg:pypi/pycryptodome",
+            "purl": "pkg:pypi/pycryptodome"
         }
       ]
       expect(python_cyclonedx.build_components_object).to include(*expected)
@@ -43,19 +43,19 @@ describe Cyclonedx::ReportPythonModules do
           "type": "library",
           "name": "amqp",
           "version": "2.2.2",
-          "purl": "pkg:pypi/amqp@2.2.2",
+          "purl": "pkg:pypi/amqp@2.2.2"
         },
         {
           "type": "library",
           "name": "billiard",
           "version": "3.5.0.3",
-          "purl": "pkg:pypi/billiard@3.5.0.3",
+          "purl": "pkg:pypi/billiard@3.5.0.3"
         },
         {
           "type": "library",
           "name": "celery",
           "version": "4.1.0",
-          "purl": "pkg:pypi/celery@4.1.0",
+          "purl": "pkg:pypi/celery@4.1.0"
         }
       ]
       expect(python_cyclonedx.build_components_object).to include(*expected)
@@ -72,37 +72,37 @@ describe Cyclonedx::ReportPythonModules do
           "type": "library",
           "name": "six",
           "version": ">=1.9",
-          "purl": "pkg:pypi/six",
+          "purl": "pkg:pypi/six"
         },
         {
           "type": "library",
           "name": "pycryptodome",
           "version": ">=3.4.11",
-          "purl": "pkg:pypi/pycryptodome",
+          "purl": "pkg:pypi/pycryptodome"
         },
         {
           "type": "library",
           "name": "celery",
           "version": "4.0.0",
-          "purl": "pkg:pypi/celery@4.0.0",
+          "purl": "pkg:pypi/celery@4.0.0"
         },
         {
           "type": "library",
           "name": "Jinja2",
           "version": "2.10",
-          "purl": "pkg:pypi/Jinja2@2.10",
+          "purl": "pkg:pypi/Jinja2@2.10"
         },
         {
           "type": "library",
           "name": "itsdangerous",
           "version": "0.24",
-          "purl": "pkg:pypi/itsdangerous@0.24",
+          "purl": "pkg:pypi/itsdangerous@0.24"
         },
         {
           "type": "library",
           "name": "idna",
           "version": "2.6",
-          "purl": "pkg:pypi/idna@2.6",
+          "purl": "pkg:pypi/idna@2.6"
         }
       ]
       expect(python_cyclonedx.build_components_object).to include(*expected)

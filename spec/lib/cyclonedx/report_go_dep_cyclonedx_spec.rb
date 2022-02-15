@@ -15,13 +15,13 @@ describe Cyclonedx::ReportGoDep do
             "type": "library",
             "name": "github.com/davecgh/go-spew",
             "version": "v1.1.0",
-            "purl": "pkg:golang/github.com/davecgh/go-spew@v1.1.0",
+            "purl": "pkg:golang/github.com/davecgh/go-spew@v1.1.0"
           },
           {
             "type": "library",
             "name": "github.com/davecgh/go-spew",
             "version": "v1.1.0",
-            "purl": "pkg:golang/github.com/davecgh/go-spew@v1.1.0",
+            "purl": "pkg:golang/github.com/davecgh/go-spew@v1.1.0"
           }
         ]
       )
@@ -39,19 +39,19 @@ describe Cyclonedx::ReportGoDep do
             "type": "library",
             "name": "github.com/PagerDuty/go-pagerduty",
             "version": "",
-            "purl": "pkg:golang/github.com/PagerDuty/go-pagerduty",
+            "purl": "pkg:golang/github.com/PagerDuty/go-pagerduty"
           },
           {
             "type": "library",
             "name": "github.com/Sirupsen/logrus",
             "version": "v0.11.5",
-            "purl": "pkg:golang/github.com/Sirupsen/logrus@v0.11.5",
+            "purl": "pkg:golang/github.com/Sirupsen/logrus@v0.11.5"
           },
           {
             "type": "library",
             "name": "golang.org/x/sys",
             "version": "",
-            "purl": "pkg:golang/golang.org/x/sys",
+            "purl": "pkg:golang/golang.org/x/sys"
           }
         ]
       )
