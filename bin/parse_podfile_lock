@@ -2,40 +2,36 @@
 
 require 'json'
 require 'yaml'
+require 'cocoapods'
 
 podfile_lock = begin
   YAML.safe_load(File.read(ARGV[0]), [Symbol])
-  #  rescue StandardError
-  #    warn 'Unable to parse Podfile.lock file'
-  #    exit(1)
+               rescue StandardError
+                 warn 'Unable to parse Podfile.lock file'
+                 exit(1)
 end
 
-if podfile_lock['PODS'].nil? || podfile_lock['DEPENDENCIES'].nil?
-  warn '"PODS" or "DEPENDENCIES" key not found in Podfile.lock!'
-  exit(1)
+lockfile = begin
+  Pod::Lockfile.new(podfile_lock)
+           rescue StandardError
+             warn 'Unable to initialize Pod::Lockfile from YAML hash'
+             exit(1)
 end
 
-dependencies = []
-# Parse individual dependency entry
-(podfile_lock['PODS'] + podfile_lock['DEPENDENCIES']).each do |dependency_entry|
-  # If this entry is a hash, then the data we want
-  # is found in the first key
-  dependency_entry = dependency_entry.keys.first.to_s if !dependency_entry.is_a? String
-  # If the entry has a path, then we ignore it, as
-  # these characters aren't allowed in package names
-  # or versions for CycloneDX.
-  next if dependency_entry.include?('/') || dependency_entry.include?('\\')
+# Checks the PODS and DEPENDENCIES section
+podfile_dependencies = (lockfile.send :pod_versions)
 
-  dependency_properties = dependency_entry.split(' (')
+normalized_dependencies = []
+podfile_dependencies.each do |dependency_entry|
   dependency_hash = {}
-  dependency_hash[:pod] = dependency_properties[0].strip
-  dependency_hash[:version] = dependency_properties[1].delete_suffix(')').strip
-  dependencies.append(dependency_hash)
+  dependency_hash[:pod] = dependency_entry[0]
+  dependency_hash[:version] = dependency_entry[1]
+  normalized_dependencies.append(dependency_hash)
 end
 
-if dependencies.empty?
+if normalized_dependencies.empty?
   warn 'No dependencies found in Podfile.lock!'
   exit(1)
 end
 
-puts dependencies.to_json
+puts normalized_dependencies.to_json

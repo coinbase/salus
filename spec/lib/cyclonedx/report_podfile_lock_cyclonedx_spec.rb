@@ -25,24 +25,24 @@ describe Cyclonedx::ReportPodfileLock do
             ]
           },
           {
-            "bom-ref": "pkg:cocoa/CocoaAsyncSocket@%3D+7.6.5",
+            "bom-ref": "pkg:cocoa/CocoaAsyncSocket@7.6.5",
             type: "library",
             group: "",
             name: "CocoaAsyncSocket",
-            version: '= 7.6.5',
-            purl: "pkg:cocoa/CocoaAsyncSocket@%3D+7.6.5",
+            version: '7.6.5',
+            purl: "pkg:cocoa/CocoaAsyncSocket@7.6.5",
             properties: [
               { key: "source", value: "" },
               { key: "dependency_file", value: "Podfile.lock" }
             ]
           },
           {
-            "bom-ref": "pkg:cocoa/Flipper@%3D+0.87.0",
+            "bom-ref": "pkg:cocoa/Flipper@0.87.0",
             type: "library",
             group: "",
             name: "Flipper",
-            version: "= 0.87.0",
-            purl: "pkg:cocoa/Flipper@%3D+0.87.0",
+            version: "0.87.0",
+            purl: "pkg:cocoa/Flipper@0.87.0",
             properties: [
               { key: "source", value: "" },
               { key: "dependency_file", value: "Podfile.lock" }

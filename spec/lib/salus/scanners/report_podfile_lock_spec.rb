@@ -53,13 +53,13 @@ describe Salus::Scanners::ReportPodfileLock do
         {
           dependency_file: 'Podfile.lock',
         name: 'CocoaAsyncSocket',
-        version: '= 7.6.5',
+        version: '7.6.5',
         type: 'cocoa'
         },
         {
           dependency_file: 'Podfile.lock',
             name: 'Flipper',
-            version: '= 0.87.0',
+            version: '0.87.0',
             type: 'cocoa'
         }
       ]
@@ -86,7 +86,7 @@ describe Salus::Scanners::ReportPodfileLock do
 
     errs = scanner.report.to_h.fetch(:errors)
     expect(errs.size).to eq(1)
-    expect(errs[0][:message]).to eq('"PODS" or "DEPENDENCIES" key not found in Podfile.lock!
+    expect(errs[0][:message]).to eq('No dependencies found in Podfile.lock!
 ')
   end
 end
