@@ -4,10 +4,10 @@ require 'json'
 require 'yaml'
 
 podfile_lock = begin
-  YAML.safe_load(File.read(ARGV[0]))
-               rescue StandardError
-                 warn 'Unable to parse Podfile.lock file'
-                 exit(1)
+  YAML.safe_load(File.read(ARGV[0]), [Symbol])
+  #  rescue StandardError
+  #    warn 'Unable to parse Podfile.lock file'
+  #    exit(1)
 end
 
 if podfile_lock['PODS'].nil? || podfile_lock['DEPENDENCIES'].nil?
@@ -18,6 +18,14 @@ end
 dependencies = []
 # Parse individual dependency entry
 (podfile_lock['PODS'] + podfile_lock['DEPENDENCIES']).each do |dependency_entry|
+  # If this entry is a hash, then the data we want
+  # is found in the first key
+  dependency_entry = dependency_entry.keys.first.to_s if !dependency_entry.is_a? String
+  # If the entry has a path, then we ignore it, as
+  # these characters aren't allowed in package names
+  # or versions for CycloneDX.
+  next if dependency_entry.include?('/') || dependency_entry.include?('\\')
+
   dependency_properties = dependency_entry.split(' (')
   dependency_hash = {}
   dependency_hash[:pod] = dependency_properties[0].strip
