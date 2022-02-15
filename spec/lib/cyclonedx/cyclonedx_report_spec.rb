@@ -68,27 +68,21 @@ describe Cyclonedx::ReportRubyGems do
       ruby_cyclonedx = Cyclonedx::ReportRubyGems.new(scanner.report, { "spec_version" => "1.2" })
       expected = [
         {
-          "bom-ref": "pkg:gem/actioncable@5.1.2",
           "type": "library",
-          "group": "",
           "name": "actioncable",
           "version": "5.1.2",
           "purl": "pkg:gem/actioncable@5.1.2",
           "licenses": [{ "license" => { "id" => "MIT" } }]
         },
         {
-          "bom-ref": "pkg:gem/actionmailer@5.1.2",
           "type": "library",
-          "group": "",
           "name": "actionmailer",
           "version": "5.1.2",
           "purl": "pkg:gem/actionmailer@5.1.2",
           "licenses": [{ "license" => { "id" => "MIT" } }]
         },
         {
-          "bom-ref": "pkg:gem/actionpack@5.1.2",
           "type": "library",
-          "group": "",
           "name": "actionpack",
           "version": "5.1.2",
           "purl": "pkg:gem/actionpack@5.1.2",
@@ -106,61 +100,25 @@ describe Cyclonedx::ReportRubyGems do
       ruby_cyclonedx = Cyclonedx::ReportRubyGems.new(scanner.report, { "spec_version" => "1.3" })
       expected = [
         {
-          "bom-ref": "pkg:gem/actioncable@5.1.2",
           "type": "library",
-          "group": "",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "actioncable",
           "version": "5.1.2",
-          "purl": "pkg:gem/actioncable@5.1.2",
-          "properties": [
-            {
-              "key": "source",
-              "value": "locally installed gems"
-            },
-            {
-              "key": "dependency_file",
-              "value": "Gemfile.lock"
-            }
-          ]
+          "purl": "pkg:gem/actioncable@5.1.2"
         },
         {
-          "bom-ref": "pkg:gem/actionmailer@5.1.2",
           "type": "library",
-          "group": "",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "actionmailer",
           "version": "5.1.2",
-          "purl": "pkg:gem/actionmailer@5.1.2",
-          "properties": [
-            {
-              "key": "source",
-              "value": "locally installed gems"
-            },
-            {
-              "key": "dependency_file",
-              "value": "Gemfile.lock"
-            }
-          ]
+          "purl": "pkg:gem/actionmailer@5.1.2"
         },
         {
-          "bom-ref": "pkg:gem/actionpack@5.1.2",
           "type": "library",
-          "group": "",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "actionpack",
           "version": "5.1.2",
-          "purl": "pkg:gem/actionpack@5.1.2",
-          "properties": [
-            {
-              "key": "source",
-              "value": "locally installed gems"
-            },
-            {
-              "key": "dependency_file",
-              "value": "Gemfile.lock"
-            }
-          ]
+          "purl": "pkg:gem/actionpack@5.1.2"
         }
       ]
       expect(ruby_cyclonedx.build_components_object).to include(*expected)
