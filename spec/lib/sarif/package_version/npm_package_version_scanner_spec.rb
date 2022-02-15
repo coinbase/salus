@@ -45,17 +45,5 @@ describe Sarif::NPMPackageScannerSarif do
            "properties" => { "severity" => "HIGH" }, "suppressions" => [{ "kind" => "external" }] }
       )
     end
-    it 'should flag when a required package is not present' do
-      scanner = Salus::Scanners::PackageVersion::NPMPackageScanner.new(repository: repo,
-      config: scanner_config2)
-      scanner.run
-
-      report = Salus::Report.new(project_name: "Neon Genesis")
-      report.add_scan_report(scanner.report, required: false)
-      sarif = JSON.parse(report.to_sarif)
-      expect(sarif['runs'][0]['results'][0]['message']).to include(
-        { "text" => "Package package-not-here was not found in the package-lock.json" }
-      )
-    end
   end
 end
