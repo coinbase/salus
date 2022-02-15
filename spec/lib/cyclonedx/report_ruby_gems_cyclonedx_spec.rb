@@ -18,61 +18,25 @@ describe Cyclonedx::ReportRubyGems do
       expect(ruby_cyclonedx.build_components_object).to match_array(
         [
           {
-            "bom-ref": "pkg:gem/kibana_url",
             "type": "library",
-            "group": "",
             "licenses": [{ "license" => { "id" => "MIT" } }],
             "name": "kibana_url",
             "version": "~> 1.0",
             "purl": "pkg:gem/kibana_url",
-            "properties": [
-              {
-                "key": "source",
-                "value": "https://rubygems.org/"
-              },
-              {
-                "key": "dependency_file",
-                "value": "Gemfile"
-              }
-            ]
           },
           {
-            "bom-ref": "pkg:gem/rails",
             "type": "library",
-            "group": "",
             "licenses": [{ "license" => { "id" => "MIT" } }],
             "name": "rails",
             "version": ">= 0",
             "purl": "pkg:gem/rails",
-            "properties": [
-              {
-                "key": "source",
-                "value": "https://rubygems.org/"
-              },
-              {
-                "key": "dependency_file",
-                "value": "Gemfile"
-              }
-            ]
           },
           {
-            "bom-ref": "pkg:gem/master_lock",
             "type": "library",
-            "group": "",
             "licenses": [{ "license" => { "id" => "MIT" } }],
             "name": "master_lock",
             "version": ">= 0",
             "purl": "pkg:gem/master_lock",
-            "properties": [
-              {
-                "key": "source",
-                "value": "git@github.com:coinbase/master_lock.git"
-              },
-              {
-                "key": "dependency_file",
-                "value": "Gemfile"
-              }
-            ]
           }
         ]
       )
@@ -86,118 +50,46 @@ describe Cyclonedx::ReportRubyGems do
       ruby_cyclonedx = Cyclonedx::ReportRubyGems.new(scanner.report)
       expected = [
         {
-          "bom-ref": "pkg:gem/actioncable@5.1.2",
           "type": "library",
-          "group": "",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "actioncable",
           "version": "5.1.2",
           "purl": "pkg:gem/actioncable@5.1.2",
-          "properties": [
-            {
-              "key": "source",
-              "value": "locally installed gems"
-            },
-            {
-              "key": "dependency_file",
-              "value": "Gemfile.lock"
-            }
-          ]
         },
         {
-          "bom-ref": "pkg:gem/actionmailer@5.1.2",
           "type": "library",
-          "group": "",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "actionmailer",
           "version": "5.1.2",
           "purl": "pkg:gem/actionmailer@5.1.2",
-          "properties": [
-            {
-              "key": "source",
-              "value": "locally installed gems"
-            },
-            {
-              "key": "dependency_file",
-              "value": "Gemfile.lock"
-            }
-          ]
         },
         {
-          "bom-ref": "pkg:gem/actionpack@5.1.2",
           "type": "library",
-          "group": "",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "actionpack",
           "version": "5.1.2",
           "purl": "pkg:gem/actionpack@5.1.2",
-          "properties": [
-            {
-              "key": "source",
-              "value": "locally installed gems"
-            },
-            {
-              "key": "dependency_file",
-              "value": "Gemfile.lock"
-            }
-          ]
         },
         {
-          "bom-ref": "pkg:gem/nio4r@2.1.0",
           "type": "library",
-          "group": "",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "nio4r",
           "version": "2.1.0",
           "purl": "pkg:gem/nio4r@2.1.0",
-          "properties": [
-            {
-              "key": "source",
-              "value": "locally installed gems"
-            },
-            {
-              "key": "dependency_file",
-              "value": "Gemfile.lock"
-            }
-          ]
         },
         {
-          "bom-ref": "pkg:gem/kibana_url@1.0.1",
           "type": "library",
-          "group": "",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "kibana_url",
           "version": "1.0.1",
           "purl": "pkg:gem/kibana_url@1.0.1",
-          "properties": [
-            {
-              "key": "source",
-              "value": "locally installed gems"
-            },
-            {
-              "key": "dependency_file",
-              "value": "Gemfile.lock"
-            }
-          ]
         },
         {
-          "bom-ref": "pkg:gem/master_lock@0.9.1",
           "type": "library",
-          "group": "",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "master_lock",
           "version": "0.9.1",
           "purl": "pkg:gem/master_lock@0.9.1",
-          "properties": [
-            {
-              "key": "source",
-              "value": "git@github.com:coinbase/master_lock.git"
-            },
-            {
-              "key": "dependency_file",
-              "value": "Gemfile.lock"
-            }
-          ]
         }
       ]
       expect(ruby_cyclonedx.build_components_object).to include(*expected)
@@ -211,61 +103,25 @@ describe Cyclonedx::ReportRubyGems do
       ruby_cyclonedx = Cyclonedx::ReportRubyGems.new(scanner.report)
       expected = [
         {
-          "bom-ref": "pkg:gem/dep1@0.0.47",
           "type": "library",
-          "group": "",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "dep1",
           "version": "0.0.47",
           "purl": "pkg:gem/dep1@0.0.47",
-          "properties": [
-            {
-              "key": "source",
-              "value": "locally installed gems"
-            },
-            {
-              "key": "dependency_file",
-              "value": "Gemfile.lock"
-            }
-          ]
         },
         {
-          "bom-ref": "pkg:gem/dep2@0.15.3",
           "type": "library",
-          "group": "",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "dep2",
           "version": "0.15.3",
           "purl": "pkg:gem/dep2@0.15.3",
-          "properties": [
-            {
-              "key": "source",
-              "value": "locally installed gems"
-            },
-            {
-              "key": "dependency_file",
-              "value": "Gemfile.lock"
-            }
-          ]
         },
         {
-          "bom-ref": "pkg:gem/minitest@5.14.4",
           "type": "library",
-          "group": "",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "minitest",
           "version": "5.14.4",
           "purl": "pkg:gem/minitest@5.14.4",
-          "properties": [
-            {
-              "key": "source",
-              "value": "locally installed gems"
-            },
-            {
-              "key": "dependency_file",
-              "value": "Gemfile.lock"
-            }
-          ]
         }
       ]
       expect(ruby_cyclonedx.build_components_object).to include(*expected)

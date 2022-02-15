@@ -12,40 +12,22 @@ describe Cyclonedx::ReportPomXml do
       expect(maven_cyclonedx.build_components_object).to match_array(
         [
           {
-            "bom-ref": "pkg:maven/org.apache.kafka/connect-api",
             type: "library",
-            group: "",
             name: "org.apache.kafka/connect-api",
             version: Salus::Scanners::ReportPomXml::UNKNOWN_VERSION.to_s,
             purl: "pkg:maven/org.apache.kafka/connect-api",
-            properties: [
-              { key: "source", value: "" },
-              { key: "dependency_file", value: "pom.xml" }
-            ]
           },
           {
-            "bom-ref": "pkg:maven/org.apache.kafka/connect-json",
             type: "library",
-            group: "",
             name: "org.apache.kafka/connect-json",
             version: Salus::Scanners::ReportPomXml::UNKNOWN_VERSION.to_s,
             purl: "pkg:maven/org.apache.kafka/connect-json",
-            properties: [
-              { key: "source", value: "" },
-              { key: "dependency_file", value: "pom.xml" }
-            ]
           },
           {
-            "bom-ref": "pkg:maven/junit/junit",
             type: "library",
-            group: "",
             name: "junit/junit",
             version: "1.1.1",
             purl: "pkg:maven/junit/junit",
-            properties: [
-              { key: "source", value: "" },
-              { key: "dependency_file", value: "pom.xml" }
-            ]
           }
         ]
       )

@@ -12,58 +12,22 @@ describe Cyclonedx::ReportRustCrates do
       expect(rust_cyclonedx.build_components_object[0..2]).to match_array(
         [
           {
-            "bom-ref": "pkg:cargo/autocfg@0.1.7",
             "type": "library",
-            "group": "",
             "name": "autocfg",
             "version": "0.1.7",
             "purl": "pkg:cargo/autocfg@0.1.7",
-            "properties": [
-              {
-                "key": "source",
-                "value": "registry+https://github.com/rust-lang/crates.io-index"
-              },
-              {
-                "key": "dependency_file",
-                "value": "Cargo.lock"
-              }
-            ]
           },
           {
-            "bom-ref": "pkg:cargo/bitflags@1.2.1",
             "type": "library",
-            "group": "",
             "name": "bitflags",
             "version": "1.2.1",
             "purl": "pkg:cargo/bitflags@1.2.1",
-            "properties": [
-              {
-                "key": "source",
-                "value": "registry+https://github.com/rust-lang/crates.io-index"
-              },
-              {
-                "key": "dependency_file",
-                "value": "Cargo.lock"
-              }
-            ]
           },
           {
-            "bom-ref": "pkg:cargo/cloudabi@0.0.3",
             "type": "library",
-            "group": "",
             "name": "cloudabi",
             "version": "0.0.3",
             "purl": "pkg:cargo/cloudabi@0.0.3",
-            "properties": [
-              {
-                "key": "source",
-                "value": "registry+https://github.com/rust-lang/crates.io-index"
-              },
-              {
-                "key": "dependency_file",
-                "value": "Cargo.lock"
-              }
-            ]
           }
         ]
       )
@@ -86,58 +50,22 @@ describe Cyclonedx::ReportRustCrates do
       rust_cyclonedx = Cyclonedx::ReportRustCrates.new(scanner.report)
       expected = [
         {
-          "bom-ref": "pkg:cargo/autocfg@0.1.7",
           "type": "library",
-          "group": "",
           "name": "autocfg",
           "version": "0.1.7",
           "purl": "pkg:cargo/autocfg@0.1.7",
-          "properties": [
-            {
-              "key": "source",
-              "value": "registry+https://github.com/rust-lang/crates.io-index"
-            },
-            {
-              "key": "dependency_file",
-              "value": "Cargo.lock"
-            }
-          ]
         },
         {
-          "bom-ref": "pkg:cargo/bitflags@1.2.1",
             "type": "library",
-            "group": "",
             "name": "bitflags",
             "version": "1.2.1",
             "purl": "pkg:cargo/bitflags@1.2.1",
-            "properties": [
-              {
-                "key": "source",
-                "value": "registry+https://github.com/rust-lang/crates.io-index"
-              },
-              {
-                "key": "dependency_file",
-                "value": "Cargo.lock"
-              }
-            ]
         },
         {
-          "bom-ref": "pkg:cargo/cloudabi@0.0.3",
             "type": "library",
-            "group": "",
             "name": "cloudabi",
             "version": "0.0.3",
             "purl": "pkg:cargo/cloudabi@0.0.3",
-            "properties": [
-              {
-                "key": "source",
-                "value": "registry+https://github.com/rust-lang/crates.io-index"
-              },
-              {
-                "key": "dependency_file",
-                "value": "Cargo.lock"
-              }
-            ]
         }
       ]
       expect(rust_cyclonedx.build_components_object).to include(*expected)
@@ -153,58 +81,22 @@ describe Cyclonedx::ReportRustCrates do
       expect(rust_cyclonedx.build_components_object[0..2]).to match_array(
         [
           {
-            "bom-ref": "pkg:cargo/autocfg@0.1.7",
             "type": "library",
-            "group": "",
             "name": "autocfg",
             "version": "0.1.7",
             "purl": "pkg:cargo/autocfg@0.1.7",
-            "properties": [
-              {
-                "key": "source",
-                "value": "registry+https://github.com/rust-lang/crates.io-index"
-              },
-              {
-                "key": "dependency_file",
-                "value": "Cargo.lock"
-              }
-            ]
           },
           {
-            "bom-ref": "pkg:cargo/bitflags@1.2.1",
             "type": "library",
-            "group": "",
             "name": "bitflags",
             "version": "1.2.1",
             "purl": "pkg:cargo/bitflags@1.2.1",
-            "properties": [
-              {
-                "key": "source",
-                "value": "registry+https://github.com/rust-lang/crates.io-index"
-              },
-              {
-                "key": "dependency_file",
-                "value": "Cargo.lock"
-              }
-            ]
           },
           {
-            "bom-ref": "pkg:cargo/cloudabi@0.0.3",
             "type": "library",
-            "group": "",
             "name": "cloudabi",
             "version": "0.0.3",
             "purl": "pkg:cargo/cloudabi@0.0.3",
-            "properties": [
-              {
-                "key": "source",
-                "value": "registry+https://github.com/rust-lang/crates.io-index"
-              },
-              {
-                "key": "dependency_file",
-                "value": "Cargo.lock"
-              }
-            ]
           }
         ]
       )

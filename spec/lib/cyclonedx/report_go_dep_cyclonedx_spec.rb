@@ -12,40 +12,16 @@ describe Cyclonedx::ReportGoDep do
       expect(golang_cyclonedx.build_components_object[0..1]).to match_array(
         [
           {
-            "bom-ref": "pkg:golang/github.com/davecgh/go-spew@v1.1.0",
             "type": "library",
-            "group": "",
             "name": "github.com/davecgh/go-spew",
             "version": "v1.1.0",
             "purl": "pkg:golang/github.com/davecgh/go-spew@v1.1.0",
-            "properties": [
-              {
-                "key": "source",
-                "value": "N/A for go.mod/go.sum dependencies"
-              },
-              {
-                "key": "dependency_file",
-                "value": "go.sum"
-              }
-            ]
           },
           {
-            "bom-ref": "pkg:golang/github.com/davecgh/go-spew@v1.1.0",
             "type": "library",
-            "group": "",
             "name": "github.com/davecgh/go-spew",
             "version": "v1.1.0",
             "purl": "pkg:golang/github.com/davecgh/go-spew@v1.1.0",
-            "properties": [
-              {
-                "key": "source",
-                "value": "N/A for go.mod/go.sum dependencies"
-              },
-              {
-                "key": "dependency_file",
-                "value": "go.sum"
-              }
-            ]
           }
         ]
       )
@@ -60,58 +36,22 @@ describe Cyclonedx::ReportGoDep do
       expect(golang_cyclonedx.build_components_object).to match_array(
         [
           {
-            "bom-ref": "pkg:golang/github.com/PagerDuty/go-pagerduty",
             "type": "library",
-            "group": "",
             "name": "github.com/PagerDuty/go-pagerduty",
             "version": "",
             "purl": "pkg:golang/github.com/PagerDuty/go-pagerduty",
-            "properties": [
-              {
-                "key": "source",
-                "value": 'fe74e407c23e030fa1523e7cbd972398fd85ec5d'
-              },
-              {
-                "key": "dependency_file",
-                "value": "Gopkg.lock"
-              }
-            ]
           },
           {
-            "bom-ref": "pkg:golang/github.com/Sirupsen/logrus@v0.11.5",
             "type": "library",
-            "group": "",
             "name": "github.com/Sirupsen/logrus",
             "version": "v0.11.5",
             "purl": "pkg:golang/github.com/Sirupsen/logrus@v0.11.5",
-            "properties": [
-              {
-                "key": "source",
-                "value": 'ba1b36c82c5e05c4f912a88eab0dcd91a171688f'
-              },
-              {
-                "key": "dependency_file",
-                "value": "Gopkg.lock"
-              }
-            ]
           },
           {
-            "bom-ref": "pkg:golang/golang.org/x/sys",
             "type": "library",
-            "group": "",
             "name": "golang.org/x/sys",
             "version": "",
             "purl": "pkg:golang/golang.org/x/sys",
-            "properties": [
-              {
-                "key": "source",
-                "value": '9a7256cb28ed514b4e1e5f68959914c4c28a92e0'
-              },
-              {
-                "key": "dependency_file",
-                "value": "Gopkg.lock"
-              }
-            ]
           }
         ]
       )
