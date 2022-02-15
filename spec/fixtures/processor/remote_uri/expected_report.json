@@ -73,6 +73,7 @@
       "ReportGoDep",
       "ReportGradleDeps",
       "ReportNodeModules",
+      "ReportPodfileLock",
       "ReportPomXml",
       "ReportPythonModules",
       "ReportRubyGems",
@@ -143,6 +144,10 @@
         "scanner_timeout_s": 0
       },
       "ReportNodeModules": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportPodfileLock": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },

@@ -37,7 +37,9 @@ module Salus
       { handle: :pom_xml, filename: 'pom.xml' },
       { handle: :build_gradle, filename: 'build.gradle' },
       # Swift
-      { handle: :package_resolved, filename: 'Package.resolved' }
+      { handle: :package_resolved, filename: 'Package.resolved' },
+      # Apple Ecosystem (macOS, iOS, etc)
+      { handle: :podfile_lock, filename: 'Podfile.lock' }
     ].freeze
 
     # Define file checkers.
