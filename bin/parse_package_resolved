@@ -2,12 +2,11 @@
 
 require 'json'
 
-package_resolved_text = ''
-begin
-  package_resolved_text = File.read(ARGV[0])
-rescue StandardError
-  warn 'Unable to read Package.resolved file'
-  exit(1)
+package_resolved_text = begin
+  File.read(ARGV[0])
+                        rescue StandardError
+                          warn 'Unable to read Package.resolved file'
+                          exit(1)
 end
 
 resolved_object = begin
