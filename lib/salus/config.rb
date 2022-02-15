@@ -1,5 +1,6 @@
 require 'safe_yaml'
 require 'set'
+require 'merge_util'
 
 module Salus
   class Config
@@ -65,7 +66,8 @@ module Salus
           bugsnag_notify(msg)
           filtered_data = {}
         end
-        final_config.deep_merge!(filtered_data)
+        combine_arrays = filtered_data.dig('cascade_config', 'combine_arrays') || false
+        final_config = MergeUtil.deep_merge(final_config, filtered_data, combine_arrays)
       end
 
       # Check if any of the values are actually pointing to envars.
@@ -151,12 +153,9 @@ module Salus
 
       # Make a fully merged config hash for NodeAudit.
       @scanner_configs['NodeAudit'] ||= {}
-      @scanner_configs['NodeAudit'].deep_merge!(@scanner_configs['NPMAudit'] || {}) do |_k, v1, v2|
-        v1.is_a?(Array) && v2.is_a?(Array) ? (v1 + v2).uniq : v2
-      end
-      @scanner_configs['NodeAudit'].deep_merge!(@scanner_configs['YarnAudit'] || {}) do |_k, v1, v2|
-        v1.is_a?(Array) && v2.is_a?(Array) ? (v1 + v2).uniq : v2
-      end
+
+      @scanner_configs['NodeAudit'] = MergeUtil.deep_merge(@scanner_configs['NodeAudit'], @scanner_configs['NPMAudit'], true)
+      @scanner_configs['NodeAudit'] = MergeUtil.deep_merge(@scanner_configs['NodeAudit'], @scanner_configs['YarnAudit'], true)
 
       # Copy over the config to the relevant scanners to ensure they all inherit it.
       @scanner_configs['NPMAudit'] = @scanner_configs['NodeAudit']
@@ -170,9 +169,7 @@ module Salus
         if @scanner_configs[scanner].is_a? Array
           bugsnag_notify("@scanner_configs[scanner] is Array: #{@scanner_configs[scanner].inspect}")
         end
-        @scanner_configs[scanner] = DEFAULT_SCANNER_CONFIG
-          .dup
-          .deep_merge!(@scanner_configs[scanner])
+        @scanner_configs[scanner] = MergeUtil.deep_merge(DEFAULT_SCANNER_CONFIG, @scanner_configs[scanner])
       end
     end
 
