@@ -67,9 +67,11 @@
       "GoVersionScanner",
       "Gosec",
       "NPMAudit",
+      "NPMPackageScanner",
       "PatternSearch",
       "RepoNotEmpty",
       "ReportGoDep",
+      "ReportGradleDeps",
       "ReportNodeModules",
       "ReportPomXml",
       "ReportPythonModules",
@@ -115,6 +117,10 @@
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
+      "NPMPackageScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
       "PatternSearch": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
@@ -124,6 +130,10 @@
         "scanner_timeout_s": 0
       },
       "ReportGoDep": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportGradleDeps": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },

@@ -129,7 +129,7 @@ describe Sarif::NPMAuditSarif do
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
         results = JSON.parse(report.to_sarif)["runs"][0]["results"]
-        result = results.first
+        result = results[-2]
         rules = JSON.parse(report.to_sarif)["runs"][0]["tool"]["driver"]["rules"]
         rule = rules.first
 

@@ -71,6 +71,10 @@
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
+      "GoVersionScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
       "Gosec": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
@@ -79,7 +83,15 @@
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
+      "NPMPackageScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
       "RepoNotEmpty": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportGradleDeps": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
@@ -107,19 +119,15 @@
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
+      "RubyVersionScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
       "Semgrep": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
       "YarnAudit": {
-        "pass_on_raise": false,
-        "scanner_timeout_s": 0
-      },
-      "GoVersionScanner": {
-        "pass_on_raise": false,
-        "scanner_timeout_s": 0
-      },
-      "RubyVersionScanner": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },

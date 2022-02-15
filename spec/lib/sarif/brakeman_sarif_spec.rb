@@ -172,13 +172,13 @@ describe Sarif::BrakemanSarif do
       it 'should generate the right results and rules' do
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
-        result = JSON.parse(report.to_sarif)["runs"][0]["results"][0]
-        rules = JSON.parse(report.to_sarif)["runs"][0]["tool"]["driver"]["rules"]
+        result = JSON.parse(report.to_sarif)["runs"][0]["results"].last
+        rules = JSON.parse(report.to_sarif)["runs"][0]["tool"]["driver"]["rules"][1]
         # Check rule info
-        expect(rules[0]['id']).to eq('13')
-        expect(rules[0]['name']).to eq('Evaluation/Dangerous Eval')
-        expect(rules[0]['fullDescription']['text']).to eq("User input in eval")
-        expect(rules[0]['helpUri']).to eq('https://brakemanscanner.org/docs/warning_types'\
+        expect(rules['id']).to eq('13')
+        expect(rules['name']).to eq('Evaluation/Dangerous Eval')
+        expect(rules['fullDescription']['text']).to eq("User input in eval")
+        expect(rules['helpUri']).to eq('https://brakemanscanner.org/docs/warning_types'\
           '/dangerous_eval/')
 
         # Check result info

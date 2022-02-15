@@ -1,16 +1,12 @@
 module Salus::Scanners; end
 
-# Sort to avoid race conditions caused by differing load orders.
-Dir.entries(File.expand_path('scanners', __dir__)).sort.each do |filename|
-  next if ['.', '..'].include?(filename) # don't include FS pointers
-  next unless /\.rb\z/.match?(filename)  # only include ruby files
+paths = ['scanners', 'scanners/language_version', 'scanners/package_version']
+paths.each do |path|
+  # Sort to avoid race conditions caused by differing load orders.
+  Dir.entries(File.expand_path(path, __dir__)).sort.each do |filename|
+    next if ['.', '..'].include?(filename) # don't include FS pointers
+    next unless /\.rb\z/.match?(filename)  # only include ruby files
 
-  require "salus/scanners/#{filename}"
-end
-
-Dir.entries(File.expand_path('scanners/language_version', __dir__)).sort.each do |filename|
-  next if ['.', '..'].include?(filename) # don't include FS pointers
-  next unless /\.rb\z/.match?(filename)  # only include ruby files
-
-  require "salus/scanners/language_version/#{filename}"
+    require "salus/#{path}/#{filename}"
+  end
 end
