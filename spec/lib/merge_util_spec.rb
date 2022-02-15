@@ -1,5 +1,5 @@
 require_relative '../spec_helper.rb'
-require 'pry'
+
 describe MergeUtil do
   describe "deep_merge" do
     let(:a) { { active_scanners: [1, 2, 3], config: { a: true } } }
