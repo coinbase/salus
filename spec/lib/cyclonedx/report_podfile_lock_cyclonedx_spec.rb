@@ -13,40 +13,22 @@ describe Cyclonedx::ReportPodfileLock do
       expect(cocoa_cyclonedx.build_components_object).to match_array(
         [
           {
-            "bom-ref": "pkg:cocoa/boost-for-react-native@1.63.0",
             type: "library",
-            group: "",
             name: "boost-for-react-native",
             version: '1.63.0',
-            purl: "pkg:cocoa/boost-for-react-native@1.63.0",
-            properties: [
-              { key: "source", value: "" },
-              { key: "dependency_file", value: "Podfile.lock" }
-            ]
+            purl: "pkg:cocoa/boost-for-react-native@1.63.0"
           },
           {
-            "bom-ref": "pkg:cocoa/CocoaAsyncSocket@7.6.5",
             type: "library",
-            group: "",
             name: "CocoaAsyncSocket",
             version: '7.6.5',
-            purl: "pkg:cocoa/CocoaAsyncSocket@7.6.5",
-            properties: [
-              { key: "source", value: "" },
-              { key: "dependency_file", value: "Podfile.lock" }
-            ]
+            purl: "pkg:cocoa/CocoaAsyncSocket@7.6.5"
           },
           {
-            "bom-ref": "pkg:cocoa/Flipper@0.87.0",
             type: "library",
-            group: "",
             name: "Flipper",
             version: "0.87.0",
-            purl: "pkg:cocoa/Flipper@0.87.0",
-            properties: [
-              { key: "source", value: "" },
-              { key: "dependency_file", value: "Podfile.lock" }
-            ]
+            purl: "pkg:cocoa/Flipper@0.87.0"
           }
         ]
       )
