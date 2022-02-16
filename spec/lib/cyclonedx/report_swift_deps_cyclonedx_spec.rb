@@ -12,58 +12,22 @@ describe Cyclonedx::ReportSwiftDeps do
       expect(swift_cyclonedx.build_components_object).to match_array(
         [
           {
-            "bom-ref": "pkg:swift/Cryptor",
-              type: "library",
-              group: "",
+            type: "library",
               name: "Cryptor",
               version: "2.0.1",
-              purl: "pkg:swift/Cryptor",
-              properties: [
-                {
-                  key: "source",
-                    value: "https://github.com/Kitura/BlueCryptor.git"
-                },
-                {
-                  key: "dependency_file",
-                    value: "Package.resolved"
-                }
-              ]
+              purl: "pkg:swift/Cryptor"
           },
           {
-            "bom-ref": "pkg:swift/CryptorECC",
-              type: "library",
-              group: "",
+            type: "library",
               name: "CryptorECC",
               version: "1.2.200",
-              purl: "pkg:swift/CryptorECC",
-              properties: [
-                {
-                  key: "source",
-                    value: "https://github.com/Kitura/BlueECC.git"
-                },
-                {
-                  key: "dependency_file",
-                    value: "Package.resolved"
-                }
-              ]
+              purl: "pkg:swift/CryptorECC"
           },
           {
-            "bom-ref": "pkg:swift/CryptorRSA",
-              type: "library",
-              group: "",
+            type: "library",
               name: "CryptorRSA",
               version: "1.0.201",
-              purl: "pkg:swift/CryptorRSA",
-              properties: [
-                {
-                  key: "source",
-                    value: "https://github.com/Kitura/BlueRSA.git"
-                },
-                {
-                  key: "dependency_file",
-                    value: "Package.resolved"
-                }
-              ]
+              purl: "pkg:swift/CryptorRSA"
           }
         ]
       )
