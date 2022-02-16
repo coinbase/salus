@@ -95,11 +95,19 @@
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
+      "ReportGradleDeps": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
       "ReportGoDep": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
       "ReportNodeModules": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportPodfileLock": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
@@ -116,6 +124,10 @@
         "scanner_timeout_s": 0
       },
       "ReportRustCrates": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportSwiftDeps": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },

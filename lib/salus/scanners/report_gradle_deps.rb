@@ -3,22 +3,19 @@ require 'salus/scanners/base'
 # Report Java library usage
 
 module Salus::Scanners
-  class ReportPomXml < Base
-    UNKNOWN_VERSION = ''.freeze
-
+  class ReportGradleDeps < Base
     def run
-      shell_return = run_shell("bin/parse_pom_xml #{@repository.pom_xml_path}", chdir: nil)
+      shell_return = run_shell("/home/bin/parse_gradle_deps")
 
       if !shell_return.success?
         report_error(shell_return.stderr)
         return
       end
 
-      dependencies = nil
       begin
         dependencies = JSON.parse(shell_return.stdout)
       rescue JSON::ParserError
-        err_msg = "Could not parse JSON returned by bin/parse_pom_xml's stdout!"
+        err_msg = "Could not parse JSON returned by /home/bin/parse_gradle_deps's stdout!"
         report_stderr(err_msg)
         report_error(err_msg)
         return
@@ -27,11 +24,9 @@ module Salus::Scanners
       dependencies.each do |dependency|
         group_id = dependency['group_id']
         artifact_id = dependency['artifact_id']
-        report_error('No group ID found for a dependency!') if group_id.nil?
-        report_error('No artifact ID found for a dependency!') if artifact_id.nil?
         report_dependency(
-          'pom.xml',
-          type: 'maven',
+          'build.gradle',
+          type: 'gradle',
           name: artifact_id.nil? ? group_id : "#{group_id}/#{artifact_id}",
           version: dependency['version'].nil? ? UNKNOWN_VERSION : dependency['version']
         )
@@ -39,7 +34,7 @@ module Salus::Scanners
     end
 
     def should_run?
-      @repository.pom_xml_present?
+      @repository.build_gradle_present?
     end
 
     def self.supported_languages
