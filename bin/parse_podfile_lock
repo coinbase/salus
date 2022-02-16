@@ -1,0 +1,37 @@
+#!/usr/bin/env ruby
+
+require 'json'
+require 'yaml'
+require 'cocoapods'
+
+podfile_lock = begin
+  YAML.safe_load(File.read(ARGV[0]), [Symbol])
+               rescue StandardError
+                 warn 'Unable to parse Podfile.lock file'
+                 exit(1)
+end
+
+lockfile = begin
+  Pod::Lockfile.new(podfile_lock)
+           rescue StandardError
+             warn 'Unable to initialize Pod::Lockfile from YAML hash'
+             exit(1)
+end
+
+# Checks the PODS and DEPENDENCIES section
+podfile_dependencies = (lockfile.send :pod_versions)
+
+normalized_dependencies = []
+podfile_dependencies.each do |dependency_entry|
+  dependency_hash = {}
+  dependency_hash[:pod] = dependency_entry[0]
+  dependency_hash[:version] = dependency_entry[1]
+  normalized_dependencies.append(dependency_hash)
+end
+
+if normalized_dependencies.empty?
+  warn 'No dependencies found in Podfile.lock!'
+  exit(1)
+end
+
+puts normalized_dependencies.to_json
