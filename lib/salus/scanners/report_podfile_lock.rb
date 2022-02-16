@@ -8,7 +8,7 @@ module Salus::Scanners
 
     def run
       shell_return =
-        run_shell("bin/parse_podfile_lock #{@repository.path_to_repo}/Podfile.lock", chdir: nil)
+        run_shell("bin/parse_podfile_lock #{@repository.podfile_lock_path}", chdir: nil)
 
       if !shell_return.success?
         report_error(shell_return.stderr)

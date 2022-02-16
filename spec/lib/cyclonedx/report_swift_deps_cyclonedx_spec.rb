@@ -21,7 +21,7 @@ describe Cyclonedx::ReportSwiftDeps do
               properties: [
                 {
                   key: "source",
-                      value: ""
+                    value: "https://github.com/Kitura/BlueCryptor.git"
                 },
                 {
                   key: "dependency_file",
@@ -39,7 +39,7 @@ describe Cyclonedx::ReportSwiftDeps do
               properties: [
                 {
                   key: "source",
-                    value: ""
+                    value: "https://github.com/Kitura/BlueECC.git"
                 },
                 {
                   key: "dependency_file",
@@ -57,7 +57,7 @@ describe Cyclonedx::ReportSwiftDeps do
               properties: [
                 {
                   key: "source",
-                    value: ""
+                    value: "https://github.com/Kitura/BlueRSA.git"
                 },
                 {
                   key: "dependency_file",

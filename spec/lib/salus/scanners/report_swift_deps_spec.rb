@@ -48,19 +48,22 @@ describe Salus::Scanners::ReportSwiftDeps do
           dependency_file: 'Package.resolved',
             name: 'Cryptor',
             version: '2.0.1',
-            type: 'swift'
+            type: 'swift',
+            source: 'https://github.com/Kitura/BlueCryptor.git'
         },
         {
           dependency_file: 'Package.resolved',
         name: 'CryptorECC',
         version: '1.2.200',
-        type: 'swift'
+        type: 'swift',
+        source: 'https://github.com/Kitura/BlueECC.git'
         },
         {
           dependency_file: 'Package.resolved',
             name: 'CryptorRSA',
             version: '1.0.201',
-            type: 'swift'
+            type: 'swift',
+            source: 'https://github.com/Kitura/BlueRSA.git'
         }
       ]
     )

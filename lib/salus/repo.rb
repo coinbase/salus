@@ -71,6 +71,18 @@ module Salus
       end
     end
 
+    # Define file path getters.
+    # Returns nil for wildcard objects with a wildcard
+    # property, as there can be more than one location
+    # for files fitting the pattern
+    IMPORTANT_FILES.each do |file|
+      define_method :"#{file[:handle]}_path" do
+        return File.expand_path("#{@path_to_repo}/#{file[:filename]}") if !file[:wildcard]
+
+        return nil
+      end
+    end
+
     def initialize(path_to_repo = nil)
       @path_to_repo = path_to_repo
     end

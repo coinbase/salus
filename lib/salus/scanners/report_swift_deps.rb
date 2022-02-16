@@ -9,7 +9,7 @@ module Salus::Scanners
     def run
       shell_return =
         run_shell(
-          "bin/parse_package_resolved #{@repository.path_to_repo}/Package.resolved",
+          "bin/parse_package_resolved #{@repository.package_resolved_path}",
           chdir: nil
         )
 
@@ -28,7 +28,8 @@ module Salus::Scanners
             'Package.resolved',
             type: 'swift',
             name: dependency['package'],
-            version: dependency['version']
+            version: dependency['version'],
+            source: dependency['source']
           )
         end
       rescue ReportSwiftDepsError, JSON::ParserError

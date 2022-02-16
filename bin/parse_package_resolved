@@ -30,6 +30,7 @@ pinned_dependencies.each do |pinned_dep|
     dependency_hash = {}
     dependency_hash[:package] = pinned_dep['package']
     dependency_hash[:version] = pinned_dep['state']['version']
+    dependency_hash[:source] =  pinned_dep['repositoryURL']
     dependencies.append(dependency_hash)
   end
 end
