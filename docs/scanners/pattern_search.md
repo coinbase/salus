@@ -10,6 +10,7 @@ The scanner also allows the options below.  These options can be set globally an
 * `exclude_directory` for excluding directories whose name matches GLOB.  It appears that sift does not support `/`s in the directory name.
 * `exclude_filepaths` for excluding file paths. Note the file paths must be regular paths, not GLOB, and cannot include regular expressions.
 * `not_followed_within` for only showing matches not followed by PATTERN within NUM lines. The value must have the format `NUM:PATTERN`. Use 0 for excluding on the same line.
+* `not_followed_by` for only showing matches not followed by PATTERN
 * `files` for search only files whose name matches GLOB.
 
 ## Configuration
@@ -32,6 +33,7 @@ scanner_configs:
           - html
           - htm
         not_followed_within: 0:my_pattern
+        not_followed_by: my_pattern
         files:
           - a.js
           - b.js

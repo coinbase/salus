@@ -64,6 +64,10 @@ module Salus::Scanners
 
         not_followed_within = match["not_followed_within"]
         command_array += ['--not-followed-within', not_followed_within] if not_followed_within
+
+        not_followed_by = match["not_followed_by"]
+        command_array += ['--not-followed-by', not_followed_by] if not_followed_by
+
         files = match['files']
         files&.each do |file|
           command_array += ['--files', file]
