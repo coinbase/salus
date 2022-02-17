@@ -1,8 +1,21 @@
 {
   "version": "2.17.0",
   "passed": true,
-  "running_time": 0.0,
+  "running_time": 0.35,
   "scans": {
+    "RepoNotEmpty": {
+      "scanner_name": "RepoNotEmpty",
+      "version": "",
+      "passed": true,
+      "running_time": 0.01,
+      "warn": {
+      },
+      "info": {
+      },
+      "errors": [
+
+      ]
+    },
     "PatternSearch": {
       "scanner_name": "PatternSearch",
       "version": "0.9.0",
@@ -17,19 +30,6 @@
         "misses": [
 
         ]
-      },
-      "errors": [
-
-      ]
-    },
-    "RepoNotEmpty": {
-      "scanner_name": "RepoNotEmpty",
-      "version": "",
-      "passed": true,
-      "running_time": 0.0,
-      "warn": {
-      },
-      "info": {
       },
       "errors": [
 
@@ -71,11 +71,14 @@
       "PatternSearch",
       "RepoNotEmpty",
       "ReportGoDep",
+      "ReportGradleDeps",
       "ReportNodeModules",
+      "ReportPodfileLock",
       "ReportPomXml",
       "ReportPythonModules",
       "ReportRubyGems",
       "ReportRustCrates",
+      "ReportSwiftDeps",
       "RubyVersionScanner",
       "Semgrep",
       "YarnAudit"
@@ -108,6 +111,10 @@
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
+      "GoVersionScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
       "Gosec": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
@@ -132,7 +139,15 @@
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
+      "ReportGradleDeps": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
       "ReportNodeModules": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportPodfileLock": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
@@ -152,19 +167,19 @@
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
+      "ReportSwiftDeps": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "RubyVersionScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
       "Semgrep": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
       "YarnAudit": {
-        "pass_on_raise": false,
-        "scanner_timeout_s": 0
-      },
-      "GoVersionScanner": {
-        "pass_on_raise": false,
-        "scanner_timeout_s": 0
-      },
-      "RubyVersionScanner": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
