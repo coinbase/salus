@@ -19,6 +19,8 @@ module Salus::Scanners::GithubAdvisory
                           MAVEN_ADVISORY_QUERY
                         elsif @repository.gemfile_present? || @repository.gemfile_lock_present?
                           RUBYGEMS_ADVISORY_QUERY
+                        elsif @repository.cargo_present? || @repository.cargo_lock_present?
+                          RUST_ADVISORY_QUERY
                         else
                           ALL_ADVISORY_QUERY
                         end
@@ -290,6 +292,46 @@ module Salus::Scanners::GithubAdvisory
         }
         }
     RUBYGEMS_QUERY
+    RUST_ADVISORY_QUERY = <<-RUST_QUERY.freeze
+        query($first: Int, $after: String) {
+        securityVulnerabilities(first: $first, after: $after, ecosystem:RUST) {
+            pageInfo {
+            endCursor
+            hasNextPage
+            hasPreviousPage
+            startCursor
+            }
+            nodes {
+            package {
+                name
+                ecosystem
+            }
+            vulnerableVersionRange
+            firstPatchedVersion {
+                identifier
+            }
+            advisory {
+                identifiers {
+                type
+                value
+                }
+                summary
+                description
+                severity
+                cvss {
+                score
+                vectorString
+                }
+                references {
+                url
+                }
+                publishedAt
+                withdrawnAt
+            }
+            }
+        }
+        }
+    RUST_QUERY
     ALL_ADVISORY_QUERY = <<-ALL_QUERY.freeze
         query($first: Int, $after: String) {
         securityVulnerabilities(first: $first, after: $after) {
