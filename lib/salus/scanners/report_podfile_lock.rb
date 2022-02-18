@@ -23,7 +23,7 @@ module Salus::Scanners
         dependencies.each do |dependency|
           report_dependency(
             'Podfile.lock',
-            type: 'cocoa',
+            type: 'cocoapods',
             name: dependency['pod'],
             version: dependency['version']
           )
