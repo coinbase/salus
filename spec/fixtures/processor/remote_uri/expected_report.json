@@ -73,10 +73,12 @@
       "ReportGoDep",
       "ReportGradleDeps",
       "ReportNodeModules",
+      "ReportPodfileLock",
       "ReportPomXml",
       "ReportPythonModules",
       "ReportRubyGems",
       "ReportRustCrates",
+      "ReportSwiftDeps",
       "RubyVersionScanner",
       "Semgrep",
       "YarnAudit"
@@ -145,6 +147,10 @@
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
+      "ReportPodfileLock": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
       "ReportPomXml": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
@@ -158,6 +164,10 @@
         "scanner_timeout_s": 0
       },
       "ReportRustCrates": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportSwiftDeps": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
