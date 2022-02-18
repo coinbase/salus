@@ -13,18 +13,21 @@ describe Cyclonedx::ReportRustCrates do
         [
           {
             "type": "library",
+          "group": "",
             "name": "autocfg",
             "version": "0.1.7",
             "purl": "pkg:cargo/autocfg@0.1.7"
           },
           {
             "type": "library",
+          "group": "",
             "name": "bitflags",
             "version": "1.2.1",
             "purl": "pkg:cargo/bitflags@1.2.1"
           },
           {
             "type": "library",
+          "group": "",
             "name": "cloudabi",
             "version": "0.0.3",
             "purl": "pkg:cargo/cloudabi@0.0.3"
@@ -51,18 +54,21 @@ describe Cyclonedx::ReportRustCrates do
       expected = [
         {
           "type": "library",
+          "group": "",
           "name": "autocfg",
           "version": "0.1.7",
           "purl": "pkg:cargo/autocfg@0.1.7"
         },
         {
           "type": "library",
+          "group": "",
             "name": "bitflags",
             "version": "1.2.1",
             "purl": "pkg:cargo/bitflags@1.2.1"
         },
         {
           "type": "library",
+          "group": "",
             "name": "cloudabi",
             "version": "0.0.3",
             "purl": "pkg:cargo/cloudabi@0.0.3"
@@ -82,18 +88,21 @@ describe Cyclonedx::ReportRustCrates do
         [
           {
             "type": "library",
+          "group": "",
             "name": "autocfg",
             "version": "0.1.7",
             "purl": "pkg:cargo/autocfg@0.1.7"
           },
           {
             "type": "library",
+          "group": "",
             "name": "bitflags",
             "version": "1.2.1",
             "purl": "pkg:cargo/bitflags@1.2.1"
           },
           {
             "type": "library",
+          "group": "",
             "name": "cloudabi",
             "version": "0.0.3",
             "purl": "pkg:cargo/cloudabi@0.0.3"

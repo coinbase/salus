@@ -13,18 +13,21 @@ describe Cyclonedx::ReportSwiftDeps do
         [
           {
             type: "library",
+          "group": "",
               name: "Cryptor",
               version: "2.0.1",
               purl: "pkg:swift/Cryptor"
           },
           {
             type: "library",
+          "group": "",
               name: "CryptorECC",
               version: "1.2.200",
               purl: "pkg:swift/CryptorECC"
           },
           {
             type: "library",
+          "group": "",
               name: "CryptorRSA",
               version: "1.0.201",
               purl: "pkg:swift/CryptorRSA"

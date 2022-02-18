@@ -19,6 +19,7 @@ describe Cyclonedx::ReportRubyGems do
         [
           {
             "type": "library",
+          "group": "",
             "licenses": [{ "license" => { "id" => "MIT" } }],
             "name": "kibana_url",
             "version": "~> 1.0",
@@ -26,6 +27,7 @@ describe Cyclonedx::ReportRubyGems do
           },
           {
             "type": "library",
+          "group": "",
             "licenses": [{ "license" => { "id" => "MIT" } }],
             "name": "rails",
             "version": ">= 0",
@@ -33,6 +35,7 @@ describe Cyclonedx::ReportRubyGems do
           },
           {
             "type": "library",
+          "group": "",
             "licenses": [{ "license" => { "id" => "MIT" } }],
             "name": "master_lock",
             "version": ">= 0",
@@ -51,6 +54,7 @@ describe Cyclonedx::ReportRubyGems do
       expected = [
         {
           "type": "library",
+          "group": "",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "actioncable",
           "version": "5.1.2",
@@ -58,6 +62,7 @@ describe Cyclonedx::ReportRubyGems do
         },
         {
           "type": "library",
+          "group": "",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "actionmailer",
           "version": "5.1.2",
@@ -65,6 +70,7 @@ describe Cyclonedx::ReportRubyGems do
         },
         {
           "type": "library",
+          "group": "",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "actionpack",
           "version": "5.1.2",
@@ -72,6 +78,7 @@ describe Cyclonedx::ReportRubyGems do
         },
         {
           "type": "library",
+          "group": "",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "nio4r",
           "version": "2.1.0",
@@ -79,6 +86,7 @@ describe Cyclonedx::ReportRubyGems do
         },
         {
           "type": "library",
+          "group": "",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "kibana_url",
           "version": "1.0.1",
@@ -86,6 +94,7 @@ describe Cyclonedx::ReportRubyGems do
         },
         {
           "type": "library",
+          "group": "",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "master_lock",
           "version": "0.9.1",
@@ -104,6 +113,7 @@ describe Cyclonedx::ReportRubyGems do
       expected = [
         {
           "type": "library",
+          "group": "",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "dep1",
           "version": "0.0.47",
@@ -111,6 +121,7 @@ describe Cyclonedx::ReportRubyGems do
         },
         {
           "type": "library",
+          "group": "",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "dep2",
           "version": "0.15.3",
@@ -118,6 +129,7 @@ describe Cyclonedx::ReportRubyGems do
         },
         {
           "type": "library",
+          "group": "",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "minitest",
           "version": "5.14.4",

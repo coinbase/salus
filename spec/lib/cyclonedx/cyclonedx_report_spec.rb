@@ -69,6 +69,7 @@ describe Cyclonedx::ReportRubyGems do
       expected = [
         {
           "type": "library",
+          "group": "",
           "name": "actioncable",
           "version": "5.1.2",
           "purl": "pkg:gem/actioncable@5.1.2",
@@ -76,6 +77,7 @@ describe Cyclonedx::ReportRubyGems do
         },
         {
           "type": "library",
+          "group": "",
           "name": "actionmailer",
           "version": "5.1.2",
           "purl": "pkg:gem/actionmailer@5.1.2",
@@ -83,6 +85,7 @@ describe Cyclonedx::ReportRubyGems do
         },
         {
           "type": "library",
+          "group": "",
           "name": "actionpack",
           "version": "5.1.2",
           "purl": "pkg:gem/actionpack@5.1.2",
@@ -101,6 +104,7 @@ describe Cyclonedx::ReportRubyGems do
       expected = [
         {
           "type": "library",
+          "group": "",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "actioncable",
           "version": "5.1.2",
@@ -108,6 +112,7 @@ describe Cyclonedx::ReportRubyGems do
         },
         {
           "type": "library",
+          "group": "",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "actionmailer",
           "version": "5.1.2",
@@ -115,6 +120,7 @@ describe Cyclonedx::ReportRubyGems do
         },
         {
           "type": "library",
+          "group": "",
           "licenses": [{ "license" => { "id" => "MIT" } }],
           "name": "actionpack",
           "version": "5.1.2",

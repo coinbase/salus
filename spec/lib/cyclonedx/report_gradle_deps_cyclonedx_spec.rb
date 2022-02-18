@@ -14,18 +14,21 @@ describe Cyclonedx::ReportGradleDeps do
       expect(components_object).to include(
         {
           type: "library",
+          "group": "",
           name: "org.apache.kafka/connect-transforms",
           version: "2.6.2",
           purl: "pkg:gradle/org.apache.kafka/connect-transforms"
         },
         {
           type: "library",
+          "group": "",
           name: "org.apache.kafka/connect-api",
           version: "2.6.2",
           purl: "pkg:gradle/org.apache.kafka/connect-api"
         },
         {
           type: "library",
+          "group": "",
           name: "org.apache.kafka/kafka-clients",
           version: "2.6.2",
           purl: "pkg:gradle/org.apache.kafka/kafka-clients"
