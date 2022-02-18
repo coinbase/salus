@@ -1,4 +1,4 @@
-# Report Modules
+# Dependency Scanners
 
 This scanner is used to report modules / dependencies found in a repository. The user may provide if they want dev dependencies to be included in the reporting or not using custom configuration.
 
