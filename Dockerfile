@@ -38,7 +38,7 @@ ENV GRADLE_HOME="/opt/gradle/gradle-7.3.3"
 ENV PATH="${GRADLE_HOME}/bin:${PATH}"
 
 ### Rust
-ENV RUST_VERSION 1.53.0
+ENV RUST_VERSION 1.56.0
 ENV RUST_TARBALL_FILE rust-${RUST_VERSION}-x86_64-unknown-linux-gnu.tar.gz
 ENV RUST_DOWNLOAD_URL https://static.rust-lang.org/dist/${RUST_TARBALL_FILE}
 ENV CARGO_AUDIT_VERSION 0.14.0
