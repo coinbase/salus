@@ -8,8 +8,8 @@ module Sarif
     SEMGREP_URI = "https://github.com/coinbase/salus/blob/master/docs/scanners/"\
                      "semgrep.md".freeze
 
-    def initialize(scan_report)
-      super(scan_report)
+    def initialize(scan_report, repo_path = nil)
+      super(scan_report, {}, repo_path)
       @uri = SEMGREP_URI
       @logs = parse_scan_report!
       @issues = Set.new
@@ -85,7 +85,8 @@ module Sarif
         uri: location[0],
         help_url: SEMGREP_URI,
         code: location[2],
-        rule: "Pattern: #{hit[:pattern]}\nMessage: #{hit[:msg]}"
+        rule: "Pattern: #{hit[:pattern]}\nMessage: #{hit[:msg]}",
+        properties: { 'severity': "HIGH" }
       }
     rescue StandardError => e
       bugsnag_notify(e.message)
@@ -100,9 +101,11 @@ module Sarif
         name: warning[:type],
         level: "HIGH",
         details: warning[:message],
-        start_line: warning[:spans][0][:start]["line"],
-        start_column: warning[:spans][0][:start]["col"],
-        uri: warning[:spans][0][:file],
+        # Default to line one if not provided as SARIF spec requires this value
+        # to be > 0
+        start_line: warning[:spans].empty? ? 1 : warning[:spans][0][:start]["line"],
+        start_column: warning[:spans].empty? ? 1 : warning[:spans][0][:start]["col"],
+        uri: warning[:spans].empty? ? "" : warning[:spans][0][:file],
         help_url: SEMGREP_URI
       }
     end

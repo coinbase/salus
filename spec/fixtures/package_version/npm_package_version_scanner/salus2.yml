@@ -1,0 +1,6 @@
+scanner_configs:
+  NPMPackageScanner:
+    package_versions:
+      package-not-here:
+        min_version: '0.1.2'
+        max_version: '0.2.4'

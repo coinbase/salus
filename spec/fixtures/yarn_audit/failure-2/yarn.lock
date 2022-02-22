@@ -16,3 +16,7 @@ uglify-js@1.2.3:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-1.2.3.tgz#3b0ce6631a28dcaa64302b893123b20876bdc536"
   integrity sha1-OwzmYxoo3KpkMCuJMSOyCHa9xTY=
+
+merge@^1.2.0:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/merge/-/merge-1.2.1.tgz#38bebf80c3220a8a487b6fcfb3941bb11720c145"

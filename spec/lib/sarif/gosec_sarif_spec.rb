@@ -5,17 +5,18 @@ require 'json-schema'
 describe Sarif::GosecSarif do
   describe '#parse_issue' do
     let(:scanner) { Salus::Scanners::Gosec.new(repository: repo, config: {}) }
+    let(:path) { 'spec/fixtures/gosec/safe_goapp' }
     before { scanner.run }
 
     context 'scan report with duplicate vulnerabilities' do
-      let(:repo) { Salus::Repo.new('spec/fixtures/gosec/safe_goapp') }
+      let(:repo) { Salus::Repo.new(path) }
+      let(:path) { 'spec/fixtures/gosec/duplicate_entries' }
       it 'should not include duplicate result entries' do
         scan_report = Salus::ScanReport.new(scanner_name: "Gosec")
-        f = File.read('spec/fixtures/gosec/duplicate_entries/report.json')
+        f = File.read("#{path}/report.json")
         scan_report.log(f.to_s)
-        adapter = Sarif::GosecSarif.new(scan_report)
+        adapter = Sarif::GosecSarif.new(scan_report, path)
         results = adapter.build_runs_object(true)["results"]
-
         expect(results.size).to eq(3)
         unique_results = Set.new
         results.each do |result|
@@ -28,7 +29,7 @@ describe Sarif::GosecSarif do
         scan_report = Salus::ScanReport.new(scanner_name: "Gosec")
         f = File.read('spec/fixtures/gosec/duplicate_entries/report.json')
         scan_report.log(f.to_s)
-        adapter = Sarif::GosecSarif.new(scan_report)
+        adapter = Sarif::GosecSarif.new(scan_report, 'spec/fixtures/gosec/duplicate_entries')
         rules = adapter.build_runs_object(true)["tool"][:driver]["rules"]
         expect(rules.size).to eq(2)
         unique_rules = Set.new
@@ -41,10 +42,11 @@ describe Sarif::GosecSarif do
 
     describe '#sarif_level' do
       context 'gosec severities' do
-        let(:repo) { Salus::Repo.new('spec/fixtures/gosec/safe_goapp') }
+        let(:path) { 'spec/fixtures/gosec/safe_goapp' }
+        let(:repo) { Salus::Repo.new(path) }
         it 'are mapped to sarif levels' do
           scan_report = Salus::ScanReport.new(scanner_name: "Gosec")
-          adapter = Sarif::GosecSarif.new(scan_report)
+          adapter = Sarif::GosecSarif.new(scan_report, path)
           expect(adapter.sarif_level("MEDIUM")).to eq("error")
           expect(adapter.sarif_level("HIGH")).to eq("error")
           expect(adapter.sarif_level("LOW")).to eq("warning")
@@ -53,9 +55,10 @@ describe Sarif::GosecSarif do
     end
 
     context 'scan report with logged vulnerabilites' do
-      let(:repo) { Salus::Repo.new('spec/fixtures/gosec/vulnerable_goapp') }
+      let(:path) { 'spec/fixtures/gosec/vulnerable_goapp' }
+      let(:repo) { Salus::Repo.new(path) }
       it 'parses information correctly' do
-        gosec_sarif = Sarif::GosecSarif.new(scanner.report)
+        gosec_sarif = Sarif::GosecSarif.new(scanner.report, path)
         issue = JSON.parse(scanner.log(''))['Issues'][0]
 
         # should Parse and fill out hash
@@ -73,6 +76,8 @@ describe Sarif::GosecSarif do
           start_line: 8,
           start_column: 2,
           help_url: "https://cwe.mitre.org/data/definitions/798.html",
+          uri: "hello.go",
+          properties: { severity: "HIGH" },
           code: expected
         )
       end
@@ -143,11 +148,13 @@ describe Sarif::GosecSarif do
     end
 
     context 'go project with vulnerabilities' do
-      let(:repo) { Salus::Repo.new('spec/fixtures/gosec/recursive_vulnerable_goapp') }
+      let(:path) { 'spec/fixtures/gosec/recursive_vulnerable_goapp' }
+      let(:repo) { Salus::Repo.new(path) }
 
       it 'should generate the right results and rules' do
-        report = Salus::Report.new(project_name: "Neon Genesis")
+        report = Salus::Report.new(project_name: "Neon Genesis", repo_path: path)
         report.add_scan_report(scanner.report, required: false)
+
         result = JSON.parse(report.to_sarif)["runs"][0]["results"][0]
         rules = JSON.parse(report.to_sarif)["runs"][0]["tool"]["driver"]["rules"]
         # Check rule info
@@ -167,6 +174,44 @@ describe Sarif::GosecSarif do
         "\tfmt.Println(\"hello, from the vulnerable app\" + password)\n"
         snippet = result['locations'][0]['physicalLocation']['region']['snippet']['text'].to_s
         expect(snippet).to eq(expected)
+      end
+    end
+  end
+
+  describe 'sarif diff' do
+    context 'git diff support' do
+      it 'should find code in git diff' do
+        git_diff_file = 'spec/fixtures/sarifs/diff/git_diff_1.txt'
+        snippet = "6:     username := \"admin\"\n7:     var password = " \
+                  "\"f62e5bcda4fae4f82370da0c6f20697b8f8447ef\"\n8: \n"
+        git_diff = File.read(git_diff_file)
+        new_lines_in_git_diff = Sarif::BaseSarif.new_lines_in_git_diff(git_diff)
+        r = Sarif::GosecSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
+        expect(r).to be true
+
+        git_diff_file = 'spec/fixtures/sarifs/diff/git_diff_2.txt'
+        snippet = "6:     username := \"admin\"\n7:     var password = " \
+                  "\"f62e5bcda4fae4f82370da0c6f20697b8f8447ef\"\n8: \n"
+        git_diff = File.read(git_diff_file)
+        new_lines_in_git_diff = Sarif::BaseSarif.new_lines_in_git_diff(git_diff)
+        r = Sarif::GosecSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
+        expect(r).to be true
+
+        git_diff_file = 'spec/fixtures/sarifs/diff/git_diff_2.txt'
+        snippet = "6:     username := \"admin123\"\n7:     var password = " \
+                  "\"f62e5bcda4fae4f82370da0c6f20697b8f8447ef\""
+        git_diff = File.read(git_diff_file)
+        new_lines_in_git_diff = Sarif::BaseSarif.new_lines_in_git_diff(git_diff)
+        r = Sarif::GosecSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
+        expect(r).to be false
+
+        git_diff_file = 'spec/fixtures/sarifs/diff/git_diff_2.txt'
+        snippet = "6:     username := \"admin123\"\n7:     var password = " \
+                  "\"f62e5bcda4fae4f82370da0c6f20697b8f8447ef\"\n8: \n"
+        git_diff = File.read(git_diff_file)
+        new_lines_in_git_diff = Sarif::BaseSarif.new_lines_in_git_diff(git_diff)
+        r = Sarif::GosecSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
+        expect(r).to be false
       end
     end
   end

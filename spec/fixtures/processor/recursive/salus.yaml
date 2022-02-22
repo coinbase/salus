@@ -1,0 +1,16 @@
+---
+  project_name: EVA-01
+  custom_info: Purple unit
+  scanner_configs: 
+    Brakeman:
+      recursion: 
+        directory_exclusions: 
+          - vendor
+        directories: 
+          - ./
+        directories_matching: 
+          - 
+            filename: "package.json"
+        static_files:
+          - Gemfile
+          - Gemfile.lock

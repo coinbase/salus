@@ -29,6 +29,11 @@ For more information on Bandit configs, see [Bandit Usage](https://pypi.org/proj
       exclude: # paths to exclude from scan
         - path1
         - path2
+      exceptions:
+        - advisory_id: test_id1
+          changed_by: security-team
+          notes: Currently no patch exists and determined that this vulnerability is not exploitable.
+          expiration: "2021-04-27"
 ```
 
 The following Bandt config options are currently NOT supported.
@@ -40,3 +45,7 @@ The following Bandt config options are currently NOT supported.
 --debug  # turn on debug mode (used for debugging Bandit code)
 --quiet  # only show output in the case of error
 ```
+
+## Exceptions
+
+The skips configuration is supported for backwards compatibility and will be deprecated in the future.  Salus exceptions are being normalized to the new exceptions configuration

@@ -1,0 +1,39 @@
+#!/usr/bin/env ruby
+
+# Write a JSON string of the dependencies of a Java Maven project
+# to stdout using its pom.xml project file
+
+require 'json'
+require 'nokogiri'
+
+parsed_file = nil
+begin
+  parsed_file = Nokogiri::XML(File.read(ARGV[0]))
+rescue StandardError
+  warn 'Unable to read and parse pom.xml file'
+  exit(1)
+end
+
+if parsed_file.errors.size.positive?
+  err_msgs = 'Errors:
+'
+  parsed_file.errors.each { |err| err_msgs += "#{err}\n" }
+  warn err_msgs
+  exit(1)
+end
+
+dependencies = []
+
+# Parse contents within each <dependency> tag
+parsed_file.css('dependency').each do |dependency|
+  group_id = dependency.at('groupId')
+  artifact_id = dependency.at('artifactId')
+  version = dependency.at('version')
+  dependency_hash = {}
+  dependency_hash[:group_id] = group_id.nil? ? nil : group_id.children.to_s
+  dependency_hash[:artifact_id] = artifact_id.nil? ? nil : artifact_id.children.to_s
+  dependency_hash[:version] = version.nil? ? nil : version.children.to_s
+  dependencies.append(dependency_hash)
+end
+
+puts dependencies.to_json

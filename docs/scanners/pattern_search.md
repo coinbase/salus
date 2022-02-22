@@ -9,7 +9,8 @@ The scanner also allows the options below.  These options can be set globally an
 * `exclude_extension` and `include_extension` for excluding and including file extensions, respectively. While these options can be combined, exclusions take precedence when extensions conflict (are both included and excluded) in declarations.
 * `exclude_directory` for excluding directories whose name matches GLOB.  It appears that sift does not support `/`s in the directory name.
 * `exclude_filepaths` for excluding file paths. Note the file paths must be regular paths, not GLOB, and cannot include regular expressions.
-
+* `not_followed_within` for only showing matches not followed by PATTERN within NUM lines. The value must have the format `NUM:PATTERN`. Use 0 for excluding on the same line.
+* `files` for search only files whose name matches GLOB.
 
 ## Configuration
 
@@ -30,6 +31,10 @@ scanner_configs:
           - erb
           - html
           - htm
+        not_followed_within: 0:my_pattern
+        files:
+          - a.js
+          - b.js
       - regex: "# Threat Model"
         message: All repos must contain a documented threat model.
         required: true

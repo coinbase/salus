@@ -25,8 +25,14 @@ module Salus::Scanners
 
     private
 
-    def scan_for_cves
-      raw = run_shell(AUDIT_COMMAND).stdout
+    def audit_command_with_options
+      command = AUDIT_COMMAND
+      command += " --production" if @config["production"] == true
+      command
+    end
+
+    def scan_for_cves(chdir: File.expand_path(@repository&.path_to_repo))
+      raw = run_shell(audit_command_with_options).stdout
       json = JSON.parse(raw, symbolize_names: true)
 
       if json.key?(:error)
@@ -34,7 +40,7 @@ module Salus::Scanners
         summary = json[:error][:summary] || '<none>'
 
         message =
-          "`#{AUDIT_COMMAND}` failed unexpectedly (error code #{code}):\n" \
+          "`#{audit_command_with_options}` failed unexpectedly (error code #{code}):\n" \
           "```\n#{summary}\n```"
 
         raise message

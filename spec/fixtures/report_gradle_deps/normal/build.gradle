@@ -1,0 +1,13 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation group: 'org.apache.kafka', name: 'connect-transforms', version: '2.6.2'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.5.1'
+    testImplementation group: 'org.testng', name: 'testng', version: '7.4.0'
+}

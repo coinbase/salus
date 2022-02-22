@@ -5,7 +5,6 @@ require 'salus/bugsnag'
 require 'shellwords'
 require 'salus/plugin_manager'
 require 'timeout'
-
 module Salus::Scanners
   # Super class for all scanner objects.
   class Base
@@ -13,17 +12,23 @@ module Salus::Scanners
     class InvalidScannerInvocationError < StandardError; end
     class ConfigFormatError < StandardError; end
     class ScannerTimeoutError < StandardError; end
+    # Default unknown version for dependency scanners
+    UNKNOWN_VERSION = ''.freeze
 
     include Salus::SalusBugsnag
 
     attr_reader :report
 
+    @@mutex = Mutex.new
+
     def initialize(repository:, config:)
       @repository = repository
+
       @config = config
       @report = Salus::ScanReport.new(
         name,
-        custom_failure_message: @config['failure_message']
+        custom_failure_message: @config['failure_message'],
+        repository: repository
       )
 
       version_number = version
@@ -74,9 +79,13 @@ module Salus::Scanners
     #   and also to pass/fail the scan if #run failed to do so
     # - catches any exceptions, appending them to both the scan report's error
     #   collection and the global salus scan's error collection
+
     def run!(salus_report:, required:, pass_on_raise:, reraise:)
-      @salus_report = salus_report
-      salus_report.add_scan_report(@report, required: required)
+      @@mutex.synchronize do
+        @salus_report = salus_report
+        salus_report.add_scan_report(@report, required: required)
+        @builds = @salus_report&.builds
+      end
 
       begin
         @report.record do
@@ -95,8 +104,7 @@ module Salus::Scanners
 
         pass_on_raise ? @report.pass : @report.fail
 
-        @report.error(timeout_error_data)
-        salus_report.error(timeout_error_data)
+        record_error(timeout_error_data)
         bugsnag_notify(error_message)
 
         # Propagate this error if desired
@@ -111,22 +119,27 @@ module Salus::Scanners
         pass_on_raise ? @report.pass : @report.fail
 
         # Record the error so that the Salus report captures the issue.
-        @report.error(error_data)
-        salus_report.error(error_data)
+        record_error(error_data)
 
         raise if reraise
       ensure
-        Salus::PluginManager.send_event(:scan_executed, { salus_report: @salus_report,
-                                                          scan_report: @report })
+        @@mutex.synchronize do
+          Salus::PluginManager.send_event(:scan_executed, { salus_report: @salus_report,
+                                                            scan_report: @report })
+        end
       end
     end
 
     # Runs a command on the terminal.
-    def run_shell(command, env: {}, stdin_data: '')
+    def run_shell(command, env: {}, stdin_data: '',
+                  chdir: File.expand_path(@repository&.path_to_repo))
       # If we're passed a string, convert it to an array before passing to capture3
       command = command.split unless command.is_a?(Array)
-      Salus::PluginManager.send_event(:run_shell, command)
-      Salus::ShellResult.new(*Open3.capture3(env, *command, stdin_data: stdin_data))
+      Salus::PluginManager.send_event(:run_shell, command, chdir: chdir)
+      #  chdir: '/some/directory'
+      opts = { stdin_data: stdin_data }
+      opts[:chdir] = chdir unless chdir.nil? || chdir == "."
+      Salus::ShellResult.new(*Open3.capture3(env, *command, opts))
     end
 
     # Add a textual logline to the report. This is for humans
@@ -154,9 +167,9 @@ module Salus::Scanners
     def report_warn(type, message)
       @report.warn(type, message)
       Salus::PluginManager.send_event(:report_warn, { type: type, message: message })
-      if @salus_report&.builds
+      if @builds
         scanner = @report.scanner_name
-        message = "#{scanner} warning: #{type}, #{message}, build: #{@salus_report.builds}"
+        message = "#{scanner} warning: #{type}, #{message}, build: #{@builds}"
       end
       bugsnag_notify(message)
     end
@@ -175,9 +188,8 @@ module Salus::Scanners
     def report_error(message, hsh = {})
       hsh[:message] = message
       @report.error(hsh)
-      if @salus_report&.builds
-        message = "#{@report.scanner_name} error: #{message}, build: #{@salus_report.builds}"
-      end
+
+      message = "#{@report.scanner_name} error: #{message}, build: #{@builds}" if @builds
       bugsnag_notify(message)
     end
 
@@ -188,6 +200,11 @@ module Salus::Scanners
     end
 
     protected
+
+    def record_error(error)
+      @report.error(error)
+      @@mutex.synchronize { @salus_report.error(error) }
+    end
 
     def validate_bool_option(keyword, value)
       return true if %w[true false].include?(value.to_s.downcase)
@@ -224,7 +241,7 @@ module Salus::Scanners
       false
     end
 
-    def validate_file_option(keyword, value)
+    def validate_file_option(keyword, value, chdir: File.expand_path(@repository&.path_to_repo))
       if value.nil?
         report_warn(:scanner_misconfiguration, "Expecting file/dir defined by #{keyword} to be a"\
                                                 "location in the project repo but got empty "\
@@ -233,7 +250,7 @@ module Salus::Scanners
       end
 
       begin
-        config_dir = File.realpath(value)
+        config_dir = File.realpath(value, chdir)
       rescue Errno::ENOENT
         report_warn(:scanner_misconfiguration, "Could not find #{config_dir} defined by "\
                                                 "#{keyword} when expanded into a fully qualified "\
@@ -241,7 +258,9 @@ module Salus::Scanners
         return false
       end
 
-      return true if config_dir.include?(Dir.pwd) # assumes the current directory is the proj dir
+      # Dir.pwd reference needs to be removed
+      # Dir.pwd) # assumes the current directory is the proj dir
+      return true if config_dir.include?(chdir) # assumes the current directory is the proj dir
 
       report_warn(:scanner_misconfiguration, "Expecting #{value} defined by "\
                                               "#{keyword} to be a dir in the project repo but was "\
@@ -332,6 +351,23 @@ module Salus::Scanners
       "#{prefix}#{keyword}#{separator}#{Shellwords.escape(validated_files.join(join_by))}#{suffix}"
     end
 
+    def fetch_exception_ids
+      exceptions = @config.fetch('exceptions', [])
+      ids = []
+      exceptions.each do |exception|
+        except = Salus::ConfigException.new(exception)
+        unless except.valid?
+          report_error(
+            'malformed exception; expected a hash with keys advisory_id, changed_by, notes',
+            exception: exception
+          )
+          next
+        end
+        ids << except.id.to_s if except.active?
+      end
+      ids
+    end
+
     public
 
     def build_option(
@@ -345,6 +381,7 @@ module Salus::Scanners
       join_by: ',',
       max_depth: 1
     )
+
       clean_type = type.to_sym.downcase
       case clean_type
       when :flag, :string, :bool, :booleans, :file # Allow repeat values
@@ -422,12 +459,24 @@ module Salus::Scanners
       end
     end
 
-    def build_options(prefix:, suffix:, separator:, args:, join_by: ',')
+    def get_config_value(key, overrides)
+      return overrides[key] if overrides&.key?(key)
+
+      @config.fetch(key)
+    end
+
+    def has_key?(key, overrides)
+      @config.key?(key) || overrides&.key?(key)
+    end
+
+    # config_overrides allows easy overrides of the @config values
+    def build_options(prefix:, suffix:, separator:, args:, join_by: ',', config_overrides: {})
       default_regex = /.*/
       args.reduce('') do |options, (keyword, type_value)|
         keyword_string = keyword.to_s
-        option = if @config.key?(keyword_string)
-                   config_value = @config.fetch(keyword_string)
+        # @config is a hash
+        option = if has_key?(keyword_string, config_overrides)
+                   config_value = get_config_value(keyword_string, config_overrides)
                    case type_value
                    when Symbol, String
                      build_option(

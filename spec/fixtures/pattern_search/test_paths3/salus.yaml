@@ -1,0 +1,6 @@
+scanner_configs:
+  PatternSearch:
+    matches:
+      - regex: hello
+        forbidden: true
+        not_followed_within: 0:bye

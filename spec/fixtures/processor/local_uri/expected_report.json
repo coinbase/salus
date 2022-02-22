@@ -1,5 +1,5 @@
 {
-  "version": "2.11.14",
+  "version": "2.17.0",
   "passed": true,
   "running_time": 0.0,
   "scans": {
@@ -37,7 +37,7 @@
     },
     "Semgrep": {
       "scanner_name": "Semgrep",
-      "version": "0.60.0",
+      "version": "0.62.0",
       "passed": true,
       "running_time": 0.0,
       "warn": {
@@ -64,15 +64,22 @@
       "Brakeman",
       "BundleAudit",
       "CargoAudit",
+      "GoVersionScanner",
       "Gosec",
       "NPMAudit",
+      "NPMPackageScanner",
       "PatternSearch",
       "RepoNotEmpty",
       "ReportGoDep",
+      "ReportGradleDeps",
       "ReportNodeModules",
+      "ReportPodfileLock",
+      "ReportPomXml",
       "ReportPythonModules",
       "ReportRubyGems",
       "ReportRustCrates",
+      "ReportSwiftDeps",
+      "RubyVersionScanner",
       "Semgrep",
       "YarnAudit"
     ],
@@ -112,6 +119,10 @@
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
+      "NPMPackageScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
       "PatternSearch": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
@@ -124,7 +135,19 @@
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
+      "ReportGradleDeps": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
       "ReportNodeModules": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportPodfileLock": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportPomXml": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
@@ -140,11 +163,23 @@
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
+      "ReportSwiftDeps": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
       "Semgrep": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
       "YarnAudit": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "GoVersionScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "RubyVersionScanner": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },

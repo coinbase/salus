@@ -6,32 +6,41 @@ describe Sarif::BundleAuditSarif do
     before { scanner.run }
 
     context 'scan report with logged vulnerabilities' do
-      let(:repo) { Salus::Repo.new('spec/fixtures/bundle_audit/cves_found') }
+      let(:path) { 'spec/fixtures/bundle_audit/cves_found' }
+      let(:repo) { Salus::Repo.new(path) }
 
       it 'updates ids accordingly' do
-        bundle_audit_sarif = Sarif::BundleAuditSarif.new(scanner.report)
+        bundle_audit_sarif = Sarif::BundleAuditSarif.new(scanner.report, path)
         issue = { "type": "InsecureSource",
-          "source": "http://rubygems.org/" }
+                  "source": "http://rubygems.org/",
+                  "line_number": 123 }
 
         parsed_issue = bundle_audit_sarif.parse_issue(issue)
         expect(parsed_issue[:id]).to eq("InsecureSource")
         expect(parsed_issue[:name]).to eq("InsecureSource http://rubygems.org/")
         expect(parsed_issue[:details]).to eq("Type: InsecureSource\nSource: http://rubygems.org/")
+        expect(parsed_issue[:start_line]).to eq(123)
+        expect(parsed_issue[:start_column]).to eq(1)
 
         issue = { "type": "UnpatchedGem",
                   "cve": "CVE1234",
-                  "url": '1' }
+                  "url": '1',
+                  "line_number": 456 }
         parsed_issue = bundle_audit_sarif.parse_issue(issue)
         expect(parsed_issue[:id]).to eq("CVE1234")
+        expect(parsed_issue[:start_line]).to eq(456)
+        expect(parsed_issue[:start_column]).to eq(1)
 
         issue = { "osvdb": "osvd value",
-          "url": '3' }
+          "url": '3', "line_number": 789 }
         parsed_issue = bundle_audit_sarif.parse_issue(issue)
         expect(parsed_issue[:id]).to eq("osvd value")
+        expect(parsed_issue[:start_line]).to eq(789)
+        expect(parsed_issue[:start_column]).to eq(1)
       end
 
       it 'parses information correctly' do
-        bundle_audit_sarif = Sarif::BundleAuditSarif.new(scanner.report)
+        bundle_audit_sarif = Sarif::BundleAuditSarif.new(scanner.report, path)
         issue = scanner.report.to_h[:info][:vulnerabilities]
         issue = issue.detect { |i| i[:cve] == 'CVE-2021-22885' }
 
@@ -46,7 +55,9 @@ describe Sarif::BundleAuditSarif do
             name: "Possible Information Disclosure / Unintended Method Execution in Action Pack",
             level: 0,
             help_url: "https://groups.google.com/g/rubyonrails-security/c/NiQl-48cXYI",
-            uri: "Gemfile.lock"
+            uri: "Gemfile.lock",
+            start_line: 8,
+            start_column: 1
           )
         else
           details = 'There is a possible DoS vulnerability in the Token Authentication logic in'
@@ -106,6 +117,9 @@ describe Sarif::BundleAuditSarif do
         expect(result['ruleId']).to eq(cve)
         expect(result['level']).to eq("note")
         expect(result['message']['text']).to include(expected)
+        region = result['locations'][0]['physicalLocation']['region']
+        expect(region['startLine']).to eq(8)
+        expect(region['startColumn']).to eq(1)
       end
     end
   end

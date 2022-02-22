@@ -27,6 +27,7 @@ describe Salus::Scanners::Base do
       end.not_to raise_error
 
       salus_errors = salus_report.to_h[:errors]
+
       scanner_errors = salus_report.to_h[:scans]['BundleAudit'][:errors]
       expect(salus_errors).to eq(scanner_errors)
       expect(salus_errors.first).to include(
@@ -99,8 +100,8 @@ describe Salus::Scanners::Base do
       fake_process_status = instance_double('Process::Status')
       allow(fake_process_status).to receive(:success?).and_return(false)
       allow(fake_process_status).to receive(:exitstatus).and_return(255)
-
-      expect(Open3).to receive(:capture3).with({}, 'ls', stdin_data: '').and_return(
+      chdir = File.expand_path(repository.path_to_repo)
+      expect(Open3).to receive(:capture3).with({}, 'ls', stdin_data: '', chdir: chdir).and_return(
         [
           "file_a\nfile_b\nfile_c",
           'error string',
