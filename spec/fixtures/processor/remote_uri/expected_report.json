@@ -64,6 +64,7 @@
       "Brakeman",
       "BundleAudit",
       "CargoAudit",
+      "GoOSV",
       "GoVersionScanner",
       "Gosec",
       "NPMAudit",
@@ -108,6 +109,10 @@
         "scanner_timeout_s": 0
       },
       "CargoAudit": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "GoOSV": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
