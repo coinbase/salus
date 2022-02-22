@@ -1,6 +1,6 @@
 module Cyclonedx
   class ReportPodfileLock < Base
-    TYPE = "cocoa".freeze
+    TYPE = "cocoapods".freeze
     UNLOCKED_DEPENDENCY_FILE = "Podfile".freeze
 
     def initialize(scan_report)
