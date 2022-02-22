@@ -46,9 +46,6 @@ module Salus::Scanners
         raise message
       end
 
-      if json[:advisories] && !json[:advisories].empty?
-        Salus::PackageLockJson.new(File.join(chdir, 'package-lock.json')).add_line_number(json)
-      end
       report_stdout(json)
 
       json.fetch(:advisories).values
