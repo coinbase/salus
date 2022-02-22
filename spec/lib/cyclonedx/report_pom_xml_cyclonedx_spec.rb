@@ -12,40 +12,25 @@ describe Cyclonedx::ReportPomXml do
       expect(maven_cyclonedx.build_components_object).to match_array(
         [
           {
-            "bom-ref": "pkg:maven/org.apache.kafka/connect-api",
             type: "library",
-            group: "",
+          "group": "",
             name: "org.apache.kafka/connect-api",
             version: Salus::Scanners::ReportPomXml::UNKNOWN_VERSION.to_s,
-            purl: "pkg:maven/org.apache.kafka/connect-api",
-            properties: [
-              { key: "source", value: "" },
-              { key: "dependency_file", value: "pom.xml" }
-            ]
+            purl: "pkg:maven/org.apache.kafka/connect-api"
           },
           {
-            "bom-ref": "pkg:maven/org.apache.kafka/connect-json",
             type: "library",
-            group: "",
+          "group": "",
             name: "org.apache.kafka/connect-json",
             version: Salus::Scanners::ReportPomXml::UNKNOWN_VERSION.to_s,
-            purl: "pkg:maven/org.apache.kafka/connect-json",
-            properties: [
-              { key: "source", value: "" },
-              { key: "dependency_file", value: "pom.xml" }
-            ]
+            purl: "pkg:maven/org.apache.kafka/connect-json"
           },
           {
-            "bom-ref": "pkg:maven/junit/junit",
             type: "library",
-            group: "",
+          "group": "",
             name: "junit/junit",
             version: "1.1.1",
-            purl: "pkg:maven/junit/junit",
-            properties: [
-              { key: "source", value: "" },
-              { key: "dependency_file", value: "pom.xml" }
-            ]
+            purl: "pkg:maven/junit/junit"
           }
         ]
       )

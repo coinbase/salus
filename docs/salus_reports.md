@@ -67,7 +67,6 @@ Below is an example of the structure of a CycloneDX report which will then be ba
   "version": 1 (always set to 1),
   "components": [
     {
-      "bom-ref": "pkg:golang/github.com/DataDog/datadog-go@v4.2.0",
       "type": "library" (Other options are application, framework, operating-system, device or file),
       "name": "github.com/DataDog/datadog-go",
       "version": "v4.2.0" (component version),
