@@ -1,0 +1,6 @@
+name: 'Doppler Salus Scan'
+description: 'Doppler Salus fork'
+
+runs:
+  using: 'docker'
+  image: 'docker://ghcr.io/doppleruniversity/salus:master'
