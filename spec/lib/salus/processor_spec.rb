@@ -71,6 +71,14 @@ describe Salus::Processor do
         end
       end
 
+      it 'should expand the repo path provided' do
+        processor = Salus::Processor.new()
+        path = processor.instance_variable_get(:@repo_path)
+        # The default repo path is relative ./repo, we are expecting
+        # the path to be expanded
+        expect(path).to not_to eq(Salus::DEFAULT_REPO_PATH)
+      end
+
       it 'fetch_config_file should return nil if file content is not hash' do
         stub_request(:get, http_config_uri).to_return(status: 200, body: "{'A': 'B'}")
         result = Salus::Processor.new.fetch_config_file(http_config_uri, '/home/repo')
