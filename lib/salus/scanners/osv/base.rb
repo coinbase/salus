@@ -65,11 +65,14 @@ module Salus::Scanners::OSV
 
       # Handle removing exception ids from vulnerabilities found.
       exception_ids = fetch_exception_ids
-      all_vulnerabilities_found.delete_if do |v|
-        identifiers_found = v.fetch("aliases", []) + [v.fetch("id")]
-        intersection = identifiers_found & exception_ids
-        true if intersection.length.positive?
+      if exception_ids && all_vulnerabilities_found
+        all_vulnerabilities_found.delete_if do |v|
+          identifiers_found = v.fetch("aliases", []) + [v.fetch("id")]
+          intersection = identifiers_found & exception_ids
+          true if intersection.length.positive?
+        end
       end
+
       all_vulnerabilities_found
     rescue StandardError => e
       report_error("Connection to OSV failed: #{e}")
