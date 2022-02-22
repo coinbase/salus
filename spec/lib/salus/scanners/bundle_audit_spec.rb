@@ -37,6 +37,7 @@ describe Salus::Scanners::BundleAudit do
         expect(vuln[:version]).to eq('4.1.15')
         expect(vuln[:cve]).to include('CVE-')
         expect(vuln[:cvss]).to eq(nil)
+        expect(vuln[:line_number]).to eq(8)
       end
     end
 
@@ -51,7 +52,7 @@ describe Salus::Scanners::BundleAudit do
         info = scanner.report.to_h.fetch(:info)
 
         expect(info[:vulnerabilities])
-          .to include(type: "InsecureSource", source: "http://rubygems.org/")
+          .to include(type: "InsecureSource", source: "http://rubygems.org/", line_number: 2)
       end
     end
 
@@ -69,6 +70,66 @@ describe Salus::Scanners::BundleAudit do
     end
 
     context 'no CVEs in Gemfile.lock when ignoring CVEs' do
+      it 'should record success and report on the ignored CVEs' do
+        repo = Salus::Repo.new('spec/fixtures/bundle_audit/passes_with_ignores')
+        scanner = Salus::Scanners::BundleAudit.new(
+          repository: repo,
+          config: { 'ignore' => %w[CVE-2012-3464 CVE-2015-3227 CVE-2020-8165] }
+        )
+
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(true)
+
+        info = scanner.report.to_h.fetch(:info)
+        expect(info[:ignored_cves]).to eq(%w[CVE-2012-3464 CVE-2015-3227 CVE-2020-8165])
+      end
+    end
+
+    context 'exceptions with expirations' do
+      let(:repo) { Salus::Repo.new('spec/fixtures/bundle_audit/passes_with_ignores') }
+
+      before(:each) do
+        allow(Date).to receive(:today).and_return Date.new(2021, 12, 31)
+      end
+
+      it 'should apply active exceptions' do
+        scanner = Salus::Scanners::BundleAudit.new(
+          repository: repo,
+          config: { 'exceptions' => [
+            { 'advisory_id' => "CVE-2012-3464", 'expiration' => '2022-12-31',
+              'changed_by' => 'appsec', 'notes' => 'foo' },
+            { 'advisory_id' => "CVE-2015-3227", 'changed_by' => 'appsec', 'notes' => 'foo' },
+            { 'advisory_id' => "CVE-2020-8165", 'changed_by' => 'appsec', 'notes' => 'foo' }
+          ] }
+        )
+
+        scanner.run
+        expect(scanner.report.passed?).to eq(true)
+        info = scanner.report.to_h.fetch(:info)
+        expect(info[:ignored_cves]).to eq(%w[CVE-2012-3464 CVE-2015-3227 CVE-2020-8165])
+      end
+
+      it 'should not apply expired exceptions' do
+        scanner = Salus::Scanners::BundleAudit.new(
+          repository: repo,
+          config: { 'exceptions' => [
+            { 'advisory_id' => "CVE-2012-3464", 'expiration' => '2020-12-31',
+              'changed_by' => 'appsec', 'notes' => 'foo' }
+          ] }
+        )
+
+        scanner.run
+        expect(scanner.report.passed?).to eq(false)
+        info = scanner.report.to_h.fetch(:info)
+        expect(info[:ignored_cves]).to eq([])
+
+        vul = info[:vulnerabilities][0]
+        expect(vul[:name]).to eq('activesupport')
+        expect(vul[:version]).to eq('2.3.18')
+        expect(vul[:line_number]).to eq(4)
+      end
+
       it 'should record success and report on the ignored CVEs' do
         repo = Salus::Repo.new('spec/fixtures/bundle_audit/passes_with_ignores')
         scanner = Salus::Scanners::BundleAudit.new(

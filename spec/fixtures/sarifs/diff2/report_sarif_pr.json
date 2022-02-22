@@ -1,0 +1,1452 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/schemas/sarif-schema-2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Bandit",
+          "version": "1.6.2",
+          "informationUri": "https://github.com/PyCQA/bandit",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": false
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "BundleAudit",
+          "version": "0.8.0",
+          "informationUri": "https://github.com/rubysec/bundler-audit/",
+          "rules": [
+            {
+              "id": "CVE-2021-22885",
+              "name": "Possible Information Disclosure / Unintended Method Execution in Action Pack",
+              "fullDescription": {
+                "text": "There is a possible information disclosure / unintended method execution\nvulnerability in Action Pack which has been assigned the CVE identifier\nCVE-2021-22885.\n\nVersions Affected:  >= 2.0.0.\nNot affected:       < 2.0.0.\nFixed Versions:     6.1.3.2, 6.0.3.7, 5.2.4.6, 5.2.6\n\nImpact\n------\nThere is a possible information disclosure / unintended method execution\nvulnerability in Action Pack when using the `redirect_to` or `polymorphic_url`\nhelper with untrusted user input.\n\nVulnerable code will look like this:\n\n```\nredirect_to(params[:some_param])\n```\n\nAll users running an affected release should either upgrade or use one of the\nworkarounds immediately.\n\nWorkarounds\n-----------\nTo work around this problem, it is recommended to use an allow list for valid\nparameters passed from the user.  For example:\n\n```\nprivate def check(param)\n  case param\n  when \"valid\"\n    param\n  else\n    \"/\"\n  end\nend\n\ndef index\n  redirect_to(check(params[:some_param]))\nend\n```\n\nOr force the user input to be cast to a string like this:\n\n```\ndef index\n  redirect_to(params[:some_param].to_s)\nend\n```\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "actionpack"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 5.2.4.6\", \"~> 5.2.6\", \"~> 6.0.3, >= 6.0.3.7\", \">= 6.1.3.2\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[\"< 2.0.0\"]"
+                },
+                "title": {
+                  "text": "Possible Information Disclosure / Unintended Method Execution in Action Pack"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "4.1.15"
+                }
+              },
+              "helpUri": "https://groups.google.com/g/rubyonrails-security/c/NiQl-48cXYI",
+              "help": {
+                "text": "More info: https://groups.google.com/g/rubyonrails-security/c/NiQl-48cXYI",
+                "markdown": "[More info](https://groups.google.com/g/rubyonrails-security/c/NiQl-48cXYI)."
+              }
+            },
+            {
+              "id": "CVE-2021-22904",
+              "name": "Possible DoS Vulnerability in Action Controller Token Authentication",
+              "fullDescription": {
+                "text": "There is a possible DoS vulnerability in the Token Authentication logic in\nAction Controller.  This vulnerability has been assigned the CVE identifier\nCVE-2021-22904.\n\nVersions Affected:  >= 4.0.0\nNot affected:       < 4.0.0\nFixed Versions:     6.1.3.2, 6.0.3.7, 5.2.4.6, 5.2.6\n\nImpact\n------\nImpacted code uses `authenticate_or_request_with_http_token` or\n`authenticate_with_http_token` for request authentication.  Impacted code will\nlook something like this:\n\n```\nclass PostsController < ApplicationController\n  before_action :authenticate\n\n  private\n\n  def authenticate\n    authenticate_or_request_with_http_token do |token, options|\n      # ...\n    end\n  end\nend\n```\n\nAll users running an affected release should either upgrade or use one of the\nworkarounds immediately.\n\nReleases\n--------\nThe fixed releases are available at the normal locations.\n\nWorkarounds\n-----------\nThe following monkey patch placed in an initializer can be used to work around\nthe issue:\n\n```ruby\nmodule ActionController::HttpAuthentication::Token\n  AUTHN_PAIR_DELIMITERS = /(?:,|;|\\t)/\nend\n```\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "actionpack"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 5.2.4.6\", \"~> 5.2.6\", \"~> 6.0.3, >= 6.0.3.7\", \">= 6.1.3.2\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[\"< 4.0.0\"]"
+                },
+                "title": {
+                  "text": "Possible DoS Vulnerability in Action Controller Token Authentication"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "4.1.15"
+                }
+              },
+              "helpUri": "https://groups.google.com/g/rubyonrails-security/c/Pf1TjkOBdyQ",
+              "help": {
+                "text": "More info: https://groups.google.com/g/rubyonrails-security/c/Pf1TjkOBdyQ",
+                "markdown": "[More info](https://groups.google.com/g/rubyonrails-security/c/Pf1TjkOBdyQ)."
+              }
+            },
+            {
+              "id": "CVE-2020-8164",
+              "name": "Possible Strong Parameters Bypass in ActionPack",
+              "fullDescription": {
+                "text": "There is a strong parameters bypass vector in ActionPack.\n\nVersions Affected:  rails <= 6.0.3\nNot affected:       rails < 4.0.0\nFixed Versions:     rails >= 5.2.4.3, rails >= 6.0.3.1\n\nImpact\n------\nIn some cases user supplied information can be inadvertently leaked from\nStrong Parameters.  Specifically the return value of `each`, or `each_value`,\nor `each_pair` will return the underlying \"untrusted\" hash of data that was\nread from the parameters.  Applications that use this return value may be\ninadvertently use untrusted user input.\n\nImpacted code will look something like this:\n\n```\ndef update\n  # Attacker has included the parameter: `{ is_admin: true }`\n  User.update(clean_up_params)\nend\n\ndef clean_up_params\n   params.each { |k, v|  SomeModel.check(v) if k == :name }\nend\n```\n\nNote the mistaken use of `each` in the `clean_up_params` method in the above\nexample.\n\nWorkarounds\n-----------\nDo not use the return values of `each`, `each_value`, or `each_pair` in your\napplication.\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "actionpack"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 5.2.4, >= 5.2.4.3\", \">= 6.0.3.1\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[\"< 4.0.0\"]"
+                },
+                "title": {
+                  "text": "Possible Strong Parameters Bypass in ActionPack"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "4.1.15"
+                }
+              },
+              "helpUri": "https://groups.google.com/forum/#!topic/rubyonrails-security/f6ioe4sdpbY",
+              "help": {
+                "text": "More info: https://groups.google.com/forum/#!topic/rubyonrails-security/f6ioe4sdpbY",
+                "markdown": "[More info](https://groups.google.com/forum/#!topic/rubyonrails-security/f6ioe4sdpbY)."
+              }
+            },
+            {
+              "id": "CVE-2020-8166",
+              "name": "Ability to forge per-form CSRF tokens given a global CSRF token",
+              "fullDescription": {
+                "text": "It is possible to possible to, given a global CSRF token such as the one\npresent in the authenticity_token meta tag, forge a per-form CSRF token for\nany action for that session.\n\nVersions Affected:  rails < 5.2.5, rails < 6.0.4\nNot affected:       Applications without existing HTML injection vulnerabilities.\nFixed Versions:     rails >= 5.2.4.3, rails >= 6.0.3.1\n\nImpact\n------\n\nGiven the ability to extract the global CSRF token, an attacker would be able to\nconstruct a per-form CSRF token for that session.\n\nWorkarounds\n-----------\n\nThis is a low-severity security issue. As such, no workaround is necessarily\nuntil such time as the application can be upgraded.\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "actionpack"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 5.2.4, >= 5.2.4.3\", \">= 6.0.3.1\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Ability to forge per-form CSRF tokens given a global CSRF token"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "4.1.15"
+                }
+              },
+              "helpUri": "https://groups.google.com/forum/#!topic/rubyonrails-security/NOjKiGeXUgw",
+              "help": {
+                "text": "More info: https://groups.google.com/forum/#!topic/rubyonrails-security/NOjKiGeXUgw",
+                "markdown": "[More info](https://groups.google.com/forum/#!topic/rubyonrails-security/NOjKiGeXUgw)."
+              }
+            },
+            {
+              "id": "CVE-2019-5418",
+              "name": "File Content Disclosure in Action View",
+              "fullDescription": {
+                "text": "There is a possible file content disclosure vulnerability in Action View. This\nvulnerability has been assigned the CVE identifier CVE-2019-5418.\n\nVersions Affected:  All.\nNot affected:       None.\nFixed Versions:     6.0.0.beta3, 5.2.2.1, 5.1.6.2, 5.0.7.2, 4.2.11.1\n\nImpact\n------\nThere is a possible file content disclosure vulnerability in Action View.\nSpecially crafted accept headers in combination with calls to `render file:`\ncan cause arbitrary files on the target server to be rendered, disclosing the\nfile contents.\n\nThe impact is limited to calls to `render` which render file contents without\na specified accept format.  Impacted code in a controller looks something like\nthis:\n\n```\nclass UserController < ApplicationController\n  def index\n    render file: \"#{Rails.root}/some/file\"\n  end\nend\n```\n\nRendering templates as opposed to files is not impacted by this vulnerability.\n\nAll users running an affected release should either upgrade or use one of the\nworkarounds immediately.\n\nReleases\n--------\nThe 6.0.0.beta3, 5.2.2.1, 5.1.6.2, 5.0.7.2, and 4.2.11.1 releases are\navailable at the normal locations.\n\nWorkarounds\n-----------\nThis vulnerability can be mitigated by specifying a format for file rendering,\nlike this:\n\n```\nclass UserController < ApplicationController\n  def index\n    render file: \"#{Rails.root}/some/file\", formats: [:html]\n  end\nend\n```\n\nIn summary, impacted calls to `render` look like this:\n\n```\nrender file: \"#{Rails.root}/some/file\"\n```\n\nThe vulnerability can be mitigated by changing to this:\n\n```\nrender file: \"#{Rails.root}/some/file\", formats: [:html]\n```\n\nOther calls to `render` are not impacted.\n\nAlternatively, the following monkey patch can be applied in an initializer:\n\n```\n$ cat config/initializers/formats_filter.rb\n# frozen_string_literal: true\n\nActionDispatch::Request.prepend(Module.new do\n  def formats\n    super().select do |format|\n      format.symbol || format.ref == \"*/*\"\n    end\n  end\nend)\n```\n\nCredits\n-------\nThanks to John Hawthorn <john@hawthorn.email> of GitHub\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "actionview"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 4.2.11, >= 4.2.11.1\", \"~> 5.0.7, >= 5.0.7.2\", \"~> 5.1.6, >= 5.1.6.2\", \"~> 5.2.2, >= 5.2.2.1\", \">= 6.0.0.beta3\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "File Content Disclosure in Action View"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "4.1.15"
+                }
+              },
+              "helpUri": "https://groups.google.com/forum/#!topic/rubyonrails-security/pFRKI96Sm8Q",
+              "help": {
+                "text": "More info: https://groups.google.com/forum/#!topic/rubyonrails-security/pFRKI96Sm8Q",
+                "markdown": "[More info](https://groups.google.com/forum/#!topic/rubyonrails-security/pFRKI96Sm8Q)."
+              }
+            },
+            {
+              "id": "CVE-2019-5419",
+              "name": "Denial of Service Vulnerability in Action View",
+              "fullDescription": {
+                "text": "There is a potential denial of service vulnerability in actionview.\nThis vulnerability has been assigned the CVE identifier CVE-2019-5419.\n\nImpact\n------\nSpecially crafted accept headers can cause the Action View template location\ncode to consume 100% CPU, causing the server unable to process requests.  This\nimpacts all Rails applications that render views.\n\nAll users running an affected release should either upgrade or use one of the\nworkarounds immediately.\n\nWorkarounds\n-----------\nThis vulnerability can be mitigated by wrapping `render` calls with\n`respond_to` blocks.  For example, the following example is vulnerable:\n\n```\nclass UserController < ApplicationController\n  def index\n    render \"index\"\n  end\nend\n```\n\nBut the following code is not vulnerable:\n\n```\nclass UserController < ApplicationController\n  def index\n    respond_to |format|\n      format.html { render \"index\" }\n    end\n  end\nend\n```\n\nImplicit rendering is impacted, so this code is vulnerable:\n\n```\nclass UserController < ApplicationController\n  def index\n  end\nend\n```\n\nBut can be changed this this:\n\n```\nclass UserController < ApplicationController\n  def index\n    respond_to |format|\n      format.html { render \"index\" }\n    end\n  end\nend\n```\n\nAlternatively to specifying the format, the following monkey patch can be\napplied in an initializer:\n\n```\n$ cat config/initializers/formats_filter.rb\n# frozen_string_literal: true\n\nActionDispatch::Request.prepend(Module.new do\n  def formats\n    super().select do |format|\n      format.symbol || format.ref == \"*/*\"\n    end\n  end\nend)\n```\n\nCredits\n-------\nThanks to John Hawthorn <john@hawthorn.email> of GitHub\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "actionview"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\">= 6.0.0.beta3\", \"~> 5.2.2, >= 5.2.2.1\", \"~> 5.1.6, >= 5.1.6.2\", \"~> 5.0.7, >= 5.0.7.2\", \"~> 4.2.11, >= 4.2.11.1\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Denial of Service Vulnerability in Action View"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "4.1.15"
+                }
+              },
+              "helpUri": "https://groups.google.com/forum/#!topic/rubyonrails-security/GN7w9fFAQeI",
+              "help": {
+                "text": "More info: https://groups.google.com/forum/#!topic/rubyonrails-security/GN7w9fFAQeI",
+                "markdown": "[More info](https://groups.google.com/forum/#!topic/rubyonrails-security/GN7w9fFAQeI)."
+              }
+            },
+            {
+              "id": "CVE-2016-6316",
+              "name": "Possible XSS Vulnerability in Action View",
+              "fullDescription": {
+                "text": "There is a possible XSS vulnerability in Action View.  Text declared as \"HTML\nsafe\" will not have quotes escaped when used as attribute values in tag\nhelpers.\n\nImpact\n------\n\nText declared as \"HTML safe\" when passed as an attribute value to a tag helper\nwill not have quotes escaped which can lead to an XSS attack.  Impacted code\nlooks something like this:\n\n```ruby\ncontent_tag(:div, \"hi\", title: user_input.html_safe)\n```\n\nSome helpers like the `sanitize` helper will automatically mark strings as\n\"HTML safe\", so impacted code could also look something like this:\n\n```ruby\ncontent_tag(:div, \"hi\", title: sanitize(user_input))\n```\n\nAll users running an affected release should either upgrade or use one of the\nworkarounds immediately.\n\nWorkarounds\n-----------\nYou can work around this issue by either *not* marking arbitrary user input as\nsafe, or by manually escaping quotes like this:\n\n```ruby\ndef escape_quotes(value)\n  value.gsub(/\"/, '&quot;'.freeze)\nend\n\ncontent_tag(:div, \"hi\", title: escape_quotes(sanitize(user_input)))\n```\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "actionview"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 4.2.7.1\", \"~> 4.2.8\", \">= 5.0.0.1\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[\"< 3.0.0\"]"
+                },
+                "title": {
+                  "text": "Possible XSS Vulnerability in Action View"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "4.1.15"
+                }
+              },
+              "helpUri": "https://groups.google.com/forum/#!topic/rubyonrails-security/I-VWr034ouk",
+              "help": {
+                "text": "More info: https://groups.google.com/forum/#!topic/rubyonrails-security/I-VWr034ouk",
+                "markdown": "[More info](https://groups.google.com/forum/#!topic/rubyonrails-security/I-VWr034ouk)."
+              }
+            },
+            {
+              "id": "CVE-2020-5267",
+              "name": "Possible XSS vulnerability in ActionView",
+              "fullDescription": {
+                "text": "There is a possible XSS vulnerability in ActionView's JavaScript literal\nescape helpers.  Views that use the `j` or `escape_javascript` methods\nmay be susceptible to XSS attacks.\n\nVersions Affected:  All.\nNot affected:       None.\nFixed Versions:     6.0.2.2, 5.2.4.2\n\nImpact\n------\nThere is a possible XSS vulnerability in the `j` and `escape_javascript`\nmethods in ActionView.  These methods are used for escaping JavaScript string\nliterals.  Impacted code will look something like this:\n\n```erb\n<script>let a = `<%= j unknown_input %>`</script>\n```\n\nor\n\n```erb\n<script>let a = `<%= escape_javascript unknown_input %>`</script>\n```\n\nReleases\n--------\nThe 6.0.2.2 and 5.2.4.2 releases are available at the normal locations.\n\nWorkarounds\n-----------\nFor those that can't upgrade, the following monkey patch may be used:\n\n```ruby\nActionView::Helpers::JavaScriptHelper::JS_ESCAPE_MAP.merge!(\n  {\n    \"`\" => \"\\\\`\",\n    \"$\" => \"\\\\$\"\n  }\n)\n\nmodule ActionView::Helpers::JavaScriptHelper\n  alias :old_ej :escape_javascript\n  alias :old_j :j\n\n  def escape_javascript(javascript)\n    javascript = javascript.to_s\n    if javascript.empty?\n      result = \"\"\n    else\n      result = javascript.gsub(/(\\\\|<\\/|\\r\\n|\\342\\200\\250|\\342\\200\\251|[\\n\\r\"']|[`]|[$])/u, JS_ESCAPE_MAP)\n    end\n    javascript.html_safe? ? result.html_safe : result\n  end\n\n  alias :j :escape_javascript\nend\n```\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "actionview"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 5.2.4, >= 5.2.4.2\", \">= 6.0.2.2\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Possible XSS vulnerability in ActionView"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "4.1.15"
+                }
+              },
+              "helpUri": "https://groups.google.com/forum/#!topic/rubyonrails-security/55reWMM_Pg8",
+              "help": {
+                "text": "More info: https://groups.google.com/forum/#!topic/rubyonrails-security/55reWMM_Pg8",
+                "markdown": "[More info](https://groups.google.com/forum/#!topic/rubyonrails-security/55reWMM_Pg8)."
+              }
+            },
+            {
+              "id": "CVE-2020-8167",
+              "name": "CSRF Vulnerability in rails-ujs",
+              "fullDescription": {
+                "text": "There is an vulnerability in rails-ujs that allows attackers to send\nCSRF tokens to wrong domains.\n\nVersions Affected:  rails <= 6.0.3\nNot affected:       Applications which don't use rails-ujs.\nFixed Versions:     rails >= 5.2.4.3, rails >= 6.0.3.1\n\nImpact\n------\n\nThis is a regression of CVE-2015-1840.\n\nIn the scenario where an attacker might be able to control the href attribute of an anchor tag or\nthe action attribute of a form tag that will trigger a POST action, the attacker can set the\nhref or action to a cross-origin URL, and the CSRF token will be sent.\n\nWorkarounds\n-----------\n\nTo work around this problem, change code that allows users to control the href attribute of an anchor\ntag or the action attribute of a form tag to filter the user parameters.\n\nFor example, code like this:\n\n    link_to params\n\nto code like this:\n\n    link_to filtered_params\n\n    def filtered_params\n      # Filter just the parameters that you trust\n    end\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "actionview"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 5.2.4, >= 5.2.4.3\", \">= 6.0.3.1\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "CSRF Vulnerability in rails-ujs"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "4.1.15"
+                }
+              },
+              "helpUri": "https://groups.google.com/forum/#!topic/rubyonrails-security/x9DixQDG9a0",
+              "help": {
+                "text": "More info: https://groups.google.com/forum/#!topic/rubyonrails-security/x9DixQDG9a0",
+                "markdown": "[More info](https://groups.google.com/forum/#!topic/rubyonrails-security/x9DixQDG9a0)."
+              }
+            },
+            {
+              "id": "CVE-2020-8163",
+              "name": "Potential remote code execution of user-provided local names in ActionView",
+              "fullDescription": {
+                "text": "There was a vulnerability in versions of Rails prior to 5.0.1 that would\nallow an attacker who controlled the `locals` argument of a `render` call.\n\nVersions Affected:  rails < 5.0.1\nNot affected:       Applications that do not allow users to control the names of locals.\nFixed Versions:     4.2.11.2\n\nImpact\n------\n\nIn the scenario where an attacker might be able to control the name of a\nlocal passed into `render`, they can acheive remote code execution.\n\nWorkarounds\n-----------\n\nUntil such time as the patch can be applied, application developers should\nensure that all user-provided local names are alphanumeric.\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "actionview"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\">= 4.2.11.2\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Potential remote code execution of user-provided local names in ActionView"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "4.1.15"
+                }
+              },
+              "helpUri": "https://groups.google.com/forum/#!topic/rubyonrails-security/hWuKcHyoKh0",
+              "help": {
+                "text": "More info: https://groups.google.com/forum/#!topic/rubyonrails-security/hWuKcHyoKh0",
+                "markdown": "[More info](https://groups.google.com/forum/#!topic/rubyonrails-security/hWuKcHyoKh0)."
+              }
+            },
+            {
+              "id": "CVE-2020-15169",
+              "name": "Potential XSS vulnerability in Action View",
+              "fullDescription": {
+                "text": "There is a potential Cross-Site Scripting (XSS) vulnerability in Action\nView's translation helpers. Views that allow the user to control the\ndefault (not found) value of the `t` and `translate` helpers could be\nsusceptible to XSS attacks.\n\nImpact\n------\n\nWhen an HTML-unsafe string is passed as the default for a missing\ntranslation key [named `html` or ending in `_html`](https://guides.rubyonrails.org/i18n.html#using-safe-html-translations),\nthe default string is incorrectly marked as HTML-safe and not escaped.\nVulnerable code may look like the following examples:\n\n```erb\n<%# The welcome_html translation is not defined for the current locale: %>\n<%= t(\"welcome_html\", default: untrusted_user_controlled_string) %>\n\n<%# Neither the title.html translation nor the missing.html translation is defined for the current locale: %>\n<%= t(\"title.html\", default: [:\"missing.html\", untrusted_user_controlled_string]) %>\n```\n\nWorkarounds\n-----------\nImpacted users who can’t upgrade to a patched Rails version can avoid\nthis issue by manually escaping default translations with the\n`html_escape` helper (aliased as `h`):\n\n```erb\n<%= t(\"welcome_html\", default: h(untrusted_user_controlled_string)) %>\n```\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "actionview"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 5.2.4, >= 5.2.4.4\", \">= 6.0.3.3\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Potential XSS vulnerability in Action View"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "4.1.15"
+                }
+              },
+              "helpUri": "https://groups.google.com/g/rubyonrails-security/c/b-C9kSGXYrc",
+              "help": {
+                "text": "More info: https://groups.google.com/g/rubyonrails-security/c/b-C9kSGXYrc",
+                "markdown": "[More info](https://groups.google.com/g/rubyonrails-security/c/b-C9kSGXYrc)."
+              }
+            },
+            {
+              "id": "CVE-2020-8165",
+              "name": "Potentially unintended unmarshalling of user-provided objects in MemCacheStore and RedisCacheStore",
+              "fullDescription": {
+                "text": "There is potentially unexpected behaviour in the MemCacheStore and RedisCacheStore where, when\nuntrusted user input is written to the cache store using the `raw: true` parameter, re-reading the result\nfrom the cache can evaluate the user input as a Marshalled object instead of plain text. Vulnerable code looks like:\n\n```\ndata = cache.fetch(\"demo\", raw: true) { untrusted_string }\n```\n\nVersions Affected:  rails < 5.2.5, rails < 6.0.4\nNot affected:       Applications not using MemCacheStore or RedisCacheStore. Applications that do not use the `raw` option when storing untrusted user input.\nFixed Versions:     rails >= 5.2.4.3, rails >= 6.0.3.1\n\nImpact\n------\n\nUnmarshalling of untrusted user input can have impact up to and including RCE. At a minimum,\nthis vulnerability allows an attacker to inject untrusted Ruby objects into a web application.\n\nIn addition to upgrading to the latest versions of Rails, developers should ensure that whenever\nthey are calling `Rails.cache.fetch` they are using consistent values of the `raw` parameter for both\nreading and writing, especially in the case of the RedisCacheStore which does not, prior to these changes,\ndetect if data was serialized using the raw option upon deserialization.\n\nWorkarounds\n-----------\n\nIt is recommended that application developers apply the suggested patch or upgrade to the latest release as\nsoon as possible. If this is not possible, we recommend ensuring that all user-provided strings cached using\nthe `raw` argument should be double-checked to ensure that they conform to the expected format.\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "activesupport"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 5.2.4, >= 5.2.4.3\", \">= 6.0.3.1\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Potentially unintended unmarshalling of user-provided objects in MemCacheStore and RedisCacheStore"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "4.1.15"
+                }
+              },
+              "helpUri": "https://groups.google.com/forum/#!topic/rubyonrails-security/bv6fW4S0Y1c",
+              "help": {
+                "text": "More info: https://groups.google.com/forum/#!topic/rubyonrails-security/bv6fW4S0Y1c",
+                "markdown": "[More info](https://groups.google.com/forum/#!topic/rubyonrails-security/bv6fW4S0Y1c)."
+              }
+            },
+            {
+              "id": "CVE-2021-41817",
+              "name": "Regular Expression Denial of Service Vulnerability of Date Parsing Methods",
+              "fullDescription": {
+                "text": "Date's parsing methods including `Date.parse` are using Regexps internally, some of\nwhich are vulnerable against regular expression denial of service. Applications and\nlibraries that apply such methods to untrusted input may be affected.\n\nThe fix limits the input length up to 128 bytes by default instead of changing the\nregexps. This is because Date gem uses many Regexps and it is possible that there are\nstill undiscovered vulnerable Regexps. For compatibility, it is allowed to remove the\nlimitation by explicitly passing `limit` keywords as `nil` like\n`Date.parse(str, limit: nil)`, but note that it may take a long time to parse.\n\nPlease update the date gem to version 3.2.1, 3.1.2, 3.0.2, and 2.0.1, or later.  You\ncan use `gem update date` to update it.  If you are using bundler, please add\n`gem \"date\", \">= 3.2.1\"` to your `Gemfile`."
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "date"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 2.0.1\", \"~> 3.0.2\", \"~> 3.1.2\", \">= 3.2.1\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Regular Expression Denial of Service Vulnerability of Date Parsing Methods"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "1.2.3"
+                }
+              },
+              "helpUri": "https://www.ruby-lang.org/en/news/2021/11/15/date-parsing-method-regexp-dos-cve-2021-41817/",
+              "help": {
+                "text": "More info: https://www.ruby-lang.org/en/news/2021/11/15/date-parsing-method-regexp-dos-cve-2021-41817/",
+                "markdown": "[More info](https://www.ruby-lang.org/en/news/2021/11/15/date-parsing-method-regexp-dos-cve-2021-41817/)."
+              }
+            },
+            {
+              "id": "CVE-2020-8161",
+              "name": "Directory traversal in Rack::Directory app bundled with Rack",
+              "fullDescription": {
+                "text": "There was a possible directory traversal vulnerability in the Rack::Directory app\nthat is bundled with Rack.\n\nVersions Affected:  rack < 2.2.0\nNot affected:       Applications that do not use Rack::Directory.\nFixed Versions:     2.1.3, >= 2.2.0\n\nImpact\n------\n\nIf certain directories exist in a director that is managed by\n`Rack::Directory`, an attacker could, using this vulnerability, read the\ncontents of files on the server that were outside of the root specified in the\nRack::Directory initializer.\n\nWorkarounds\n-----------\n\nUntil such time as the patch is applied or their Rack version is upgraded,\nwe recommend that developers do not use Rack::Directory in their\napplications.\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "rack"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 2.1.3\", \">= 2.2.0\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Directory traversal in Rack::Directory app bundled with Rack"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "1.5.5"
+                }
+              },
+              "helpUri": "https://groups.google.com/forum/#!topic/ruby-security-ann/T4ZIsfRf2eA",
+              "help": {
+                "text": "More info: https://groups.google.com/forum/#!topic/ruby-security-ann/T4ZIsfRf2eA",
+                "markdown": "[More info](https://groups.google.com/forum/#!topic/ruby-security-ann/T4ZIsfRf2eA)."
+              }
+            },
+            {
+              "id": "CVE-2019-16782",
+              "name": "Possible information leak / session hijack vulnerability",
+              "fullDescription": {
+                "text": "There's a possible information leak / session hijack vulnerability in Rack.\n\nAttackers may be able to find and hijack sessions by using timing attacks\ntargeting the session id. Session ids are usually stored and indexed in a\ndatabase that uses some kind of scheme for speeding up lookups of that\nsession id. By carefully measuring the amount of time it takes to look up\na session, an attacker may be able to find a valid session id and hijack\nthe session.\n\nThe session id itself may be generated randomly, but the way the session is\nindexed by the backing store does not use a secure comparison.\n\nImpact:\n\nThe session id stored in a cookie is the same id that is used when querying\nthe backing session storage engine.  Most storage mechanisms (for example a\ndatabase) use some sort of indexing in order to speed up the lookup of that\nid.  By carefully timing requests and session lookup failures, an attacker\nmay be able to perform a timing attack to determine an existing session id\nand hijack that session."
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "rack"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 1.6.12\", \">= 2.0.8\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Possible information leak / session hijack vulnerability"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "1.5.5"
+                }
+              },
+              "helpUri": "https://github.com/rack/rack/security/advisories/GHSA-hrqr-hxpp-chr3",
+              "help": {
+                "text": "More info: https://github.com/rack/rack/security/advisories/GHSA-hrqr-hxpp-chr3",
+                "markdown": "[More info](https://github.com/rack/rack/security/advisories/GHSA-hrqr-hxpp-chr3)."
+              }
+            },
+            {
+              "id": "CVE-2018-16471",
+              "name": "Possible XSS vulnerability in Rack",
+              "fullDescription": {
+                "text": "There is a possible vulnerability in Rack. This vulnerability has been\nassigned the CVE identifier CVE-2018-16471.\n\nVersions Affected:  All.\nNot affected:       None.\nFixed Versions:     2.0.6, 1.6.11\n\nImpact\n------\nThere is a possible XSS vulnerability in Rack.  Carefully crafted requests can\nimpact the data returned by the `scheme` method on `Rack::Request`.\nApplications that expect the scheme to be limited to \"http\" or \"https\" and do\nnot escape the return value could be vulnerable to an XSS attack.\n\nVulnerable code looks something like this:\n\n```\n<%= request.scheme.html_safe %>\n```\n\nNote that applications using the normal escaping mechanisms provided by Rails\nmay not impacted, but applications that bypass the escaping mechanisms, or do\nnot use them may be vulnerable.\n\nAll users running an affected release should either upgrade or use one of the\nworkarounds immediately.\n\nReleases\n--------\nThe 2.0.6 and 1.6.11 releases are available at the normal locations.\n\nWorkarounds\n-----------\nThe following monkey patch can be applied to work around this issue:\n\n```\nrequire \"rack\"\nrequire \"rack/request\"\n\nclass Rack::Request\nSCHEME_WHITELIST = %w(https http).freeze\n\ndef scheme\n  if get_header(Rack::HTTPS) == 'on'\n    'https'\n  elsif get_header(HTTP_X_FORWARDED_SSL) == 'on'\n    'https'\n  elsif forwarded_scheme\n    forwarded_scheme\n  else\n    get_header(Rack::RACK_URL_SCHEME)\n  end\nend\n\ndef forwarded_scheme\n  scheme_headers = [\n    get_header(HTTP_X_FORWARDED_SCHEME),\n    get_header(HTTP_X_FORWARDED_PROTO).to_s.split(',')[0]\n  ]\n\n  scheme_headers.each do |header|\n    return header if SCHEME_WHITELIST.include?(header)\n  end\n\n  nil\nend\nend\n```\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "rack"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 1.6.11\", \">= 2.0.6\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Possible XSS vulnerability in Rack"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "1.5.5"
+                }
+              },
+              "helpUri": "https://groups.google.com/forum/#!topic/ruby-security-ann/NAalCee8n6o",
+              "help": {
+                "text": "More info: https://groups.google.com/forum/#!topic/ruby-security-ann/NAalCee8n6o",
+                "markdown": "[More info](https://groups.google.com/forum/#!topic/ruby-security-ann/NAalCee8n6o)."
+              }
+            },
+            {
+              "id": "CVE-2020-8184",
+              "name": "Percent-encoded cookies can be used to overwrite existing prefixed cookie names",
+              "fullDescription": {
+                "text": "It is possible to forge a secure or host-only cookie prefix in Rack using\nan arbitrary cookie write by using URL encoding (percent-encoding) on the\nname of the cookie. This could result in an application that is dependent on\nthis prefix to determine if a cookie is safe to process being manipulated\ninto processing an insecure or cross-origin request.\nThis vulnerability has been assigned the CVE identifier CVE-2020-8184.\n\nVersions Affected:  rack < 2.2.3, rack < 2.1.4\nNot affected:       Applications which do not rely on __Host- and __Secure- prefixes to determine if a cookie is safe to process\nFixed Versions:     rack >= 2.2.3, rack >= 2.1.4\n\nImpact\n------\n\nAn attacker may be able to trick a vulnerable application into processing an\ninsecure (non-SSL) or cross-origin request if they can gain the ability to write\narbitrary cookies that are sent to the application.\n\nWorkarounds\n-----------\n\nIf your application is impacted but you cannot upgrade to the released versions or apply\nthe provided patch, this issue can be temporarily addressed by adding the following workaround:\n\n```\nmodule Rack\n  module Utils\n    module_function def parse_cookies_header(header)\n      return {} unless header\n      header.split(/[;] */n).each_with_object({}) do |cookie, cookies|\n        next if cookie.empty?\n        key, value = cookie.split('=', 2)\n        cookies[key] = (unescape(value) rescue value) unless cookies.key?(key)\n      end\n    end\n  end\nend\n```\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "rack"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 2.1.4\", \">= 2.2.3\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Percent-encoded cookies can be used to overwrite existing prefixed cookie names"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "1.5.5"
+                }
+              },
+              "helpUri": "https://groups.google.com/g/rubyonrails-security/c/OWtmozPH9Ak",
+              "help": {
+                "text": "More info: https://groups.google.com/g/rubyonrails-security/c/OWtmozPH9Ak",
+                "markdown": "[More info](https://groups.google.com/g/rubyonrails-security/c/OWtmozPH9Ak)."
+              }
+            },
+            {
+              "id": "CVE-2020-8130",
+              "name": "OS Command Injection in Rake",
+              "fullDescription": {
+                "text": "There is an OS command injection vulnerability in Ruby Rake < 12.3.3 in\nRake::FileList when supplying a filename that begins with the pipe character\n`|`.\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "rake"
+                },
+                "severity": {
+                  "text": "9.3"
+                },
+                "patched_versions": {
+                  "text": "[\">= 12.3.3\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "OS Command Injection in Rake"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "12.0.0"
+                }
+              },
+              "helpUri": "https://github.com/advisories/GHSA-jppv-gw3r-w3q8",
+              "help": {
+                "text": "More info: https://github.com/advisories/GHSA-jppv-gw3r-w3q8",
+                "markdown": "[More info](https://github.com/advisories/GHSA-jppv-gw3r-w3q8)."
+              }
+            },
+            {
+              "id": "CVE-2018-3760",
+              "name": "Path Traversal in Sprockets",
+              "fullDescription": {
+                "text": "Specially crafted requests can be used to access files that exist on\nthe filesystem that is outside an application's root directory, when the\nSprockets server is used in production.\n\nAll users running an affected release should either upgrade or use one of the work arounds immediately.\n\nWorkaround:\nIn Rails applications, work around this issue, set `config.assets.compile = false` and\n`config.public_file_server.enabled = true` in an initializer and precompile the assets.\n\n This work around will not be possible in all hosting environments and upgrading is advised.\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "sprockets"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\">= 2.12.5, < 3.0.0\", \">= 3.7.2, < 4.0.0\", \">= 4.0.0.beta8\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Path Traversal in Sprockets"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "3.7.1"
+                }
+              },
+              "helpUri": "https://groups.google.com/forum/#!topic/ruby-security-ann/2S9Pwz2i16k",
+              "help": {
+                "text": "More info: https://groups.google.com/forum/#!topic/ruby-security-ann/2S9Pwz2i16k",
+                "markdown": "[More info](https://groups.google.com/forum/#!topic/ruby-security-ann/2S9Pwz2i16k)."
+              }
+            }
+          ],
+          "properties": {
+            "salusEnforced": true
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+        {
+          "ruleId": "CVE-2021-22885",
+          "ruleIndex": 0,
+          "level": "note",
+          "message": {
+            "text": "There is a possible information disclosure / unintended method execution\nvulnerability in Action Pack which has been assigned the CVE identifier\nCVE-2021-22885.\n\nVersions Affected:  >= 2.0.0.\nNot affected:       < 2.0.0.\nFixed Versions:     6.1.3.2, 6.0.3.7, 5.2.4.6, 5.2.6\n\nImpact\n------\nThere is a possible information disclosure / unintended method execution\nvulnerability in Action Pack when using the `redirect_to` or `polymorphic_url`\nhelper with untrusted user input.\n\nVulnerable code will look like this:\n\n```\nredirect_to(params[:some_param])\n```\n\nAll users running an affected release should either upgrade or use one of the\nworkarounds immediately.\n\nWorkarounds\n-----------\nTo work around this problem, it is recommended to use an allow list for valid\nparameters passed from the user.  For example:\n\n```\nprivate def check(param)\n  case param\n  when \"valid\"\n    param\n  else\n    \"/\"\n  end\nend\n\ndef index\n  redirect_to(check(params[:some_param]))\nend\n```\n\nOr force the user input to be cast to a string like this:\n\n```\ndef index\n  redirect_to(params[:some_param].to_s)\nend\n```\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2021-22904",
+          "ruleIndex": 1,
+          "level": "note",
+          "message": {
+            "text": "There is a possible DoS vulnerability in the Token Authentication logic in\nAction Controller.  This vulnerability has been assigned the CVE identifier\nCVE-2021-22904.\n\nVersions Affected:  >= 4.0.0\nNot affected:       < 4.0.0\nFixed Versions:     6.1.3.2, 6.0.3.7, 5.2.4.6, 5.2.6\n\nImpact\n------\nImpacted code uses `authenticate_or_request_with_http_token` or\n`authenticate_with_http_token` for request authentication.  Impacted code will\nlook something like this:\n\n```\nclass PostsController < ApplicationController\n  before_action :authenticate\n\n  private\n\n  def authenticate\n    authenticate_or_request_with_http_token do |token, options|\n      # ...\n    end\n  end\nend\n```\n\nAll users running an affected release should either upgrade or use one of the\nworkarounds immediately.\n\nReleases\n--------\nThe fixed releases are available at the normal locations.\n\nWorkarounds\n-----------\nThe following monkey patch placed in an initializer can be used to work around\nthe issue:\n\n```ruby\nmodule ActionController::HttpAuthentication::Token\n  AUTHN_PAIR_DELIMITERS = /(?:,|;|\\t)/\nend\n```\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2020-8164",
+          "ruleIndex": 2,
+          "level": "note",
+          "message": {
+            "text": "There is a strong parameters bypass vector in ActionPack.\n\nVersions Affected:  rails <= 6.0.3\nNot affected:       rails < 4.0.0\nFixed Versions:     rails >= 5.2.4.3, rails >= 6.0.3.1\n\nImpact\n------\nIn some cases user supplied information can be inadvertently leaked from\nStrong Parameters.  Specifically the return value of `each`, or `each_value`,\nor `each_pair` will return the underlying \"untrusted\" hash of data that was\nread from the parameters.  Applications that use this return value may be\ninadvertently use untrusted user input.\n\nImpacted code will look something like this:\n\n```\ndef update\n  # Attacker has included the parameter: `{ is_admin: true }`\n  User.update(clean_up_params)\nend\n\ndef clean_up_params\n   params.each { |k, v|  SomeModel.check(v) if k == :name }\nend\n```\n\nNote the mistaken use of `each` in the `clean_up_params` method in the above\nexample.\n\nWorkarounds\n-----------\nDo not use the return values of `each`, `each_value`, or `each_pair` in your\napplication.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2020-8166",
+          "ruleIndex": 3,
+          "level": "note",
+          "message": {
+            "text": "It is possible to possible to, given a global CSRF token such as the one\npresent in the authenticity_token meta tag, forge a per-form CSRF token for\nany action for that session.\n\nVersions Affected:  rails < 5.2.5, rails < 6.0.4\nNot affected:       Applications without existing HTML injection vulnerabilities.\nFixed Versions:     rails >= 5.2.4.3, rails >= 6.0.3.1\n\nImpact\n------\n\nGiven the ability to extract the global CSRF token, an attacker would be able to\nconstruct a per-form CSRF token for that session.\n\nWorkarounds\n-----------\n\nThis is a low-severity security issue. As such, no workaround is necessarily\nuntil such time as the application can be upgraded.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2019-5418",
+          "ruleIndex": 4,
+          "level": "note",
+          "message": {
+            "text": "There is a possible file content disclosure vulnerability in Action View. This\nvulnerability has been assigned the CVE identifier CVE-2019-5418.\n\nVersions Affected:  All.\nNot affected:       None.\nFixed Versions:     6.0.0.beta3, 5.2.2.1, 5.1.6.2, 5.0.7.2, 4.2.11.1\n\nImpact\n------\nThere is a possible file content disclosure vulnerability in Action View.\nSpecially crafted accept headers in combination with calls to `render file:`\ncan cause arbitrary files on the target server to be rendered, disclosing the\nfile contents.\n\nThe impact is limited to calls to `render` which render file contents without\na specified accept format.  Impacted code in a controller looks something like\nthis:\n\n```\nclass UserController < ApplicationController\n  def index\n    render file: \"#{Rails.root}/some/file\"\n  end\nend\n```\n\nRendering templates as opposed to files is not impacted by this vulnerability.\n\nAll users running an affected release should either upgrade or use one of the\nworkarounds immediately.\n\nReleases\n--------\nThe 6.0.0.beta3, 5.2.2.1, 5.1.6.2, 5.0.7.2, and 4.2.11.1 releases are\navailable at the normal locations.\n\nWorkarounds\n-----------\nThis vulnerability can be mitigated by specifying a format for file rendering,\nlike this:\n\n```\nclass UserController < ApplicationController\n  def index\n    render file: \"#{Rails.root}/some/file\", formats: [:html]\n  end\nend\n```\n\nIn summary, impacted calls to `render` look like this:\n\n```\nrender file: \"#{Rails.root}/some/file\"\n```\n\nThe vulnerability can be mitigated by changing to this:\n\n```\nrender file: \"#{Rails.root}/some/file\", formats: [:html]\n```\n\nOther calls to `render` are not impacted.\n\nAlternatively, the following monkey patch can be applied in an initializer:\n\n```\n$ cat config/initializers/formats_filter.rb\n# frozen_string_literal: true\n\nActionDispatch::Request.prepend(Module.new do\n  def formats\n    super().select do |format|\n      format.symbol || format.ref == \"*/*\"\n    end\n  end\nend)\n```\n\nCredits\n-------\nThanks to John Hawthorn <john@hawthorn.email> of GitHub\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2019-5419",
+          "ruleIndex": 5,
+          "level": "note",
+          "message": {
+            "text": "There is a potential denial of service vulnerability in actionview.\nThis vulnerability has been assigned the CVE identifier CVE-2019-5419.\n\nImpact\n------\nSpecially crafted accept headers can cause the Action View template location\ncode to consume 100% CPU, causing the server unable to process requests.  This\nimpacts all Rails applications that render views.\n\nAll users running an affected release should either upgrade or use one of the\nworkarounds immediately.\n\nWorkarounds\n-----------\nThis vulnerability can be mitigated by wrapping `render` calls with\n`respond_to` blocks.  For example, the following example is vulnerable:\n\n```\nclass UserController < ApplicationController\n  def index\n    render \"index\"\n  end\nend\n```\n\nBut the following code is not vulnerable:\n\n```\nclass UserController < ApplicationController\n  def index\n    respond_to |format|\n      format.html { render \"index\" }\n    end\n  end\nend\n```\n\nImplicit rendering is impacted, so this code is vulnerable:\n\n```\nclass UserController < ApplicationController\n  def index\n  end\nend\n```\n\nBut can be changed this this:\n\n```\nclass UserController < ApplicationController\n  def index\n    respond_to |format|\n      format.html { render \"index\" }\n    end\n  end\nend\n```\n\nAlternatively to specifying the format, the following monkey patch can be\napplied in an initializer:\n\n```\n$ cat config/initializers/formats_filter.rb\n# frozen_string_literal: true\n\nActionDispatch::Request.prepend(Module.new do\n  def formats\n    super().select do |format|\n      format.symbol || format.ref == \"*/*\"\n    end\n  end\nend)\n```\n\nCredits\n-------\nThanks to John Hawthorn <john@hawthorn.email> of GitHub\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2016-6316",
+          "ruleIndex": 6,
+          "level": "note",
+          "message": {
+            "text": "There is a possible XSS vulnerability in Action View.  Text declared as \"HTML\nsafe\" will not have quotes escaped when used as attribute values in tag\nhelpers.\n\nImpact\n------\n\nText declared as \"HTML safe\" when passed as an attribute value to a tag helper\nwill not have quotes escaped which can lead to an XSS attack.  Impacted code\nlooks something like this:\n\n```ruby\ncontent_tag(:div, \"hi\", title: user_input.html_safe)\n```\n\nSome helpers like the `sanitize` helper will automatically mark strings as\n\"HTML safe\", so impacted code could also look something like this:\n\n```ruby\ncontent_tag(:div, \"hi\", title: sanitize(user_input))\n```\n\nAll users running an affected release should either upgrade or use one of the\nworkarounds immediately.\n\nWorkarounds\n-----------\nYou can work around this issue by either *not* marking arbitrary user input as\nsafe, or by manually escaping quotes like this:\n\n```ruby\ndef escape_quotes(value)\n  value.gsub(/\"/, '&quot;'.freeze)\nend\n\ncontent_tag(:div, \"hi\", title: escape_quotes(sanitize(user_input)))\n```\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2020-5267",
+          "ruleIndex": 7,
+          "level": "note",
+          "message": {
+            "text": "There is a possible XSS vulnerability in ActionView's JavaScript literal\nescape helpers.  Views that use the `j` or `escape_javascript` methods\nmay be susceptible to XSS attacks.\n\nVersions Affected:  All.\nNot affected:       None.\nFixed Versions:     6.0.2.2, 5.2.4.2\n\nImpact\n------\nThere is a possible XSS vulnerability in the `j` and `escape_javascript`\nmethods in ActionView.  These methods are used for escaping JavaScript string\nliterals.  Impacted code will look something like this:\n\n```erb\n<script>let a = `<%= j unknown_input %>`</script>\n```\n\nor\n\n```erb\n<script>let a = `<%= escape_javascript unknown_input %>`</script>\n```\n\nReleases\n--------\nThe 6.0.2.2 and 5.2.4.2 releases are available at the normal locations.\n\nWorkarounds\n-----------\nFor those that can't upgrade, the following monkey patch may be used:\n\n```ruby\nActionView::Helpers::JavaScriptHelper::JS_ESCAPE_MAP.merge!(\n  {\n    \"`\" => \"\\\\`\",\n    \"$\" => \"\\\\$\"\n  }\n)\n\nmodule ActionView::Helpers::JavaScriptHelper\n  alias :old_ej :escape_javascript\n  alias :old_j :j\n\n  def escape_javascript(javascript)\n    javascript = javascript.to_s\n    if javascript.empty?\n      result = \"\"\n    else\n      result = javascript.gsub(/(\\\\|<\\/|\\r\\n|\\342\\200\\250|\\342\\200\\251|[\\n\\r\"']|[`]|[$])/u, JS_ESCAPE_MAP)\n    end\n    javascript.html_safe? ? result.html_safe : result\n  end\n\n  alias :j :escape_javascript\nend\n```\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2020-8167",
+          "ruleIndex": 8,
+          "level": "note",
+          "message": {
+            "text": "There is an vulnerability in rails-ujs that allows attackers to send\nCSRF tokens to wrong domains.\n\nVersions Affected:  rails <= 6.0.3\nNot affected:       Applications which don't use rails-ujs.\nFixed Versions:     rails >= 5.2.4.3, rails >= 6.0.3.1\n\nImpact\n------\n\nThis is a regression of CVE-2015-1840.\n\nIn the scenario where an attacker might be able to control the href attribute of an anchor tag or\nthe action attribute of a form tag that will trigger a POST action, the attacker can set the\nhref or action to a cross-origin URL, and the CSRF token will be sent.\n\nWorkarounds\n-----------\n\nTo work around this problem, change code that allows users to control the href attribute of an anchor\ntag or the action attribute of a form tag to filter the user parameters.\n\nFor example, code like this:\n\n    link_to params\n\nto code like this:\n\n    link_to filtered_params\n\n    def filtered_params\n      # Filter just the parameters that you trust\n    end\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2020-8163",
+          "ruleIndex": 9,
+          "level": "note",
+          "message": {
+            "text": "There was a vulnerability in versions of Rails prior to 5.0.1 that would\nallow an attacker who controlled the `locals` argument of a `render` call.\n\nVersions Affected:  rails < 5.0.1\nNot affected:       Applications that do not allow users to control the names of locals.\nFixed Versions:     4.2.11.2\n\nImpact\n------\n\nIn the scenario where an attacker might be able to control the name of a\nlocal passed into `render`, they can acheive remote code execution.\n\nWorkarounds\n-----------\n\nUntil such time as the patch can be applied, application developers should\nensure that all user-provided local names are alphanumeric.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2020-15169",
+          "ruleIndex": 10,
+          "level": "note",
+          "message": {
+            "text": "There is a potential Cross-Site Scripting (XSS) vulnerability in Action\nView's translation helpers. Views that allow the user to control the\ndefault (not found) value of the `t` and `translate` helpers could be\nsusceptible to XSS attacks.\n\nImpact\n------\n\nWhen an HTML-unsafe string is passed as the default for a missing\ntranslation key [named `html` or ending in `_html`](https://guides.rubyonrails.org/i18n.html#using-safe-html-translations),\nthe default string is incorrectly marked as HTML-safe and not escaped.\nVulnerable code may look like the following examples:\n\n```erb\n<%# The welcome_html translation is not defined for the current locale: %>\n<%= t(\"welcome_html\", default: untrusted_user_controlled_string) %>\n\n<%# Neither the title.html translation nor the missing.html translation is defined for the current locale: %>\n<%= t(\"title.html\", default: [:\"missing.html\", untrusted_user_controlled_string]) %>\n```\n\nWorkarounds\n-----------\nImpacted users who can’t upgrade to a patched Rails version can avoid\nthis issue by manually escaping default translations with the\n`html_escape` helper (aliased as `h`):\n\n```erb\n<%= t(\"welcome_html\", default: h(untrusted_user_controlled_string)) %>\n```\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2020-8165",
+          "ruleIndex": 11,
+          "level": "note",
+          "message": {
+            "text": "There is potentially unexpected behaviour in the MemCacheStore and RedisCacheStore where, when\nuntrusted user input is written to the cache store using the `raw: true` parameter, re-reading the result\nfrom the cache can evaluate the user input as a Marshalled object instead of plain text. Vulnerable code looks like:\n\n```\ndata = cache.fetch(\"demo\", raw: true) { untrusted_string }\n```\n\nVersions Affected:  rails < 5.2.5, rails < 6.0.4\nNot affected:       Applications not using MemCacheStore or RedisCacheStore. Applications that do not use the `raw` option when storing untrusted user input.\nFixed Versions:     rails >= 5.2.4.3, rails >= 6.0.3.1\n\nImpact\n------\n\nUnmarshalling of untrusted user input can have impact up to and including RCE. At a minimum,\nthis vulnerability allows an attacker to inject untrusted Ruby objects into a web application.\n\nIn addition to upgrading to the latest versions of Rails, developers should ensure that whenever\nthey are calling `Rails.cache.fetch` they are using consistent values of the `raw` parameter for both\nreading and writing, especially in the case of the RedisCacheStore which does not, prior to these changes,\ndetect if data was serialized using the raw option upon deserialization.\n\nWorkarounds\n-----------\n\nIt is recommended that application developers apply the suggested patch or upgrade to the latest release as\nsoon as possible. If this is not possible, we recommend ensuring that all user-provided strings cached using\nthe `raw` argument should be double-checked to ensure that they conform to the expected format.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2021-41817",
+          "ruleIndex": 12,
+          "level": "note",
+          "message": {
+            "text": "Date's parsing methods including `Date.parse` are using Regexps internally, some of\nwhich are vulnerable against regular expression denial of service. Applications and\nlibraries that apply such methods to untrusted input may be affected.\n\nThe fix limits the input length up to 128 bytes by default instead of changing the\nregexps. This is because Date gem uses many Regexps and it is possible that there are\nstill undiscovered vulnerable Regexps. For compatibility, it is allowed to remove the\nlimitation by explicitly passing `limit` keywords as `nil` like\n`Date.parse(str, limit: nil)`, but note that it may take a long time to parse.\n\nPlease update the date gem to version 3.2.1, 3.1.2, 3.0.2, and 2.0.1, or later.  You\ncan use `gem update date` to update it.  If you are using bundler, please add\n`gem \"date\", \">= 3.2.1\"` to your `Gemfile`."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2020-8161",
+          "ruleIndex": 13,
+          "level": "note",
+          "message": {
+            "text": "There was a possible directory traversal vulnerability in the Rack::Directory app\nthat is bundled with Rack.\n\nVersions Affected:  rack < 2.2.0\nNot affected:       Applications that do not use Rack::Directory.\nFixed Versions:     2.1.3, >= 2.2.0\n\nImpact\n------\n\nIf certain directories exist in a director that is managed by\n`Rack::Directory`, an attacker could, using this vulnerability, read the\ncontents of files on the server that were outside of the root specified in the\nRack::Directory initializer.\n\nWorkarounds\n-----------\n\nUntil such time as the patch is applied or their Rack version is upgraded,\nwe recommend that developers do not use Rack::Directory in their\napplications.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2019-16782",
+          "ruleIndex": 14,
+          "level": "note",
+          "message": {
+            "text": "There's a possible information leak / session hijack vulnerability in Rack.\n\nAttackers may be able to find and hijack sessions by using timing attacks\ntargeting the session id. Session ids are usually stored and indexed in a\ndatabase that uses some kind of scheme for speeding up lookups of that\nsession id. By carefully measuring the amount of time it takes to look up\na session, an attacker may be able to find a valid session id and hijack\nthe session.\n\nThe session id itself may be generated randomly, but the way the session is\nindexed by the backing store does not use a secure comparison.\n\nImpact:\n\nThe session id stored in a cookie is the same id that is used when querying\nthe backing session storage engine.  Most storage mechanisms (for example a\ndatabase) use some sort of indexing in order to speed up the lookup of that\nid.  By carefully timing requests and session lookup failures, an attacker\nmay be able to perform a timing attack to determine an existing session id\nand hijack that session."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2018-16471",
+          "ruleIndex": 15,
+          "level": "note",
+          "message": {
+            "text": "There is a possible vulnerability in Rack. This vulnerability has been\nassigned the CVE identifier CVE-2018-16471.\n\nVersions Affected:  All.\nNot affected:       None.\nFixed Versions:     2.0.6, 1.6.11\n\nImpact\n------\nThere is a possible XSS vulnerability in Rack.  Carefully crafted requests can\nimpact the data returned by the `scheme` method on `Rack::Request`.\nApplications that expect the scheme to be limited to \"http\" or \"https\" and do\nnot escape the return value could be vulnerable to an XSS attack.\n\nVulnerable code looks something like this:\n\n```\n<%= request.scheme.html_safe %>\n```\n\nNote that applications using the normal escaping mechanisms provided by Rails\nmay not impacted, but applications that bypass the escaping mechanisms, or do\nnot use them may be vulnerable.\n\nAll users running an affected release should either upgrade or use one of the\nworkarounds immediately.\n\nReleases\n--------\nThe 2.0.6 and 1.6.11 releases are available at the normal locations.\n\nWorkarounds\n-----------\nThe following monkey patch can be applied to work around this issue:\n\n```\nrequire \"rack\"\nrequire \"rack/request\"\n\nclass Rack::Request\nSCHEME_WHITELIST = %w(https http).freeze\n\ndef scheme\n  if get_header(Rack::HTTPS) == 'on'\n    'https'\n  elsif get_header(HTTP_X_FORWARDED_SSL) == 'on'\n    'https'\n  elsif forwarded_scheme\n    forwarded_scheme\n  else\n    get_header(Rack::RACK_URL_SCHEME)\n  end\nend\n\ndef forwarded_scheme\n  scheme_headers = [\n    get_header(HTTP_X_FORWARDED_SCHEME),\n    get_header(HTTP_X_FORWARDED_PROTO).to_s.split(',')[0]\n  ]\n\n  scheme_headers.each do |header|\n    return header if SCHEME_WHITELIST.include?(header)\n  end\n\n  nil\nend\nend\n```\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2020-8184",
+          "ruleIndex": 16,
+          "level": "note",
+          "message": {
+            "text": "It is possible to forge a secure or host-only cookie prefix in Rack using\nan arbitrary cookie write by using URL encoding (percent-encoding) on the\nname of the cookie. This could result in an application that is dependent on\nthis prefix to determine if a cookie is safe to process being manipulated\ninto processing an insecure or cross-origin request.\nThis vulnerability has been assigned the CVE identifier CVE-2020-8184.\n\nVersions Affected:  rack < 2.2.3, rack < 2.1.4\nNot affected:       Applications which do not rely on __Host- and __Secure- prefixes to determine if a cookie is safe to process\nFixed Versions:     rack >= 2.2.3, rack >= 2.1.4\n\nImpact\n------\n\nAn attacker may be able to trick a vulnerable application into processing an\ninsecure (non-SSL) or cross-origin request if they can gain the ability to write\narbitrary cookies that are sent to the application.\n\nWorkarounds\n-----------\n\nIf your application is impacted but you cannot upgrade to the released versions or apply\nthe provided patch, this issue can be temporarily addressed by adding the following workaround:\n\n```\nmodule Rack\n  module Utils\n    module_function def parse_cookies_header(header)\n      return {} unless header\n      header.split(/[;] */n).each_with_object({}) do |cookie, cookies|\n        next if cookie.empty?\n        key, value = cookie.split('=', 2)\n        cookies[key] = (unescape(value) rescue value) unless cookies.key?(key)\n      end\n    end\n  end\nend\n```\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        },
+        {
+          "ruleId": "CVE-2020-8130",
+          "ruleIndex": 17,
+          "level": "error",
+          "message": {
+            "text": "There is an OS command injection vulnerability in Ruby Rake < 12.3.3 in\nRake::FileList when supplying a filename that begins with the pipe character\n`|`.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": "9.3"
+          }
+        },
+        {
+          "ruleId": "CVE-2018-3760",
+          "ruleIndex": 18,
+          "level": "note",
+          "message": {
+            "text": "Specially crafted requests can be used to access files that exist on\nthe filesystem that is outside an application's root directory, when the\nSprockets server is used in production.\n\nAll users running an affected release should either upgrade or use one of the work arounds immediately.\n\nWorkaround:\nIn Rails applications, work around this issue, set `config.assets.compile = false` and\n`config.public_file_server.enabled = true` in an initializer and precompile the assets.\n\n This work around will not be possible in all hosting environments and upgrading is advised.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          }
+        }
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": false
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "BundlerVerifier",
+          "version": "",
+          "informationUri": "https://github.com/coinbase/salus",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": false
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "toolExecutionNotifications": [
+            {
+              "descriptor": {
+                "id": "SAL001"
+              },
+              "message": {
+                "text": "SARIF reports are not available for this scanner"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Gosec",
+          "version": "2.7.0",
+          "informationUri": "https://github.com/securego/gosec",
+          "rules": [
+            {
+              "id": "G101",
+              "name": "CWE-798",
+              "fullDescription": {
+                "text": "Potential hardcoded credentials \nSeverity: HIGH\nConfidence: LOW\nCWE: https://cwe.mitre.org/data/definitions/798.html\n* Gosec flags all assignments where the left hand side variable name looks like a credential and right hand side is a string literal. This regex is used for checking credentials: `(?i)passwd|pass|password|pwd|secret|token` (Note ?i means case insensitive.)\n\nNote this vulnerability may be a false positive. Here are some false positive cases:\n* The variable does not represent a hard coded credential.\n* The vulnerable code will not be used in production (Ex. vulnerable code is only used during testing).\n* If you believe this is a false positive not covered by the above, please ping #ask-seceng"
+              },
+              "messageStrings": {
+                "severity": {
+                  "text": "HIGH"
+                },
+                "confidence": {
+                  "text": "LOW"
+                },
+                "cwe": {
+                  "text": "https://cwe.mitre.org/data/definitions/798.html"
+                }
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/798.html",
+              "help": {
+                "text": "More info: https://cwe.mitre.org/data/definitions/798.html",
+                "markdown": "[More info](https://cwe.mitre.org/data/definitions/798.html)."
+              }
+            }
+          ],
+          "properties": {
+            "salusEnforced": true
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+        {
+          "ruleId": "G101",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Potential hardcoded credentials \nSeverity: HIGH\nConfidence: LOW\nCWE: https://cwe.mitre.org/data/definitions/798.html"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "bad.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 7,
+                  "startColumn": 9,
+                  "snippet": {
+                    "text": "6:     username := \"admin\"\n7:     var password = \"f62e5bcda4fae4f82370da0c6f20697b8f8447efABCD\"              \n8: \n"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": "HIGH"
+          }
+        }
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": false
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "PatternSearch",
+          "version": "0.9.0",
+          "informationUri": "https://github.com/coinbase/salus/blob/master/docs/scanners/pattern_search.md",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": true
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "RepoNotEmpty",
+          "version": "",
+          "informationUri": "https://github.com/coinbase/salus/blob/master/docs/scanners/repository_not_blank.md",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": true
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "ReportPythonModules",
+          "version": "",
+          "informationUri": "https://github.com/coinbase/salus",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": false
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "toolExecutionNotifications": [
+            {
+              "descriptor": {
+                "id": "SAL001"
+              },
+              "message": {
+                "text": "SARIF reports are not available for this scanner"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "ReportRubyGems",
+          "version": "",
+          "informationUri": "https://github.com/coinbase/salus",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": false
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "toolExecutionNotifications": [
+            {
+              "descriptor": {
+                "id": "SAL001"
+              },
+              "message": {
+                "text": "SARIF reports are not available for this scanner"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

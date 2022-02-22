@@ -1,0 +1,15 @@
+scanner_configs:
+    NPMAudit:
+        exceptions:
+            - {
+                advisory_id: "1006708",
+                changed_by: "ryan.sears",
+                notes: "See https://www.npmjs.com/advisories/39. We're not vulnerable to this because uglify is a transient dev dependency, and we never actually invoke it with our code.",
+                expiration: "2021-01-01",
+              }
+            - {
+                advisory_id: "1006709",
+                changed_by: "ryan.sears",
+                notes: "See https://www.npmjs.com/advisories/48. We're not vulnerable to this because this is a regex dos and we have nothing that puts user input into it. The impact is also minimal.",
+                expiration: "2021-01-01",
+              }

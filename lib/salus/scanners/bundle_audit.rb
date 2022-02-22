@@ -4,20 +4,55 @@ require 'salus/scanners/base'
 # BundlerAudit scanner to check for CVEs in Ruby gems.
 # https://github.com/rubysec/bundler-audit
 
+# BundlerAudit is not threadsafe as it uses Dir.chdir
+# File.expand_path(File.join(Gem.user_home,'.local','share','ruby-advisory-db'))
+
+# Monkey patching Bundler::Audit::Database to make it threadsafe
+# We should open a fork or PR against the gem
+module Bundler
+  module Audit
+    class Database
+      def update!(options = {})
+        if git?
+          command = %w[git pull]
+          command << '--quiet' if options[:quiet]
+          command << 'origin' << 'master'
+
+          unless system(*command, chdir: @path)
+            raise(UpdateFailed, "failed to update #{@path.inspect}")
+          end
+
+          true
+        end
+      end
+
+      def last_updated_at
+        if git?
+          Time.parse(system(['git log --date=iso8601 --pretty="%cd" -1'], chdir: @path))
+        else
+          File.mtime(@path)
+        end
+      end
+    end
+  end
+end
+
 module Salus::Scanners
   class BundleAudit < Base
     class UnvalidGemVulnError < StandardError; end
 
     def run
+      # return
       # Ensure the DB is up to date
       unless Bundler::Audit::Database.update!(quiet: true)
         report_error("Error updating the bundler-audit DB!")
         return
       end
 
-      ignore = @config.fetch('ignore', [])
+      ignore = ignore_list
       scanner = Bundler::Audit::Scanner.new(@repository.path_to_repo)
       @vulns = []
+      @gemfile_lock_path = File.join(@repository.path_to_repo, 'Gemfile.lock')
       run_scanner(scanner, ignore)
 
       local_db_path = @config['local_db']
@@ -42,6 +77,7 @@ module Salus::Scanners
     def run_scanner(scanner, ignore)
       scanner.scan(ignore: ignore) do |result|
         hash = serialize_vuln(result)
+        Salus::GemfileLock.new(@gemfile_lock_path).add_line_number(hash)
         @vulns.push(hash)
 
         # TODO: we should tabulate these vulnerabilities in the same way
@@ -72,6 +108,14 @@ module Salus::Scanners
     end
 
     private
+
+    def ignore_list
+      # We are deprecating this.  This will pull the list of CVEs from the ignore setting.
+      list = @config.fetch('ignore', [])
+
+      # combine with the newer exception entry
+      (fetch_exception_ids + list).uniq
+    end
 
     def serialize_vuln(vuln)
       case vuln

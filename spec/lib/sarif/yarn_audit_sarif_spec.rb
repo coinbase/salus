@@ -2,27 +2,48 @@ require_relative '../../spec_helper'
 require 'json'
 
 describe Sarif::YarnAuditSarif do
+  let(:stub_stdout_failure_2) do
+    File.read('spec/fixtures/yarn_audit/failure-2/stub_stdout.txt')
+  end
+  let(:stub_stderr_failure_2) { "" }
+  let(:stub_status_failure_2) { 26 }
+  let(:stub_stdout_failure_4) do
+    File.read('spec/fixtures/yarn_audit/failure-4/stub_stdout.txt')
+  end
+  let(:stub_stderr_failure_4) { "" }
+  let(:stub_status_failure_4) { 28 }
+
   describe '#parse_issue' do
     let(:scanner) { Salus::Scanners::YarnAudit.new(repository: repo, config: {}) }
-    before { scanner.run }
+    let(:error_id_fail_2) { "1002899" } # was 39 before the great yarn advisory reshuffling of '21
 
     context 'scan report with logged vulnerabilites' do
-      let(:repo) { Salus::Repo.new('spec/fixtures/yarn_audit/failure-2') }
+      let(:path) { 'spec/fixtures/yarn_audit/failure-2' }
+      let(:repo) { Salus::Repo.new(path) }
       it 'parses information correctly' do
+        status = ProcessStatusDouble.new(stub_status_failure_2)
+        stub_ret = Salus::ShellResult.new(stub_stdout_failure_2, stub_stderr_failure_2, status)
+        allow(scanner).to receive(:run_shell).and_return(stub_ret)
+        scanner.run
         issue = JSON.parse(scanner.report.to_h[:info][:stdout])[0]
-        yarn_sarif = Sarif::YarnAuditSarif.new(scanner.report)
+        yarn_sarif = Sarif::YarnAuditSarif.new(scanner.report, path)
 
         expect(yarn_sarif.parse_issue(issue)).to include(
-          id: "39",
-          name: "Incorrect Handling of Non-Boolean Comparisons During Minification",
-          level: "LOW",
-          details: "Incorrect Handling of Non-Boolean Comparisons During Minification",
-          messageStrings: { "package": { "text": "uglify-js" },
-                           "severity": { "text": "low" },
-                           "patched_versions": { "text": ">= 2.4.24" },
-                           "dependency_of": { "text": "uglify-js" } },
+          id: "1005415",
+          name: "Prototype Pollution in merge",
+          level: "HIGH",
+          details: "Prototype Pollution in merge, Dependency of: merge",
+          messageStrings: {
+            dependency_of: { text: "merge" },
+            package: { text: "merge" },
+            patched_versions: { text: ">=2.1.1" },
+            severity: { text: "high" }
+          },
           uri: "yarn.lock",
-          help_url: "https://www.npmjs.com/advisories/39"
+          help_url: "https://www.npmjs.com/advisories/1005415",
+          start_line: 21,
+          start_column: 1,
+          properties: { severity: "high" }
         )
       end
     end
@@ -30,11 +51,12 @@ describe Sarif::YarnAuditSarif do
 
   describe '#sarif_report' do
     let(:scanner) { Salus::Scanners::YarnAudit.new(repository: repo, config: {}) }
-    before { scanner.run }
 
     context 'Yarn file with errors' do
-      let(:repo) { Salus::Repo.new('spec/fixtures/yarn_audit/failure-3') }
+      let(:path) { 'spec/fixtures/yarn_audit/failure-3' }
+      let(:repo) { Salus::Repo.new(path) }
       it 'should generate error in report' do
+        scanner.run
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
         report_object = JSON.parse(report.to_sarif)['runs'][0]
@@ -50,6 +72,7 @@ describe Sarif::YarnAuditSarif do
     context 'Yarn file with no vulnerabilities' do
       let(:repo) { Salus::Repo.new('spec/fixtures/yarn_audit/success') }
       it 'should generate an empty sarif report' do
+        scanner.run
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
         report_object = JSON.parse(report.to_sarif)['runs'][0]
@@ -60,31 +83,44 @@ describe Sarif::YarnAuditSarif do
 
     context 'yarn project with vulnerabilities' do
       let(:repo) { Salus::Repo.new('spec/fixtures/yarn_audit/failure-4') }
+      let(:error_id_fail_4) { "1004708" } # was 39 before the great yarn advisory reshuffling of '21
+
       it 'should generate the right results and rules' do
+        status = ProcessStatusDouble.new(stub_status_failure_4)
+        stub_ret = Salus::ShellResult.new(stub_stdout_failure_4, stub_stderr_failure_4, status)
+        allow(scanner).to receive(:run_shell).and_return(stub_ret)
+        scanner.run
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
-        result = JSON.parse(report.to_sarif)["runs"][0]["results"][0]
-        rules = JSON.parse(report.to_sarif)["runs"][0]["tool"]["driver"]["rules"]
+
+        parsed_json = JSON.parse(report.to_sarif)
+        result = parsed_json["runs"][0]["results"].first
+        rule = parsed_json["runs"][0]["tool"]["driver"]["rules"].first
+
         # Check rule info
-        expect(rules[0]['id']).to eq('39')
-        expect(rules[0]['name']).to eq("Incorrect Handling of Non-Boolean Comparisons During"\
-          " Minification")
-        expect(rules[0]['fullDescription']['text']).to eq("Incorrect Handling of Non-Boolean"\
-          " Comparisons During Minification")
-        expect(rules[0]['helpUri']).to eq("https://www.npmjs.com/advisories/39")
+        expect(rule['id']).to eq("1005365")
+        expect(rule['name']).to eq("Command Injection in lodash")
+        expect(rule['fullDescription']['text']).to eq("Command Injection in lodash")
+        expect(rule['helpUri']).to eq("https://www.npmjs.com/advisories/1005365")
 
         # Check result info
-        expect(result['ruleId']).to eq('39')
-        expect(result['ruleIndex']).to eq(0)
-        expect(result['level']).to eq('note')
+        expect(result['ruleId']).to eq("1005365")
+        expect(result['ruleIndex']).to be >= 0 # liberal here to avoid hard coding the index
+        expect(result['level']).to eq('error')
+
+        region = result['locations'][0]['physicalLocation']['region']
+        expect(region['startLine']).to eq(21)
+        expect(region['startColumn']).to eq(1)
       end
     end
 
     context 'yarn.lock file with vulnerabilities having the same ID' do
-      let(:repo) { Salus::Repo.new('spec/fixtures/yarn_audit/failure-2') }
+      let(:path) { 'spec/fixtures/yarn_audit/failure-2' }
+      let(:repo) { Salus::Repo.new(path) }
       it 'should generate all identified vulnerabilities' do
+        scanner.run
         issue = JSON.parse(scanner.report.to_h[:info][:stdout])[0]
-        yarn_sarif = Sarif::YarnAuditSarif.new(scanner.report)
+        yarn_sarif = Sarif::YarnAuditSarif.new(scanner.report, path)
 
         issue2 = issue.clone
         issue2['Dependency of'] = 'random package'

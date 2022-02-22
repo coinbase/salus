@@ -19,5 +19,8 @@ salus-report.json
 node_modules
 yarn-error.log
 
+# Gradle build artifacts
+.gradle/
+
 # vscode
 .vscode

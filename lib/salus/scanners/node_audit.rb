@@ -28,118 +28,116 @@ module Salus::Scanners
     def run
       exception_ids = fetch_exception_ids
 
-      Dir.chdir(@repository.path_to_repo) do
-        raw_advisories = scan_for_cves
+      raw_advisories = scan_for_cves
 
-        # We need to deduplicate advisories with identical ids -
-        # yarn audit for instance can yield many copies of the same advisory
-        # (for different versions of the same package) but we only care about
-        # the common information (module name, etc.)
+      # We need to deduplicate advisories with identical ids -
+      # yarn audit for instance can yield many copies of the same advisory
+      # (for different versions of the same package) but we only care about
+      # the common information (module name, etc.)
 
-        raw_advisories_by_id = raw_advisories.group_by { |advisory| advisory.fetch(:id).to_s }
+      raw_advisories_by_id = raw_advisories.group_by { |advisory| advisory.fetch(:id).to_s }
 
-        advisories = raw_advisories_by_id.map do |id, raw_advisories_for_id|
-          advisory = raw_advisories_for_id.first
+      advisories = raw_advisories_by_id.map do |id, raw_advisories_for_id|
+        advisory = raw_advisories_for_id.first
 
-          module_name = advisory.fetch(:module_name)
-          title       = advisory.fetch(:title)
-          severity    = advisory.fetch(:severity)
-          url         = advisory.fetch(:url)
-          excepted    = exception_ids.include?(id)
+        module_name = advisory.fetch(:module_name)
+        title       = advisory.fetch(:title)
+        severity    = advisory.fetch(:severity)
+        url         = advisory.fetch(:url)
+        excepted    = exception_ids.include?(id)
 
-          # Each advisory corresponds to some instance of the vulnerable
-          # package, which may exist as in multiple nodes of the dependency
-          # tree. advisory[:findings] is an array of objects looking roughly
-          # like:
-          # [
-          #   { "version": "1.0.5", ..., "dev": false },
-          #   { "version": "1.0.5", ..., "dev": true }
-          # ]
-          # where each element records an instance of the vulnerable package
-          # in the dependency tree. If, for some advisory and for some finding
-          # on that advisory, dev is false, then there exists a vulnerable version
-          # of the module in the prod dependency tree
+        # Each advisory corresponds to some instance of the vulnerable
+        # package, which may exist as in multiple nodes of the dependency
+        # tree. advisory[:findings] is an array of objects looking roughly
+        # like:
+        # [
+        #   { "version": "1.0.5", ..., "dev": false },
+        #   { "version": "1.0.5", ..., "dev": true }
+        # ]
+        # where each element records an instance of the vulnerable package
+        # in the dependency tree. If, for some advisory and for some finding
+        # on that advisory, dev is false, then there exists a vulnerable version
+        # of the module in the prod dependency tree
 
-          # For all advisories,
-          prod = raw_advisories_for_id.any? do |raw_advisory|
-            # any there there any instances in the prod dependency tree?
-            raw_advisory.fetch(:findings).any? { |finding| !finding.fetch(:dev, false) }
-          end
-
-          Advisory.new(id, module_name, title, severity, url, prod, excepted)
+        # For all advisories,
+        prod = raw_advisories_for_id.any? do |raw_advisory|
+          # any there there any instances in the prod dependency tree?
+          raw_advisory.fetch(:findings).any? { |finding| !finding.fetch(:dev, false) }
         end
 
-        # Sort advisories with un-excepted prod vulnerabilities first,
-        # and in ascending order of ID otherwise
-        advisories = advisories.sort_by do |advisory|
-          unexcepted_and_prod = !advisory.excepted? && advisory.prod?
-          [(unexcepted_and_prod ? 0 : 1), advisory.id.to_i]
-        end
-
-        # Categorize the advisories and exceptions for informational purposes
-
-        prod_advisories, dev_advisories = advisories.partition(&:prod?)
-        unex_prod_advisories = prod_advisories.reject(&:excepted?)
-
-        advisories_by_id = advisories.map(&:id).zip(advisories).to_h
-
-        useful_exception_ids, useless_exception_ids = exception_ids.partition do |id|
-          advisories_by_id.key?(id)
-        end
-
-        prod_exception_ids, dev_exception_ids = useful_exception_ids.partition do |id|
-          advisories_by_id.fetch(id).prod?
-        end
-
-        prod_advisory_ids      = prod_advisories.map(&:id).sort_by(&:to_i)
-        dev_advisory_ids       = dev_advisories.map(&:id).sort_by(&:to_i)
-        unex_prod_advisory_ids = unex_prod_advisories.map(&:id).sort_by(&:to_i)
-        prod_exception_ids     = prod_exception_ids.sort_by(&:to_i)
-        dev_exception_ids      = dev_exception_ids.sort_by(&:to_i)
-        useless_exception_ids  = useless_exception_ids.sort_by(&:to_i)
-
-        # The _id suffix isn't super interesting information from the perspective of an
-        # external consumer just drop it
-        report_info(:prod_advisories,            prod_advisory_ids)
-        report_info(:dev_advisories,             dev_advisory_ids)
-        report_info(:unexcepted_prod_advisories, unex_prod_advisory_ids)
-        report_info(:exceptions,                 useful_exception_ids)
-        report_info(:prod_exceptions,            prod_exception_ids)
-        report_info(:dev_exceptions,             dev_exception_ids)
-        report_info(:useless_exceptions,         useless_exception_ids)
-
-        if advisories.empty?
-          log('There are no advisories against your dependencies. Hooray!')
-        else
-          log(tabulate_advisories(advisories) + "\n")
-        end
-
-        if unex_prod_advisory_ids.any?
-          stringified_ids = unex_prod_advisory_ids.join(' ')
-          log(
-            "Audit failed pending the following advisory(s): #{stringified_ids}. " \
-            'To fix the build, please resolve the previous advisory(s), or add exceptions.'
-          )
-        end
-
-        if useless_exception_ids.any?
-          stringified_ids = useless_exception_ids.join(' ')
-          log(
-            'The following exception(s) do not match any advisory against the directory ' \
-            "and can safely be removed: #{stringified_ids}."
-          )
-        end
-
-        if dev_exception_ids.any?
-          stringified_ids = dev_exception_ids.join(' ')
-          log(
-            'The following exceptions apply only to development dependencies ' \
-            "and can safely be removed: #{stringified_ids}."
-          )
-        end
-
-        unex_prod_advisories.empty? ? report_success : report_failure
+        Advisory.new(id, module_name, title, severity, url, prod, excepted)
       end
+
+      # Sort advisories with un-excepted prod vulnerabilities first,
+      # and in ascending order of ID otherwise
+      advisories = advisories.sort_by do |advisory|
+        unexcepted_and_prod = !advisory.excepted? && advisory.prod?
+        [(unexcepted_and_prod ? 0 : 1), advisory.id.to_i]
+      end
+
+      # Categorize the advisories and exceptions for informational purposes
+
+      prod_advisories, dev_advisories = advisories.partition(&:prod?)
+      unex_prod_advisories = prod_advisories.reject(&:excepted?)
+
+      advisories_by_id = advisories.map(&:id).zip(advisories).to_h
+
+      useful_exception_ids, useless_exception_ids = exception_ids.partition do |id|
+        advisories_by_id.key?(id)
+      end
+
+      prod_exception_ids, dev_exception_ids = useful_exception_ids.partition do |id|
+        advisories_by_id.fetch(id).prod?
+      end
+
+      prod_advisory_ids      = prod_advisories.map(&:id).sort_by(&:to_i)
+      dev_advisory_ids       = dev_advisories.map(&:id).sort_by(&:to_i)
+      unex_prod_advisory_ids = unex_prod_advisories.map(&:id).sort_by(&:to_i)
+      prod_exception_ids     = prod_exception_ids.sort_by(&:to_i)
+      dev_exception_ids      = dev_exception_ids.sort_by(&:to_i)
+      useless_exception_ids  = useless_exception_ids.sort_by(&:to_i)
+
+      # The _id suffix isn't super interesting information from the perspective of an
+      # external consumer just drop it
+      report_info(:prod_advisories,            prod_advisory_ids)
+      report_info(:dev_advisories,             dev_advisory_ids)
+      report_info(:unexcepted_prod_advisories, unex_prod_advisory_ids)
+      report_info(:exceptions,                 useful_exception_ids)
+      report_info(:prod_exceptions,            prod_exception_ids)
+      report_info(:dev_exceptions,             dev_exception_ids)
+      report_info(:useless_exceptions,         useless_exception_ids)
+
+      if advisories.empty?
+        log('There are no advisories against your dependencies. Hooray!')
+      else
+        log(tabulate_advisories(advisories) + "\n")
+      end
+
+      if unex_prod_advisory_ids.any?
+        stringified_ids = unex_prod_advisory_ids.join(' ')
+        log(
+          "Audit failed pending the following advisory(s): #{stringified_ids}. " \
+          'To fix the build, please resolve the previous advisory(s), or add exceptions.'
+        )
+      end
+
+      if useless_exception_ids.any?
+        stringified_ids = useless_exception_ids.join(' ')
+        log(
+          'The following exception(s) do not match any advisory against the directory ' \
+          "and can safely be removed: #{stringified_ids}."
+        )
+      end
+
+      if dev_exception_ids.any?
+        stringified_ids = dev_exception_ids.join(' ')
+        log(
+          'The following exceptions apply only to development dependencies ' \
+          "and can safely be removed: #{stringified_ids}."
+        )
+      end
+
+      unex_prod_advisories.empty? ? report_success : report_failure
     end
 
     def should_run?
@@ -147,26 +145,6 @@ module Salus::Scanners
     end
 
     private
-
-    def fetch_exception_ids
-      exceptions = @config.fetch('exceptions', [])
-
-      ids = []
-
-      exceptions.each do |exception|
-        if !exception.is_a?(Hash) || exception.keys.sort != %w[advisory_id changed_by notes]
-          report_error(
-            'malformed exception; expected a hash with keys advisory_id, changed_by, notes',
-            exception: exception
-          )
-          next
-        end
-
-        ids << exception.fetch('advisory_id').to_s
-      end
-
-      ids
-    end
 
     # This must return an array of the standard advisory info hashes.
     def scan_for_cves

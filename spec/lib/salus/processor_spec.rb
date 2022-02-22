@@ -29,6 +29,12 @@ RSpec::Matchers.define :match_cyclonedx_report_json do |expected|
 end
 
 describe Salus::Processor do
+  before do
+    allow_any_instance_of(Salus::Scanners::ReportRubyGems)
+      .to receive(:find_licenses_for)
+      .and_return(['MIT'])
+  end
+
   describe '#initialize' do
     let(:config_file_path) { 'spec/fixtures/processor/repo/salus.yaml' }
     let(:config_file)      { File.read(config_file_path) }
@@ -122,7 +128,6 @@ describe Salus::Processor do
     it 'should scan the project given by a particular path' do
       processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/explicit_path')
       processor.scan_project
-
       expect(processor.passed?).to eq(false)
 
       report_hsh = processor.report.to_h
@@ -138,6 +143,72 @@ describe Salus::Processor do
 
       cves = report_hsh[:scans]['BundleAudit'][:info][:vulnerabilities].map { |vuln| vuln[:cve] }
       expect(cves).to include('CVE-2016-6316')
+    end
+
+    it 'should override the configured active scanners when they\'re provided via command line' do
+      processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/allowlist_scanners',
+        cli_scanners_to_run: %w[Brakeman CargoAudit NPMAudit])
+      processor.scan_project
+
+      report_hsh = processor.report.to_h
+
+      expect(report_hsh[:config][:active_scanners].length).to eq(3)
+      expect(report_hsh[:config][:active_scanners][0]).to eq('Brakeman')
+      expect(report_hsh[:config][:active_scanners][1]).to eq('CargoAudit')
+      expect(report_hsh[:config][:active_scanners][2]).to eq('NPMAudit')
+    end
+
+    it 'should scan the project using only scanners provided from the command line' do
+      processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/allowlist_scanners',
+        cli_scanners_to_run: %w[Brakeman NPMAudit])
+      processor.scan_project
+
+      expect(processor.passed?).to eq(false)
+
+      report_hsh = processor.report.to_h
+
+      expect(report_hsh[:config][:active_scanners].length).to eq(2)
+      expect(report_hsh[:config][:active_scanners][0]).to eq('Brakeman')
+      expect(report_hsh[:config][:active_scanners][1]).to eq('NPMAudit')
+
+      expect(report_hsh[:project_name]).to eq('EVA-01')
+      expect(report_hsh[:custom_info]).to eq('Purple unit')
+      expect(report_hsh[:version]).to eq(Salus::VERSION)
+      expect(report_hsh[:passed]).to eq(false)
+      expect(report_hsh[:errors]).to eq([])
+
+      expect(report_hsh[:scans]['Brakeman'][:passed]).to eq(false)
+      expect(report_hsh[:scans]['Brakeman'][:info][:stdout].length).to be_positive
+      expect(report_hsh[:scans]['Brakeman'][:logs].length).to be_positive
+
+      expect(report_hsh[:scans]['NPMAudit'][:passed]).to eq(false)
+      expect(report_hsh[:scans]['NPMAudit'][:info][:stdout][:actions].length).to be_positive
+      expect(report_hsh[:scans]['NPMAudit'][:logs].length).to be_positive
+    end
+
+    it 'should recurse when configured' do
+      path = 'spec/fixtures/processor/recursive'
+
+      processor = Salus::Processor.new(repo_path: path,
+        cli_scanners_to_run: %w[Brakeman NPMAudit])
+
+      processor.scan_project
+
+      processor.report.report_uris.reject! { |u| u['format'] == FULL_SARIF_DIFF_FORMAT }
+
+      sarif = processor.report.to_sarif
+      json = JSON.parse(sarif)
+
+      # We should have multiple runs of Brakeman
+      scanners = json['runs'].map { |run| run.dig('tool', 'driver', 'name') }.sort
+      expect(scanners).to eq(%w[Brakeman Brakeman NPMAudit])
+
+      # We should not have vendors here (excluded)
+      scanned_dirs = json['runs'].map do |run|
+        run.dig('originalUriBaseIds', 'SRCROOT', 'uri')
+      end.uniq.sort
+
+      expect(scanned_dirs).to eq(['.', 'project-two'])
     end
   end
 

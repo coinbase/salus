@@ -1,0 +1,19 @@
+diff --git a/hello.py b/hello.py
+index 299f186..5688e52 100644
+--- a/hello.py
++++ b/hello.py
+@@ -1,5 +1,6 @@
+ import hello
+ 
+ self.process = subprocess.Popen('/bin/echo', shell=True)
+-test()
++  foo()
++baz(432)
+ bar()
+diff --git a/hello2.py b/hello2.py
+new file mode 100644
+index 0000000..d33f9bc
+--- /dev/null
++++ b/hello2.py
+@@ -0,0 +1 @@
++baz(123)

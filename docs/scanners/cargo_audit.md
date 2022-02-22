@@ -17,4 +17,5 @@ scanner_configs:
       - advisory_id: RUSTSEC-2019-0010
         changed_by: security-team
         notes: Currently no patch exists and determined that this vulnerability is not exploitable.
+        expiration: "2021-04-27"
 ```

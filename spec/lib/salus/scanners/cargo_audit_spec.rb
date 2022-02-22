@@ -1,45 +1,5 @@
 require_relative '../../../spec_helper.rb'
 
-RSpec::Matchers.define :pretty_json do
-  match do |actual|
-    JSON.pretty_generate(JSON.parse(actual)) == actual
-  end
-end
-
-RSpec::Matchers.define :json_with_keys do |keys|
-  match do |actual|
-    begin
-      json = JSON.parse(actual)
-    rescue JSON::ParserError
-      return false
-    end
-    (json.keys - keys).empty?
-  end
-end
-
-class ProcessStatusDouble
-  attr_accessor :exitstatus
-  def initialize(exitstatus)
-    @exitstatus = exitstatus
-  end
-
-  def success?
-    @exitstatus.zero?
-  end
-end
-
-class ShellResultDouble
-  def initialize(stdout, stderr, status)
-    @stdout = stdout
-    @stderr = stderr
-    @status = status
-  end
-
-  def shell_result
-    Salus::ShellResult.new(@stdout, @stderr, ProcessStatusDouble.new(@status))
-  end
-end
-
 describe Salus::Scanners::CargoAudit do
   describe '#should_run?' do
     it 'should return false in the absence of Cargo.lock' do
@@ -119,6 +79,19 @@ describe Salus::Scanners::CargoAudit do
       expect(scanner.report.to_h.fetch(:passed)).to eq(true)
     end
 
+    it 'should honor exception expirations' do
+      fixture_directory = 'spec/fixtures/cargo_audit/failure-vulnerability-present'
+      repo = Salus::Repo.new(fixture_directory)
+
+      config_path = File.join(fixture_directory, 'salus-expired.yaml')
+      config = YAML.load_file(config_path)['scanner_configs']['CargoAudit']
+
+      scanner = Salus::Scanners::CargoAudit.new(repository: repo, config: config)
+      scanner.run
+
+      expect(scanner.report.to_h.fetch(:passed)).to eq(false)
+    end
+
     it 'should send the audit log as json' do
       path = 'spec/fixtures/cargo_audit/failure-vulnerability-present'
       repo = Salus::Repo.new(path)
@@ -161,7 +134,7 @@ describe Salus::Scanners::CargoAudit do
   describe '#version_valid?' do
     context 'scanner version is valid' do
       it 'should return true' do
-        repo = Salus::Repo.new("dir")
+        repo = Salus::Repo.new('spec/fixtures/cargo_audit/non_project_directory')
         scanner = Salus::Scanners::CargoAudit.new(repository: repo, config: {})
         expect(scanner.version).to be_a_valid_version
       end

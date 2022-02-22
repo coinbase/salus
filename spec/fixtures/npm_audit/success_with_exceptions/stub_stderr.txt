@@ -1,0 +1,1 @@
+"npm info it worked if it ends with ok\nnpm info using npm@6.14.8\nnpm info using node@v13.8.0\nnpm timing audit submit Completed in 235ms\nnpm http fetch POST 200 https://registry.npmjs.org/-/npm/v1/security/audits 237ms\nnpm timing audit body Completed in 1ms\nnpm timing npm Completed in 527ms\nnpm info ok \n"

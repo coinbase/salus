@@ -20,9 +20,9 @@ describe Sarif::SemgrepSarif do
         scanner.run
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: true)
-
         sarif_report = JSON.parse(report.to_sarif)
         result = sarif_report["runs"][0]["results"]
+
         expect(result).to include({
           "ruleId": "Forbidden Pattern Found",
           "ruleIndex": 0,
@@ -46,7 +46,8 @@ describe Sarif::SemgrepSarif do
                 }
               }
             }
-          ]
+          ],
+          "properties": { "severity": "HIGH" }
         }.deep_stringify_keys)
       end
 
@@ -68,7 +69,7 @@ describe Sarif::SemgrepSarif do
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: true)
         sarif_report = JSON.parse(report.to_sarif)
-        result = sarif_report["runs"][0]["results"][1]
+        result = sarif_report["runs"][0]["results"][0]
         rules = sarif_report["runs"][0]["tool"]["driver"]["rules"]
         semgrep_doc_url = Sarif::SemgrepSarif::SEMGREP_URI
         expect(rules).to include(

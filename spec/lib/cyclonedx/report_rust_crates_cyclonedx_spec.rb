@@ -75,7 +75,7 @@ describe Cyclonedx::ReportRustCrates do
       # Cargo tree will create a lock file if not already present
       # We will stub the lock file generate to keep our specs from needing to
       # hit the internet and pulldown the dependency graph
-      allow(scanner).to receive(:run_shell).with(/cargo tree/) do
+      allow(scanner).to receive(:run_shell).with(/cargo tree/, chdir: nil) do
         existing_lock = 'spec/fixtures/report_rust_crates/lock_only/Cargo.lock'
         mock_lock = File.join(repo.path_to_repo, 'Cargo.lock')
         FileUtils.cp existing_lock, mock_lock

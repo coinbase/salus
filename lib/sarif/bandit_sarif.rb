@@ -4,8 +4,8 @@ module Sarif
 
     BANDIT_URI = 'https://github.com/PyCQA/bandit'.freeze
 
-    def initialize(scan_report)
-      super(scan_report)
+    def initialize(scan_report, repo_path = nil)
+      super(scan_report, {}, repo_path)
       @uri = BANDIT_URI
       @logs = parse_scan_report!
     end
@@ -51,6 +51,7 @@ module Sarif
         details: (issue['issue_text']).to_s,
         messageStrings: { "confidence": { "text": (issue['issue_severity']).to_s },
                          "severity": { "text": (issue['issue_severity']).to_s } },
+        properties: { 'severity': issue['issue_severity'].to_s },
         start_line: issue["line_number"].to_i,
         end_line: endline,
         start_column: 1,
@@ -58,6 +59,23 @@ module Sarif
         help_url: issue['more_info'],
         code: issue['code']
       }
+    end
+
+    def self.snippet_possibly_in_git_diff?(snippet, lines_added)
+      # Bandit snippet looks like
+      #   "2 \n3 self.process = subprocess.Popen('/bin/echo', shell=True)\n4 foo()\n"
+      lines = snippet.split("\n")
+      # using any? because snippet may include surrounding code that may not be in git diff
+      lines.any? do |line|
+        line = line.split(' ', 2)[1]
+        if line.nil?
+          # maybe the line of code has some special pattern
+          # we'll just not deal with it and assume snippet may be in git diff
+          true
+        else
+          lines_added.keys.include?(line) && !line.strip.empty?
+        end
+      end
     end
   end
 end

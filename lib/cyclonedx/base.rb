@@ -3,6 +3,8 @@ module Cyclonedx
     DEFAULT_DEP_COMPONENT_TYPE = "library".freeze
     TYPE = "N/A".freeze
     UNLOCKED_DEPENDENCY_FILE = "N/A".freeze
+    SCOPE_REQUIRED = "required".freeze
+    SCOPE_OPTIONAL = "optional".freeze
 
     attr_accessor :config
 

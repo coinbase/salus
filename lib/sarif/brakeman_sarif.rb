@@ -4,8 +4,8 @@ module Sarif
 
     BRAKEMAN_URI = 'https://github.com/presidentbeef/brakeman'.freeze
 
-    def initialize(scan_report)
-      super(scan_report)
+    def initialize(scan_report, repo_path = nil)
+      super(scan_report, {}, repo_path)
       @uri = BRAKEMAN_URI
       @logs = parse_scan_report!
     end
@@ -44,11 +44,17 @@ module Sarif
         name: "#{issue['check_name']}/#{issue['warning_type']}",
         level: issue['confidence'].upcase,
         details: (issue['message']).to_s,
-        messageStrings: { "confidence": { "text": (issue['confidence']).to_s },
-                         "title": { "text": (issue['check_name']).to_s },
-                         "type": { "text": (issue['warning_type']).to_s },
-                         "warning_code": { "text": (issue['warning_code']).to_s },
-                         "fingerprint": { "text": (issue['fingerprint']).to_s } },
+        messageStrings: { "title": { "text": (issue['check_name']).to_s },
+                          "type": { "text": (issue['warning_type']).to_s },
+                          "warning_code": { "text": (issue['warning_code']).to_s } },
+        properties: { 'fingerprint': issue['fingerprint'].to_s,
+                      'confidence': issue['confidence'].to_s,
+                      'severity': "",
+                      'render_path': issue['render_path'].to_s,
+                      'user_input': issue['user_input'].to_s,
+                      'location_type': issue.dig('location', 'type').to_s,
+                      'location_class': issue.dig('location', 'class').to_s,
+                      'location_method': issue.dig('location', 'method').to_s },
         start_line: issue['line'].to_i,
         start_column: 1,
         uri: issue['file'],

@@ -9,6 +9,19 @@ describe Sarif::BaseSarif do
     scan_report.add_version('1.1.1')
   end
 
+  describe 'uri_info' do
+    it 'should populate SRCROOT' do
+      repo_path = 'spec/fixtures/processor'
+      repo = Salus::Repo.new("#{repo_path}/recursive")
+      report = Salus::ScanReport.new("Unsupported_Scanner", repository: repo)
+      sarif = Sarif::BaseSarif.new(report, {}, repo_path)
+      info = sarif.uri_info
+
+      expect(info[:PROJECTROOT][:uri]).to end_with(repo_path)
+      expect(info[:SRCROOT]).to eq({ uri: "recursive", uriBaseId: "PROJECTROOT" })
+    end
+  end
+
   describe 'tool_info' do
     it 'returns the runs object for an unsupported scanner' do
       expect(base_sarif.build_tool).to include({ "driver":
@@ -47,6 +60,7 @@ describe Sarif::BaseSarif do
 
   describe '#build_runs_object' do
     context 'results object' do
+      let(:path) { "./" }
       it 'has suppressions objects for suppressed results' do
         parsed_issue = {
           id: 'SAL002',
@@ -60,7 +74,7 @@ describe Sarif::BaseSarif do
           code: "",
           suppressed: true
         }
-        adapter = Sarif::GosecSarif.new(scan_report)
+        adapter = Sarif::GosecSarif.new(scan_report, path)
         adapter.instance_variable_set(:@logs, [parsed_issue])
         runs_object = adapter.build_runs_object(true)
         expect(runs_object['results'][0]['suppressions'].nil?).to eq(false)
@@ -78,7 +92,7 @@ describe Sarif::BaseSarif do
           help_url: "https://github.com/coinbase/salus/blob/master/docs/salus_reports.md",
           code: ""
         }
-        adapter = Sarif::GosecSarif.new(scan_report)
+        adapter = Sarif::GosecSarif.new(scan_report, path)
         adapter.instance_variable_set(:@logs, [parsed_issue])
         runs_object = adapter.build_runs_object(true)
         expect(runs_object['results'][0]['suppressions'].nil?).to eq(true)
@@ -97,7 +111,7 @@ describe Sarif::BaseSarif do
           code: "",
           suppressed: true
         }
-        adapter = Sarif::GosecSarif.new(scan_report)
+        adapter = Sarif::GosecSarif.new(scan_report, path)
         adapter.instance_variable_set(:@logs, [parsed_issue])
         adapter.instance_variable_set(:@config, { "include_suppressed": false }.stringify_keys)
         runs_object = adapter.build_runs_object(true)
@@ -117,7 +131,7 @@ describe Sarif::BaseSarif do
           code: "",
           suppressed: true
         }
-        adapter = Sarif::GosecSarif.new(scan_report)
+        adapter = Sarif::GosecSarif.new(scan_report, path)
         adapter.instance_variable_set(:@logs, [parsed_issue])
         adapter.instance_variable_set(:@config, { "include_suppressed": true }.stringify_keys)
         runs_object = adapter.build_runs_object(true)
@@ -136,7 +150,7 @@ describe Sarif::BaseSarif do
           help_url: "https://github.com/coinbase/salus/blob/master/docs/salus_reports.md",
           code: ""
         }
-        adapter = Sarif::GosecSarif.new(scan_report)
+        adapter = Sarif::GosecSarif.new(scan_report, path)
         adapter.instance_variable_set(:@logs, [parsed_issue])
         adapter.instance_variable_set(:@config, { "include_suppressed": true }.stringify_keys)
         adapter.instance_variable_set(:@required, false)
@@ -157,7 +171,7 @@ describe Sarif::BaseSarif do
           help_url: "https://github.com/coinbase/salus/blob/master/docs/salus_reports.md",
           code: ""
         }
-        adapter = Sarif::GosecSarif.new(scan_report)
+        adapter = Sarif::GosecSarif.new(scan_report, path)
         adapter.instance_variable_set(:@logs, [parsed_issue])
         adapter.instance_variable_set(:@config, { "include_suppressed": true }.stringify_keys)
         adapter.instance_variable_set(:@required, false)
@@ -177,12 +191,36 @@ describe Sarif::BaseSarif do
           help_url: "https://github.com/coinbase/salus/blob/master/docs/salus_reports.md",
           code: ""
         }
-        adapter = Sarif::GosecSarif.new(scan_report)
+        adapter = Sarif::GosecSarif.new(scan_report, path)
         adapter.instance_variable_set(:@logs, [parsed_issue])
         adapter.instance_variable_set(:@config, { "include_suppressed": false }.stringify_keys)
         adapter.instance_variable_set(:@required, true)
         runs_object = adapter.build_runs_object(true)
         expect(runs_object['tool'][:driver]['properties'][:salusEnforced]).to eq(true)
+      end
+
+      it 'includes originalUriBaseIds' do
+        parsed_issue = {
+          id: 'SAL002',
+          name: "Golang Error",
+          level: "NOTE",
+          details: 'error',
+          start_line: 1,
+          start_column: 1,
+          uri: '',
+          help_url: "https://github.com/coinbase/salus/blob/master/docs/salus_reports.md",
+          code: ""
+        }
+        adapter = Sarif::GosecSarif.new(scan_report, path)
+        adapter.instance_variable_set(:@logs, [parsed_issue])
+        adapter.instance_variable_set(:@config, { "include_suppressed": true }.stringify_keys)
+        adapter.instance_variable_set(:@required, false)
+        runs_object = adapter.build_runs_object(true)
+
+        expect(runs_object.keys).to include("originalUriBaseIds")
+        base = runs_object["originalUriBaseIds"]
+        expect(base[:PROJECTROOT][:uri]).not_to be_empty
+        expect(base[:SRCROOT]).to eq({ uri: ".", uriBaseId: "PROJECTROOT" })
       end
 
       it 'results are not included for non enforced scanners when include_suppressed is false' do
@@ -197,13 +235,123 @@ describe Sarif::BaseSarif do
           help_url: "https://github.com/coinbase/salus/blob/master/docs/salus_reports.md",
           code: ""
         }
-        adapter = Sarif::GosecSarif.new(scan_report)
+        adapter = Sarif::GosecSarif.new(scan_report, path)
         adapter.instance_variable_set(:@logs, [parsed_issue])
         adapter.instance_variable_set(:@config, { "include_suppressed": false }.stringify_keys)
         adapter.instance_variable_set(:@required, false)
         runs_object = adapter.build_runs_object(true)
         expect(runs_object['results'].empty?).to eq(true)
       end
+    end
+  end
+
+  describe 'salus_passed?' do
+    it 'salus_passed? should return false if enforced scanner failed' do
+      sarif_file = 'spec/fixtures/sarifs/diff/sarif_2.json'
+      sarif = JSON.parse(File.read(sarif_file))
+      passed = Sarif::BaseSarif.salus_passed?(sarif)
+      expect(passed).to be_falsey
+    end
+
+    it 'salus_passed? should return true if non-enforced scanner failed' do
+      sarif_file = 'spec/fixtures/sarifs/diff/sarif_1_non_enforced.json'
+      sarif = JSON.parse(File.read(sarif_file))
+      passed = Sarif::BaseSarif.salus_passed?(sarif)
+      expect(passed).to be_truthy
+    end
+
+    it 'salus_passed? should return true if all scanners passed' do
+      sarif_file = 'spec/fixtures/sarifs/diff/sarif_all_passed.json'
+      sarif = JSON.parse(File.read(sarif_file))
+      passed = Sarif::BaseSarif.salus_passed?(sarif)
+      expect(passed).to be_truthy
+    end
+  end
+
+  describe 'full sarif diff' do
+    it 'diff should have 0 vul with exec success if old sarif includes all vuls in new sarif' do
+      # old sarif includes all vuls in new sarif
+      # expected_diff has 0 rule/result for each scanner
+      #               executionSuccessful for scanner updated to true
+      old_sarif_file = 'spec/fixtures/sarifs/diff/sarif_2.json'
+      new_sarif_file = 'spec/fixtures/sarifs/diff/sarif_1.json'
+      diff_file = 'spec/fixtures/sarifs/diff/sarif_1_2.json'
+      old_sarif = JSON.parse(File.read(old_sarif_file))
+      new_sarif = JSON.parse(File.read(new_sarif_file))
+      diff = Sarif::BaseSarif.report_diff(new_sarif, old_sarif)
+
+      expect { Sarif::SarifReport.validate_sarif(diff) }.not_to raise_error
+      expected_diff = JSON.parse(File.read(diff_file))
+      expect(expected_diff).to eq(diff)
+    end
+
+    it 'diff should include vuls in new sarif that are not in old sarif' do
+      # new sarif has 20+ BundleAudit vuls and Brakeman vul
+      # old sarif has 2 BundleAudit vuls that are in new sarif, and no Brakeman vul
+      # expect diff has the Brakeman vul in new sarif
+      #                 and the BundleAudit vuls in new sarif, except the 2 in old sarif
+      old_sarif_file = 'spec/fixtures/sarifs/diff/sarif_1.json'
+      new_sarif_file = 'spec/fixtures/sarifs/diff/sarif_2.json'
+      diff_file = 'spec/fixtures/sarifs/diff/sarif_2_1.json'
+      old_sarif = JSON.parse(File.read(old_sarif_file))
+      new_sarif = JSON.parse(File.read(new_sarif_file))
+      diff = Sarif::BaseSarif.report_diff(new_sarif, old_sarif)
+
+      expect { Sarif::SarifReport.validate_sarif(diff) }.not_to raise_error
+      expected_diff = JSON.parse(File.read(diff_file))
+      expect(expected_diff).to eq(diff)
+    end
+
+    it 'diff should be sarif with no vuls if new sarif == old sarif and old sarif has vuls' do
+      old_sarif_file = 'spec/fixtures/sarifs/diff/sarif_1.json'
+      new_sarif_file = old_sarif_file
+      diff_file = 'spec/fixtures/sarifs/diff/sarif_1_2.json'
+      old_sarif = JSON.parse(File.read(old_sarif_file))
+      new_sarif = JSON.parse(File.read(new_sarif_file))
+      diff = Sarif::BaseSarif.report_diff(new_sarif, old_sarif)
+
+      expect { Sarif::SarifReport.validate_sarif(diff) }.not_to raise_error
+      expected_diff = JSON.parse(File.read(diff_file))
+      expect(expected_diff).to eq(diff)
+    end
+
+    it 'diff should be same as new sarif if new sarif == old sarif and old sarif has no vuls' do
+      old_sarif_file = 'spec/fixtures/sarifs/diff/sarif_1_2.json'
+      new_sarif_file = old_sarif_file
+      diff_file = old_sarif_file
+      old_sarif = JSON.parse(File.read(old_sarif_file))
+      new_sarif = JSON.parse(File.read(new_sarif_file))
+      diff = Sarif::BaseSarif.report_diff(new_sarif, old_sarif)
+
+      expect { Sarif::SarifReport.validate_sarif(diff) }.not_to raise_error
+      expected_diff = JSON.parse(File.read(diff_file))
+      expect(expected_diff).to eq(diff)
+    end
+
+    it 'diff should be same as new sarif if everything passed in new sarif' do
+      # if everything passed in new sarif but old sarif has vuls
+      # then diff should be the same as new sarif
+      old_sarif_file = 'spec/fixtures/sarifs/diff/sarif_1.json' # has vuls
+      new_sarif_file = 'spec/fixtures/sarifs/diff/sarif_succ.json' # everything passed
+      old_sarif = JSON.parse(File.read(old_sarif_file))
+      new_sarif = JSON.parse(File.read(new_sarif_file))
+      diff = Sarif::BaseSarif.report_diff(new_sarif, old_sarif)
+
+      expect { Sarif::SarifReport.validate_sarif(diff) }.not_to raise_error
+      expect(new_sarif).to eq(diff)
+    end
+
+    it 'diff should include vuls with same id but different artifact locations' do
+      old_sarif_file = 'spec/fixtures/sarifs/diff/sarif_3.json'
+      new_sarif_file = 'spec/fixtures/sarifs/diff/sarif_1.json'
+      diff_file = 'spec/fixtures/sarifs/diff/sarif_1_3.json'
+      old_sarif = JSON.parse(File.read(old_sarif_file))
+      new_sarif = JSON.parse(File.read(new_sarif_file))
+      diff = Sarif::BaseSarif.report_diff(new_sarif, old_sarif)
+
+      expect { Sarif::SarifReport.validate_sarif(diff) }.not_to raise_error
+      expected_diff = JSON.parse(File.read(diff_file))
+      expect(expected_diff).to eq(diff)
     end
   end
 end

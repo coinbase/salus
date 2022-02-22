@@ -1,0 +1,176 @@
+{
+  "$schema": "https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/schemas/sarif-schema-2.1.0",
+  "runs": [
+    {
+      "conversion": {
+        "tool": {
+          "driver": {
+            "informationUri": "https://github.com/coinbase/salus",
+            "name": "Salus"
+          }
+        }
+      },
+      "invocations": [
+        {
+          "executionSuccessful": false
+        }
+      ],
+      "originalUriBaseIds": {
+        "SRCROOT": {
+          "uri": "spec/fixtures/semgrep",
+          "uriBaseId": "PROJECTROOT"
+        }
+      },
+      "results": [
+        {
+          "level": "error",
+          "locations": [
+
+          ],
+          "message": {
+            "text": "Useless equality test.. Pattern 1 == $X is required but not found."
+          },
+          "ruleId": "Required Pattern Not Found",
+          "ruleIndex": 1
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/spec/fixtures/semgrep/invalid/unparsable_py.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startColumn": 12,
+                  "startLine": 3
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Could not parse unparsable_py.py as python"
+          },
+          "ruleId": "SourceParseError",
+          "ruleIndex": 0
+        }
+      ],
+      "tool": {
+        "driver": {
+          "informationUri": "https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md",
+          "name": "Semgrep",
+          "properties": {
+            "salusEnforced": true
+          },
+          "rules": [
+            {
+              "fullDescription": {
+                "text": "Could not parse unparsable_py.py as python"
+              },
+              "help": {
+                "markdown": "[More info](https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md).",
+                "text": "More info: https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md"
+              },
+              "helpUri": "https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md",
+              "id": "SourceParseError",
+              "messageStrings": {
+              },
+              "name": "SourceParseError"
+            },
+            {
+              "fullDescription": {
+                "text": "Required Pattern Not Found"
+              },
+              "help": {
+                "markdown": "[More info](https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md).",
+                "text": "More info: https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md"
+              },
+              "helpUri": "https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md",
+              "id": "Required Pattern Not Found",
+              "messageStrings": {
+              },
+              "name": "Required Pattern Not Found"
+            }
+          ],
+          "version": "0.62.0"
+        }
+      }
+    },
+    {
+      "conversion": {
+        "tool": {
+          "driver": {
+            "informationUri": "https://github.com/coinbase/salus",
+            "name": "Salus"
+          }
+        }
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ],
+      "originalUriBaseIds": {
+        "SRCROOT": {
+          "uri": "spec/fixtures/bundle_audit/no_cves",
+          "uriBaseId": "PROJECTROOT"
+        }
+      },
+      "results": [
+
+      ],
+      "tool": {
+        "driver": {
+          "informationUri": "https://github.com/rubysec/bundler-audit/",
+          "name": "BundleAudit",
+          "properties": {
+            "salusEnforced": false
+          },
+          "rules": [
+
+          ],
+          "version": "0.8.0"
+        }
+      }
+    },
+    {
+      "conversion": {
+        "tool": {
+          "driver": {
+            "informationUri": "https://github.com/coinbase/salus",
+            "name": "Salus"
+          }
+        }
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ],
+      "originalUriBaseIds": {
+        "SRCROOT": {
+          "uri": "spec/fixtures/python/python_project_no_vulns",
+          "uriBaseId": "PROJECTROOT"
+        }
+      },
+      "results": [
+
+      ],
+      "tool": {
+        "driver": {
+          "informationUri": "https://github.com/PyCQA/bandit",
+          "name": "Bandit",
+          "properties": {
+            "salusEnforced": false
+          },
+          "rules": [
+
+          ],
+          "version": "1.6.2"
+        }
+      }
+    }
+  ],
+  "version": "2.1.0"
+}

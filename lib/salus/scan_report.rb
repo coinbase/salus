@@ -1,13 +1,13 @@
 require 'json'
 require 'salus/formatting'
-
 module Salus
   class ScanReport
     include Formatting
 
-    attr_reader :scanner_name, :running_time, :errors, :version
+    attr_reader :scanner_name, :running_time, :errors, :version, :repository,
+                :custom_failure_message
 
-    def initialize(scanner_name, custom_failure_message: nil)
+    def initialize(scanner_name, custom_failure_message: nil, repository: nil)
       @scanner_name = scanner_name
       @passed = nil
       @running_time = nil
@@ -16,6 +16,8 @@ module Salus
       @warn = {}
       @errors = []
       @custom_failure_message = custom_failure_message
+      @repository = repository # Salus::Repo used to track what this scan report
+      # is being ran against.  Needed for recusive scanning
     end
 
     def add_version(scanner_version)
@@ -129,13 +131,49 @@ module Salus
       output
     end
 
+    ##
+    # Merge! will combine results from another scan report from the same scanner.
+    # Run times are summed.  Logs and errors are appedned.  Warn/info hashes are merged.
+    # Passed is logically ANDed.  If the scan_report passed to the method has a
+    # custom_failure_method that one is adopted.
+    #
+    # @param [Salus::ScanReport] scan_report The scan report to merge into self
+    # @returns [Salus::ScanReport]
+    def merge!(scan_report)
+      h = scan_report.to_h
+
+      if @scanner_name != scan_report.scanner_name
+        raise 'Unable to merge scan reports from different scanners'
+      end
+
+      if !@running_time.nil? || !scan_report.running_time.nil?
+        @running_time ||= 0
+        @running_time += scan_report.running_time || 0
+      end
+
+      if !@logs.nil? || h.key?(:logs)
+        @logs ||= ""
+        @logs += h[:logs]&.to_s
+      end
+
+      @passed &= scan_report.passed?
+      @warn.merge!(h[:warn]) if !@warn.empty? || !h[:warn].empty?
+      @info.merge!(h[:info]) if !@info.empty? || !h[:info].empty?
+      @errors += h[:errors]
+
+      if !scan_report.custom_failure_message.nil?
+        @custom_failure_message = scan_report.custom_failure_message
+      end
+      self
+    end
+
     private
 
     def render_banner(use_colors:)
       status = passed? ? 'PASSED' : 'FAILED'
       status = colorize(status, (passed? ? :green : :red)) if use_colors
 
-      version_str = @version.empty? ? @version : " v#{@version}"
+      version_str = !@version.present? ? "" : " v#{@version}"
       banner = "==== #{@scanner_name}#{version_str}: #{status}"
       banner += " in #{@running_time}s" if @running_time
 

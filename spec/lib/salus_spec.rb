@@ -117,35 +117,168 @@ describe Salus::CLI do
       end
     end
 
+    context 'With --sarif_diff_full' do
+      it 'Should ouput full sarif diff of two files' do
+        Dir.chdir('spec/fixtures/sarifs/diff') do
+          args = ['sarif_1.json', 'sarif_2.json']
+          ENV['SALUS_CONFIGURATION'] = 'file:///salus_diff.yaml'
+          exit_status = Salus.scan(quiet: true, repo_path: '.', sarif_diff_full: args)
+          diff_file = 'diff_1_2.json'
+          expect(File).to exist(diff_file)
+          diff_sarif = JSON.parse(File.read(diff_file))
+          expected_sarif = JSON.parse(File.read('sarif_1_2.json'))
+          expect(expected_sarif).to eq(diff_sarif)
+          expect(exit_status).to eq(Salus::EXIT_SUCCESS) # no vuls in sarif
+        end
+      end
+
+      it 'Should report error if invalid arguments used for option' do
+        Dir.chdir('spec/fixtures/sarifs/diff') do
+          expect do # two sarifs should be provided for sarif diff
+            Salus.scan(quiet: true, repo_path: '.', sarif_diff_full: ['sarif_1.json'])
+          end.to raise_error
+
+          expect do # file names should not be outside repo dir
+            args = ['sarif_1.json', '../sarif_2.json']
+            Salus.scan(quiet: true, repo_path: '.', sarif_diff_full: args)
+          end.to raise_error
+        end
+      end
+
+      it 'Vuls should have appropriate rule indexes' do
+        Dir.chdir('spec/fixtures/sarifs/diff') do
+          diff_args = ['v3.json', 'v4.json']
+          ENV['SALUS_CONFIGURATION'] = 'file:///salus_diff_3_4.yaml'
+          exit_status = Salus.scan(quiet: true, repo_path: '.', sarif_diff_full: diff_args)
+          diff_file = 'diff_3_4.json'
+          expect(File).to exist(diff_file)
+          diff_sarif = JSON.parse(File.read(diff_file))
+          gosec_info = diff_sarif['runs'].select do |run|
+            run['tool']['driver']['name'] == 'Gosec'
+          end[0]
+          expect(gosec_info['results'].size).to eq(2)
+          expect(gosec_info['results'][0]['ruleId']).to eq('G101')
+          expect(gosec_info['results'][1]['ruleId']).to eq('G101')
+
+          # same ruleIndex for same vul id
+          expect(gosec_info['results'][0]['ruleIndex']).to eq(0)
+          expect(gosec_info['results'][1]['ruleIndex']).to eq(0)
+          expect(exit_status).to eq(Salus::EXIT_FAILURE)
+
+          # different vul ids do not have the same ruleIndex
+          bundle_info = diff_sarif['runs'].select do |run|
+            run['tool']['driver']['name'] == 'BundleAudit'
+          end[0]
+          expect(bundle_info['results'].size).to eq(3)
+          rule_id = bundle_info['results'].map { |r| r['ruleId'] }
+          expect(rule_id.uniq.size).to eq(3)
+          rule_index = bundle_info['results'].map { |r| r['ruleIndex'] }
+          expect(rule_index).to eq([0, 1, 2])
+        end
+      end
+    end
+
+    context 'With --sarif_diff_full and --git_diff' do
+      it 'Should still only output new vuls if --git-diff not used' do
+        Dir.chdir('spec/fixtures/sarifs/diff') do
+          # without --git-diff, Gosec has a vul
+          args = ['v2.json', 'v1.json']
+          ENV['SALUS_CONFIGURATION'] = 'file:///salus_diff.yaml'
+          exit_status = Salus.scan(quiet: true, repo_path: '.', sarif_diff_full: args)
+          diff_file = 'diff_1_2.json'
+          expect(File).to exist(diff_file)
+          diff_sarif = JSON.parse(File.read(diff_file))
+          gosec_info = diff_sarif['runs'].select do |run|
+            run['tool']['driver']['name'] == 'Gosec'
+          end[0]
+          expect(gosec_info['results'].size).to eq(1)
+          expect(gosec_info['results'][0]['ruleId']).to eq('G101')
+          expect(exit_status).to eq(Salus::EXIT_FAILURE)
+        end
+      end
+
+      it 'Should output new vuls that are in git diff' do
+        Dir.chdir('spec/fixtures/sarifs/diff') do
+          # with --git-diff, Gosec still fails because vul exists in git diff
+          diff_args = ['v2.json', 'v1.json']
+          ENV['SALUS_CONFIGURATION'] = 'file:///salus_diff.yaml'
+          exit_status = Salus.scan(quiet: true, repo_path: '.', sarif_diff_full: diff_args,
+                     git_diff: 'v1_diff.txt')
+          diff_file = 'diff_1_2.json'
+          expect(File).to exist(diff_file)
+          diff_sarif = JSON.parse(File.read(diff_file))
+          gosec_info = diff_sarif['runs'].select do |run|
+            run['tool']['driver']['name'] == 'Gosec'
+          end[0]
+          expect(gosec_info['invocations'][0]['executionSuccessful']).to be(false)
+          expect(gosec_info['results'].size).to eq(1)
+          expect(gosec_info['results'][0]['ruleId']).to eq('G101')
+          expect(exit_status).to eq(Salus::EXIT_FAILURE)
+        end
+      end
+
+      it 'Should work with vuls from different scanners' do
+        Dir.chdir('spec/fixtures/sarifs/diff2') do
+          # with --git-diff, Gosec still fails because vul exists in git diff
+          diff_args = ['report_sarif_pr.json', 'report_sarif_master.json']
+          ENV['SALUS_CONFIGURATION'] = 'file:///salus.yaml'
+          exit_status = Salus.scan(quiet: true, repo_path: '.', sarif_diff_full: diff_args,
+                     git_diff: 'git_diff_master_pr.txt')
+          diff_file = 'sarif_diff.json'
+          expect(File).to exist(diff_file)
+          diff_sarif = JSON.parse(File.read(diff_file))
+          expected_diff_sarif = JSON.parse(File.read('expected_sarif_diff.json'))
+          expect(diff_sarif).to eq(expected_diff_sarif)
+          expect(exit_status).to eq(Salus::EXIT_FAILURE)
+          remove_file(diff_file)
+        end
+      end
+
+      it 'Should not output vulns caused by added comment' do
+        Dir.chdir('spec/fixtures/sarifs/diff3') do
+          # with --git-diff, Gosec still fails because vul exists in git diff
+          diff_args = ['report_sarif_pr.json', 'report_sarif_master.json']
+          ENV['SALUS_CONFIGURATION'] = 'file:///salus.yaml'
+          exit_status = Salus.scan(quiet: true, repo_path: '.', sarif_diff_full: diff_args,
+                     git_diff: 'git_diff_master_pr.txt')
+          diff_file = 'sarif_diff.json'
+          expect(File).to exist(diff_file)
+          diff_sarif = JSON.parse(File.read(diff_file))
+          expected_diff_sarif = JSON.parse(File.read('expected_sarif_diff.json'))
+          expect(diff_sarif).to eq(expected_diff_sarif)
+          expect(exit_status).to eq(Salus::EXIT_FAILURE)
+          remove_file(diff_file)
+        end
+      end
+    end
+
     context 'With --filter_sarif' do
       it 'Should ouput filtered vulnerabilities' do
-        Dir.chdir('spec/fixtures/gosec/multiple_vulns2') do
-          ENV['SALUS_CONFIGURATION'] = 'file:///salus.yaml'
-          Salus.scan(quiet: true, repo_path: '.', filter_sarif: 'filter.sarif')
-          diff_file = 'salus_sarif_diff.json' # filtered results
-          sarif_file = 'out.sarif' # full results
-          expect(File).to exist(diff_file)
-          expect(File).to exist(sarif_file)
+        dir = 'spec/fixtures/gosec/multiple_vulns2'
+        ENV['SALUS_CONFIGURATION'] = "file:///salus.yaml"
+        Salus.scan(quiet: true, repo_path: dir, filter_sarif: "filter.sarif")
+        diff_file = "#{dir}/salus_sarif_diff.json" # filtered results
+        sarif_file = "#{dir}/out.sarif" # full results
+        expect(File).to exist(diff_file)
+        expect(File).to exist(sarif_file)
 
-          data = JSON.parse(File.read(sarif_file))
-          results = data['runs'][0]['results']
-          rule_ids = results.map { |r| r['ruleId'] }.sort
-          expect(rule_ids).to eq(%w[G101 G104 G401 G501])
+        data = JSON.parse(File.read(sarif_file))
 
-          # filtered result file should include both new rules and project build info
-          data = JSON.parse(File.read(diff_file))
+        results = data['runs'][0]['results']
+        rule_ids = results.map { |r| r['ruleId'] }.sort
 
-          expect(data['report_type']).to eq('salus_sarif_diff')
+        expect(rule_ids).to eq(%w[G101 G104 G401 G501])
 
-          rule_ids = data['filtered_results'].map { |r| r['ruleId'] }.sort
+        # filtered result file should include both new rules and project build info
+        data = JSON.parse(File.read(diff_file))
+        expect(data['report_type']).to eq('salus_sarif_diff')
+        rule_ids = data['filtered_results'].map { |r| r['ruleId'] }.sort
 
-          expect(rule_ids).to eq(%w[G401 G501])
-
-          builds = data['builds']
-          expect(builds['org']).to eq('my_org')
-          expect(builds['project']).to eq('my_repo')
-          expect(builds['url']).to eq('http://buildkite/builds/123456')
-        end
+        expect(rule_ids).to eq(%w[G401 G501])
+        builds = data['builds']
+        expect(builds['org']).to eq('my_org')
+        expect(builds['project']).to eq('my_repo')
+        expect(builds['url']).to eq('http://buildkite/builds/123456')
       end
     end
 

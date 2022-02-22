@@ -1,8 +1,21 @@
 {
-  "version": "2.11.14",
+  "version": "2.17.0",
   "passed": true,
-  "running_time": 0.0,
+  "running_time": 0.35,
   "scans": {
+    "RepoNotEmpty": {
+      "scanner_name": "RepoNotEmpty",
+      "version": "",
+      "passed": true,
+      "running_time": 0.01,
+      "warn": {
+      },
+      "info": {
+      },
+      "errors": [
+
+      ]
+    },
     "PatternSearch": {
       "scanner_name": "PatternSearch",
       "version": "0.9.0",
@@ -22,22 +35,9 @@
 
       ]
     },
-    "RepoNotEmpty": {
-      "scanner_name": "RepoNotEmpty",
-      "version": "",
-      "passed": true,
-      "running_time": 0.0,
-      "warn": {
-      },
-      "info": {
-      },
-      "errors": [
-
-      ]
-    },
     "Semgrep": {
       "scanner_name": "Semgrep",
-      "version": "0.60.0",
+      "version": "0.62.0",
       "passed": true,
       "running_time": 0.0,
       "warn": {
@@ -64,15 +64,22 @@
       "Brakeman",
       "BundleAudit",
       "CargoAudit",
+      "GoVersionScanner",
       "Gosec",
       "NPMAudit",
+      "NPMPackageScanner",
       "PatternSearch",
       "RepoNotEmpty",
       "ReportGoDep",
+      "ReportGradleDeps",
       "ReportNodeModules",
+      "ReportPodfileLock",
+      "ReportPomXml",
       "ReportPythonModules",
       "ReportRubyGems",
       "ReportRustCrates",
+      "ReportSwiftDeps",
+      "RubyVersionScanner",
       "Semgrep",
       "YarnAudit"
     ],
@@ -104,11 +111,19 @@
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
+      "GoVersionScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
       "Gosec": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
       "NPMAudit": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "NPMPackageScanner": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
@@ -124,7 +139,19 @@
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
+      "ReportGradleDeps": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
       "ReportNodeModules": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportPodfileLock": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportPomXml": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
@@ -137,6 +164,14 @@
         "scanner_timeout_s": 0
       },
       "ReportRustCrates": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportSwiftDeps": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "RubyVersionScanner": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },

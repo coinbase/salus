@@ -16,17 +16,27 @@ module Salus
                 :custom_info,
                 :report_uris,
                 :builds,
-                :active_scanners,
                 :enforced_scanners,
                 :scanner_configs
 
-    # Dynamically get all Scanner classes
-    ABSTRACT_SCANNERS = %i[Base NodeAudit].freeze
-    SCANNERS = Salus::Scanners.constants
+    attr_accessor :active_scanners
+
+    ABSTRACT_SCANNERS = %i[Base NodeAudit LanguageVersion PackageVersion].freeze
+
+    PACKAGE_VERSION_SCANNERS = Salus::Scanners::PackageVersion.constants
+      .reject { |klass| ABSTRACT_SCANNERS.include?(klass) }
+      .map { |klass| [klass.to_s, Salus::Scanners::PackageVersion.const_get(klass)] }
+    # Dynamically get all Scanners for language version checking
+    LANGUAGE_VERSION_SCANNERS = Salus::Scanners::LanguageVersion.constants
+      .reject { |klass| ABSTRACT_SCANNERS.include?(klass) }
+      .map { |klass| [klass.to_s, Salus::Scanners::LanguageVersion.const_get(klass)] }
+
+    # Dynamically get all other Scanner classes
+    OTHER_SCANNERS = Salus::Scanners.constants
       .reject { |klass| ABSTRACT_SCANNERS.include?(klass) }
       .map { |klass| [klass.to_s, Salus::Scanners.const_get(klass)] }
-      .sort
-      .to_h
+
+    SCANNERS = (PACKAGE_VERSION_SCANNERS + LANGUAGE_VERSION_SCANNERS + OTHER_SCANNERS).sort.to_h
       .freeze
 
     # This is the base configuration file, and we merge all other configuration
@@ -67,9 +77,8 @@ module Salus
 
       # Apply any config filters the user has defined
       final_config = apply_config_filters(final_config)
-
       # Parse and store configuration.
-      @active_scanners   = all_none_some(SCANNERS.keys, final_config['active_scanners'])
+      @active_scanners = all_none_some(SCANNERS.keys, final_config['active_scanners'])
       @enforced_scanners = all_none_some(SCANNERS.keys, final_config['enforced_scanners'])
       @scanner_configs   = final_config['scanner_configs'] || {}
       @project_name      = final_config['project_name']&.to_s
@@ -162,6 +171,9 @@ module Salus
     def apply_default_scanner_config!
       SCANNERS.each_key do |scanner|
         @scanner_configs[scanner] ||= {}
+        if @scanner_configs[scanner].is_a? Array
+          bugsnag_notify("@scanner_configs[scanner] is Array: #{@scanner_configs[scanner].inspect}")
+        end
         @scanner_configs[scanner] = DEFAULT_SCANNER_CONFIG
           .dup
           .deep_merge!(@scanner_configs[scanner])
