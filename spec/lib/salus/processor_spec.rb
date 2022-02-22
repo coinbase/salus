@@ -72,7 +72,7 @@ describe Salus::Processor do
       end
 
       it 'should expand the repo path provided' do
-        processor = Salus::Processor.new()
+        processor = Salus::Processor.new
         path = processor.instance_variable_get(:@repo_path)
         # The default repo path is relative ./repo, we are expecting
         # the path to be expanded
