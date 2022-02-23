@@ -37,7 +37,7 @@
     },
     "Semgrep": {
       "scanner_name": "Semgrep",
-      "version": "0.62.0",
+      "version": "0.75.0",
       "passed": true,
       "running_time": 0.0,
       "warn": {

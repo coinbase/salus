@@ -7,6 +7,10 @@ RSpec::Matchers.define :match_report_json do |expected|
     json['scans'].each do |scanner, _|
       json['scans'][scanner].delete(key)
     end
+    # Avoid comparing relative and absolute file:///
+    json['config']['report_uris'].each_with_index do |endpoint, index|
+      json['config']['report_uris'][index].delete('uri') if endpoint['uri'] =~ /^file:/
+    end
     json
   end
 
@@ -277,7 +281,7 @@ describe Salus::Processor do
         processor.scan_project
         processor.export_report
 
-        expect(File.read(local_uri)).to match_report_json(expected_report)
+        expect(File.read(local_uri)).to match_report_json(expected_report, true)
 
         # remove report file that was generated from Salus execution
         remove_file(local_uri)
