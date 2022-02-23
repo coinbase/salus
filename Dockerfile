@@ -38,12 +38,13 @@ ENV GRADLE_HOME="/opt/gradle/gradle-7.3.3"
 ENV PATH="${GRADLE_HOME}/bin:${PATH}"
 
 ### Rust
-ENV RUST_VERSION 1.53.0
+ENV RUST_VERSION 1.58.1
 ENV RUST_TARBALL_FILE rust-${RUST_VERSION}-x86_64-unknown-linux-gnu.tar.gz
 ENV RUST_DOWNLOAD_URL https://static.rust-lang.org/dist/${RUST_TARBALL_FILE}
 ENV CARGO_AUDIT_VERSION 0.14.0
 
 # We'll download rust manually to ensure signing looks good
+# rust-pgp-signature: https://forge.rust-lang.org/infra/other-installation-methods.html
 COPY build/rust-key.gpg.asc build/rust-pgp-signature.asc ./
 RUN curl -fsSL "$RUST_DOWNLOAD_URL" -o rust.tar.gz \
   && gpg --import rust-key.gpg.asc \

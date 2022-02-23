@@ -13,58 +13,25 @@ describe Cyclonedx::ReportGradleDeps do
       expect(components_object.size).to eq(61)
       expect(components_object).to include(
         {
-          "bom-ref": "pkg:gradle/org.apache.kafka/connect-transforms",
           type: "library",
-          group: "",
+          "group": "",
           name: "org.apache.kafka/connect-transforms",
           version: "2.6.2",
-          purl: "pkg:gradle/org.apache.kafka/connect-transforms",
-          properties: [
-            {
-              key: "source",
-              value: ""
-            },
-            {
-              key: "dependency_file",
-              value: "build.gradle"
-            }
-          ]
+          purl: "pkg:gradle/org.apache.kafka/connect-transforms"
         },
         {
-          "bom-ref": "pkg:gradle/org.apache.kafka/connect-api",
           type: "library",
-          group: "",
+          "group": "",
           name: "org.apache.kafka/connect-api",
           version: "2.6.2",
-          purl: "pkg:gradle/org.apache.kafka/connect-api",
-          properties: [
-            {
-              key: "source",
-              value: ""
-            },
-            {
-              key: "dependency_file",
-              value: "build.gradle"
-            }
-          ]
+          purl: "pkg:gradle/org.apache.kafka/connect-api"
         },
         {
-          "bom-ref": "pkg:gradle/org.apache.kafka/kafka-clients",
           type: "library",
-          group: "",
+          "group": "",
           name: "org.apache.kafka/kafka-clients",
           version: "2.6.2",
-          purl: "pkg:gradle/org.apache.kafka/kafka-clients",
-          properties: [
-            {
-              key: "source",
-              value: ""
-            },
-            {
-              key: "dependency_file",
-              value: "build.gradle"
-            }
-          ]
+          purl: "pkg:gradle/org.apache.kafka/kafka-clients"
         }
       )
     end
