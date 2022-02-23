@@ -96,7 +96,7 @@ module Salus::Scanners::OSV
                 "Version Detected": version_found.to_s,
                 "Patched Version": fixed || EMPTY_STRING,
                 "ID": m.fetch("aliases", [m.fetch("id", [])]).join(", ").to_s,
-                "Summary": m.dig("details").to_s.strip,
+                "Summary": m.fetch("summary", m.dig("details")).to_s.strip,
                 "References": m.fetch("references", []).collect do |p|
                                 p["url"].to_s
                               end.join(", "),
