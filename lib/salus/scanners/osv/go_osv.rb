@@ -62,7 +62,7 @@ module Salus::Scanners::OSV
       end
 
       # Match dependencies found with advisories from Github
-      if osv_vulnerabilities.empty?
+      if osv_vulnerabilities.nil?
         msg = "No vulnerabilities found to compare."
         return report_error("GoOSV: #{msg}")
       else

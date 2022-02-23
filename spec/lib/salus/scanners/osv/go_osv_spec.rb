@@ -18,6 +18,7 @@ describe Salus::Scanners::OSV::GoOSV do
         )
         .to_return(
           status: 200,
+          body: [],
           headers: {}
         )
     end
