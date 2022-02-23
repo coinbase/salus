@@ -44,6 +44,7 @@ ENV RUST_DOWNLOAD_URL https://static.rust-lang.org/dist/${RUST_TARBALL_FILE}
 ENV CARGO_AUDIT_VERSION 0.14.0
 
 # We'll download rust manually to ensure signing looks good
+# rust-pgp-signature: https://forge.rust-lang.org/infra/other-installation-methods.html
 COPY build/rust-key.gpg.asc build/rust-pgp-signature.asc ./
 RUN curl -fsSL "$RUST_DOWNLOAD_URL" -o rust.tar.gz \
   && gpg --import rust-key.gpg.asc \
