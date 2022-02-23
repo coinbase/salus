@@ -29,30 +29,23 @@ module Salus::Scanners::OSV
     end
 
     def osv_url
-      # Bucket location contains individual entries in OSVF.
-      url = if @repository.go_sum_present? || @repository.go_mod_present?
-              "https://osv-vulnerabilities.storage.googleapis.com/"\
-              "Go/all.zip"
-            elsif @repository.requirements_txt_present?
-              "https://osv-vulnerabilities.storage.googleapis.com/"\
-              "PyPI/all.zip"
-            elsif @repository.pom_xml_present?
-              "https://osv-vulnerabilities.storage.googleapis.com/"\
-              "Maven/all.zip"
-            elsif @repository.gemfile_present? || @repository.gemfile_lock_present?
-              "https://osv-vulnerabilities.storage.googleapis.com/"\
-              "RubyGems/all.zip"
-            elsif @repository.cargo_present? || @repository.cargo_lock_present?
-              "https://osv-vulnerabilities.storage.googleapis.com/"\
-              "crates.io/all.zip"
-            elsif @repository.package_lock_json_present?
-              "https://osv-vulnerabilities.storage.googleapis.com/"\
-              "npm/all.zip"
-            end
+      # Bucket contains individual entries for an ecosystem in OSVF.
+      return osv_url_for("Go") if @repository.go_sum_present? || @repository.go_mod_present?
+      return osv_url_for("PyPI") if @repository.requirements_txt_present?
+      if @repository.gemfile_present? || @repository.gemfile_lock_present?
+        return osv_url_for("RubyGems")
+      end
+      return osv_url_for("Maven") if @repository.pom_xml_present?
+    end
+
+    def osv_url_for(package)
+      url = "https://osv-vulnerabilities.storage.googleapis.com/"\
+      + package + "/all.zip"
       URI(url)
     end
 
     def fetch_vulnerabilities
+      results = []
       all_vulnerabilities_found = []
 
       # Flatten vulnerabilities by package name.
@@ -73,7 +66,12 @@ module Salus::Scanners::OSV
         end
       end
 
-      all_vulnerabilities_found
+      # Group vulnerabilities by aliases / id
+      grouped = all_vulnerabilities_found.group_by { |d| d.fetch("aliases", [d.fetch("id")]) }
+      grouped.each do |_key, value|
+        results.append(value[0])
+      end
+      results
     rescue StandardError => e
       report_error("Connection to OSV failed: #{e}")
     rescue ApiTooManyRequestsError

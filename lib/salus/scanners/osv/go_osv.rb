@@ -6,6 +6,8 @@ module Salus::Scanners::OSV
     class SemDependency < Gem::Dependency; end
 
     EMPTY_STRING = "Not Found".freeze
+    DEFAULT_SOURCE = "https://osv.dev/list".freeze
+    DEFAULT_SEVERITY = "LOW".freeze
 
     def should_run?
       @repository.go_sum_present?
@@ -60,7 +62,7 @@ module Salus::Scanners::OSV
       end
 
       # Match dependencies found with advisories from Github
-      if osv_vulnerabilities.nil?
+      if osv_vulnerabilities.empty?
         msg = "No vulnerabilities found to compare."
         return report_error("GoOSV: #{msg}")
       else
@@ -92,13 +94,14 @@ module Salus::Scanners::OSV
                                "Package": m.dig("package", "name").to_s,
                 "Vulnerable Version": version_ranges[0]["introduced"].to_s,
                 "Version Detected": version_found.to_s,
-                "Patched Version": fixed.to_s || EMPTY_STRING,
+                "Patched Version": fixed || EMPTY_STRING,
                 "ID": m.fetch("aliases", [m.fetch("id", [])]).join(", ").to_s,
                 "Summary": m.dig("details").to_s.strip,
                 "References": m.fetch("references", []).collect do |p|
                                 p["url"].to_s
                               end.join(", "),
-                "Source":  m.dig("database_specific", "url").to_s
+                "Source":  m.dig("database_specific", "url") || DEFAULT_SOURCE,
+                "Severity": DEFAULT_SEVERITY
                              })
             end
           end
