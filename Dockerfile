@@ -39,21 +39,19 @@ ENV PATH="${GRADLE_HOME}/bin:${PATH}"
 
 ### Rust
 ENV RUST_VERSION 1.58.1
+# Add a .sha256 to the rust download URL to get this sha
+ENV RUST_VERSION_SHA256 4fac6df9ea49447682c333e57945bebf4f9f45ec7b08849e507a64b2ccd5f8fb
 ENV RUST_TARBALL_FILE rust-${RUST_VERSION}-x86_64-unknown-linux-gnu.tar.gz
 ENV RUST_DOWNLOAD_URL https://static.rust-lang.org/dist/${RUST_TARBALL_FILE}
 ENV CARGO_AUDIT_VERSION 0.14.0
 
-# We'll download rust manually to ensure signing looks good
-# rust-pgp-signature: https://forge.rust-lang.org/infra/other-installation-methods.html
-COPY build/rust-key.gpg.asc build/rust-pgp-signature.asc ./
+# Download manually and verify the hash
 RUN curl -fsSL "$RUST_DOWNLOAD_URL" -o rust.tar.gz \
-  && gpg --import rust-key.gpg.asc \
-  && gpg --verify rust-pgp-signature.asc rust.tar.gz \
+  && echo "$RUST_VERSION_SHA256 rust.tar.gz" | sha256sum -c - \
   && mkdir rust \
   && tar -C rust -xf rust.tar.gz --strip-components=1 \
   && rust/install.sh \
   && cargo install cargo-audit --version "$CARGO_AUDIT_VERSION"
-
 
 ### Python
 # Install bandit, python static code scanner
