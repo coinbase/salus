@@ -23,16 +23,17 @@ module Salus::Scanners::OSV
         line = line.strip
         next if line.empty?
 
-        go_sum_regex = %r{(?<namespace>(.*)(?!/go\.mod))/(?<name>[^\s]*)
-        (\s)*(?<version>(.*))(\s)*h1:(?<checksum>(.*))}x
-
-        if (matches = line.match(go_sum_regex))
-          all_dependencies.append(
-            {
-              "name": (matches[:namespace] + "/" + matches[:name]).to_s,
-              "version": (matches[:version]).to_s.gsub(%r{/go.mod}, '').strip
-            }
-          )
+        parts = line.split
+        if parts.length > 2
+          name = parts[0]
+          version = parts[1]
+          if version[0] == 'v'
+            version = version[1..-1].to_s.gsub('/go.mod', '').gsub('+incompatible', '')
+          end
+          all_dependencies.append({
+                                    "name": name,
+                                    "version": version
+                                  })
         end
       end
 
@@ -41,7 +42,7 @@ module Salus::Scanners::OSV
       # https://go.dev/ref/mod#minimal-version-selection
       all_dependencies.each do |deps|
         lib = deps[:name]
-        version = deps[:version].to_s.gsub('v', '').gsub('+incompatible', '')
+        version = deps[:version]
         if chosen_dependencies.key?(lib)
           chosen_dependencies[lib] = version if SemVersion.new(version) >
             SemVersion.new(chosen_dependencies[lib])
@@ -58,12 +59,14 @@ module Salus::Scanners::OSV
       dependencies = find_dependencies
       if dependencies.empty?
         msg = "Failed to parse any dependencies from the project."
+        bugsnag_notify("GoOSV: #{msg}")
         return report_error("GoOSV: #{msg}")
       end
 
       # Match dependencies found with advisories from Github
       if osv_vulnerabilities.nil?
         msg = "No vulnerabilities found to compare."
+        bugsnag_notify("GoOSV: #{msg}")
         return report_error("GoOSV: #{msg}")
       else
         dependencies.each do |lib, version|
@@ -92,16 +95,16 @@ module Salus::Scanners::OSV
             if vulnerable_flag
               results.append({
                                "Package": m.dig("package", "name").to_s,
-                "Vulnerable Version": version_ranges[0]["introduced"].to_s,
-                "Version Detected": version_found.to_s,
-                "Patched Version": fixed || EMPTY_STRING,
-                "ID": m.fetch("aliases", [m.fetch("id", [])]).join(", ").to_s,
-                "Summary": m.fetch("summary", m.dig("details")).to_s.strip,
-                "References": m.fetch("references", []).collect do |p|
-                                p["url"].to_s
-                              end.join(", "),
-                "Source":  m.dig("database_specific", "url") || DEFAULT_SOURCE,
-                "Severity": DEFAULT_SEVERITY
+                              "Vulnerable Version": version_ranges[0]["introduced"].to_s,
+                              "Version Detected": version_found.to_s,
+                              "Patched Version": fixed || EMPTY_STRING,
+                              "ID": m.fetch("aliases", [m.fetch("id", [])]).join(", ").to_s,
+                              "Summary": m.fetch("summary", m.dig("details")).to_s.strip,
+                              "References": m.fetch("references", []).collect do |p|
+                                              p["url"].to_s
+                                            end.join(", "),
+                              "Source":  m.dig("database_specific", "url") || DEFAULT_SOURCE,
+                              "Severity": DEFAULT_SEVERITY
                              })
             end
           end

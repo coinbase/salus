@@ -6,36 +6,28 @@ require 'net/http'
 
 module Salus::Scanners::OSV
   class Base < Salus::Scanners::Base
-    class ApiTooManyRequestsError < StandardError; end
-
-    MAX_RETRIES = 2
-
     def run
-      raise NoMethodError
+      raise NoMethodError, 'implement in subclass'
     end
 
     def should_run?
-      raise NoMethodError
+      raise NoMethodError, 'implement in subclass'
     end
 
     private
-
-    def name
-      self.class.name.sub('Salus::Scanners::OSV::', '')
-    end
 
     def osv_vulnerabilities
       @osv_vulnerabilities ||= fetch_vulnerabilities
     end
 
     def osv_url
+      urls = []
       # Bucket contains individual entries for an ecosystem in OSVF.
-      return osv_url_for("Go") if @repository.go_sum_present? || @repository.go_mod_present?
-      return osv_url_for("PyPI") if @repository.requirements_txt_present?
-      if @repository.gemfile_present? || @repository.gemfile_lock_present?
-        return osv_url_for("RubyGems")
-      end
-      return osv_url_for("Maven") if @repository.pom_xml_present?
+      urls.append(osv_url_for("Go")) if @repository.go_sum_present? || @repository.go_mod_present?
+      urls.append(osv_url_for("PyPI")) if @repository.requirements_txt_present?
+      urls.append(osv_url_for("Maven")) if @repository.pom_xml_present?
+
+      urls
     end
 
     def osv_url_for(package)
@@ -73,20 +65,45 @@ module Salus::Scanners::OSV
       end
       results
     rescue StandardError => e
+      bugsnag_notify(e.message)
       report_error("Connection to OSV failed: #{e}")
-    rescue ApiTooManyRequestsError
-      if retries < MAX_RETRIES
-        retries += 1
-        max_sleep_seconds = Float(2**retries)
-        sleep rand(0..max_sleep_seconds)
-        retry
-      else
-        msg = "Too many requests to OSV url after " \
-        "#{retries} retries"
-        report_error("Connection to OSV failed: #{msg}")
-      end
     end
 
+    # Converts list of affected into multiple documents
+    # doc_1 -> doc_2
+    # doc_1 = [{
+    #     "id": "Sample-1",
+    #     "affected": [
+    #       {
+    #         "package": {
+    #           "name": "sample-dep-1",
+    #         },
+    #         "ecosystem_specific": {}
+    #       },
+    #       {
+    #         "package": {
+    #           "name": "sample-dep-2",
+    #         },
+    #         "ecosystem_specific": {}
+    #       }
+    #     ],
+    #   }]
+    # doc_2 = [{
+    #     "id": "Sample-1",
+    #         "package": {
+    #           "name": "sample-dep-1",
+    #         },
+    #         "ecosystem_specific": {}
+    #     },
+    #     {
+    #         "id": "Sample-1",
+    #         "package": {
+    #           "name": "sample-dep-2",
+    #         },
+    #         "ecosystem_specific": {}
+    #       }
+    #     ],
+    #   }]
     def flatten_by_affected(doc)
       flattened_results = []
       affected_list = doc.delete("affected")
@@ -110,17 +127,20 @@ module Salus::Scanners::OSV
 
     def send_request
       vulns = []
-      response = Net::HTTP.get_response(osv_url)
-      if response.is_a?(Net::HTTPSuccess)
-        # Response is returned as a zip with a list of JSON files. This loop
-        # combines JSON files into an array.
-        Zip::InputStream.open(StringIO.new(response.body)) do |io|
-          vulns.append(JSON.parse(io.read)) while io.get_next_entry
+      urls = osv_url
+      raise(StandardError, msg) if urls.empty?
+
+      urls.each do |url|
+        response = Net::HTTP.get_response(url)
+        if response.is_a?(Net::HTTPSuccess)
+          # Response is returned as a zip with a list of JSON files. This loop
+          # combines JSON files into an array.
+          Zip::InputStream.open(StringIO.new(response.body)) do |io|
+            vulns.append(JSON.parse(io.read)) while io.get_next_entry
+          end
+        else
+          raise(StandardError, response.body)
         end
-      elsif response.is_a?(Net::HTTPTooManyRequests)
-        raise(ApiTooManyRequestsError, response.body)
-      else
-        raise(StandardError, response.body)
       end
       msg = "Connection to OSV failed: No data returned from GCS bucket."
       raise(StandardError, msg) if vulns.empty?
