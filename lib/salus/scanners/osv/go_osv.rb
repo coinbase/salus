@@ -27,12 +27,11 @@ module Salus::Scanners::OSV
         if parts.length > 2
           name = parts[0]
           version = parts[1]
-          if version[0] == 'v'
-            version = version[1..-1].to_s.gsub('/go.mod', '').gsub('+incompatible', '')
-          end
+          version.slice!(0) if version[0] == 'v'
           all_dependencies.append({
                                     "name": name,
-                                    "version": version
+                                    "version": version.to_s.gsub('/go.mod', '')
+                                    .gsub('+incompatible', '')
                                   })
         end
       end
@@ -42,7 +41,7 @@ module Salus::Scanners::OSV
       # https://go.dev/ref/mod#minimal-version-selection
       all_dependencies.each do |deps|
         lib = deps[:name]
-        version = deps[:version]
+        version = deps[:version].to_s.gsub('v', '').gsub('+incompatible', '')
         if chosen_dependencies.key?(lib)
           chosen_dependencies[lib] = version if SemVersion.new(version) >
             SemVersion.new(chosen_dependencies[lib])
@@ -77,12 +76,14 @@ module Salus::Scanners::OSV
             version_ranges = m["ranges"][0]["events"]
             version_found = SemVersion.new(version)
             vulnerable_flag = false
+            # If version range length is 1, then no fix available.
             if version_ranges.length == 1
               introduced = SemVersion.new(
                 version_ranges[0]["introduced"].to_s.gsub('v', '').gsub('+incompatible', '')
               )
               version_found = SemVersion.new(version)
               vulnerable_flag = true if version_found >= introduced
+            # If version range length is 2, then both introduced and fixed are available.
             elsif version_ranges.length == 2
               introduced = SemVersion.new(
                 version_ranges[0]["introduced"].to_s.gsub('v', '').gsub('+incompatible', '')
@@ -92,19 +93,20 @@ module Salus::Scanners::OSV
               )
               vulnerable_flag = true if version_found >= introduced && version_found < fixed
             end
+
             if vulnerable_flag
               results.append({
-                               "Package": m.dig("package", "name").to_s,
-                              "Vulnerable Version": version_ranges[0]["introduced"].to_s,
-                              "Version Detected": version_found.to_s,
-                              "Patched Version": fixed || EMPTY_STRING,
-                              "ID": m.fetch("aliases", [m.fetch("id", [])]).join(", ").to_s,
-                              "Summary": m.fetch("summary", m.dig("details")).to_s.strip,
-                              "References": m.fetch("references", []).collect do |p|
-                                              p["url"].to_s
-                                            end.join(", "),
-                              "Source":  m.dig("database_specific", "url") || DEFAULT_SOURCE,
-                              "Severity": DEFAULT_SEVERITY
+                               "Package": m.dig("package", "name"),
+                "Vulnerable Version": version_ranges[0]["introduced"],
+                "Version Detected": version_found,
+                "Patched Version": fixed || EMPTY_STRING,
+                "ID": m.fetch("aliases", [m.fetch("id", [])])[0],
+                "Summary": m.fetch("summary", m.dig("details")).strip,
+                "References": m.fetch("references", []).collect do |p|
+                                p["url"]
+                              end.join(", "),
+                "Source":  m.dig("database_specific", "url") || DEFAULT_SOURCE,
+                "Severity": DEFAULT_SEVERITY
                              })
             end
           end

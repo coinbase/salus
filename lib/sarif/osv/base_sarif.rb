@@ -6,6 +6,7 @@ module Sarif::OSV
 
     OSV_URI = "https://osv.dev/list".freeze
     SEVERITY = "LOW".freeze
+    SCANNER_NAME = "OSV Scanner".freeze
 
     def initialize(scan_report, repo_path = nil)
       super(scan_report, {}, repo_path)
@@ -32,8 +33,8 @@ module Sarif::OSV
 
     def parse_issue(issue)
       parsed_issue = {
-        id: issue['ID'].to_s,
-          name: issue['Summary'].to_s,
+        id: issue['ID'],
+          name: SCANNER_NAME,
           level: SEVERITY,
           details: issue['Summary'].to_s,
           messageStrings: { "package": { "text": issue['Package'].to_s },
@@ -43,7 +44,7 @@ module Sarif::OSV
                            "vulnerable_versions": {
                              "text": issue['Vulnerable Version'].to_s
                            } },
-          properties: { 'severity': SEVERITY.to_s },
+          properties: { 'severity': SEVERITY },
           uri: OSV_URI.to_s,
           help_url: issue["Source"].to_s
       }

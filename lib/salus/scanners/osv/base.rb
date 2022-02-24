@@ -14,6 +14,10 @@ module Salus::Scanners::OSV
       raise NoMethodError, 'implement in subclass'
     end
 
+    def name
+      self.class.name.sub('Salus::Scanners::OSV::', '')
+    end
+
     private
 
     def osv_vulnerabilities
@@ -59,6 +63,11 @@ module Salus::Scanners::OSV
       end
 
       # Group vulnerabilities by aliases / id
+      # Picks 1 item from each grouped item
+      # { "ID-1": [
+      #      {"name": "sample-dep-1"},  {"name": "sample-dep-1"}
+      #    ]
+      # }
       grouped = all_vulnerabilities_found.group_by { |d| d.fetch("aliases", [d.fetch("id")]) }
       grouped.each do |_key, value|
         results.append(value[0])
@@ -120,7 +129,7 @@ module Salus::Scanners::OSV
           raise(StandardError, response.body)
         end
       end
-      msg = "Connection to OSV failed: No data returned from GCS bucket."
+      msg = "Connection to OSV failed: No data found from GCS bucket."
       raise(StandardError, msg) if vulns.empty?
 
       vulns
