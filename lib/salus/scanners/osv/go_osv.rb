@@ -79,17 +79,17 @@ module Salus::Scanners::OSV
             # If version range length is 1, then no fix available.
             if version_ranges.length == 1
               introduced = SemVersion.new(
-                version_ranges[0]["introduced"].to_s.gsub('v', '').gsub('+incompatible', '')
+                version_ranges[0]["introduced"]
               )
               version_found = SemVersion.new(version)
               vulnerable_flag = true if version_found >= introduced
             # If version range length is 2, then both introduced and fixed are available.
             elsif version_ranges.length == 2
               introduced = SemVersion.new(
-                version_ranges[0]["introduced"].to_s.gsub('v', '').gsub('+incompatible', '')
+                version_ranges[0]["introduced"]
               )
               fixed = SemVersion.new(
-                version_ranges[1]["fixed"].to_s.gsub('v', '').gsub('+incompatible', '')
+                version_ranges[1]["fixed"]
               )
               vulnerable_flag = true if version_found >= introduced && version_found < fixed
             end
@@ -106,7 +106,7 @@ module Salus::Scanners::OSV
                                 p["url"]
                               end.join(", "),
                 "Source":  m.dig("database_specific", "url") || DEFAULT_SOURCE,
-                "Severity": DEFAULT_SEVERITY
+                "Severity": m.dig("database_specific", "severity") || DEFAULT_SEVERITY
                              })
             end
           end
