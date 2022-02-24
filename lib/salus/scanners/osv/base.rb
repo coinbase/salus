@@ -35,6 +35,10 @@ module Salus::Scanners::OSV
     end
 
     def osv_url_for(package)
+      # Approximate zip sizes
+      # Go: all.zip (478 KB) -> 1.1 MB
+      # PyPI: all.zip (3.4 MB) -> 10.9 MB
+      # Maven: all.zip (1.6 MB) -> 5.1 MB
       url = "https://osv-vulnerabilities.storage.googleapis.com/"\
       + package + "/all.zip"
       URI(url)

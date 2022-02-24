@@ -11,7 +11,7 @@ scanner_configs:
    include_dev_deps: true
 ```
 
-For now, we only support following version scanners:
+For now, we only support this config option on the following scanners:
 
 ```
   ReportNodeModules

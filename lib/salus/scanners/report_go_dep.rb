@@ -21,29 +21,23 @@ module Salus::Scanners
     end
 
     def record_dep_from_go_sum
-      go_sum_path = @repository.go_sum_path.to_s
-      dep_list = []
-
-      File.foreach(go_sum_path).each("=\n") do |line|
-        line = line.strip
-        next if line.empty?
-
-        go_sum_regex = %r{(?<namespace>(.*)(?!/go\.mod))/(?<name>[^\s]*)
-        (\s)*(?<version>(.*))(\s)*h1:(?<checksum>(.*))}x
-
-        if (matches = line.match(go_sum_regex))
-          dep_list.append(
-            {
-              "namespace" => (matches[:namespace]).to_s,
-              "name" => (matches[:name]).to_s,
-              "version" => (matches[:version]).to_s.gsub(%r{/go.mod}, '').strip,
-              "checksum" => (matches[:checksum]).to_s
-            }
-          )
-        end
+      shell_return = run_shell("bin/parse_go_sum #{@repository.go_sum_path}", chdir: nil)
+      if !shell_return.success?
+        report_error(shell_return.stderr)
+        return
       end
-      # Note references are hashes meant for packages in Gopkg.lock files
-      dep_list.each do |dependency|
+
+      dependencies = nil
+      begin
+        dependencies = JSON.parse(shell_return.stdout)
+      rescue JSON::ParserError
+        err_msg = "Could not parse JSON returned by bin/parse_go_sum's stdout!"
+        report_stderr(err_msg)
+        report_error(err_msg)
+        return
+      end
+
+      dependencies.each do |dependency|
         record_dep_package(
           namespace: dependency["namespace"],
           name: dependency["namespace"] + "/" + dependency["name"],
