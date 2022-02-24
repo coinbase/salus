@@ -3,6 +3,8 @@ module Cyclonedx
     DEFAULT_DEP_COMPONENT_TYPE = "library".freeze
     TYPE = "N/A".freeze
     UNLOCKED_DEPENDENCY_FILE = "N/A".freeze
+    SCOPE_REQUIRED = "required".freeze
+    SCOPE_OPTIONAL = "optional".freeze
 
     attr_accessor :config
 
@@ -26,39 +28,21 @@ module Cyclonedx
 
     def parse_dependency(dependency)
       component = build_component(dependency)
-      component[:properties] = build_properties(dependency)
 
       # Default to version 1.3 if no spec version is specified
       return component unless @config['spec_version'].present?
-
-      component.delete(:properties) if @config['spec_version'] == "1.2"
 
       component
     end
 
     def build_component(dependency)
       {
-        "bom-ref": package_url(dependency),
         "type": DEFAULT_DEP_COMPONENT_TYPE,
-        "group": "", # TODO: add group or domain name of the publisher
         "name": dependency[:name],
+        "group": "", # TODO: add group or domain name of the publisher
         "version": version_string(dependency),
         "purl": package_url(dependency)
       }
-    end
-
-    def build_properties(dependency)
-      [
-        {
-          "key": "source",
-          # Varies between these two values by scanner
-          "value": dependency[:source] || dependency[:reference].to_s
-        },
-        {
-          "key": "dependency_file",
-          "value": dependency[:dependency_file]
-        }
-      ]
     end
 
     def package_url(dependency)

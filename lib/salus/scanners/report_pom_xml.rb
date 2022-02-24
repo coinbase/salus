@@ -7,7 +7,7 @@ module Salus::Scanners
     UNKNOWN_VERSION = ''.freeze
 
     def run
-      shell_return = run_shell("bin/parse_pom_xml #{@repository.path_to_repo}/pom.xml", chdir: nil)
+      shell_return = run_shell("bin/parse_pom_xml #{@repository.pom_xml_path}", chdir: nil)
 
       if !shell_return.success?
         report_error(shell_return.stderr)

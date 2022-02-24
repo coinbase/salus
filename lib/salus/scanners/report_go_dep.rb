@@ -21,7 +21,7 @@ module Salus::Scanners
     end
 
     def record_dep_from_go_sum
-      go_sum_path = "#{@repository.path_to_repo}/go.sum"
+      go_sum_path = @repository.go_sum_path.to_s
       dep_list = []
 
       File.foreach(go_sum_path).each("=\n") do |line|
