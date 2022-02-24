@@ -7,6 +7,9 @@ RSpec::Matchers.define :match_report_json do |expected|
     json['scans'].each do |scanner, _|
       json['scans'][scanner].delete(key)
     end
+
+    return json unless json.dig('config', 'report_uris').nil?
+
     # Avoid comparing relative and absolute file:///
     json['config']['report_uris'].each_with_index do |endpoint, index|
       json['config']['report_uris'][index].delete('uri') if endpoint['uri'] =~ /^file:/
