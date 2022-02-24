@@ -70,40 +70,18 @@ module Salus::Scanners::OSV
     end
 
     # Converts list of affected into multiple documents
-    # doc_1 -> doc_2
-    # doc_1 = [{
-    #     "id": "Sample-1",
+    # BEFORE = [
+    #   {"id": "ID-1",
     #     "affected": [
-    #       {
-    #         "package": {
-    #           "name": "sample-dep-1",
-    #         },
-    #         "ecosystem_specific": {}
-    #       },
-    #       {
-    #         "package": {
-    #           "name": "sample-dep-2",
-    #         },
-    #         "ecosystem_specific": {}
-    #       }
-    #     ],
-    #   }]
-    # doc_2 = [{
-    #     "id": "Sample-1",
-    #         "package": {
-    #           "name": "sample-dep-1",
-    #         },
-    #         "ecosystem_specific": {}
-    #     },
-    #     {
-    #         "id": "Sample-1",
-    #         "package": {
-    #           "name": "sample-dep-2",
-    #         },
-    #         "ecosystem_specific": {}
-    #       }
-    #     ],
-    #   }]
+    #       {"package": {"name": "sample-dep-1"},"ecosystem_specific": {}},
+    #       {"package": {"name": "sample-dep-2"}, "ecosystem_specific": {}}
+    #     ]
+    #   }
+    # ]
+    # AFTER = [
+    #  {"id": "ID-1", "package": {"name": "sample-dep-1"}, "ecosystem_specific": {}},
+    #  {"id": "ID-1", "package": {"name": "sample-dep-2"}, "ecosystem_specific": {}}
+    #  ]
     def flatten_by_affected(doc)
       flattened_results = []
       affected_list = doc.delete("affected")
