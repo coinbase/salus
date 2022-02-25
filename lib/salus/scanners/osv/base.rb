@@ -73,8 +73,18 @@ module Salus::Scanners::OSV
       #    ]
       # }
       grouped = all_vulnerabilities_found.group_by { |d| d.fetch("aliases", [d.fetch("id")]) }
-      grouped.each do |_key, value|
-        results.append(value[0])
+      grouped.each do |_key, values|
+        advisory = {}
+        # Prefer picking github advisory over other sources.
+        # Github Advisory ID is of the format 'GHSA-xxx-xxx'
+        values.each do |v|
+          id_prefix = v.dig("id").split("-")
+          advisory = v if id_prefix[0] == "GHSA"
+          break
+        end
+        # If Github Advisory not found pick first value.
+        advisory = values[0] if advisory.empty?
+        results.append(advisory)
       end
       results
     rescue StandardError => e
@@ -82,7 +92,7 @@ module Salus::Scanners::OSV
       report_error("Connection to OSV failed: #{e}")
     end
 
-    # Converts list of affected into multiple documents
+    # Converts list of affected into multiple documents.
     # BEFORE = [
     #   {"id": "ID-1",
     #     "affected": [
@@ -99,7 +109,7 @@ module Salus::Scanners::OSV
       flattened_results = []
       affected_list = doc.delete("affected")
       affected_list.each do |affected|
-        flattened_doc = doc.merge(affected)
+        flattened_doc = affected.merge(doc)
         flattened_results.append(flattened_doc)
       end
       flattened_results
