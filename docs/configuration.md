@@ -46,6 +46,14 @@ project_name: "my-repo"
 # that might be used by the consumer of the Salus report.
 custom_info: "PR-123"
 
+
+# Cascade_config contains available settings to control how multiple configuration
+# files are cascaded.
+# Combine_arrays: Boolean.  Default: false.  When cascading configurations, determines if arrays are combined (with uniq applied) or if the current configuration overrides any previsouly loaded configurations (the default)
+cascade_config:
+  combine_arrays: false
+
+
 # Array[Hash[String=>String]]
 # Defines where to send Salus reports and in what format.
 #
