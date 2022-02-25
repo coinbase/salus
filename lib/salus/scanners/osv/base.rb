@@ -78,7 +78,7 @@ module Salus::Scanners::OSV
         # Prefer picking github advisory over other sources.
         # Github Advisory ID is of the format 'GHSA-xxx-xxx'
         values.each do |v|
-          id_prefix = v.dig("id").split("-")
+          id_prefix = v.fetch("id", "").split("-")
           advisory = v if id_prefix[0] == "GHSA"
           break
         end
