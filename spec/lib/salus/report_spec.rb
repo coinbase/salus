@@ -107,7 +107,7 @@ describe Salus::Report do
         report.add_scan_report(scan_report, required: true)
       end
 
-      to_h = { version: "2.17.1", passed: false,
+      to_h = { version: "2.17.2", passed: false,
         scans: {
           "DerpScanner" => { scanner_name: "DerpScanner",
                              passed: false,
@@ -262,7 +262,7 @@ describe Salus::Report do
            "\"DerpScanner\": {\n        \"errors\": [\n\n        ],\n        \"info\": {\n     "\
            "     \"asdf\": \"qwerty\"\n        },\n        \"passed\": false,\n        "\
            "\"scanner_name\": \"DerpScanner\",\n        \"warn\": {\n        }\n      }\n    "\
-           "},\n    \"version\": \"2.17.1\"\n  }\n}",
+           "},\n    \"version\": \"2.17.2\"\n  }\n}",
            headers: { 'Accept' => '*/*',
           'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
           'Content-Type' => 'application/json',
@@ -285,7 +285,7 @@ describe Salus::Report do
             "- :message: derp\n  - :message: derp\n  - :message: derp\n  - :message: derp\n  - "\
             ":message: derp\n  :passed: false\n  :project_name: eva00\n  :scans:\n    DerpScanner:"\
             "\n      :errors: []\n      :info:\n        :asdf: qwerty\n      :passed: false\n     "\
-            " :scanner_name: DerpScanner\n      :warn: {}\n  :version: 2.17.1\n",
+            " :scanner_name: DerpScanner\n      :warn: {}\n  :version: 2.17.2\n",
            headers: { 'Accept' => '*/*',
           'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
           'Content-Type' => 'text/x-yaml',
@@ -305,7 +305,7 @@ describe Salus::Report do
         report.instance_variable_set(:@config, config)
 
         stub_request(:post, "https://nerv.tk3/salus-report").with(body: "{\"foo\"=>\"bar\", \"abc"\
-          "\"=>\"def\", \"report\"=>\"==== Salus Scan v2.17.1 for eva00\\n\\n==== Salus "\
+          "\"=>\"def\", \"report\"=>\"==== Salus Scan v2.17.2 for eva00\\n\\n==== Salus "\
           "Configuration Files Used:\\n\\n  word\\n\\n\\n==== Salus Errors\\n\\n  [\\n    {\\n    "\
           "  \\\"message\\\": \\\"derp\\\"\\n    },\\n    {\\n      \\\"message\\\": \\\"derp\\"\
           "\"\\n    },\\n    {\\n      \\\"message\\\": \\\"derp\\\"\\n    },\\n    {\\n      "\
