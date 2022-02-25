@@ -132,6 +132,37 @@ describe Salus::Config do
       )
     end
 
+    it 'should replace arrays by default' do
+      config = Salus::Config.new([config_file_1, config_file_2])
+      expect(config.scanner_configs['BundleAudit']).to include(
+        'ignore' => %w[CVE-AAAA-BBBB CVE-XXXX-YYYY],
+        'failure_message' => 'Please upgrade the failing dependency.'
+      )
+
+      expect(config.enforced_scanners.to_a).to eq(%w[BundleAudit ExtraScanner])
+    end
+
+    it 'should replace arrays when configured' do
+      config_file = File.read('spec/fixtures/config/cascade_arrays_false.yaml')
+      config = Salus::Config.new([config_file_1, config_file])
+      expect(config.scanner_configs['BundleAudit']).to include(
+        'ignore' => %w[CVE-AAAA-BBBB CVE-XXXX-YYYY],
+        'failure_message' => 'Please upgrade the failing dependency.'
+      )
+
+      expect(config.enforced_scanners.to_a).to eq(%w[BundleAudit ExtraScanner])
+    end
+
+    it 'should combine arrays when configured' do
+      config_file = File.read('spec/fixtures/config/cascade_arrays.yaml')
+      config = Salus::Config.new([config_file_1, config_file])
+      expect(config.scanner_configs['BundleAudit']).to include(
+        'ignore' => %w[CVE-AAAA-BBBB CVE-XXXX-YYYY],
+        'failure_message' => 'Please upgrade the failing dependency.'
+      )
+      expect(config.enforced_scanners.to_a).to eq(%w[BundleAudit Brakeman ExtraScanner])
+    end
+
     it 'should apply default scanner config for each scanner' do
       config = Salus::Config.new([config_file_1])
       expect(config.scanner_configs.none? { |_, conf| conf['pass_on_raise'] }).to eq(true)
