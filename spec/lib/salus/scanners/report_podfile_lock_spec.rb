@@ -48,19 +48,19 @@ describe Salus::Scanners::ReportPodfileLock do
           dependency_file: 'Podfile.lock',
             name: 'boost-for-react-native',
             version: '1.63.0',
-            type: 'cocoa'
+            type: 'cocoapods'
         },
         {
           dependency_file: 'Podfile.lock',
         name: 'CocoaAsyncSocket',
         version: '7.6.5',
-        type: 'cocoa'
+        type: 'cocoapods'
         },
         {
           dependency_file: 'Podfile.lock',
             name: 'Flipper',
             version: '0.87.0',
-            type: 'cocoa'
+            type: 'cocoapods'
         }
       ]
     )

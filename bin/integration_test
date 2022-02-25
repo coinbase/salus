@@ -40,6 +40,14 @@ end
 report['running_time'] = 0.0
 report['scans'].map { |_, scan| scan['running_time'] = 0.0 }
 
+# The report path will be absolute
+if report['config']['report_uris'].first['uri'] =~ %r{repo/reports/salus_report.json$}
+  report['config']['report_uris'].first['uri'] = "file://./repo/reports/salus_report.json"
+else
+  puts "Unxpected report URI"
+  exit(1)
+end
+
 if report != expected_report
   puts("Report doesn't match expectation")
   puts("Expected:\n#{JSON.pretty_generate(expected_report)}")
