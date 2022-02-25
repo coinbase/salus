@@ -24,7 +24,7 @@ module Salus::Scanners::OSV
       @osv_vulnerabilities ||= fetch_vulnerabilities
     end
 
-    def osv_url
+    def osv_urls
       urls = []
       # Bucket contains individual entries for an ecosystem in OSVF.
       urls.append(osv_url_for("Go")) if @repository.go_sum_present? || @repository.go_mod_present?
@@ -45,12 +45,10 @@ module Salus::Scanners::OSV
     end
 
     def fetch_vulnerabilities
-      results = []
-      all_vulnerabilities_found = []
-
       # Flatten vulnerabilities by package name.
       all_vulnerabilities = send_request
 
+      all_vulnerabilities_found = []
       all_vulnerabilities.each do |vulnerability|
         all_vulnerabilities_found.append(flatten_by_affected(vulnerability))
       end
@@ -72,6 +70,7 @@ module Salus::Scanners::OSV
       #      {"name": "sample-dep-1"},  {"name": "sample-dep-1"}
       #    ]
       # }
+      results = []
       grouped = all_vulnerabilities_found.group_by { |d| d.fetch("aliases", [d.fetch("id")]) }
       grouped.each do |_key, values|
         advisory = {}
@@ -127,10 +126,10 @@ module Salus::Scanners::OSV
     end
 
     def send_request
-      vulns = []
-      urls = osv_url
+      urls = osv_urls
       raise(StandardError, msg) if urls.empty?
 
+      vulns = []
       urls.each do |url|
         response = Net::HTTP.get_response(url)
         if response.is_a?(Net::HTTPSuccess)

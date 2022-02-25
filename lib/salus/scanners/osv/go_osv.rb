@@ -21,6 +21,7 @@ module Salus::Scanners::OSV
         return report_error("GoOSV: #{msg}")
       end
 
+      results = []
       if osv_vulnerabilities.nil?
         msg = "No vulnerabilities found to compare."
         bugsnag_notify("GoOSV: #{msg}")
@@ -29,12 +30,10 @@ module Salus::Scanners::OSV
         results = match_vulnerable_dependencies(dependencies)
       end
       # Report scanner status
-      if results.length.positive?
-        report_failure
-        log(format_vulns(results))
-      else
-        report_success
-      end
+      return report_success if results.empty?
+
+      report_failure
+      log(format_vulns(results))
     end
 
     # Find dependencies from the project
@@ -61,9 +60,9 @@ module Salus::Scanners::OSV
       # Pick specific version of dependencies
       # If multiple versions of dependencies are found then pick the max version to mimic MVS
       # https://go.dev/ref/mod#minimal-version-selection
-      all_dependencies.each do |deps|
-        lib = deps["namespace"] + "/" + deps["name"]
-        version = deps["version"].to_s.gsub('v', '').gsub('+incompatible', '')
+      all_dependencies.each do |dependency|
+        lib = dependency["namespace"] + "/" + dependency["name"]
+        version = dependency["version"].to_s.gsub('v', '').gsub('+incompatible', '')
         if dependencies.key?(lib)
           dependencies[lib] = version if SemVersion.new(version) >
             SemVersion.new(dependencies[lib])
