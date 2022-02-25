@@ -7,6 +7,13 @@ RSpec::Matchers.define :match_report_json do |expected|
     json['scans'].each do |scanner, _|
       json['scans'][scanner].delete(key)
     end
+
+    return json if json.dig('config', 'report_uris').nil?
+
+    # Avoid comparing relative and absolute file:///
+    json['config']['report_uris'].each_with_index do |endpoint, index|
+      json['config']['report_uris'][index].delete('uri') if endpoint['uri'] =~ /^file:/
+    end
     json
   end
 
@@ -69,6 +76,14 @@ describe Salus::Processor do
           )
           expect(reported_config[:enforced_scanners]).to include('BundleAudit', 'Brakeman')
         end
+      end
+
+      it 'should expand the repo path provided' do
+        processor = Salus::Processor.new
+        path = processor.instance_variable_get(:@repo_path)
+        # The default repo path is relative ./repo, we are expecting
+        # the path to be expanded
+        expect(path).not_to eq(Salus::DEFAULT_REPO_PATH)
       end
 
       it 'fetch_config_file should return nil if file content is not hash' do
@@ -269,7 +284,7 @@ describe Salus::Processor do
         processor.scan_project
         processor.export_report
 
-        expect(File.read(local_uri)).to match_report_json(expected_report)
+        expect(File.read(local_uri)).to match_report_json(expected_report, true)
 
         # remove report file that was generated from Salus execution
         remove_file(local_uri)
