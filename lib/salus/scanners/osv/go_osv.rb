@@ -15,10 +15,12 @@ module Salus::Scanners::OSV
 
     def run
       dependencies = find_dependencies
+
       if dependencies.empty?
-        msg = "Failed to parse any dependencies from the project."
-        bugsnag_notify("GoOSV: #{msg}")
-        return report_error("GoOSV: #{msg}")
+        err_msg = "GoOSV: Failed to parse any dependencies from the project."
+        report_stderr(err_msg)
+        report_error(err_msg)
+        return
       end
 
       results = []
@@ -50,7 +52,7 @@ module Salus::Scanners::OSV
       begin
         all_dependencies = JSON.parse(shell_return.stdout)
       rescue JSON::ParserError
-        err_msg = "Could not parse JSON returned by bin/parse_go_sum's stdout!"
+        err_msg = "GoOSV: Could not parse JSON returned by bin/parse_go_sum's stdout!"
         report_stderr(err_msg)
         report_error(err_msg)
         return
@@ -73,6 +75,29 @@ module Salus::Scanners::OSV
       dependencies
     end
 
+    # Match if dependency version found is in the range of
+    # vulnerable dependency found.
+    def version_matching(version_found, version_ranges)
+      vulnerable_flag = false
+      # If version range length is 1, then no fix available.
+      if version_ranges.length == 1
+        introduced = SemVersion.new(
+          version_ranges[0]["introduced"]
+        )
+        vulnerable_flag = true if version_found >= introduced
+      # If version range length is 2, then both introduced and fixed are available.
+      elsif version_ranges.length == 2
+        introduced = SemVersion.new(
+          version_ranges[0]["introduced"]
+        )
+        fixed = SemVersion.new(
+          version_ranges[1]["fixed"]
+        )
+        vulnerable_flag = true if version_found >= introduced && version_found < fixed
+      end
+      vulnerable_flag
+    end
+
     # Compare vulnerabilities found with dependencies found
     # and return vulnerable dependencies
     def match_vulnerable_dependencies(dependencies)
@@ -85,31 +110,18 @@ module Salus::Scanners::OSV
         package_matches.each do |m|
           version_ranges = m["ranges"][0]["events"]
           version_found = SemVersion.new(version)
-          vulnerable_flag = false
-          # If version range length is 1, then no fix available.
-          if version_ranges.length == 1
-            introduced = SemVersion.new(
-              version_ranges[0]["introduced"]
-            )
-            version_found = SemVersion.new(version)
-            vulnerable_flag = true if version_found >= introduced
-          # If version range length is 2, then both introduced and fixed are available.
-          elsif version_ranges.length == 2
-            introduced = SemVersion.new(
-              version_ranges[0]["introduced"]
-            )
-            fixed = SemVersion.new(
-              version_ranges[1]["fixed"]
-            )
-            vulnerable_flag = true if version_found >= introduced && version_found < fixed
-          end
+          vulnerable_flag = version_matching(version_found, version_ranges)
 
           if vulnerable_flag
             results.append({
                              "Package": m.dig("package", "name"),
               "Vulnerable Version": version_ranges[0]["introduced"],
-              "Version Detected": version_found,
-              "Patched Version": fixed || EMPTY_STRING,
+              "Version Detected": version,
+              "Patched Version": if version_ranges.length == 2
+                                   version_ranges[1]["fixed"]
+                                 else
+                                   EMPTY_STRING
+                                 end,
               "ID": m.fetch("aliases", [m.fetch("id", [])])[0],
               "Summary": m.fetch("summary", m.dig("details")).strip,
               "References": m.fetch("references", []).collect do |p|

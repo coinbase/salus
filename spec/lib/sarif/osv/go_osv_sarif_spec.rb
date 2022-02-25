@@ -39,17 +39,18 @@ describe Sarif::GoOSVSarif do
           { "text" => "Due to improper HTTP header santization, a malicious user can spoof their" },
         "help" => {
           "markdown" => "[More info]"\
-            "(https://go.googlesource.com/vulndb/+/refs/heads/master/reports/GO-2021-0052.yaml).",
-        "text" => "More info: https://go.googlesource.com/vulndb/+/refs/heads/master/reports/GO-2021-0052.yaml"
+          "(https://go.googlesource.com/vulndb/+/refs/heads/master/reports/GO-2021-0052.yaml).",
+            "text" => "More info: https://go.googlesource.com/vulndb/+/refs/heads/master/reports/GO-2021-0052.yaml"
+
         },
         "helpUri" =>
         "https://go.googlesource.com/vulndb/+/refs/heads/master/reports/GO-2021-0052.yaml",
         "id" => "CVE-2020-28483", "messageStrings" =>
         { "package" => { "text" => "github.com/gin-gonic/gin" },
-        "patched_versions" => { "text" => "1.6.3.pre.0.20210406033725.pre.bfc8ca285eb4" },
+        "patched_versions" => { "text" => "1.6.3-0.20210406033725-bfc8ca285eb4" },
         "severity" => { "text" => "LOW" },
-        "title" =>
-        { "text" => "Due to improper HTTP header santization, a malicious user can spoof their" },
+        "title" => { "text" =>
+          "Due to improper HTTP header santization, a malicious user can spoof their" },
         "vulnerable_versions" => { "text" => "0" } }, "name" => "GoOSV" }
       )
 
@@ -82,6 +83,7 @@ describe Sarif::GoOSVSarif do
       report.add_scan_report(scanner.report, required: false)
       report_object = JSON.parse(report.to_sarif)['runs'][0]
       expect(report_object['results'].length).to eq(0)
+
       expect(report_object['invocations'][0]['executionSuccessful']).to eq(true)
     end
   end

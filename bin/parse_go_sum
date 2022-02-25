@@ -2,13 +2,7 @@
 
 require 'json'
 
-parsed_file = nil
-begin
-  parsed_file = File.read(ARGV[0])
-rescue StandardError
-  warn 'Unable to read and parse go.sum file'
-  exit(1)
-end
+parsed_file = File.read(ARGV[0])
 
 dependencies = []
 
