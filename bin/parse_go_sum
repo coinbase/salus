@@ -13,6 +13,9 @@ end
 dependencies = []
 
 parsed_file.each_line do |line|
+  # Split on space
+  # Example - github.com/google/go-cmp v0.5.3/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
+  # Validate 3 parts - name, version and checksum
   parts = line.split
   if parts.length == 3
     names = parts[0].split("/")
