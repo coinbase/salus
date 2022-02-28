@@ -8,6 +8,7 @@ module Salus::Scanners::OSV
     EMPTY_STRING = "Not Found".freeze
     DEFAULT_SOURCE = "https://osv.dev/list".freeze
     DEFAULT_SEVERITY = "LOW".freeze
+    GITHUB_DATABASE_STRING = "Github Advisory Database".freeze
 
     def should_run?
       @repository.go_sum_present?
@@ -29,7 +30,16 @@ module Salus::Scanners::OSV
         bugsnag_notify("GoOSV: #{msg}")
         return report_error("GoOSV: #{msg}")
       else
-        results = match_vulnerable_dependencies(dependencies)
+        # Fetch vulnerable dependencies.
+        # Dedupe and select Github Advisory over other sources if available.
+        grouped = match_vulnerable_dependencies(dependencies).group_by { |d| d[:ID] }
+        grouped.each do |_key, values|
+          vuln = {}
+          values.each do |v|
+            vuln = v if v[:Database] == GITHUB_DATABASE_STRING
+          end
+          results.append(vuln.empty? ? values[0] : vuln)
+        end
       end
       # Report scanner status
       return report_success if results.empty?
@@ -40,7 +50,6 @@ module Salus::Scanners::OSV
 
     # Find dependencies from the project
     def find_dependencies
-      # Return a map of dependency name and versions used by the project
       shell_return = run_shell("bin/parse_go_sum #{@repository.go_sum_path}", chdir: nil)
 
       if !shell_return.success?
@@ -122,7 +131,8 @@ module Salus::Scanners::OSV
                                  else
                                    EMPTY_STRING
                                  end,
-              "ID": m.fetch("aliases", [m.fetch("id", [])])[0],
+              "ID": m.fetch("aliases", [m.fetch("id")])[0],
+              "Database": m.fetch("database"),
               "Summary": m.fetch("summary", m.dig("details")).strip,
               "References": m.fetch("references", []).collect do |p|
                               p["url"]
@@ -133,6 +143,7 @@ module Salus::Scanners::OSV
           end
         end
       end
+
       results
     end
   end

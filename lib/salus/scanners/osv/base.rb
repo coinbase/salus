@@ -6,6 +6,14 @@ require 'net/http'
 
 module Salus::Scanners::OSV
   class Base < Salus::Scanners::Base
+    DATABASE_STRING_MAPPING = {
+      "GHSA" => "Github Advisory Database",
+      "PYSEC" => "Python Packaging Advisory Database",
+      "GO" => "Go Vulnerability Database",
+      "RUSTSEC" => "RustSec Advisory Database",
+      "default" => "Open Source Vulnerabilitiy"
+    }.freeze
+
     def run
       raise NoMethodError, 'implement in subclass'
     end
@@ -26,15 +34,16 @@ module Salus::Scanners::OSV
 
     def osv_urls
       urls = []
-      # Bucket contains individual entries for an ecosystem in OSVF.
       urls.append(osv_url_for("Go")) if @repository.go_sum_present? || @repository.go_mod_present?
       urls.append(osv_url_for("PyPI")) if @repository.requirements_txt_present?
-      urls.append(osv_url_for("Maven")) if @repository.pom_xml_present?
+      urls.append(osv_url_for("Maven")) if @repository.pom_xml_present? ||
+        @repository.build_gradle_present?
 
       urls
     end
 
     def osv_url_for(package)
+      # zip contains individual entries for an ecosystem in OSV format.
       # Approximate zip sizes
       # Go: all.zip (478 KB) -> 1.1 MB
       # PyPI: all.zip (3.4 MB) -> 10.9 MB
@@ -64,28 +73,16 @@ module Salus::Scanners::OSV
         end
       end
 
-      # Group vulnerabilities by aliases / id
-      # Picks 1 item from each grouped item
-      # { "ID-1": [
-      #      {"name": "sample-dep-1"},  {"name": "sample-dep-1"}
-      #    ]
-      # }
-      results = []
-      grouped = all_vulnerabilities_found.group_by { |d| d.fetch("aliases", [d.fetch("id")]) }
-      grouped.each do |_key, values|
-        advisory = {}
-        # Prefer picking github advisory over other sources.
-        # Github Advisory ID is of the format 'GHSA-xxx-xxx'
-        values.each do |v|
-          id_prefix = v.fetch("id", "").split("-")
-          advisory = v if id_prefix[0] == "GHSA"
-          break
-        end
-        # If Github Advisory not found pick first value.
-        advisory = values[0] if advisory.empty?
-        results.append(advisory)
+      # Add database field for identifying sources.
+      all_vulnerabilities_found.each do |vulnerability|
+        prefix = vulnerability.fetch("id", "").split("-")[0]
+        vulnerability["database"] = DATABASE_STRING_MAPPING.fetch(
+          prefix,
+          DATABASE_STRING_MAPPING["default"]
+        )
       end
-      results
+
+      all_vulnerabilities_found
     rescue StandardError => e
       bugsnag_notify(e.message)
       report_error("Connection to OSV failed: #{e}")
