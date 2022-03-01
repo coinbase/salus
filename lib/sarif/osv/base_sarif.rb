@@ -14,20 +14,13 @@ module Sarif::OSV
     end
 
     def parse_scan_report!
-      logs = []
-      advisories = @scan_report.to_h.dig(:logs).split("\n\n")
-      advisories.each do |advisory|
-        doc = {}
-        document = advisory.split("\n")
-        document.each do |d|
-          key, value = d.split(":", 2)
-          doc[key] = value.to_s.strip
-        end
-        logs.append(doc)
-      end
-      return [] if logs.empty?
+      logs = @scan_report.log('')
+      return [] if logs.strip.empty?
 
-      logs
+      JSON.parse(@scan_report.to_h.dig(:logs))
+    rescue JSON::ParserError => e
+      bugsnag_notify(e.message)
+      []
     end
 
     def parse_issue(issue)

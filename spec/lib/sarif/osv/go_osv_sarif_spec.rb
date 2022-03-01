@@ -35,23 +35,35 @@ describe Sarif::GoOSVSarif do
       sarif = JSON.parse(report.to_sarif)
 
       expect(sarif['runs'][0]['tool']['driver']['rules'][0]).to include(
-        { "fullDescription" =>
-          { "text" => "Due to improper HTTP header santization, a malicious user can spoof their" },
-        "help" => {
-          "markdown" => "[More info]"\
-          "(https://go.googlesource.com/vulndb/+/refs/heads/master/reports/GO-2021-0052.yaml).",
-            "text" => "More info: https://go.googlesource.com/vulndb/+/refs/heads/master/reports/GO-2021-0052.yaml"
-
-        },
-        "helpUri" =>
-        "https://go.googlesource.com/vulndb/+/refs/heads/master/reports/GO-2021-0052.yaml",
-        "id" => "CVE-2020-28483", "messageStrings" =>
-        { "package" => { "text" => "github.com/gin-gonic/gin" },
-        "patched_versions" => { "text" => "1.6.3-0.20210406033725-bfc8ca285eb4" },
-        "severity" => { "text" => "LOW" },
-        "title" => { "text" =>
-          "Due to improper HTTP header santization, a malicious user can spoof their" },
-        "vulnerable_versions" => { "text" => "0" } }, "name" => "GoOSV" }
+        {
+          "fullDescription" => {
+            "text" => "Crash due to malformed relay protocol message"
+          },
+          "help" => {
+            "markdown" => "[More info](https://osv.dev/list).",
+             "text" => "More info: https://osv.dev/list"
+          },
+          "helpUri" => "https://osv.dev/list",
+          "id" => "CVE-2021-21404",
+          "messageStrings" => {
+            "package" => {
+              "text" => "github.com/syncthing/syncthing"
+            },
+             "patched_versions" => {
+               "text" => "1.15.0"
+             },
+             "severity" => {
+               "text" => "LOW"
+             },
+             "title" => {
+               "text" => "Crash due to malformed relay protocol message",
+             },
+             "vulnerable_versions" => {
+               "text" => "0"
+             }
+          },
+          "name" => "GoOSV"
+        }
       )
 
       expect(sarif['runs'][0]['results']).to include(
@@ -62,9 +74,9 @@ describe Sarif::GoOSVSarif do
                  { "uri" => "https://osv.dev/list", "uriBaseId" => "%SRCROOT%" } } }
           ],
             "message" => { "text" =>
-              "Due to improper HTTP header santization, a malicious user can spoof their" },
+              "Crash due to malformed relay protocol message" },
             "properties" => { "severity" => "LOW" },
-            "ruleId" => "CVE-2020-28483",
+            "ruleId" => "CVE-2021-21404",
             "ruleIndex" => 0,
             "suppressions" => [{ "kind" => "external" }] }
       )

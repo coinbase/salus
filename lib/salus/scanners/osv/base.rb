@@ -111,17 +111,6 @@ module Salus::Scanners::OSV
       flattened_results
     end
 
-    def format_vulns(vulns)
-      str = ""
-      vulns.each do |vul|
-        vul.each do |k, v|
-          str += "#{k}: #{v}\n"
-        end
-        str += "\n"
-      end
-      str
-    end
-
     def send_request
       urls = osv_urls
       raise(StandardError, msg) if urls.empty?

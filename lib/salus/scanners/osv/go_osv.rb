@@ -45,7 +45,7 @@ module Salus::Scanners::OSV
       return report_success if results.empty?
 
       report_failure
-      log(format_vulns(results))
+      log(JSON.pretty_generate(results))
     end
 
     # Find dependencies from the project

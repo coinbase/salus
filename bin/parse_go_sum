@@ -2,8 +2,12 @@
 
 require 'json'
 
-parsed_file = File.read(ARGV[0])
-
+begin
+  parsed_file = File.read(ARGV[0])
+rescue StandardError
+  warn 'Unable to read go.sum file'
+  exit(1)
+end
 dependencies = []
 
 parsed_file.each_line do |line|
