@@ -56,7 +56,7 @@ describe Sarif::GoOSVSarif do
                "text" => "LOW"
              },
              "title" => {
-               "text" => "Crash due to malformed relay protocol message",
+               "text" => "Crash due to malformed relay protocol message"
              },
              "vulnerable_versions" => {
                "text" => "0"
