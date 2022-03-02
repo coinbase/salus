@@ -24,22 +24,22 @@ module Salus::Scanners::OSV
       end
 
       @osv_vulnerabilities ||= fetch_vulnerabilities(GO_OSV_ADVISORY_URL)
-      results = []
       if @osv_vulnerabilities.nil?
         msg = "No vulnerabilities found to compare."
         bugsnag_notify("GoOSV: #{msg}")
         return report_error("GoOSV: #{msg}")
-      else
-        # Fetch vulnerable dependencies.
-        # Dedupe and select Github Advisory over other sources if available.
-        grouped = match_vulnerable_dependencies(dependencies).group_by { |d| d[:ID] }
-        grouped.each do |_key, values|
-          vuln = {}
-          values.each do |v|
-            vuln = v if v[:Database] == GITHUB_DATABASE_STRING
-          end
-          results.append(vuln.empty? ? values[0] : vuln)
+      end
+
+      # Fetch vulnerable dependencies.
+      # Dedupe and select Github Advisory over other sources if available.
+      results = []
+      grouped = match_vulnerable_dependencies(dependencies).group_by { |d| d[:ID] }
+      grouped.each do |_key, values|
+        vuln = {}
+        values.each do |v|
+          vuln = v if v[:Database] == GITHUB_DATABASE_STRING
         end
+        results.append(vuln.empty? ? values[0] : vuln)
       end
       # Report scanner status
       return report_success if results.empty?
