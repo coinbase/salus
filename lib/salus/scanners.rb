@@ -1,6 +1,6 @@
 module Salus::Scanners; end
 
-paths = ['scanners', 'scanners/language_version', 'scanners/package_version']
+paths = ['scanners', 'scanners/language_version', 'scanners/package_version', 'scanners/osv']
 paths.each do |path|
   # Sort to avoid race conditions caused by differing load orders.
   Dir.entries(File.expand_path(path, __dir__)).sort.each do |filename|
