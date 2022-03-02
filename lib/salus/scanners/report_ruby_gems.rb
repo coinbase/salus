@@ -98,6 +98,9 @@ module Salus::Scanners
       raise RubyGemsApiError, res.body unless res.is_a?(Net::HTTPSuccess)
 
       licenses = JSON.parse(res.body)['licenses']
+
+      return [] if licenses.nil? || !licenses.is_a?(Array)
+
       licenses.map { |license| spdx_license_for(license) }
     rescue RubyGemsApiError, StandardError => e
       msg = "Unable to gather license information " \
