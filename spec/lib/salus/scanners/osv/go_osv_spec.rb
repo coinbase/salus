@@ -72,11 +72,9 @@ describe Salus::Scanners::OSV::GoOSV do
       let(:fixture_path) { File.expand_path(path_str, __dir__) }
 
       it 'should fail when vulnerable dependencies are found in go.sum' do
-        stub_req_with_valid_response
         repo = Salus::Repo.new(File.join(fixture_path, 'failure_vulnerability_present'))
-
-        # stub_req_with_valid_response
         scanner = Salus::Scanners::OSV::GoOSV.new(repository: repo, config: {})
+        stub_req_with_valid_response
         scanner.run
 
         expect(scanner.report.to_h.fetch(:passed)).to eq(false)
@@ -86,9 +84,9 @@ describe Salus::Scanners::OSV::GoOSV do
         repo = Salus::Repo.new(File.join(fixture_path, 'failure_vulnerability_present'))
         config_data = YAML.load_file(File.join(fixture_path,
                                                'failure_vulnerability_present/salus.yaml'))
-        stub_req_with_valid_response
         scanner = Salus::Scanners::OSV::GoOSV.new(repository: repo,
             config: config_data["scanner_configs"]["GoOSV"])
+        stub_req_with_valid_response
         scanner.run
 
         expect(scanner.report.to_h.fetch(:passed)).to eq(true)
@@ -107,9 +105,9 @@ describe Salus::Scanners::OSV::GoOSV do
       end
 
       it 'should fail when OSV returns error' do
-        stub_req_with_400_response
         repo = Salus::Repo.new(File.join(fixture_path, 'failure_vulnerability_present'))
         scanner = Salus::Scanners::OSV::GoOSV.new(repository: repo, config: {})
+        stub_req_with_400_response
         scanner.run
 
         expect(scanner.report.to_h.fetch(:passed)).to eq(false)
@@ -134,7 +132,7 @@ describe Salus::Scanners::OSV::GoOSV do
         scanner = Salus::Scanners::OSV::GoOSV.new(repository: repo, config: {})
         stub_req_with_valid_response
         scanner.run
-        puts scanner.report.to_h
+
         expect(scanner.report.to_h.fetch(:passed)).to eq(true)
       end
     end
