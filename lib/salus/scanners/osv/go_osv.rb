@@ -7,7 +7,7 @@ module Salus::Scanners::OSV
 
     EMPTY_STRING = "Not Found".freeze
     DEFAULT_SOURCE = "https://osv.dev/list".freeze
-    DEFAULT_SEVERITY = "LOW".freeze
+    DEFAULT_SEVERITY = "MODERATE".freeze
     GITHUB_DATABASE_STRING = "Github Advisory Database".freeze
 
     def should_run?

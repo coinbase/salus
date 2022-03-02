@@ -69,7 +69,7 @@ module Salus::Scanners::OSV
         all_vulnerabilities_found.delete_if do |v|
           identifiers_found = v.fetch("aliases", []) + [v.fetch("id")]
           intersection = identifiers_found & exception_ids
-          true if intersection.length.positive?
+          intersection.length.positive?
         end
       end
 
