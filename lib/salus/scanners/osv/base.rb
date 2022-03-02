@@ -6,6 +6,8 @@ require 'net/http'
 
 module Salus::Scanners::OSV
   class Base < Salus::Scanners::Base
+    # Repo - https://github.com/google/osv
+    # Data - https://osv.dev/list
     DATABASE_STRING_MAPPING = {
       "GHSA" => "Github Advisory Database",
       "PYSEC" => "Python Packaging Advisory Database",
@@ -28,37 +30,13 @@ module Salus::Scanners::OSV
 
     private
 
-    def osv_vulnerabilities
-      @osv_vulnerabilities ||= fetch_vulnerabilities
-    end
+    def fetch_vulnerabilities(url)
+      raise(StandardError, "OSV Scanner: Empty url supplied from base class") if url.empty?
 
-    def osv_urls
-      urls = []
-      urls.append(osv_url_for("Go")) if @repository.go_sum_present? || @repository.go_mod_present?
-      urls.append(osv_url_for("PyPI")) if @repository.requirements_txt_present?
-      urls.append(osv_url_for("Maven")) if @repository.pom_xml_present? ||
-        @repository.build_gradle_present?
-
-      urls
-    end
-
-    def osv_url_for(package)
-      # zip contains individual entries for an ecosystem in OSV format.
-      # Approximate zip sizes
-      # Go: all.zip (478 KB) -> 1.1 MB
-      # PyPI: all.zip (3.4 MB) -> 10.9 MB
-      # Maven: all.zip (1.6 MB) -> 5.1 MB
-      url = "https://osv-vulnerabilities.storage.googleapis.com/"\
-      + package + "/all.zip"
-      URI(url)
-    end
-
-    def fetch_vulnerabilities
-      # Flatten vulnerabilities by package name.
-      all_vulnerabilities = send_request
-
+      all_vulnerabilities = send_request(url)
       all_vulnerabilities_found = []
       all_vulnerabilities.each do |vulnerability|
+        # Flatten vulnerabilities by package name.
         all_vulnerabilities_found.append(flatten_by_affected(vulnerability))
       end
       all_vulnerabilities_found.flatten!
@@ -111,22 +89,22 @@ module Salus::Scanners::OSV
       flattened_results
     end
 
-    def send_request
-      urls = osv_urls
-      raise(StandardError, msg) if urls.empty?
-
+    def send_request(url)
       vulns = []
-      urls.each do |url|
-        response = Net::HTTP.get_response(url)
-        if response.is_a?(Net::HTTPSuccess)
-          # Response is returned as a zip with a list of JSON files. This loop
-          # combines JSON files into an array.
-          Zip::InputStream.open(StringIO.new(response.body)) do |io|
-            vulns.append(JSON.parse(io.read)) while io.get_next_entry
-          end
-        else
-          raise(StandardError, response.body)
+      response = Net::HTTP.get_response(URI(url))
+      if response.is_a?(Net::HTTPSuccess)
+        # Response is returned as a zip with a list of JSON files. This loop
+        # combines JSON files into an array.
+        # zip contains individual entries for an ecosystem in OSV format.
+        # Approximate zip sizes
+        # Go: all.zip (478 KB) -> 1.1 MB
+        # PyPI: all.zip (3.4 MB) -> 10.9 MB
+        # Maven: all.zip (1.6 MB) -> 5.1 MB
+        Zip::InputStream.open(StringIO.new(response.body)) do |io|
+          vulns.append(JSON.parse(io.read)) while io.get_next_entry
         end
+      else
+        raise(StandardError, response.body)
       end
       msg = "Connection to OSV failed: No data found from GCS bucket."
       raise(StandardError, msg) if vulns.empty?

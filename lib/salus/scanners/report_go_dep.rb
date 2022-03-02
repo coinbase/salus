@@ -37,7 +37,7 @@ module Salus::Scanners
         return
       end
 
-      dependencies.each do |dependency|
+      dependencies["parsed"].each do |dependency|
         record_dep_package(
           namespace: dependency["namespace"],
           name: dependency["namespace"] + "/" + dependency["name"],

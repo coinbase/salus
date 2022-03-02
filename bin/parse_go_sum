@@ -8,7 +8,11 @@ rescue StandardError
   warn 'Unable to read go.sum file'
   exit(1)
 end
-dependencies = []
+
+dependencies = {
+  "parsed" => [],
+  "skipped" => []
+}
 
 parsed_file.each_line do |line|
   # Split on space
@@ -17,7 +21,7 @@ parsed_file.each_line do |line|
   parts = line.split
   if parts.length == 3
     names = parts[0].split("/")
-    dependencies.append(
+    dependencies["parsed"].append(
       {
         "namespace" => names[0..-2].join("/").to_s,
         "name" => names[-1].to_s,
@@ -25,6 +29,8 @@ parsed_file.each_line do |line|
         "checksum" => parts[2].to_s.gsub('h1:', '')
       }
     )
+  else
+    dependencies["skipped"].append(line)
   end
 end
 

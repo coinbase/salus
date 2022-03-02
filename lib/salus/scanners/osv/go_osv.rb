@@ -3,12 +3,12 @@ require 'salus/scanners/osv/base'
 module Salus::Scanners::OSV
   class GoOSV < Base
     class SemVersion < Gem::Version; end
-    class SemDependency < Gem::Dependency; end
 
     EMPTY_STRING = "Not Found".freeze
     DEFAULT_SOURCE = "https://osv.dev/list".freeze
     DEFAULT_SEVERITY = "MODERATE".freeze
     GITHUB_DATABASE_STRING = "Github Advisory Database".freeze
+    GO_OSV_ADVISORY_URL = "https://osv-vulnerabilities.storage.googleapis.com/Go/all.zip".freeze
 
     def should_run?
       @repository.go_sum_present?
@@ -16,7 +16,6 @@ module Salus::Scanners::OSV
 
     def run
       dependencies = find_dependencies
-
       if dependencies.empty?
         err_msg = "GoOSV: Failed to parse any dependencies from the project."
         report_stderr(err_msg)
@@ -24,8 +23,9 @@ module Salus::Scanners::OSV
         return
       end
 
+      @osv_vulnerabilities ||= fetch_vulnerabilities(GO_OSV_ADVISORY_URL)
       results = []
-      if osv_vulnerabilities.nil?
+      if @osv_vulnerabilities.nil?
         msg = "No vulnerabilities found to compare."
         bugsnag_notify("GoOSV: #{msg}")
         return report_error("GoOSV: #{msg}")
@@ -71,7 +71,7 @@ module Salus::Scanners::OSV
       # Pick specific version of dependencies
       # If multiple versions of dependencies are found then pick the max version to mimic MVS
       # https://go.dev/ref/mod#minimal-version-selection
-      all_dependencies.each do |dependency|
+      all_dependencies["parsed"].each do |dependency|
         lib = dependency["namespace"] + "/" + dependency["name"]
         version = dependency["version"].to_s.gsub('v', '').gsub('+incompatible', '')
         if dependencies.key?(lib)
@@ -112,7 +112,7 @@ module Salus::Scanners::OSV
     def match_vulnerable_dependencies(dependencies)
       results = []
       dependencies.each do |lib, version|
-        package_matches = osv_vulnerabilities.select do |v|
+        package_matches = @osv_vulnerabilities.select do |v|
           v.dig("package", "name") == lib
         end
 
