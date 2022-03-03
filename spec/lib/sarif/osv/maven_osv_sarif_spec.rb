@@ -5,7 +5,7 @@ describe Sarif::MavenOSVSarif do
   let(:osv) { "../../../../spec/fixtures/osv/maven_osv/" }
   let(:file) { File.expand_path(osv, __dir__) }
   let(:config_file) do
-    YAML.load_file("#{file}/success_vulnerability_present_excpetion_added/salus.yaml")
+    YAML.load_file("#{file}/success_vulnerability_present_exception_added/salus.yaml")
   end
   let(:scanner_config) { config_file['scanner_configs']["MavenOSV"] }
 
@@ -102,7 +102,7 @@ describe Sarif::MavenOSVSarif do
   context 'with vulnerable go project but exceptions configured' do
     let(:repo) do
       Salus::Repo.new(
-        'spec/fixtures/osv/maven_osv/success_vulnerability_present_excpetion_added'
+        'spec/fixtures/osv/maven_osv/success_vulnerability_present_exception_added'
       )
     end
 

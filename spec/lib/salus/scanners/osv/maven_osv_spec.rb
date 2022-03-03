@@ -82,9 +82,9 @@ describe Salus::Scanners::OSV::MavenOSV do
 
       it 'should pass when vulnerable dependencies found in pom.xml have exceptions configured' do
         repo = Salus::Repo.new(File.join(fixture_path,
-                                         'success_vulnerability_present_excpetion_added'))
+                                         'success_vulnerability_present_exception_added'))
         config_data = YAML.load_file(File.join(fixture_path,
-                                               'success_vulnerability_present_excpetion_added/'\
+                                               'success_vulnerability_present_exception_added/'\
                                                'salus.yaml'))
         scanner = Salus::Scanners::OSV::MavenOSV.new(repository: repo,
             config: config_data["scanner_configs"]["MavenOSV"])
