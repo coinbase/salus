@@ -23,6 +23,7 @@ if parsed_file.errors.size.positive?
 end
 
 properties = {}
+# Parse contents within each <properties> tag
 nodes = parsed_file.css('properties')
 nodes.each do |node|
   childrens = node.children
