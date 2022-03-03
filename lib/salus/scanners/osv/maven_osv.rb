@@ -26,9 +26,9 @@ module Salus::Scanners::OSV
 
       @osv_vulnerabilities ||= fetch_vulnerabilities(MAVEN_OSV_ADVISORY_URL)
       if @osv_vulnerabilities.nil?
-        msg = "No vulnerabilities found to compare."
-        bugsnag_notify("MavenOSV: #{msg}")
-        return report_error("MavenOSV: #{msg}")
+        err_msg = "No vulnerabilities found to compare."
+        bugsnag_notify("MavenOSV: #{err_msg}")
+        return report_error("MavenOSV: #{err_msg}")
       end
 
       # Fetch vulnerable dependencies.
@@ -55,7 +55,7 @@ module Salus::Scanners::OSV
     def version_matching(version, version_ranges)
       vulnerable_flag = false
 
-      # If version is of the format ${deps.version}, log it.
+      # If version is of the format '${deps.version}', log it.
       if version.count("${}a-zA-Z.") == version.length
         bugsnag_notify("MavenOSV: Found #{version} with incompatible format.")
       else
@@ -105,17 +105,17 @@ module Salus::Scanners::OSV
                 if version_matching(version, version_ranges["events"])
                   results.append({
                                    "Package": m.dig("package", "name"),
-                    "Vulnerable Version": introduced,
-                    "Version Detected": version,
-                    "Patched Version": fixed,
-                    "ID": m.fetch("aliases", [m.fetch("id", [])])[0],
-                    "Database": m.fetch("database"),
-                    "Summary": m.fetch("summary", m.dig("details")).strip,
-                    "References": m.fetch("references", []).collect do |p|
-                                    p["url"]
-                                  end.join(", "),
-                    "Source":  m.dig("database_specific", "url") || DEFAULT_SOURCE,
-                    "Severity": m.dig("database_specific", "severity") || DEFAULT_SEVERITY
+                              "Vulnerable Version": introduced,
+                              "Version Detected": version,
+                              "Patched Version": fixed,
+                              "ID": m.fetch("aliases", [m.fetch("id", [])])[0],
+                              "Database": m.fetch("database"),
+                              "Summary": m.fetch("summary", m.dig("details")).strip,
+                              "References": m.fetch("references", []).collect do |p|
+                                              p["url"]
+                                            end.join(", "),
+                              "Source":  m.dig("database_specific", "url") || DEFAULT_SOURCE,
+                              "Severity": m.dig("database_specific", "severity") || DEFAULT_SEVERITY
                                  })
                 end
               end
@@ -132,7 +132,7 @@ module Salus::Scanners::OSV
       shell_return = run_shell("bin/parse_pom_xml #{@repository.pom_xml_path}", chdir: nil)
       if !shell_return.success?
         report_error(shell_return.stderr)
-        return
+        return []
       end
 
       begin
@@ -141,7 +141,7 @@ module Salus::Scanners::OSV
         err_msg = "Could not parse JSON returned by bin/parse_pom_xml's stdout!"
         report_stderr(err_msg)
         report_error(err_msg)
-        return
+        return []
       end
 
       dependencies

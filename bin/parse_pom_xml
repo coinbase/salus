@@ -25,9 +25,9 @@ end
 properties = {}
 nodes = parsed_file.css('properties')
 nodes.each do |node|
-  children = node.children
-  children.each do |c|
-    properties["${#{c.name}}"] = c.text
+  childrens = node.children
+  childrens.each do |children|
+    properties["${#{children.name}}"] = children.text
   end
 end
 
