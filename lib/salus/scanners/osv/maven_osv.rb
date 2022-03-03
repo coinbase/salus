@@ -85,7 +85,7 @@ module Salus::Scanners::OSV
         unless dependency['version'].nil?
           version = dependency['version']
           # If version is of the format '${deps.version}', log it.
-          if version.count("${}a-zA-Z.") == version.length
+          if version.match(/\${(.*)\.version}/)
             bugsnag_notify("MavenOSV: Found #{lib}:#{version} with incompatible format.")
             break
           end
