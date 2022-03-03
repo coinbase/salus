@@ -101,7 +101,7 @@ describe Salus::Scanners::OSV::GradleOSV do
         scanner = Salus::Scanners::OSV::GradleOSV.new(repository: repo, config: {})
         stub_req_with_valid_response
         scanner.run
-        
+
         expect(scanner.report.to_h.fetch(:passed)).to eq(false)
       end
 
