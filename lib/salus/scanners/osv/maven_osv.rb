@@ -138,7 +138,7 @@ module Salus::Scanners::OSV
       begin
         dependencies = JSON.parse(shell_return.stdout)
       rescue JSON::ParserError
-        err_msg = "Could not parse JSON returned by bin/parse_pom_xml's stdout!"
+        err_msg = "MavenOSV: Could not parse JSON returned by bin/parse_pom_xml's stdout!"
         report_stderr(err_msg)
         report_error(err_msg)
         return []
