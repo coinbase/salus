@@ -84,18 +84,16 @@ module Salus::Scanners::OSV
 
         unless dependency['version'].nil?
           version = dependency['version']
+          # If version is of the format '${deps.version}', log it.
+          if version.count("${}a-zA-Z.") == version.length
+            bugsnag_notify("MavenOSV: Found #{lib}:#{version} with incompatible format.")
+            break
+          end
 
           package_matches = @osv_vulnerabilities.select do |v|
             v.dig("package", "name") == lib
           end
-
           package_matches.each do |m|
-            # If version is of the format '${deps.version}', log it.
-            if version.count("${}a-zA-Z.") == version.length
-              bugsnag_notify("MavenOSV: Found #{lib}:#{version} with incompatible format.")
-              break
-            end
-
             m["ranges"].each do |version_ranges|
               if version_ranges["type"] == "SEMVER" || version_ranges["type"] == "ECOSYSTEM"
                 introduced = version_ranges["events"][0]["introduced"]
