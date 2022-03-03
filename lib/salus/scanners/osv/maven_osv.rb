@@ -55,7 +55,7 @@ module Salus::Scanners::OSV
     def version_matching(version, version_ranges)
       vulnerable_flag = false
 
-      # If version is of the format ${mybatis.version}, log it.
+      # If version is of the format ${deps.version}, log it.
       if version.count("${}a-zA-Z.") == version.length
         bugsnag_notify("MavenOSV: Found #{version} with incompatible format.")
       else
