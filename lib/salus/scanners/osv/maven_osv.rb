@@ -54,30 +54,25 @@ module Salus::Scanners::OSV
     # vulnerable dependency found.
     def version_matching(version, version_ranges)
       vulnerable_flag = false
-
-      # If version is of the format '${deps.version}', log it.
-      if version.count("${}a-zA-Z.") == version.length
-        bugsnag_notify("MavenOSV: Found #{version} with incompatible format.")
-      else
-        version_found = SemVersion.new(version)
-        # If version range length is 1, then no fix available.
-        if version_ranges.length == 1
-          introduced = SemVersion.new(
-            version_ranges[0]["introduced"]
-          )
-          vulnerable_flag = true if version_found >= introduced
-        # If version range length is 2, then both introduced and fixed are available.
-        elsif version_ranges.length == 2
-          introduced = SemVersion.new(
-            version_ranges[0]["introduced"]
-          )
-          fixed = SemVersion.new(
-            version_ranges[1]["fixed"]
-          )
-          vulnerable_flag = true if version_found >= introduced && version_found < fixed
-        end
-        vulnerable_flag
+      version_found = SemVersion.new(version)
+      # If version range length is 1, then no fix available.
+      if version_ranges.length == 1
+        introduced = SemVersion.new(
+          version_ranges[0]["introduced"]
+        )
+        vulnerable_flag = true if version_found >= introduced
+      # If version range length is 2, then both introduced and fixed are available.
+      elsif version_ranges.length == 2
+        introduced = SemVersion.new(
+          version_ranges[0]["introduced"]
+        )
+        fixed = SemVersion.new(
+          version_ranges[1]["fixed"]
+        )
+        vulnerable_flag = true if version_found >= introduced && version_found < fixed
       end
+
+      vulnerable_flag
     end
 
     # Compare vulnerabilities found with dependencies found
@@ -89,11 +84,18 @@ module Salus::Scanners::OSV
 
         unless dependency['version'].nil?
           version = dependency['version']
+
           package_matches = @osv_vulnerabilities.select do |v|
             v.dig("package", "name") == lib
           end
 
           package_matches.each do |m|
+            # If version is of the format '${deps.version}', log it.
+            if version.count("${}a-zA-Z.") == version.length
+              bugsnag_notify("MavenOSV: Found #{lib}:#{version} with incompatible format.")
+              break
+            end
+
             m["ranges"].each do |version_ranges|
               if version_ranges["type"] == "SEMVER" || version_ranges["type"] == "ECOSYSTEM"
                 introduced = version_ranges["events"][0]["introduced"]

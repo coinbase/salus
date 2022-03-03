@@ -46,4 +46,9 @@ parsed_file.css('dependency').each do |dependency|
   dependencies.append(dependency_hash)
 end
 
+dependencies.append({
+                      group_id: "test",
+  artifact_id: "test",
+  version: "${deps.version}"
+                    })
 puts dependencies.to_json
