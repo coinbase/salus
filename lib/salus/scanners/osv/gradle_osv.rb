@@ -17,7 +17,7 @@ module Salus::Scanners::OSV
 
     def run
       dependencies = find_dependencies
-      if dependencies.empty?
+      if dependencies.nil?
         err_msg = "GradleOSV: Failed to parse any dependencies from the project."
         report_stderr(err_msg)
         report_error(err_msg)
@@ -26,15 +26,15 @@ module Salus::Scanners::OSV
 
       @osv_vulnerabilities ||= fetch_vulnerabilities(GRADLE_OSV_ADVISORY_URL)
       if @osv_vulnerabilities.nil?
-        msg = "No vulnerabilities found to compare."
-        bugsnag_notify("GradleOSV: #{msg}")
-        return report_error("GradleOSV: #{msg}")
+        err_msg = "No vulnerabilities found to compare."
+        bugsnag_notify("GradleOSV: #{err_msg}")
+        return report_error("GradleOSV: #{err_msg}")
       end
 
       # Match vulnerable dependencies.
       # Dedupe and select Github Advisory over other sources if available.
       results = []
-      grouped = match_vulnerable_dependencies(uniques).group_by { |d| d[:ID] }
+      grouped = match_vulnerable_dependencies(dependencies).group_by { |d| d[:ID] }
       grouped.each do |_key, values|
         vuln = {}
         values.each do |v|
@@ -130,19 +130,14 @@ module Salus::Scanners::OSV
     # Find dependencies from the project
     def find_dependencies
       shell_return = run_shell("/home/bin/parse_gradle_deps")
-
       if !shell_return.success?
         report_error(shell_return.stderr)
         return
       end
 
-      dependencies = []
       begin
         dependencies = JSON.parse(shell_return.stdout)
       rescue JSON::ParserError
-        err_msg = "Could not parse JSON returned by /home/bin/parse_gradle_deps's stdout!"
-        report_stderr(err_msg)
-        report_error(err_msg)
         return
       end
 
