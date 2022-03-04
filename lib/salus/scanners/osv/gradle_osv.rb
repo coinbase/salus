@@ -17,7 +17,7 @@ module Salus::Scanners::OSV
 
     def run
       dependencies = find_dependencies
-      if dependencies.nil?
+      if dependencies.empty?
         err_msg = "GradleOSV: Failed to parse any dependencies from the project."
         report_stderr(err_msg)
         report_error(err_msg)
@@ -26,9 +26,9 @@ module Salus::Scanners::OSV
 
       @osv_vulnerabilities ||= fetch_vulnerabilities(GRADLE_OSV_ADVISORY_URL)
       if @osv_vulnerabilities.nil?
-        err_msg = "No vulnerabilities found to compare."
-        bugsnag_notify("GradleOSV: #{err_msg}")
-        return report_error("GradleOSV: #{err_msg}")
+        err_msg = "GradleOSV: No vulnerabilities found to compare."
+        bugsnag_notify(err_msg)
+        return report_error(err_msg)
       end
 
       # Match vulnerable dependencies.
@@ -53,16 +53,7 @@ module Salus::Scanners::OSV
     # vulnerable dependency found.
     def version_matching(version, version_ranges)
       vulnerable_flag = false
-
-      begin
-        version = version.delete("^0-9.")
-        version = version.gsub(/\.+$/, "")
-        version_found = SemVersion.new(version)
-      rescue StandardError
-        bugsnag_notify("GradleOSV: Version #{version} is of incompatible format.")
-        vulnerable_flag
-      end
-
+      version_found = SemVersion.new(version)
       # If version range length is 1, then no fix available.
       if version_ranges.length == 1
         introduced = SemVersion.new(
@@ -90,7 +81,9 @@ module Salus::Scanners::OSV
         lib = "#{dependency['group_id']}:#{dependency['artifact_id']}"
 
         unless dependency['version'].nil?
+          version = dependency['version']
           # Cleanup version string.
+          version = version.delete("^0-9.").gsub(/\.+$/, "")
           package_matches = @osv_vulnerabilities.select do |v|
             v.dig("package", "name") == lib
           end
@@ -104,7 +97,7 @@ module Salus::Scanners::OSV
                         else
                           EMPTY_STRING
                         end
-                if version_matching(dependency["version"], version_ranges["events"])
+                if version_matching(version, version_ranges["events"])
                   results.append({
                                    "Package": m.dig("package", "name"),
                     "Vulnerable Version": introduced,
@@ -132,16 +125,19 @@ module Salus::Scanners::OSV
       shell_return = run_shell("/home/bin/parse_gradle_deps")
       if !shell_return.success?
         report_error(shell_return.stderr)
-        return
+        return []
       end
 
       begin
         dependencies = JSON.parse(shell_return.stdout)
       rescue JSON::ParserError
-        return
+        err_msg = "MavenOSV: Could not parse JSON returned by bin/parse_gradle_deps's stdout!"
+        report_stderr(err_msg)
+        report_error(err_msg)
+        return []
       end
 
-      # Dedupe dependencies to avoid listing duplicated.
+      # Dedupe dependencies returned.
       uniques = []
       dependencies.group_by { |e| [e["group_id"], e["artifact_id"]] }.each do |_key, values|
         uniques.append(values[0])
