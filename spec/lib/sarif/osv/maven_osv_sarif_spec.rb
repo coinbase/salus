@@ -26,7 +26,7 @@ describe Sarif::MavenOSVSarif do
       )
   end
 
-  context 'with vulnerable go project' do
+  context 'with vulnerable maven project' do
     let(:repo) { Salus::Repo.new('spec/fixtures/osv/maven_osv/failure_vulnerability_present') }
     it 'should generate report with logged vulnerabilities' do
       scanner = Salus::Scanners::OSV::MavenOSV.new(repository: repo, config: {})
@@ -96,10 +96,13 @@ describe Sarif::MavenOSVSarif do
             ]
         }
       )
+
+      filtered_sarif = report.apply_report_sarif_filters(sarif)
+      expect { Sarif::SarifReport.validate_sarif(filtered_sarif) }.not_to raise_error
     end
   end
 
-  context 'with vulnerable go project but exceptions configured' do
+  context 'with vulnerable maven project but exceptions configured' do
     let(:repo) do
       Salus::Repo.new(
         'spec/fixtures/osv/maven_osv/success_vulnerability_present_exception_added'
@@ -113,14 +116,17 @@ describe Sarif::MavenOSVSarif do
       scanner.run
       report = Salus::Report.new(project_name: "Neon Genesis")
       report.add_scan_report(scanner.report, required: false)
-      report_object = JSON.parse(report.to_sarif)['runs'][0]
+      report_object = JSON.parse(report.to_sarif)
 
-      expect(report_object['results'].length).to eq(0)
-      expect(report_object['invocations'][0]['executionSuccessful']).to eq(true)
+      expect(report_object['runs'][0]['results'].length).to eq(0)
+      expect(report_object['runs'][0]['invocations'][0]['executionSuccessful']).to eq(true)
+
+      filtered_sarif = report.apply_report_sarif_filters(report_object)
+      expect { Sarif::SarifReport.validate_sarif(filtered_sarif) }.not_to raise_error
     end
   end
 
-  context 'with non vulnerable go project' do
+  context 'with non vulnerable maven project' do
     let(:repo) { Salus::Repo.new('spec/fixtures/osv/maven_osv/success_no_vulnerability') }
     it 'should generate an empty sarif report' do
       scanner = Salus::Scanners::OSV::MavenOSV.new(repository: repo, config: {})
@@ -128,10 +134,13 @@ describe Sarif::MavenOSVSarif do
       scanner.run
       report = Salus::Report.new(project_name: "Neon Genesis")
       report.add_scan_report(scanner.report, required: false)
-      report_object = JSON.parse(report.to_sarif)['runs'][0]
+      report_object = JSON.parse(report.to_sarif)
 
-      expect(report_object['results'].length).to eq(0)
-      expect(report_object['invocations'][0]['executionSuccessful']).to eq(true)
+      expect(report_object['runs'][0]['results'].length).to eq(0)
+      expect(report_object['runs'][0]['invocations'][0]['executionSuccessful']).to eq(true)
+
+      filtered_sarif = report.apply_report_sarif_filters(report_object)
+      expect { Sarif::SarifReport.validate_sarif(filtered_sarif) }.not_to raise_error
     end
   end
 end

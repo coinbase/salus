@@ -4,7 +4,7 @@ module Salus::Scanners::OSV
   class MavenOSV < Base
     class SemVersion < Gem::Version; end
 
-    EMPTY_STRING = "Not Found".freeze
+    EMPTY_STRING = "".freeze
     DEFAULT_SOURCE = "https://osv.dev/list".freeze
     DEFAULT_SEVERITY = "MODERATE".freeze
     GITHUB_DATABASE_STRING = "Github Advisory Database".freeze
@@ -26,9 +26,10 @@ module Salus::Scanners::OSV
 
       @osv_vulnerabilities ||= fetch_vulnerabilities(MAVEN_OSV_ADVISORY_URL)
       if @osv_vulnerabilities.nil?
-        err_msg = "No vulnerabilities found to compare."
-        bugsnag_notify("MavenOSV: #{err_msg}")
-        return report_error("MavenOSV: #{err_msg}")
+        err_msg = "MavenOSV: No vulnerabilities found to compare."
+        report_stderr(err_msg)
+        report_error(err_msg)
+        return
       end
 
       # Fetch vulnerable dependencies.
@@ -57,19 +58,23 @@ module Salus::Scanners::OSV
       version_found = SemVersion.new(version)
       # If version range length is 1, then no fix available.
       if version_ranges.length == 1
-        introduced = SemVersion.new(
-          version_ranges[0]["introduced"]
-        )
-        vulnerable_flag = true if version_found >= introduced
+        if version_ranges[0].key?("introduced")
+          introduced = SemVersion.new(
+            version_ranges[0]["introduced"]
+          )
+          vulnerable_flag = true if version_found >= introduced
+        end
       # If version range length is 2, then both introduced and fixed are available.
       elsif version_ranges.length == 2
-        introduced = SemVersion.new(
-          version_ranges[0]["introduced"]
-        )
-        fixed = SemVersion.new(
-          version_ranges[1]["fixed"]
-        )
-        vulnerable_flag = true if version_found >= introduced && version_found < fixed
+        if version_ranges[0].key?("introduced") && version_ranges[1].key?("fixed")
+          introduced = SemVersion.new(
+            version_ranges[0]["introduced"]
+          )
+          fixed = SemVersion.new(
+            version_ranges[1]["fixed"]
+          )
+          vulnerable_flag = true if version_found >= introduced && version_found < fixed
+        end
       end
 
       vulnerable_flag
@@ -81,13 +86,13 @@ module Salus::Scanners::OSV
       results = []
       dependencies.each do |dependency|
         lib = "#{dependency['group_id']}:#{dependency['artifact_id']}"
-
+        puts "here #{lib}"
         unless dependency['version'].nil?
           version = dependency['version']
           # If version is of the format '${deps.version}', log it.
           if version.match(/\${(.*)\.version}/)
             bugsnag_notify("MavenOSV: Found #{lib}:#{version} with incompatible format.")
-            break
+            next
           end
 
           package_matches = @osv_vulnerabilities.select do |v|
