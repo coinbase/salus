@@ -53,28 +53,19 @@ module Salus::Scanners::OSV
 
     # Match if dependency version found is in the range of
     # vulnerable dependency found.
-    def version_matching(version, version_ranges)
+    def version_matching(version, introduced, fixed)
       vulnerable_flag = false
       version_found = SemVersion.new(version)
-      # If version range length is 1, then no fix available.
-      if version_ranges.length == 1
-        if version_ranges[0].key?("introduced")
-          introduced = SemVersion.new(
-            version_ranges[0]["introduced"]
-          )
-          vulnerable_flag = true if version_found >= introduced
+
+      if introduced.present? && fixed.present?
+        introduced_version = SemVersion.new(introduced)
+        fixed_version = SemVersion.new(fixed)
+        if version_found >= introduced_version && version_found < fixed_version
+          vulnerable_flag = true
         end
-      # If version range length is 2, then both introduced and fixed are available.
-      elsif version_ranges.length == 2
-        if version_ranges[0].key?("introduced") && version_ranges[1].key?("fixed")
-          introduced = SemVersion.new(
-            version_ranges[0]["introduced"]
-          )
-          fixed = SemVersion.new(
-            version_ranges[1]["fixed"]
-          )
-          vulnerable_flag = true if version_found >= introduced && version_found < fixed
-        end
+      elsif introduced.present?
+        introduced_version = SemVersion.new(introduced)
+        vulnerable_flag = true if version_found >= introduced_version
       end
 
       vulnerable_flag
@@ -86,7 +77,6 @@ module Salus::Scanners::OSV
       results = []
       dependencies.each do |dependency|
         lib = "#{dependency['group_id']}:#{dependency['artifact_id']}"
-        puts "here #{lib}"
         unless dependency['version'].nil?
           version = dependency['version']
           # If version is of the format '${deps.version}', log it.
@@ -100,14 +90,21 @@ module Salus::Scanners::OSV
           end
           package_matches.each do |m|
             m["ranges"].each do |version_ranges|
+              introduced = fixed = ""
+              if version_ranges["events"].length == 1
+                if version_ranges["events"][0].key?("introduced")
+                  introduced = version_ranges["events"][0]["introduced"]
+                end
+              elsif version_ranges["events"].length == 2
+                if version_ranges["events"][0].key?("introduced") &&
+                    version_ranges["events"][1].key?("fixed")
+                  introduced = version_ranges["events"][0]["introduced"]
+                  fixed = version_ranges["events"][1]["fixed"]
+                end
+              end
+
               if version_ranges["type"] == "SEMVER" || version_ranges["type"] == "ECOSYSTEM"
-                introduced = version_ranges["events"][0]["introduced"]
-                fixed = if version_ranges["events"].length == 2
-                          version_ranges["events"][1]["fixed"]
-                        else
-                          EMPTY_STRING
-                        end
-                if version_matching(version, version_ranges["events"])
+                if version_matching(version, introduced, fixed)
                   results.append({
                                    "Package": m.dig("package", "name"),
                               "Vulnerable Version": introduced,
