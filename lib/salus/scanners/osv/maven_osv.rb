@@ -76,7 +76,7 @@ module Salus::Scanners::OSV
     def match_vulnerable_dependencies(dependencies)
       results = []
       dependencies.each do |dependency|
-        lib = "#{dependency['group_id']}:#{dependency['artifact_id']}"
+        lib = "#{dependency.fetch('group_id', '')}:#{dependency.fetch('artifact_id', '')}"
         unless dependency['version'].nil?
           version = dependency['version']
           # If version is of the format '${deps.version}', log it.
