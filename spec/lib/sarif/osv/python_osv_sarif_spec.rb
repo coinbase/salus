@@ -94,6 +94,9 @@ describe Sarif::PythonOSVSarif do
             ]
         }
       )
+
+      filtered_sarif = report.apply_report_sarif_filters(sarif)
+      expect { Sarif::SarifReport.validate_sarif(filtered_sarif) }.not_to raise_error
     end
   end
 
@@ -107,10 +110,13 @@ describe Sarif::PythonOSVSarif do
       scanner.run
       report = Salus::Report.new(project_name: "Neon Genesis")
       report.add_scan_report(scanner.report, required: false)
-      report_object = JSON.parse(report.to_sarif)['runs'][0]
+      report_object = JSON.parse(report.to_sarif)
 
-      expect(report_object['results'].length).to eq(0)
-      expect(report_object['invocations'][0]['executionSuccessful']).to eq(true)
+      expect(report_object['runs'][0]['results'].length).to eq(0)
+      expect(report_object['runs'][0]['invocations'][0]['executionSuccessful']).to eq(true)
+
+      filtered_sarif = report.apply_report_sarif_filters(report_object)
+      expect { Sarif::SarifReport.validate_sarif(filtered_sarif) }.not_to raise_error
     end
   end
 
@@ -122,10 +128,13 @@ describe Sarif::PythonOSVSarif do
       scanner.run
       report = Salus::Report.new(project_name: "Neon Genesis")
       report.add_scan_report(scanner.report, required: false)
-      report_object = JSON.parse(report.to_sarif)['runs'][0]
+      report_object = JSON.parse(report.to_sarif)
 
-      expect(report_object['results'].length).to eq(0)
-      expect(report_object['invocations'][0]['executionSuccessful']).to eq(true)
+      expect(report_object['runs'][0]['results'].length).to eq(0)
+      expect(report_object['runs'][0]['invocations'][0]['executionSuccessful']).to eq(true)
+
+      filtered_sarif = report.apply_report_sarif_filters(report_object)
+      expect { Sarif::SarifReport.validate_sarif(filtered_sarif) }.not_to raise_error
     end
   end
 end

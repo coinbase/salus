@@ -27,9 +27,10 @@ module Salus::Scanners::OSV
 
       @osv_vulnerabilities ||= fetch_vulnerabilities(PYTHON_OSV_ADVISORY_URL)
       if @osv_vulnerabilities.nil?
-        err_msg = "No vulnerabilities found to compare."
-        bugsnag_notify("PythonOSV: #{err_msg}")
-        return report_error("PythonOSV: #{err_msg}")
+        err_msg = "PythonOSV: No vulnerabilities found to compare."
+        report_stderr(err_msg)
+        report_error(err_msg)
+        return
       end
 
       # Fetch vulnerable dependencies.
@@ -55,9 +56,8 @@ module Salus::Scanners::OSV
       vulnerable_flag = false
       versions = version.split(",")
       if versions.length == 1
-        v = versions[0].gsub("==", "")
         version_ranges.each do |version_range|
-          vulnerable_flag = SemDependency.new('', v).match?('', version_range)
+          vulnerable_flag = SemDependency.new('', versions[0]).match?('', version_range)
           break if vulnerable_flag
         end
       elsif versions.length == 2
@@ -77,22 +77,28 @@ module Salus::Scanners::OSV
       results = []
       dependencies.each do |lib, version|
         unless version.nil? || version.empty?
-
+          version = version.gsub("==", "")
           package_matches = @osv_vulnerabilities.select do |v|
             v.dig("package", "name") == lib
           end
 
           package_matches.each do |m|
             m["ranges"].each do |version_ranges|
-              if version_ranges["type"] == "SEMVER" || version_ranges["type"] == "ECOSYSTEM"
-                introduced = version_ranges["events"][0]["introduced"]
-                fixed = if version_ranges["events"].length == 2
-                          version_ranges["events"][1]["fixed"]
-                        else
-                          EMPTY_STRING
-                        end
+              introduced = fixed = ""
+              if version_ranges["events"].length == 1
+                if version_ranges["events"][0].key?("introduced")
+                  introduced = version_ranges["events"][0]["introduced"]
+                end
+              elsif version_ranges["events"].length == 2
+                if version_ranges["events"][0].key?("introduced") &&
+                    version_ranges["events"][1].key?("fixed")
+                  introduced = version_ranges["events"][0]["introduced"]
+                  fixed = version_ranges["events"][1]["fixed"]
+                end
+              end
 
-                if version_matching(version, m["versions"])
+              if version_ranges["type"] == "SEMVER" || version_ranges["type"] == "ECOSYSTEM"
+                if version_matching(version, m.fetch("versions", []))
                   results.append({
                                    "Package": m.dig("package", "name"),
                       "Vulnerable Version": introduced,
