@@ -100,10 +100,10 @@ describe Salus::Scanners::OSV::MavenOSV do
         scanner = Salus::Scanners::OSV::MavenOSV.new(repository: repo, config: {})
         stub_req_with_valid_response
         scanner.run
-        expect(scanner.report.to_h.fetch(:passed)).to eq(false)
 
         msg = "MavenOSV: Failed to parse any dependencies from the project."
-        expect(scanner.report.to_h.fetch(:errors).first.fetch(:message)).to include(msg)
+        expect(scanner.report.to_h.fetch(:passed)).to eq(false)
+        expect(scanner.report.to_h.fetch(:errors)[0][:message]).to eq(msg)
       end
 
       it 'should fail when OSV returns error' do

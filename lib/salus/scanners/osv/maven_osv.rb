@@ -16,11 +16,16 @@ module Salus::Scanners::OSV
     end
 
     def run
-      dependencies = find_dependencies
-      if dependencies.empty?
-        err_msg = "MavenOSV: Failed to parse any dependencies from the project."
-        report_stderr(err_msg)
-        report_error(err_msg)
+      begin
+        parser = Salus::MavenDependencyParser.new(@repository.pom_xml_path)
+        parser.parse
+        if parser.pom_xml_dependencies.empty?
+          err_msg = "MavenOSV: Failed to parse any dependencies from the project."
+          raise StandardError, err_msg
+        end
+      rescue StandardError => e
+        report_stderr(e.message)
+        report_error(e.message)
         return
       end
 
@@ -32,24 +37,15 @@ module Salus::Scanners::OSV
         return
       end
 
-      # Fetch vulnerable dependencies.
-      # Dedupe and select Github Advisory over other sources if available.
-      results = []
-      grouped = match_vulnerable_dependencies(dependencies).group_by { |d| d[:ID] }
-      grouped.each do |_key, values|
-        vuln = {}
-        values.each do |v|
-          vuln = v if v[:Database] == GITHUB_DATABASE_STRING
-        end
-        results.append(vuln.empty? ? values[0] : vuln)
-      end
-
       # Report scanner status
+      results = fetch_vulnerable_dependencies(parser.pom_xml_dependencies)
       return report_success if results.empty?
 
       report_failure
       log(JSON.pretty_generate(results))
     end
+
+    private
 
     # Match if dependency version found is in the range of
     # vulnerable dependency found.
@@ -77,7 +73,7 @@ module Salus::Scanners::OSV
       results = []
       dependencies.each do |dependency|
         lib = "#{dependency.fetch('group_id', '')}:#{dependency.fetch('artifact_id', '')}"
-        unless dependency['version'].nil?
+        if dependency['version']
           version = dependency['version']
           # If version is of the format '${deps.version}', log it.
           if version.match(/\${(.*)\.version}/)
@@ -88,8 +84,25 @@ module Salus::Scanners::OSV
           package_matches = @osv_vulnerabilities.select do |v|
             v.dig("package", "name") == lib
           end
-          package_matches.each do |m|
-            m["ranges"].each do |version_ranges|
+          package_matches.each do |match|
+            # 'match' format
+            # {
+            #   "package"=>{"name"=>"sample:sample-java", "ecosystem"=>"Maven",
+            #   "purl"=>"pkg:maven/sample/sample-java"},
+            #   "ranges"=>[{"type"=>"ECOSYSTEM", "events"=>[{"introduced"=>"0"},
+            #   {"fixed"=>"8.0.16"}]}], "versions"=>["2.0.14", "3.0.10"],
+            #   "database_specific"=>{"cwe_ids"=>["CWE-000"], "github_reviewed"=>true,
+            #   "severity"=>"MODERATE"}, "id"=>"GHSA-xxxx-xxxx-xxxx",
+            #   "summary"=>"Privilege escalation in sample-java",
+            #   "details"=>"Vulnerability in the Sample Java.", "aliases"=>["CVE-0000-0000"],
+            #   "modified"=>"2022-00-00T00:00:00.00Z", "published"=>"2020-00-00T00:00:00Z",
+            #   "references"=>[{"type"=>"ADVISORY",
+            #   "url"=>"https://nvd.nist.gov/vuln/detail/CVE-0000-0000"}],
+            #   "schema_version"=>"1.2.0", "severity"=>[{"type"=>"CVSS_V3",
+            #   "score"=>"CVSS:3.0/AV:L/AC:H/PR:H/UI:R/S:U/C:H/I:H/A:H"}]
+            #   "database"=>"Github Advisory Database"
+            # }
+            match["ranges"].each do |version_ranges|
               introduced = fixed = ""
               if version_ranges["events"].length == 1
                 if version_ranges["events"][0].key?("introduced")
@@ -103,21 +116,22 @@ module Salus::Scanners::OSV
                 end
               end
 
-              if version_ranges["type"] == "SEMVER" || version_ranges["type"] == "ECOSYSTEM"
+              if %w[SEMVER ECOSYSTEM].include?(version_ranges["type"])
                 if version_matching(version, introduced, fixed)
                   results.append({
-                                   "Package": m.dig("package", "name"),
+                                   "Package": match.dig("package", "name"),
                               "Vulnerable Version": introduced,
                               "Version Detected": version,
                               "Patched Version": fixed,
-                              "ID": m.fetch("aliases", [m.fetch("id", [])])[0],
-                              "Database": m.fetch("database"),
-                              "Summary": m.fetch("summary", m.dig("details")).strip,
-                              "References": m.fetch("references", []).collect do |p|
+                              "ID": match.fetch("aliases", [match.fetch("id", [])])[0],
+                              "Database": match.fetch("database"),
+                              "Summary": match.fetch("summary", match.dig("details")).strip,
+                              "References": match.fetch("references", []).collect do |p|
                                               p["url"]
                                             end.join(", "),
-                              "Source":  m.dig("database_specific", "url") || DEFAULT_SOURCE,
-                              "Severity": m.dig("database_specific", "severity") || DEFAULT_SEVERITY
+                              "Source":  match.dig("database_specific", "url") || DEFAULT_SOURCE,
+                              "Severity": match.dig("database_specific",
+                                                    "severity") || DEFAULT_SEVERITY
                                  })
                 end
               end
@@ -128,25 +142,18 @@ module Salus::Scanners::OSV
       results
     end
 
-    # Find dependencies from the project
-    def find_dependencies
-      dependencies = []
-      shell_return = run_shell("bin/parse_pom_xml #{@repository.pom_xml_path}", chdir: nil)
-      if !shell_return.success?
-        report_error(shell_return.stderr)
-        return []
+    # Fetch and Dedupe / Select Github Advisory over other sources when available.
+    def fetch_vulnerable_dependencies(dependencies)
+      results = []
+      grouped = match_vulnerable_dependencies(dependencies).group_by { |d| d[:ID] }
+      grouped.each do |_key, values|
+        vuln = {}
+        values.each do |v|
+          vuln = v if v[:Database] == GITHUB_DATABASE_STRING
+        end
+        results.append(vuln.empty? ? values[0] : vuln)
       end
-
-      begin
-        dependencies = JSON.parse(shell_return.stdout)
-      rescue JSON::ParserError
-        err_msg = "MavenOSV: Could not parse JSON returned by bin/parse_pom_xml's stdout!"
-        report_stderr(err_msg)
-        report_error(err_msg)
-        return []
-      end
-
-      dependencies
+      results
     end
   end
 end

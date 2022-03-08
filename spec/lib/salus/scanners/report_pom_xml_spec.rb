@@ -110,9 +110,8 @@ describe Salus::Scanners::ReportPomXml do
 
     errs = scanner.report.to_h.fetch(:errors)
     expect(errs.size).to eq(1)
-    expect(errs[0][:message]).to eq('Errors:
-12:11: FATAL: Opening and ending tag mismatch: dependency line 11 and project
-13:1: FATAL: Premature end of data in tag dependencies line 5
-')
+    expect(errs[0][:message]).to eq("Errors:\n        12:11: FATAL: Opening and ending "\
+      "tag mismatch: dependency line 11 "\
+      "and project\n13:1: FATAL: Premature end of data in tag dependencies line 5\n")
   end
 end
