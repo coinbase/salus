@@ -103,19 +103,7 @@ module Salus::Scanners::OSV
             #   "database"=>"Github Advisory Database"
             # }
             match["ranges"].each do |version_ranges|
-              introduced = fixed = ""
-              if version_ranges["events"].length == 1
-                if version_ranges["events"][0].key?("introduced")
-                  introduced = version_ranges["events"][0]["introduced"]
-                end
-              elsif version_ranges["events"].length == 2
-                if version_ranges["events"][0].key?("introduced") &&
-                    version_ranges["events"][1].key?("fixed")
-                  introduced = version_ranges["events"][0]["introduced"]
-                  fixed = version_ranges["events"][1]["fixed"]
-                end
-              end
-
+              introduced, fixed = vulnerability_info_for(version_ranges)
               if %w[SEMVER ECOSYSTEM].include?(version_ranges["type"])
                 if version_matching(version, introduced, fixed)
                   results.append({
@@ -140,6 +128,12 @@ module Salus::Scanners::OSV
         end
       end
       results
+    end
+
+    def vulnerability_info_for(version_range)
+      introduced = version_range["events"]&.first&.[]("introduced")
+      fixed = version_range["events"]&.[](1)&.[]("fixed")
+      [introduced.nil? ? EMPTY_STRING : introduced, fixed.nil? ? EMPTY_STRING : fixed]
     end
 
     # Fetch and Dedupe / Select Github Advisory over other sources when available.
