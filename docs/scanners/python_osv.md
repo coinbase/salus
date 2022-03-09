@@ -2,15 +2,6 @@
 
 Finds vulnerable dependencies in a Python project. By default, PythonOSV Scanner pulls advisory information from [OSV - Database for open source vulnerabilities](https://osv.dev/) to compare against the dependencies found in `requirements.txt`.
 
-## Usage
-
-PythonOSV scanner can be run by using the following `salus.yaml` configuration.
-
-```yaml
-active_scanners:
-  - PythonOSV
-```
-
 ## Configuration
 
 When a CVE is present in a dependency, the best course of action is to upgrade the dependency to a patched version. However, if there is currently no patch available or its a false positive you can use the following configuration option to ignore a particular CVE.
