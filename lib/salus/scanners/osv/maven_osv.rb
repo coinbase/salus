@@ -114,7 +114,7 @@ module Salus::Scanners::OSV
     end
 
     def vulnerability_document(match, version, introduced, fixed)
-      doc = {
+      {
         "Package": match.dig("package", "name"),
         "Vulnerable Version": introduced,
         "Version Detected": version,
@@ -129,7 +129,6 @@ module Salus::Scanners::OSV
         "Severity": match.dig("database_specific",
                               "severity") || DEFAULT_SEVERITY
       }
-      doc
     end
 
     def vulnerability_info_for(version_range)
