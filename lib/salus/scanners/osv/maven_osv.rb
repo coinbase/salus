@@ -51,17 +51,13 @@ module Salus::Scanners::OSV
     # vulnerable dependency found.
     def version_matching(version, introduced, fixed)
       vulnerable_flag = false
-      version_found = SemVersion.new(version)
-
       if introduced.present? && fixed.present?
-        introduced_version = SemVersion.new(introduced)
-        fixed_version = SemVersion.new(fixed)
-        if version_found >= introduced_version && version_found < fixed_version
+        if SemVersion.new(version) >= SemVersion.new(introduced) &&
+            SemVersion.new(version) < SemVersion.new(fixed)
           vulnerable_flag = true
         end
       elsif introduced.present?
-        introduced_version = SemVersion.new(introduced)
-        vulnerable_flag = true if version_found >= introduced_version
+        vulnerable_flag = true if SemVersion.new(version) >= SemVersion.new(introduced)
       end
 
       vulnerable_flag
