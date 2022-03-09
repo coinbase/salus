@@ -21,23 +21,16 @@ module Salus::Scanners
     end
 
     def record_dep_from_go_sum
-      shell_return = run_shell("bin/parse_go_sum #{@repository.go_sum_path}", chdir: nil)
-      if !shell_return.success?
-        report_error(shell_return.stderr)
-        return
-      end
-
-      dependencies = nil
       begin
-        dependencies = JSON.parse(shell_return.stdout)
-      rescue JSON::ParserError
-        err_msg = "Could not parse JSON returned by bin/parse_go_sum's stdout!"
-        report_stderr(err_msg)
-        report_error(err_msg)
+        parser = Salus::GoDependencyParser.new(@repository.go_sum_path)
+        parser.parse
+      rescue StandardError => e
+        report_stderr(e.message)
+        report_error(e.message)
         return
       end
 
-      dependencies["parsed"].each do |dependency|
+      parser.go_dependencies["parsed"].each do |dependency|
         record_dep_package(
           namespace: dependency["namespace"],
           name: dependency["namespace"] + "/" + dependency["name"],
