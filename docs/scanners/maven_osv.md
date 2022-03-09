@@ -1,6 +1,15 @@
 # Maven OSV Scanner
 
-Finds vulnerable dependencies in a Maven project. By default, Maven OSV Scanner pulls advisory information from [OSV - Database for open source vulnerabilities](https://osv.dev/) to compare against the dependencies found in `pom.xml`.
+Finds vulnerable dependencies in a Maven project. By default, MavenOSV Scanner pulls advisory information from [OSV - Database for open source vulnerabilities](https://osv.dev/) to compare against the dependencies found in `pom.xml`.
+
+## Usage
+
+MavenOSV scanner can be run by using the following `salus.yaml` configuration.
+
+```yaml
+active_scanners:
+  - MavenOSV
+```
 
 ## Configuration
 
