@@ -66,6 +66,17 @@ module Salus::Scanners::OSV
           end
 
           package_matches.each do |match|
+            # 'match' sample
+            # {
+            #   "package"=>{"name"=>"sample", "ecosystem"=>"PyPI", "purl"=>"pkg:pypi/sample"},
+            #   "ranges"=>[{"type"=>"ECOSYSTEM", "events"=>[{"introduced"=>"0"},
+            #   {"fixed"=>"2.3.0"}]}], "versions"=>["0.0.1", "0.10.0", "0.10.1"],
+            #   "database_specific"=>{"source"=>"https://github.com/pypa/"},
+            #   "id"=>"PYSEC-XX-XX", "details"=>"Requests..", "aliases"=>["CVE-XX-XX"],
+            #   "modified"=>"2021-00-00T00:00:00.001Z", "published"=>"2014-00-00T00:00:00Z",
+            #   "references"=>[{"type"=>"WEB", "url"=>"https://bugs.debian.org"}],
+            #   "schema_version"=>"1.2.0", "database"=>"Python Packaging Advisory Database"
+            # }
             match["ranges"].each do |version_ranges|
               introduced, fixed = vulnerability_info_for(version_ranges)
               if %w[SEMVER ECOSYSTEM].include?(version_ranges["type"]) &&
