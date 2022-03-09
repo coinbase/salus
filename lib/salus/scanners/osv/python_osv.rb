@@ -4,7 +4,7 @@ module Salus::Scanners::OSV
   class PythonOSV < Base
     class SemDependency < Gem::Dependency; end
 
-    EMPTY_STRING = "Not Found".freeze
+    EMPTY_STRING = "".freeze
     DEFAULT_SOURCE = "https://osv.dev/list".freeze
     DEFAULT_SEVERITY = "MODERATE".freeze
     GITHUB_DATABASE_STRING = "Github Advisory Database".freeze
@@ -33,37 +33,29 @@ module Salus::Scanners::OSV
         return
       end
 
-      # Fetch vulnerable dependencies.
-      # Dedupe and select Github Advisory over other sources if available.
-      results = []
-      grouped = match_vulnerable_dependencies(dependencies).group_by { |d| d[:ID] }
-      grouped.each do |_key, values|
-        vuln = {}
-        values.each do |v|
-          vuln = v if v[:Database] == GITHUB_DATABASE_STRING
-        end
-        results.append(vuln.empty? ? values[0] : vuln)
-      end
       # Report scanner status
+      results = fetch_vulnerable_dependencies(dependencies)
       return report_success if results.empty?
 
       report_failure
       log(JSON.pretty_generate(results))
     end
 
+    private
+
     # Match if dependency version found is in version list
-    def version_matching(version, version_ranges)
+    def version_matching(version, vulnerable_versions)
       vulnerable_flag = false
       versions = version.split(",")
       if versions.length == 1
-        version_ranges.each do |version_range|
-          vulnerable_flag = SemDependency.new('', versions[0]).match?('', version_range)
+        vulnerable_versions.each do |vulnerable_version|
+          vulnerable_flag = SemDependency.new('', versions[0]).match?('', vulnerable_version)
           break if vulnerable_flag
         end
       elsif versions.length == 2
-        version_ranges.each do |version_range|
-          vulnerable_flag = SemDependency.new('', versions[0]).match?('', version_range) &&
-            SemDependency.new('', versions[1]).match?('', version_range)
+        vulnerable_versions.each do |vulnerable_version|
+          vulnerable_flag = SemDependency.new('', versions[0]).match?('', vulnerable_version) &&
+            SemDependency.new('', versions[1]).match?('', vulnerable_version)
           break if vulnerable_flag
         end
       end
@@ -76,47 +68,60 @@ module Salus::Scanners::OSV
     def match_vulnerable_dependencies(dependencies)
       results = []
       dependencies.each do |lib, version|
-        unless version.nil? || version.empty?
+        if version
           version = version.gsub("==", "")
           package_matches = @osv_vulnerabilities.select do |v|
             v.dig("package", "name") == lib
           end
 
-          package_matches.each do |m|
-            m["ranges"].each do |version_ranges|
-              introduced = fixed = ""
-              if version_ranges["events"].length == 1
-                if version_ranges["events"][0].key?("introduced")
-                  introduced = version_ranges["events"][0]["introduced"]
-                end
-              elsif version_ranges["events"].length == 2
-                if version_ranges["events"][0].key?("introduced") &&
-                    version_ranges["events"][1].key?("fixed")
-                  introduced = version_ranges["events"][0]["introduced"]
-                  fixed = version_ranges["events"][1]["fixed"]
-                end
-              end
-
-              if version_ranges["type"] == "SEMVER" || version_ranges["type"] == "ECOSYSTEM"
-                if version_matching(version, m.fetch("versions", []))
-                  results.append({
-                                   "Package": m.dig("package", "name"),
-                      "Vulnerable Version": introduced,
-                      "Version Detected": version,
-                      "Patched Version": fixed,
-                      "ID": m.fetch("aliases", [m.fetch("id", [])])[0],
-                      "Summary": m.fetch("summary", m.dig("details")).strip,
-                      "References": m.fetch("references", []).collect do |p|
-                                      p["url"]
-                                    end.join(", "),
-                      "Source":  m.dig("database_specific", "url") || DEFAULT_SOURCE,
-                      "Severity": m.dig("database_specific", "severity") || DEFAULT_SEVERITY
-                                 })
-                end
+          package_matches.each do |match|
+            match["ranges"].each do |version_ranges|
+              introduced, fixed = vulnerability_info_for(version_ranges)
+              if %w[SEMVER ECOSYSTEM].include?(version_ranges["type"]) &&
+                  version_matching(version, match.fetch("versions", []))
+                results.append(vulnerability_document(match, version, introduced, fixed))
               end
             end
           end
         end
+      end
+      results
+    end
+
+    def vulnerability_info_for(version_range)
+      introduced = version_range["events"]&.first&.[]("introduced")
+      fixed = version_range["events"]&.[](1)&.[]("fixed")
+      [introduced.nil? ? EMPTY_STRING : introduced, fixed.nil? ? EMPTY_STRING : fixed]
+    end
+
+    def vulnerability_document(match, version, introduced, fixed)
+      {
+        "Package": match.dig("package", "name"),
+        "Vulnerable Version": introduced,
+        "Version Detected": version,
+        "Patched Version": fixed,
+        "ID": match.fetch("aliases", [match.fetch("id", [])])[0],
+        "Database": match.fetch("database"),
+        "Summary": match.fetch("summary", match.dig("details")).strip,
+        "References": match.fetch("references", []).collect do |p|
+                        p["url"]
+                      end.join(", "),
+        "Source":  match.dig("database_specific", "url") || DEFAULT_SOURCE,
+        "Severity": match.dig("database_specific",
+                              "severity") || DEFAULT_SEVERITY
+      }
+    end
+
+    # Fetch and Dedupe / Select Github Advisory over other sources when available.
+    def fetch_vulnerable_dependencies(dependencies)
+      results = []
+      grouped = match_vulnerable_dependencies(dependencies).group_by { |d| d[:ID] }
+      grouped.each do |_key, values|
+        vuln = {}
+        values.each do |v|
+          vuln = v if v[:Database] == GITHUB_DATABASE_STRING
+        end
+        results.append(vuln.empty? ? values[0] : vuln)
       end
       results
     end
