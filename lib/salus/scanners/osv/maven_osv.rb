@@ -92,42 +92,44 @@ module Salus::Scanners::OSV
             #   "ranges"=>[{"type"=>"ECOSYSTEM", "events"=>[{"introduced"=>"0"},
             #   {"fixed"=>"8.0.16"}]}], "versions"=>["2.0.14", "3.0.10"],
             #   "database_specific"=>{"cwe_ids"=>["CWE-000"], "github_reviewed"=>true,
-            #   "severity"=>"MODERATE"}, "id"=>"GHSA-xxxx-xxxx-xxxx",
-            #   "summary"=>"Privilege escalation in sample-java",
-            #   "details"=>"Vulnerability in the Sample Java.", "aliases"=>["CVE-0000-0000"],
-            #   "modified"=>"2022-00-00T00:00:00.00Z", "published"=>"2020-00-00T00:00:00Z",
-            #   "references"=>[{"type"=>"ADVISORY",
+            #   "severity"=>"MODERATE"}, "id"=>"GHSA-xxxx",
+            #   "summary"=>"Privilege escalation", "details"=>"Vulnerability",
+            #   "aliases"=>["CVE-0000"], "modified"=>"2022-00-00T00:00:00.00Z",
+            #   "published"=>"2020-00-00T00:00:00Z", "references"=>[{"type"=>"ADVISORY",
             #   "url"=>"https://nvd.nist.gov/vuln/detail/CVE-0000-0000"}],
             #   "schema_version"=>"1.2.0", "severity"=>[{"type"=>"CVSS_V3",
-            #   "score"=>"CVSS:3.0/AV:L/AC:H/PR:H/UI:R/S:U/C:H/I:H/A:H"}]
-            #   "database"=>"Github Advisory Database"
+            #   "score"=>"CVSS:3.0"}], "database"=>"Github Advisory Database"
             # }
             match["ranges"].each do |version_ranges|
               introduced, fixed = vulnerability_info_for(version_ranges)
-              if %w[SEMVER ECOSYSTEM].include?(version_ranges["type"])
-                if version_matching(version, introduced, fixed)
-                  results.append({
-                                   "Package": match.dig("package", "name"),
-                              "Vulnerable Version": introduced,
-                              "Version Detected": version,
-                              "Patched Version": fixed,
-                              "ID": match.fetch("aliases", [match.fetch("id", [])])[0],
-                              "Database": match.fetch("database"),
-                              "Summary": match.fetch("summary", match.dig("details")).strip,
-                              "References": match.fetch("references", []).collect do |p|
-                                              p["url"]
-                                            end.join(", "),
-                              "Source":  match.dig("database_specific", "url") || DEFAULT_SOURCE,
-                              "Severity": match.dig("database_specific",
-                                                    "severity") || DEFAULT_SEVERITY
-                                 })
-                end
+              if %w[SEMVER ECOSYSTEM].include?(version_ranges["type"]) &&
+                  version_matching(version, introduced, fixed)
+                results.append(vulnerability_document(match, version, introduced, fixed))
               end
             end
           end
         end
       end
       results
+    end
+
+    def vulnerability_document(match, version, introduced, fixed)
+      doc = {
+        "Package": match.dig("package", "name"),
+        "Vulnerable Version": introduced,
+        "Version Detected": version,
+        "Patched Version": fixed,
+        "ID": match.fetch("aliases", [match.fetch("id", [])])[0],
+        "Database": match.fetch("database"),
+        "Summary": match.fetch("summary", match.dig("details")).strip,
+        "References": match.fetch("references", []).collect do |p|
+                        p["url"]
+                      end.join(", "),
+        "Source":  match.dig("database_specific", "url") || DEFAULT_SOURCE,
+        "Severity": match.dig("database_specific",
+                              "severity") || DEFAULT_SEVERITY
+      }
+      doc
     end
 
     def vulnerability_info_for(version_range)
