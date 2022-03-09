@@ -17,7 +17,6 @@ module Salus::Scanners::OSV
 
     def run
       dependencies = find_dependencies
-
       if dependencies.empty?
         err_msg = "PythonOSV: Failed to parse any dependencies from the project."
         report_stderr(err_msg)
@@ -121,7 +120,6 @@ module Salus::Scanners::OSV
     # Find dependencies from the project
     def find_dependencies
       dependencies = {}
-
       shell_return = run_shell(['bin/report_python_modules',
                                 @repository.path_to_repo], chdir: nil)
       if !shell_return.success?
