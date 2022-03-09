@@ -39,29 +39,29 @@ describe Sarif::GradleOSVSarif do
       expect(sarif['runs'][0]['tool']['driver']['rules'][0]).to include(
         {
           "fullDescription" => {
-            "text" => "Deserialization of Untrusted Data in jackson-databind"
+            "text" => "Information Disclosure in Guava"
           },
             "help" => {
               "markdown" => "[More info](https://osv.dev/list).",
               "text" => "More info: https://osv.dev/list"
             },
             "helpUri" => "https://osv.dev/list",
-            "id" => "CVE-2019-20330",
+            "id" => "CVE-2020-8908",
             "messageStrings" => {
               "package" => {
-                "text" => "com.fasterxml.jackson.core:jackson-databind"
+                "text" => "com.google.guava:guava"
               },
               "patched_versions" => {
                 "text" => ""
               },
               "severity" => {
-                "text" => "CRITICAL"
+                "text" => "LOW"
               },
               "title" => {
-                "text" => "Deserialization of Untrusted Data in jackson-databind"
+                "text" => "Information Disclosure in Guava"
               },
               "vulnerable_versions" => {
-                "text" => "2.0.0"
+                "text" => "0"
               }
             },
             "name" => "GradleOSV"
@@ -70,7 +70,7 @@ describe Sarif::GradleOSVSarif do
 
       expect(sarif['runs'][0]['results'][0]).to include(
         {
-          "level" => "note",
+          "level" => "warning",
             "locations" => [
               {
                 "physicalLocation" => {
@@ -82,13 +82,13 @@ describe Sarif::GradleOSVSarif do
               }
             ],
             "message" => {
-              "text" => "Deserialization of Untrusted Data in jackson-databind"
+              "text" => "Information Disclosure in Guava"
             },
             "properties" => {
-              "severity" => "CRITICAL"
+              "severity" =>  "LOW"
             },
-            "ruleId" => "CVE-2019-20330",
-            "ruleIndex" => 1,
+            "ruleId" => "CVE-2020-8908",
+            "ruleIndex" => 0,
             "suppressions" => [
               {
                 "kind" => "external"

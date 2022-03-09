@@ -69,7 +69,7 @@ module Salus::Scanners::OSV
       dependencies.each do |dependency|
         lib = "#{dependency['group_id']}:#{dependency['artifact_id']}"
 
-        unless dependency['version'].nil?
+        if dependency['version']
           version = dependency['version']
           # Cleanup version string.
           version = version.delete("^0-9.").gsub(/\.+$/, "")
@@ -82,6 +82,7 @@ module Salus::Scanners::OSV
               introduced, fixed = vulnerability_info_for(version_ranges)
               if %w[SEMVER ECOSYSTEM].include?(version_ranges["type"]) &&
                   version_matching(version, introduced, fixed)
+                puts "Found", match["package"]["name"]
                 results.append(format_vulnerability_result(match, version, introduced, fixed))
               end
             end
