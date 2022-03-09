@@ -46,6 +46,8 @@ module Salus::Scanners::OSV
       log(JSON.pretty_generate(results))
     end
 
+    private
+
     # Find dependencies from the project
     def select_dependencies(all_dependencies)
       dependencies = {}
