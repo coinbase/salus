@@ -78,6 +78,21 @@ module Salus::Scanners::OSV
           end
 
           package_matches.each do |match|
+            # 'match' format
+            # {
+            #   "package"=>{"name"=>"sample:sample-java", "ecosystem"=>"Maven",
+            #   "purl"=>"pkg:maven/sample/sample-java"},
+            #   "ranges"=>[{"type"=>"ECOSYSTEM", "events"=>[{"introduced"=>"0"},
+            #   {"fixed"=>"8.0.16"}]}], "versions"=>["2.0.14", "3.0.10"],
+            #   "database_specific"=>{"cwe_ids"=>["CWE-000"], "github_reviewed"=>true,
+            #   "severity"=>"MODERATE"}, "id"=>"GHSA-xxxx",
+            #   "summary"=>"Privilege escalation", "details"=>"Vulnerability",
+            #   "aliases"=>["CVE-0000"], "modified"=>"2022-00-00T00:00:00.00Z",
+            #   "published"=>"2020-00-00T00:00:00Z", "references"=>[{"type"=>"ADVISORY",
+            #   "url"=>"https://nvd.nist.gov/vuln/detail/CVE-0000-0000"}],
+            #   "schema_version"=>"1.2.0", "severity"=>[{"type"=>"CVSS_V3",
+            #   "score"=>"CVSS:3.0"}], "database"=>"Github Advisory Database"
+            # }
             match["ranges"].each do |version_ranges|
               introduced, fixed = vulnerability_info_for(version_ranges)
               if %w[SEMVER ECOSYSTEM].include?(version_ranges["type"]) &&
