@@ -13,6 +13,12 @@ module Salus
     end
 
     def parse
+      parse_dependencies
+    end
+
+    private
+
+    def parse_dependencies
       @go_sum_content.each_line do |line|
         # Split on space
         # github.com/google/go-cmp v0.5.3/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
