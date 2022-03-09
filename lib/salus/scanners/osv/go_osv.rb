@@ -97,24 +97,9 @@ module Salus::Scanners::OSV
         package_matches.each do |match|
           match["ranges"].each do |version_ranges|
             introduced, fixed = vulnerability_info_for(version_ranges)
-            if %w[SEMVER ECOSYSTEM].include?(version_ranges["type"])
-              if version_matching(version, introduced, fixed)
-                results.append({
-                                 "Package": match.dig("package", "name"),
-                            "Vulnerable Version": introduced,
-                            "Version Detected": version,
-                            "Patched Version": fixed,
-                            "ID": match.fetch("aliases", [match.fetch("id", [])])[0],
-                            "Database": match.fetch("database"),
-                            "Summary": match.fetch("summary", match.dig("details")).strip,
-                            "References": match.fetch("references", []).collect do |p|
-                                            p["url"]
-                                          end.join(", "),
-                            "Source":  match.dig("database_specific", "url") || DEFAULT_SOURCE,
-                            "Severity": match.dig("database_specific",
-                                                  "severity") || DEFAULT_SEVERITY
-                               })
-              end
+            if %w[SEMVER ECOSYSTEM].include?(version_ranges["type"]) &&
+                version_matching(version, introduced, fixed)
+              results.append(vulnerability_document(match, version, introduced, fixed))
             end
           end
         end
@@ -123,9 +108,30 @@ module Salus::Scanners::OSV
       results
     end
 
+    def vulnerability_document(match, version, introduced, fixed)
+      doc = {
+        "Package": match.dig("package", "name"),
+        "Vulnerable Version": introduced,
+        "Version Detected": version,
+        "Patched Version": fixed,
+        "ID": match.fetch("aliases", [match.fetch("id", [])])[0],
+        "Database": match.fetch("database"),
+        "Summary": match.fetch("summary", match.dig("details")).strip,
+        "References": match.fetch("references", []).collect do |p|
+                        p["url"]
+                      end.join(", "),
+        "Source":  match.dig("database_specific", "url") || DEFAULT_SOURCE,
+        "Severity": match.dig("database_specific",
+                              "severity") || DEFAULT_SEVERITY
+      }
+
+      doc
+    end
+
     def vulnerability_info_for(version_range)
       introduced = version_range["events"]&.first&.[]("introduced")
       fixed = version_range["events"]&.[](1)&.[]("fixed")
+      
       [introduced.nil? ? EMPTY_STRING : introduced, fixed.nil? ? EMPTY_STRING : fixed]
     end
 
@@ -140,6 +146,7 @@ module Salus::Scanners::OSV
         end
         results.append(vuln.empty? ? values[0] : vuln)
       end
+
       results
     end
   end
