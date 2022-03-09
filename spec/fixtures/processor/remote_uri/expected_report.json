@@ -68,6 +68,7 @@
       "GoVersionScanner",
       "Gosec",
       "GradleOSV",
+      "MavenOSV",
       "NPMAudit",
       "NPMPackageScanner",
       "PatternSearch",
@@ -126,6 +127,10 @@
         "scanner_timeout_s": 0
       },
       "GradleOSV": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "MavenOSV": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },

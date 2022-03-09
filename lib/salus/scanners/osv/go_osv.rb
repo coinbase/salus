@@ -4,7 +4,7 @@ module Salus::Scanners::OSV
   class GoOSV < Base
     class SemVersion < Gem::Version; end
 
-    EMPTY_STRING = "Not Found".freeze
+    EMPTY_STRING = "".freeze
     DEFAULT_SOURCE = "https://osv.dev/list".freeze
     DEFAULT_SEVERITY = "MODERATE".freeze
     GITHUB_DATABASE_STRING = "Github Advisory Database".freeze
