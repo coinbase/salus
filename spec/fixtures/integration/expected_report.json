@@ -83,6 +83,10 @@
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
+      "MavenOSV" :{
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
       "NPMAudit": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
