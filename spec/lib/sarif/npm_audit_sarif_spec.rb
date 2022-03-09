@@ -155,7 +155,7 @@ describe Sarif::NPMAuditSarif do
       let(:repo) { Salus::Repo.new('spec/fixtures/npm_audit/success_with_exceptions') }
       it 'does not contain excluded cves' do
         config_file = YAML.load_file(
-          "spec/fixtures/npm_audit/success_with_exceptions/salus.yaml"
+          "spec/fixtures/npm_audit/success_with_exceptions/salus-sarif.yaml"
         )
         scanner = Salus::Scanners::NPMAudit.new(
           repository: repo, config: config_file['scanner_configs']['NPMAudit']
