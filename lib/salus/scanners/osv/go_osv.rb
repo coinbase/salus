@@ -131,7 +131,7 @@ module Salus::Scanners::OSV
     def vulnerability_info_for(version_range)
       introduced = version_range["events"]&.first&.[]("introduced")
       fixed = version_range["events"]&.[](1)&.[]("fixed")
-      
+
       [introduced.nil? ? EMPTY_STRING : introduced, fixed.nil? ? EMPTY_STRING : fixed]
     end
 
