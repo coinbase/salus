@@ -23,6 +23,7 @@ if parsed_file.errors.size.positive?
 end
 
 properties = {}
+
 # Parse contents within each <properties> tag and map it to dependency version
 # ${logback.version} => 1.2.10
 # <dependency>
@@ -42,6 +43,7 @@ nodes.each do |node|
 end
 
 dependencies = []
+
 # Parse contents within each <dependency> tag
 parsed_file.css('dependency').each do |dependency|
   group_id = dependency.at('groupId')
