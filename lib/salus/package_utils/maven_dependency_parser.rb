@@ -19,7 +19,28 @@ module Salus
         @pom_xml_content.errors.each { |err| err_msg += "#{err}\n" }
         raise StandardError, err_msg
       end
+      parse_dependencies
+    end
 
+    private
+
+    def parse_dependencies
+      properties = parse_properties
+      @pom_xml_content.css('dependency')&.each do |dependency|
+        group_id = dependency.at('groupId')
+        artifact_id = dependency.at('artifactId')
+        version = dependency.at('version')
+        version = properties.dig(version.children.to_s) || version.children.to_s unless version.nil?
+
+        @pom_xml_dependencies.append({
+                                       "group_id" => group_id.nil? ? nil : group_id.children.to_s,
+                        "artifact_id" => artifact_id.nil? ? nil : artifact_id.children.to_s,
+                        "version" => version
+                                     })
+      end
+    end
+
+    def parse_properties
       # Parse contents within each <properties> tag and map it to dependency version
       # ${logback.version} => 1.2.10
       # <dependency>
@@ -38,23 +59,7 @@ module Salus
           properties["${#{children.name}}"] = children.text
         end
       end
-
-      parsed = []
-      # Parse contents within each <dependency> tag
-      @pom_xml_content.css('dependency').each do |dependency|
-        group_id = dependency.at('groupId')
-        artifact_id = dependency.at('artifactId')
-        version = dependency.at('version')
-        version = properties.dig(version.children.to_s) || version.children.to_s unless version.nil?
-
-        parsed.append({
-                        "group_id" =>  group_id.nil? ? nil : group_id.children.to_s,
-                        "artifact_id" => artifact_id.nil? ? nil : artifact_id.children.to_s,
-                        "version" => version
-                      })
-      end
-
-      @pom_xml_dependencies = parsed
+      properties
     end
   end
 end
