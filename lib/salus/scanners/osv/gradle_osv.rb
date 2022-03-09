@@ -4,7 +4,7 @@ module Salus::Scanners::OSV
   class GradleOSV < Base
     class SemVersion < Gem::Version; end
 
-    EMPTY_STRING = "Not Found".freeze
+    EMPTY_STRING = "".freeze
     DEFAULT_SOURCE = "https://osv.dev/list".freeze
     DEFAULT_SEVERITY = "MODERATE".freeze
     GITHUB_DATABASE_STRING = "Github Advisory Database".freeze
@@ -32,23 +32,15 @@ module Salus::Scanners::OSV
         return
       end
 
-      # Match vulnerable dependencies.
-      # Dedupe and select Github Advisory over other sources if available.
-      results = []
-      grouped = match_vulnerable_dependencies(dependencies).group_by { |d| d[:ID] }
-      grouped.each do |_key, values|
-        vuln = {}
-        values.each do |v|
-          vuln = v if v[:Database] == GITHUB_DATABASE_STRING
-        end
-        results.append(vuln.empty? ? values[0] : vuln)
-      end
       # Report scanner status
+      results = fetch_vulnerable_dependencies(dependencies)
       return report_success if results.empty?
 
       report_failure
       log(JSON.pretty_generate(results))
     end
+
+    private
 
     # Match if dependency version found is in the range of
     # vulnerable dependency found.
@@ -87,19 +79,7 @@ module Salus::Scanners::OSV
 
           package_matches.each do |m|
             m["ranges"].each do |version_ranges|
-              introduced = fixed = ""
-              if version_ranges["events"].length == 1
-                if version_ranges["events"][0].key?("introduced")
-                  introduced = version_ranges["events"][0]["introduced"]
-                end
-              elsif version_ranges["events"].length == 2
-                if version_ranges["events"][0].key?("introduced") &&
-                    version_ranges["events"][1].key?("fixed")
-                  introduced = version_ranges["events"][0]["introduced"]
-                  fixed = version_ranges["events"][1]["fixed"]
-                end
-              end
-
+              introduced, fixed = vulnerability_info_for(version_ranges)
               if version_ranges["type"] == "SEMVER" || version_ranges["type"] == "ECOSYSTEM"
                 if version_matching(version, introduced, fixed)
                   results.append({
@@ -148,6 +128,26 @@ module Salus::Scanners::OSV
       end
 
       uniques
+    end
+
+    def vulnerability_info_for(version_range)
+      introduced = version_range["events"]&.first&.[]("introduced")
+      fixed = version_range["events"]&.[](1)&.[]("fixed")
+      [introduced.nil? ? EMPTY_STRING : introduced, fixed.nil? ? EMPTY_STRING : fixed]
+    end
+
+    # Fetch and Dedupe / Select Github Advisory over other sources when available.
+    def fetch_vulnerable_dependencies(dependencies)
+      results = []
+      grouped = match_vulnerable_dependencies(dependencies).group_by { |d| d[:ID] }
+      grouped.each do |_key, values|
+        vuln = {}
+        values.each do |v|
+          vuln = v if v[:Database] == GITHUB_DATABASE_STRING
+        end
+        results.append(vuln.empty? ? values[0] : vuln)
+      end
+      results
     end
   end
 end
