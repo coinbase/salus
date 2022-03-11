@@ -1,5 +1,5 @@
 {
-  "version": "2.17.1",
+  "version": "2.17.3",
   "passed": true,
   "running_time": 0.0,
   "scans": {
@@ -71,11 +71,19 @@
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
+      "GoOSV": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
       "GoVersionScanner": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
       "Gosec": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "MavenOSV" :{
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },

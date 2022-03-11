@@ -21,29 +21,16 @@ module Salus::Scanners
     end
 
     def record_dep_from_go_sum
-      go_sum_path = @repository.go_sum_path.to_s
-      dep_list = []
-
-      File.foreach(go_sum_path).each("=\n") do |line|
-        line = line.strip
-        next if line.empty?
-
-        go_sum_regex = %r{(?<namespace>(.*)(?!/go\.mod))/(?<name>[^\s]*)
-        (\s)*(?<version>(.*))(\s)*h1:(?<checksum>(.*))}x
-
-        if (matches = line.match(go_sum_regex))
-          dep_list.append(
-            {
-              "namespace" => (matches[:namespace]).to_s,
-              "name" => (matches[:name]).to_s,
-              "version" => (matches[:version]).to_s.gsub(%r{/go.mod}, '').strip,
-              "checksum" => (matches[:checksum]).to_s
-            }
-          )
-        end
+      begin
+        parser = Salus::GoDependencyParser.new(@repository.go_sum_path)
+        parser.parse
+      rescue StandardError => e
+        report_stderr(e.message)
+        report_error(e.message)
+        return
       end
-      # Note references are hashes meant for packages in Gopkg.lock files
-      dep_list.each do |dependency|
+
+      parser.go_dependencies["parsed"].each do |dependency|
         record_dep_package(
           namespace: dependency["namespace"],
           name: dependency["namespace"] + "/" + dependency["name"],
