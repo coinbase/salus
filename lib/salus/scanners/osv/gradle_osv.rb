@@ -65,7 +65,7 @@ module Salus::Scanners::OSV
       dependencies.each do |dependency|
         lib = "#{dependency['group_id']}:#{dependency['artifact_id']}"
 
-        if dependency['version']
+        if dependency['version'].present?
           version = dependency['version']
           # Cleanup version string.
           version = version.delete("^0-9.").gsub(/\.+$/, "")
