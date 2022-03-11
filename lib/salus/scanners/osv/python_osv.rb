@@ -45,18 +45,12 @@ module Salus::Scanners::OSV
     # Match if dependency version found is in version list
     def version_matching(version, vulnerable_versions)
       vulnerable_flag = false
-      range = version.split(",")
-      if range.length == 1
-        vulnerable_versions.each do |vulnerable_version|
-          vulnerable_flag = SemDependency.new('', range[0]).match?('', vulnerable_version)
-          break if vulnerable_flag
+      vulnerable_versions.each do |vulnerable_version|
+        status = version.split(",").collect do |each|
+          SemDependency.new('', each).match?('', vulnerable_version)
         end
-      elsif range.length == 2
-        vulnerable_versions.each do |vulnerable_version|
-          vulnerable_flag = SemDependency.new('', range[0]).match?('', vulnerable_version) &&
-            SemDependency.new('', range[1]).match?('', vulnerable_version)
-          break if vulnerable_flag
-        end
+        vulnerable_flag = status.all?
+        break if vulnerable_flag
       end
 
       vulnerable_flag
@@ -67,7 +61,7 @@ module Salus::Scanners::OSV
     def match_vulnerable_dependencies(dependencies)
       results = []
       dependencies.each do |lib, version|
-        if version
+        if version.present?
           version = version.gsub("==", "")
           package_matches = @osv_vulnerabilities.select do |v|
             v.dig("package", "name") == lib
