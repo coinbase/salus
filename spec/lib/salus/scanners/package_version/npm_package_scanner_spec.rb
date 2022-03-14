@@ -3,7 +3,9 @@ require_relative '../../../../spec_helper.rb'
 describe Salus::Scanners::PackageVersion::NPMPackageScanner do
   let(:path) { 'spec/fixtures/package_version/npm_package_version_scanner/' }
   let(:config_file) { YAML.load_file("#{path}/salus.yml") }
+  let(:config_file_with_block) { YAML.load_file("#{path}/salus_fail_with_block.yml") }
   let(:scanner_config) { config_file['scanner_configs']["NPMPackageScanner"] }
+  let(:scanner_config_with_block) { config_file_with_block['scanner_configs']["NPMPackageScanner"] }
 
   describe '#should_run?' do
     it 'should return false when package lock file is absent' do
@@ -35,6 +37,18 @@ describe Salus::Scanners::PackageVersion::NPMPackageScanner do
         )
       end
 
+      it 'should fail when package in repo matched blocked range' do
+        repo = Salus::Repo.new('spec/fixtures/npm_audit/failure')
+        scanner = Salus::Scanners::PackageVersion::NPMPackageScanner.new(repository: repo,
+          config: scanner_config_with_block)
+        scanner.run
+        expect(scanner.report.passed?).to eq(false)
+        expect(scanner.report.to_h).to include(
+          { errors: [{ message: "Package version for (mobx) (3.6.2) matches the configured "\
+            "blocked version (3.6.2) on line {13} in package-lock.json" }] }
+        )
+      end
+
       it 'should pass when package-lock file exists and nothing is configured for the scanner' do
         repo = Salus::Repo.new('spec/fixtures/npm_audit/failure')
         scanner = Salus::Scanners::PackageVersion::NPMPackageScanner.new(repository: repo,
@@ -48,6 +62,7 @@ describe Salus::Scanners::PackageVersion::NPMPackageScanner do
         config = scanner_config
         config['package_versions']['mobx']['min_version'] = '3.6.0'
         config['package_versions']['uglify-js']['max_version'] = '1.3.4'
+        config['package_versions']['mobx']['block'] = '1.1.1'
         scanner = Salus::Scanners::PackageVersion::NPMPackageScanner.new(repository: repo,
           config: config)
         scanner.run
