@@ -28,7 +28,7 @@ module Salus::Scanners::OSV
         return
       end
 
-      dependencies = select_dependencies(parser.go_dependencies)
+      dependencies = parser.select_dependencies(parser.go_dependencies)
 
       @osv_vulnerabilities ||= fetch_vulnerabilities(GO_OSV_ADVISORY_URL)
       if @osv_vulnerabilities.nil?
@@ -47,25 +47,6 @@ module Salus::Scanners::OSV
     end
 
     private
-
-    # Find dependencies from the project
-    def select_dependencies(all_dependencies)
-      dependencies = {}
-      # Pick specific version of dependencies
-      # If multiple versions of dependencies are found then pick the max version to mimic MVS
-      # https://go.dev/ref/mod#minimal-version-selection
-      all_dependencies["parsed"].each do |dependency|
-        lib = dependency["namespace"] + "/" + dependency["name"]
-        version = dependency["version"].to_s.gsub('v', '').gsub('+incompatible', '')
-        if dependencies.key?(lib)
-          dependencies[lib] = version if SemVersion.new(version) >
-            SemVersion.new(dependencies[lib])
-        else
-          dependencies[lib] = version
-        end
-      end
-      dependencies
-    end
 
     # Match if dependency version found is in the range of
     # vulnerable dependency found.
