@@ -5,7 +5,7 @@ require 'salus/scanners/base'
 module Salus::Scanners
   class ReportGradleDeps < Base
     def run
-      shell_return = run_shell("/home/bin/parse_gradle_deps")
+      shell_return = run_shell('bin/parse_gradle_deps', chdir: nil)
 
       if !shell_return.success?
         report_error(shell_return.stderr)

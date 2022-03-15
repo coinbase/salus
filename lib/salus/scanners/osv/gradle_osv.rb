@@ -7,7 +7,6 @@ module Salus::Scanners::OSV
     EMPTY_STRING = "".freeze
     DEFAULT_SOURCE = "https://osv.dev/list".freeze
     DEFAULT_SEVERITY = "MODERATE".freeze
-    GITHUB_DATABASE_STRING = "Github Advisory Database".freeze
     GRADLE_OSV_ADVISORY_URL = "https://osv-vulnerabilities.storage.googleapis.com"\
         "/Maven/all.zip".freeze
 
@@ -16,6 +15,7 @@ module Salus::Scanners::OSV
     end
 
     def run
+      # Find dependencies
       dependencies = find_dependencies
       if dependencies.empty?
         err_msg = "GradleOSV: Failed to parse any dependencies from the project."
@@ -24,6 +24,7 @@ module Salus::Scanners::OSV
         return
       end
 
+      # Fetch vulnerabilities
       @osv_vulnerabilities ||= fetch_vulnerabilities(GRADLE_OSV_ADVISORY_URL)
       if @osv_vulnerabilities.nil?
         err_msg = "GradleOSV: No vulnerabilities found to compare."
@@ -32,8 +33,9 @@ module Salus::Scanners::OSV
         return
       end
 
-      # Report scanner status
-      results = fetch_vulnerable_dependencies(dependencies)
+      # Match and Report scanner status
+      vulnerabilities_found = match_vulnerable_dependencies(dependencies)
+      results = group_vulnerable_dependencies(vulnerabilities_found)
       return report_success if results.empty?
 
       report_failure
@@ -93,7 +95,6 @@ module Salus::Scanners::OSV
               introduced, fixed = vulnerability_info_for(version_ranges)
               if %w[SEMVER ECOSYSTEM].include?(version_ranges["type"]) &&
                   version_matching(version, introduced, fixed)
-                puts "Found", match["package"]["name"]
                 results.append(format_vulnerability_result(match, version, introduced, fixed))
               end
             end
@@ -105,7 +106,7 @@ module Salus::Scanners::OSV
 
     # Find dependencies from the project
     def find_dependencies
-      shell_return = run_shell("/home/bin/parse_gradle_deps")
+      shell_return = run_shell('bin/parse_gradle_deps', chdir: nil)
       if !shell_return.success?
         report_error(shell_return.stderr)
         return []
@@ -151,20 +152,6 @@ module Salus::Scanners::OSV
       introduced = version_range["events"]&.first&.[]("introduced")
       fixed = version_range["events"]&.[](1)&.[]("fixed")
       [introduced.nil? ? EMPTY_STRING : introduced, fixed.nil? ? EMPTY_STRING : fixed]
-    end
-
-    # Fetch and Dedupe / Select Github Advisory over other sources when available.
-    def fetch_vulnerable_dependencies(dependencies)
-      results = []
-      grouped = match_vulnerable_dependencies(dependencies).group_by { |d| d[:ID] }
-      grouped.each do |_key, values|
-        vuln = {}
-        values.each do |v|
-          vuln = v if v[:Database] == GITHUB_DATABASE_STRING
-        end
-        results.append(vuln.empty? ? values[0] : vuln)
-      end
-      results
     end
   end
 end

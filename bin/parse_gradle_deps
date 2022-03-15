@@ -4,7 +4,8 @@ require 'json'
 
 dependency_metadata_regex = /-\s(?<group_id>.+):(?<artifact_id>.+):(?<version>.+)/
 
-gradle_stdout = `gradle dependencies`
+# 'gradle dependencies' command needs to be run in the folder where buid.gradle is present.
+gradle_stdout = `cd repo && gradle dependencies`
 
 dependencies = []
 
