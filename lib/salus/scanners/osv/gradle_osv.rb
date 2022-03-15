@@ -106,7 +106,7 @@ module Salus::Scanners::OSV
 
     # Find dependencies from the project
     def find_dependencies
-      shell_return = run_shell('bin/parse_gradle_deps', chdir: nil)
+      shell_return = run_shell(['bin/parse_gradle_deps', @repository.path_to_repo], chdir: nil)
       if !shell_return.success?
         report_error(shell_return.stderr)
         return []
