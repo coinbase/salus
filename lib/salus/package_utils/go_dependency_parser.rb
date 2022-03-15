@@ -60,4 +60,3 @@ module Salus
     end
   end
 end
-
