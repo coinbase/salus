@@ -16,6 +16,7 @@ module Salus::Scanners::OSV
     end
 
     def run
+      # Find dependencies
       dependencies = find_dependencies
       if dependencies.empty?
         err_msg = "PythonOSV: Failed to parse any dependencies from the project."
@@ -24,6 +25,7 @@ module Salus::Scanners::OSV
         return
       end
 
+      # Fetch vulnerabilities
       @osv_vulnerabilities ||= fetch_vulnerabilities(PYTHON_OSV_ADVISORY_URL)
       if @osv_vulnerabilities.nil?
         err_msg = "PythonOSV: No vulnerabilities found to compare."
@@ -32,8 +34,9 @@ module Salus::Scanners::OSV
         return
       end
 
-      # Report scanner status
-      results = fetch_vulnerable_dependencies(dependencies)
+      # Match and Report scanner status
+      vulnerabilities_found = match_vulnerable_dependencies(dependencies)
+      results = group_vulnerable_dependencies(vulnerabilities_found)
       return report_success if results.empty?
 
       report_failure
@@ -114,20 +117,6 @@ module Salus::Scanners::OSV
         "Severity": match.dig("database_specific",
                               "severity") || DEFAULT_SEVERITY
       }
-    end
-
-    # Fetch and Dedupe / Select Github Advisory over other sources when available.
-    def fetch_vulnerable_dependencies(dependencies)
-      results = []
-      grouped = match_vulnerable_dependencies(dependencies).group_by { |d| d[:ID] }
-      grouped.each do |_key, values|
-        vuln = {}
-        values.each do |v|
-          vuln = v if v[:Database] == GITHUB_DATABASE_STRING
-        end
-        results.append(vuln.empty? ? values[0] : vuln)
-      end
-      results
     end
 
     # Find dependencies from the project
