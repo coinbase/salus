@@ -44,7 +44,6 @@ module Salus::Scanners::PackageVersion
 
     def check_max_version(package_name, line_number, repo_version, max_version)
       if repo_version > max_version
-        line_number = @dependencies[package_name][repo_version.to_s].to_s
         msg = "Package version for (#{package_name}) (#{repo_version}) " \
           "is greater than maximum configured version (#{max_version}) on line "\
           "{#{line_number}} in package-lock.json."
@@ -55,7 +54,6 @@ module Salus::Scanners::PackageVersion
     def check_blocked_versions(package_name, line_number, repo_version, blocked_versions)
       blocked_versions.each do |blocked|
         if repo_version == blocked
-          line_number = @dependencies[package_name][repo_version.to_s].to_s
           msg = "Package version for (#{package_name}) (#{repo_version}) " \
           "matches the configured blocked version (#{blocked}) on line "\
           "{#{line_number}} in package-lock.json."
