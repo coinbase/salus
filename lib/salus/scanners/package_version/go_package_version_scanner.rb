@@ -33,6 +33,7 @@ module Salus::Scanners::PackageVersion
         error_msg = "Package version for (#{package_name}) (#{repo_version})" \
         " is less than minimum configured version (#{min_version}) in go.sum"
         report_error(error_msg)
+        report_stderr(error_msg)
         @passed = false
       end
     end
@@ -42,6 +43,7 @@ module Salus::Scanners::PackageVersion
         error_msg = "Package version for (#{package_name}) (#{repo_version})" \
           " is greater than maximum configured version (#{max_version}) in go.sum"
         report_error(error_msg)
+        report_stderr(error_msg)
         @passed = false
       end
     end
@@ -52,6 +54,7 @@ module Salus::Scanners::PackageVersion
           error_msg = "Package version for (#{package_name}) (#{repo_version})" \
           " matches the configured blocked version (#{blocked}) in go.sum"
           report_error(error_msg)
+          report_stderr(error_msg)
           @passed = false
         end
       end
