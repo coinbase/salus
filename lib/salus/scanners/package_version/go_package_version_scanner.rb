@@ -31,7 +31,7 @@ module Salus::Scanners::PackageVersion
     def check_min_version(package_name, repo_version, min_version)
       if repo_version < min_version
         error_msg = "Package version for (#{package_name}) (#{repo_version})" \
-        "is less than minimum configured version (#{min_version}) in go.sum"
+        " is less than minimum configured version (#{min_version}) in go.sum"
         report_error(error_msg)
         @passed = false
       end
@@ -39,8 +39,8 @@ module Salus::Scanners::PackageVersion
 
     def check_max_version(package_name, repo_version, max_version)
       if repo_version > max_version
-        error_msg = "Package version for (#{package_name}) (#{repo_version}) " \
-          "is greater than maximum configured version (#{max_version}) in go.sum"
+        error_msg = "Package version for (#{package_name}) (#{repo_version})" \
+          " is greater than maximum configured version (#{max_version}) in go.sum"
         report_error(error_msg)
         @passed = false
       end
@@ -49,8 +49,8 @@ module Salus::Scanners::PackageVersion
     def check_blocked_versions(package_name, repo_version, blocked_versions)
       blocked_versions.each do |blocked|
         if repo_version == blocked
-          error_msg = "Package version for (#{package_name}) (#{repo_version}) " \
-          "matches the configured blocked version (#{blocked}) in go.sum"
+          error_msg = "Package version for (#{package_name}) (#{repo_version})" \
+          " matches the configured blocked version (#{blocked}) in go.sum"
           report_error(error_msg)
           @passed = false
         end

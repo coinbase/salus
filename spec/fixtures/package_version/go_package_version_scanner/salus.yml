@@ -1,0 +1,7 @@
+active_scanners:
+  - GoPackageScanner
+
+
+scanner_configs:
+  GoPackageScanner:
+    package_versions:
