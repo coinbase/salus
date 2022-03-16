@@ -30,10 +30,11 @@ describe Salus::Scanners::PackageVersion::NPMPackageScanner do
         scanner.run
         expect(scanner.report.passed?).to eq(false)
         expect(scanner.report.to_h).to include(
-          { errors: [{ message: "Package version for (mobx) (3.6.2)is less than minimum configured"\
-            " version (3.6.3) on line {13} in package-lock.json" }, { message: "Package version fo"\
-              "r (uglify-js) (1.2.3) is greater than maximum configured version (0.10.3) on line "\
-              "{18} in package-lock.json" }] }
+          { errors: [{ message: "Package version for (mobx) (3.6.2) is less than minimum"\
+            " configured version (3.6.3) on line {13} in package-lock.json." },
+                     { message: "Package "\
+                       "version for (uglify-js) (1.2.3) is greater than maximum configured "\
+                       "version (0.10.3) on line {18} in package-lock.json." }] }
         )
       end
 
@@ -45,7 +46,7 @@ describe Salus::Scanners::PackageVersion::NPMPackageScanner do
         expect(scanner.report.passed?).to eq(false)
         expect(scanner.report.to_h).to include(
           { errors: [{ message: "Package version for (mobx) (3.6.2) matches the configured "\
-            "blocked version (3.6.2) on line {13} in package-lock.json" }] }
+            "blocked version (3.6.2) on line {13} in package-lock.json." }] }
         )
       end
 

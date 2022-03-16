@@ -17,10 +17,15 @@ module Salus::Scanners::PackageVersion
         repo_version = SemVersion.new(@dependencies[package_name].keys[0])
 
         if repo_version
-          check_min_version(package_name, repo_version, min_version) if min_version.present?
-          check_max_version(package_name, repo_version, max_version) if max_version.present?
+          line_number = @dependencies[package_name][repo_version.to_s].to_s
+          if min_version.present?
+            check_min_version(package_name, line_number, repo_version, min_version)
+          end
+          if max_version.present?
+            check_max_version(package_name, line_number, repo_version, max_version)
+          end
           if blocked_versions.present?
-            check_blocked_versions(package_name, repo_version, blocked_versions)
+            check_blocked_versions(package_name, line_number, repo_version, blocked_versions)
           end
         end
       end
@@ -28,40 +33,33 @@ module Salus::Scanners::PackageVersion
 
     private
 
-    def check_min_version(package_name, repo_version, min_version)
+    def check_min_version(package_name, line_number, repo_version, min_version)
       if repo_version < min_version
-        line_number = @dependencies[package_name][repo_version.to_s].to_s
-        error_msg = "Package version for (#{package_name}) (#{repo_version})" \
+        msg = "Package version for (#{package_name}) (#{repo_version}) " \
         "is less than minimum configured version (#{min_version}) on line " \
-        "{#{line_number}} in package-lock.json"
-        report_error(error_msg)
-        report_stderr(error_msg)
-        @passed = false
+        "{#{line_number}} in package-lock.json."
+        report_error_status(msg)
       end
     end
 
-    def check_max_version(package_name, repo_version, max_version)
+    def check_max_version(package_name, line_number, repo_version, max_version)
       if repo_version > max_version
         line_number = @dependencies[package_name][repo_version.to_s].to_s
-        error_msg = "Package version for (#{package_name}) (#{repo_version}) " \
+        msg = "Package version for (#{package_name}) (#{repo_version}) " \
           "is greater than maximum configured version (#{max_version}) on line "\
-          "{#{line_number}} in package-lock.json"
-        report_error(error_msg)
-        report_stderr(error_msg)
-        @passed = false
+          "{#{line_number}} in package-lock.json."
+        report_error_status(msg)
       end
     end
 
-    def check_blocked_versions(package_name, repo_version, blocked_versions)
+    def check_blocked_versions(package_name, line_number, repo_version, blocked_versions)
       blocked_versions.each do |blocked|
         if repo_version == blocked
           line_number = @dependencies[package_name][repo_version.to_s].to_s
-          error_msg = "Package version for (#{package_name}) (#{repo_version}) " \
+          msg = "Package version for (#{package_name}) (#{repo_version}) " \
           "matches the configured blocked version (#{blocked}) on line "\
-          "{#{line_number}} in package-lock.json"
-          report_error(error_msg)
-          report_stderr(error_msg)
-          @passed = false
+          "{#{line_number}} in package-lock.json."
+          report_error_status(msg)
         end
       end
     end

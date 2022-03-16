@@ -49,6 +49,12 @@ module Salus::Scanners::PackageVersion
 
     private
 
+    def report_error_status(msg)
+      report_error(msg)
+      report_stderr(msg)
+      @passed = false
+    end
+
     def parse_blocked_versions(blocked_versions)
       versions = []
       blocked_versions.split(",").each do |blocked_version|
