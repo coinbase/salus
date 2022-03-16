@@ -35,6 +35,7 @@ module Salus::Scanners::PackageVersion
         "is less than minimum configured version (#{min_version}) on line " \
         "{#{line_number}} in package-lock.json"
         report_error(error_msg)
+        report_stderr(error_msg)
         @passed = false
       end
     end
@@ -46,6 +47,7 @@ module Salus::Scanners::PackageVersion
           "is greater than maximum configured version (#{max_version}) on line "\
           "{#{line_number}} in package-lock.json"
         report_error(error_msg)
+        report_stderr(error_msg)
         @passed = false
       end
     end
@@ -58,6 +60,7 @@ module Salus::Scanners::PackageVersion
           "matches the configured blocked version (#{blocked}) on line "\
           "{#{line_number}} in package-lock.json"
           report_error(error_msg)
+          report_stderr(error_msg)
           @passed = false
         end
       end
