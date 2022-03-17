@@ -39,7 +39,7 @@ describe Salus::Scanners::PackageVersion::GoPackageScanner do
         expect(scanner.report.to_h).to include(
           { errors: [{
             message: "Package version for (github.com/syncthing/syncthing) (1.14.0) is greater"\
-            " than maximum configured version (1.0.5) in go.sum"
+            " than maximum configured version (1.0.5) in go.sum."
           }] }
         )
       end
@@ -53,7 +53,7 @@ describe Salus::Scanners::PackageVersion::GoPackageScanner do
         expect(scanner.report.to_h).to include(
           { errors: [{
             message: "Package version for (github.com/syncthing/syncthing) (1.14.0) matches"\
-          " the configured blocked version (1.14.0) in go.sum"
+          " the configured blocked version (1.14.0) in go.sum."
           }] }
         )
       end

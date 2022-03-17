@@ -33,7 +33,7 @@ describe Sarif::GoPackageScannerSarif do
         { "ruleId" => "PV0001",
          "ruleIndex" => 0, "level" => "error",
          "message" => { "text" => "Package version for (github.com/syncthing/syncthing) (1.14.0)"\
-            " is greater than maximum configured version (1.0.5) in go.sum" },
+            " is greater than maximum configured version (1.0.5) in go.sum." },
          "locations" => [{ "physicalLocation" => {
            "artifactLocation" => { "uri" => "go.sum",
          "uriBaseId" => "%SRCROOT%" }
