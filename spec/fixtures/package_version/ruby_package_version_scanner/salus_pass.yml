@@ -1,0 +1,10 @@
+active_scanners:
+  - RubyPackageScanner
+
+scanner_configs:
+  RubyPackageScanner:
+    package_versions:
+      actionmailer:
+        min_version: '4.0.0'
+        max_version: '5.0.0'
+        block: '4.0.1'

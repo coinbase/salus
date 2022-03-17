@@ -1,0 +1,7 @@
+active_scanners:
+  - RubyPackageScanner
+
+
+scanner_configs:
+  RubyPackageScanner:
+    package_versions:
