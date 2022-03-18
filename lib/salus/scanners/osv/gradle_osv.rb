@@ -69,7 +69,10 @@ module Salus::Scanners::OSV
 
         if dependency['version'].present?
           version = dependency['version']
-          # Cleanup version string to handle case like 1.2.1.somestring
+          puts version
+          # Cleanup version string to handle case like -
+          # 1.2.1.somestring / 9999.0-empty-to-avoid-conflict-with-test /
+          # 30.3.0-deprecated-use-gradle-api
           version = version.delete("^0-9.").gsub(/\.+$/, "")
           package_matches = @osv_vulnerabilities.select do |v|
             v.dig("package", "name") == lib
