@@ -87,6 +87,10 @@
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
+      "GradleOSV": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
       "MavenOSV" :{
         "pass_on_raise": false,
         "scanner_timeout_s": 0
@@ -96,6 +100,10 @@
         "scanner_timeout_s": 0
       },
       "NPMPackageScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "PythonOSV": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },

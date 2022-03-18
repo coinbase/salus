@@ -16,6 +16,7 @@ module Salus::Scanners::OSV
 
     def run
       begin
+        # Find dependencies
         parser = Salus::GoDependencyParser.new(@repository.go_sum_path)
         parser.parse
         if parser.go_dependencies["parsed"].empty?
@@ -28,8 +29,9 @@ module Salus::Scanners::OSV
         return
       end
 
-      dependencies = parser.select_dependencies(parser.go_dependencies)
+      dependencies = select_dependencies(parser.go_dependencies)
 
+      # Fetch vulnerabilities
       @osv_vulnerabilities ||= fetch_vulnerabilities(GO_OSV_ADVISORY_URL)
       if @osv_vulnerabilities.nil?
         err_msg = "GoOSV: No vulnerabilities found to compare."
@@ -38,8 +40,9 @@ module Salus::Scanners::OSV
         return
       end
 
-      # Report scanner status
-      results = fetch_vulnerable_dependencies(dependencies)
+      # Match and Report scanner status
+      vulnerabilities_found = match_vulnerable_dependencies(dependencies)
+      results = group_vulnerable_dependencies(vulnerabilities_found)
       return report_success if results.empty?
 
       report_failure

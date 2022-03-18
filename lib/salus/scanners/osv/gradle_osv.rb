@@ -1,46 +1,40 @@
 require 'salus/scanners/osv/base'
 
 module Salus::Scanners::OSV
-  class MavenOSV < Base
+  class GradleOSV < Base
     class SemVersion < Gem::Version; end
 
     EMPTY_STRING = "".freeze
     DEFAULT_SOURCE = "https://osv.dev/list".freeze
     DEFAULT_SEVERITY = "MODERATE".freeze
-    GITHUB_DATABASE_STRING = "Github Advisory Database".freeze
-    MAVEN_OSV_ADVISORY_URL = "https://osv-vulnerabilities.storage.googleapis.com/"\
-        "Maven/all.zip".freeze
+    GRADLE_OSV_ADVISORY_URL = "https://osv-vulnerabilities.storage.googleapis.com"\
+        "/Maven/all.zip".freeze
 
     def should_run?
-      @repository.pom_xml_present?
+      @repository.build_gradle_present?
     end
 
     def run
-      begin
-        # Find dependencies
-        parser = Salus::MavenDependencyParser.new(@repository.pom_xml_path)
-        parser.parse
-        if parser.pom_xml_dependencies.empty?
-          err_msg = "MavenOSV: Failed to parse any dependencies from the project."
-          raise StandardError, err_msg
-        end
-      rescue StandardError => e
-        report_stderr(e.message)
-        report_error(e.message)
+      # Find dependencies
+      dependencies = find_dependencies
+      if dependencies.empty?
+        err_msg = "GradleOSV: Failed to parse any dependencies from the project."
+        report_stderr(err_msg)
+        report_error(err_msg)
         return
       end
 
       # Fetch vulnerabilities
-      @osv_vulnerabilities ||= fetch_vulnerabilities(MAVEN_OSV_ADVISORY_URL)
+      @osv_vulnerabilities ||= fetch_vulnerabilities(GRADLE_OSV_ADVISORY_URL)
       if @osv_vulnerabilities.nil?
-        err_msg = "MavenOSV: No vulnerabilities found to compare."
+        err_msg = "GradleOSV: No vulnerabilities found to compare."
         report_stderr(err_msg)
         report_error(err_msg)
         return
       end
 
       # Match and Report scanner status
-      vulnerabilities_found = match_vulnerable_dependencies(parser.pom_xml_dependencies)
+      vulnerabilities_found = match_vulnerable_dependencies(dependencies)
       results = group_vulnerable_dependencies(vulnerabilities_found)
       return report_success if results.empty?
 
@@ -71,18 +65,18 @@ module Salus::Scanners::OSV
     def match_vulnerable_dependencies(dependencies)
       results = []
       dependencies.each do |dependency|
-        lib = "#{dependency.fetch('group_id', '')}:#{dependency.fetch('artifact_id', '')}"
-        if dependency['version']
-          version = dependency['version']
-          # If version is of the format '${deps.version}', log it.
-          if version.match(/\${(.*)\.version}/)
-            bugsnag_notify("MavenOSV: Found #{lib}:#{version} with incompatible format.")
-            next
-          end
+        lib = "#{dependency['group_id']}:#{dependency['artifact_id']}"
 
+        if dependency['version'].present?
+          version = dependency['version']
+          # Cleanup version string to handle case like -
+          # 1.2.1.somestring / 9999.0-empty-to-avoid-conflict-with-test /
+          # 30.3.0-deprecated-use-gradle-api
+          version = version.delete("^0-9.").gsub(/\.+$/, "")
           package_matches = @osv_vulnerabilities.select do |v|
             v.dig("package", "name") == lib
           end
+
           package_matches.each do |match|
             # 'match' format
             # {
@@ -103,7 +97,7 @@ module Salus::Scanners::OSV
               introduced, fixed = vulnerability_info_for(version_ranges)
               if %w[SEMVER ECOSYSTEM].include?(version_ranges["type"]) &&
                   version_matching(version, introduced, fixed)
-                results.append(vulnerability_document(match, version, introduced, fixed))
+                results.append(format_vulnerability_result(match, version, introduced, fixed))
               end
             end
           end
@@ -112,7 +106,33 @@ module Salus::Scanners::OSV
       results
     end
 
-    def vulnerability_document(match, version, introduced, fixed)
+    # Find dependencies from the project
+    def find_dependencies
+      shell_return = run_shell(['bin/parse_gradle_deps', @repository.path_to_repo], chdir: nil)
+      if !shell_return.success?
+        report_error(shell_return.stderr)
+        return []
+      end
+
+      begin
+        dependencies = JSON.parse(shell_return.stdout)
+      rescue JSON::ParserError
+        err_msg = "GradleOSV: Could not parse JSON returned by bin/parse_gradle_deps's stdout!"
+        report_stderr(err_msg)
+        report_error(err_msg)
+        return []
+      end
+
+      # Dedupe dependencies returned.
+      uniques = []
+      dependencies.group_by { |e| [e["group_id"], e["artifact_id"]] }.each do |_key, values|
+        uniques.append(values[0])
+      end
+
+      uniques
+    end
+
+    def format_vulnerability_result(match, version, introduced, fixed)
       {
         "Package": match.dig("package", "name"),
         "Vulnerable Version": introduced,
@@ -134,20 +154,6 @@ module Salus::Scanners::OSV
       introduced = version_range["events"]&.first&.[]("introduced")
       fixed = version_range["events"]&.[](1)&.[]("fixed")
       [introduced.nil? ? EMPTY_STRING : introduced, fixed.nil? ? EMPTY_STRING : fixed]
-    end
-
-    # Fetch and Dedupe / Select Github Advisory over other sources when available.
-    def fetch_vulnerable_dependencies(dependencies)
-      results = []
-      grouped = match_vulnerable_dependencies(dependencies).group_by { |d| d[:ID] }
-      grouped.each do |_key, values|
-        vuln = {}
-        values.each do |v|
-          vuln = v if v[:Database] == GITHUB_DATABASE_STRING
-        end
-        results.append(vuln.empty? ? values[0] : vuln)
-      end
-      results
     end
   end
 end
