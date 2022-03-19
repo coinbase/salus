@@ -2,6 +2,7 @@ require 'salus/scanners/package_version/base'
 
 module Salus::Scanners::PackageVersion
   class NPMPackageScanner < Base
+    LOCK_FILE = "package-lock.json".freeze
     def initialize(repository:, config:)
       super
       @dependencies = should_run? ? generate_dependency_hash : {}
@@ -45,7 +46,7 @@ module Salus::Scanners::PackageVersion
       if repo_version < min_version
         violation = "Package version for (#{package_name}) (#{repo_version}) " \
         "is less than minimum configured version (#{min_version}) on line " \
-        "{#{line_number}} in package-lock.json."
+        "{#{line_number}} in #{LOCK_FILE}."
       end
       violation
     end
@@ -55,7 +56,7 @@ module Salus::Scanners::PackageVersion
       if repo_version > max_version
         violation = "Package version for (#{package_name}) (#{repo_version}) " \
           "is greater than maximum configured version (#{max_version}) on line "\
-          "{#{line_number}} in package-lock.json."
+          "{#{line_number}} in #{LOCK_FILE}."
       end
       violation
     end
@@ -66,7 +67,7 @@ module Salus::Scanners::PackageVersion
         if repo_version == blocked
           violation = "Package version for (#{package_name}) (#{repo_version}) " \
           "matches the configured blocked version (#{blocked}) on line "\
-          "{#{line_number}} in package-lock.json."
+          "{#{line_number}} in #{LOCK_FILE}."
           break
         end
       end
@@ -74,7 +75,7 @@ module Salus::Scanners::PackageVersion
     end
 
     def generate_dependency_hash
-      lock_file = "#{@repository.path_to_repo}/package-lock.json"
+      lock_file = "#{@repository.path_to_repo}/#{LOCK_FILE}"
       # record_dep_locations parses the name, line number and version into a hash
       # {name: {version: line_number}, name: {version: line_number}}
       lock_json = Salus::PackageLockJson.new(lock_file)

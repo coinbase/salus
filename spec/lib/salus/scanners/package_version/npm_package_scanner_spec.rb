@@ -28,14 +28,16 @@ describe Salus::Scanners::PackageVersion::NPMPackageScanner do
         scanner = Salus::Scanners::PackageVersion::NPMPackageScanner.new(repository: repo,
           config: scanner_config)
         scanner.run
-        expect(scanner.report.passed?).to eq(false)
         logs = scanner.report.to_h[:logs]
-        puts JSON.parse(logs)
-        # expect(scanner.report.to_h[:logs]).to include(
-        #   '[\n  \"Package version for (mobx) (3.6.2) is less than minimum configured version (3.6.3) on '\ 
-        #   'line {13} in package-lock.json.,\n Package version for (uglify-js) (1.2.3) is greater than maximum '\
-        #   'configured version (0.10.3) on line {18} in package-lock.json.\"\n]'
-        # )
+        expect(scanner.report.passed?).to eq(false)
+        expect(JSON.parse(logs)).to eq(
+          [
+            "Package version for (mobx) (3.6.2) is less than minimum configured version (3.6.3) "\
+            "on line {13} in package-lock.json.",
+            "Package version for (uglify-js) (1.2.3) is greater than maximum configured version "\
+            "(0.10.3) on line {18} in package-lock.json."
+          ]
+        )
       end
 
       it 'should fail when package in repo matched blocked range' do
