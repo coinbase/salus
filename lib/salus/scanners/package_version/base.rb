@@ -6,13 +6,12 @@ module Salus::Scanners::PackageVersion
 
     def initialize(repository:, config:)
       super
-      @passed = true
     end
 
     def run
       # gather all package versions specified in scanner_config
       package_versions = @config['package_versions'] || []
-
+      results = []
       begin
         # for each package in there, check if any violations exist
         package_versions.each do |name, specified_version|
@@ -25,7 +24,7 @@ module Salus::Scanners::PackageVersion
           blocked_versions = if specified_version['block'].present?
                                parse_blocked_versions(specified_version['block'])
                              end
-          check_for_violations(name, min_version, max_version, blocked_versions)
+          results.concat check_for_violations(name, min_version, max_version, blocked_versions)
         end
       rescue ArgumentError
         err_msg = "Malformed SEMVER version number found."
@@ -33,8 +32,10 @@ module Salus::Scanners::PackageVersion
         report_error(err_msg)
         return
       end
+      return report_success if results.empty?
 
-      @passed ? report_success : report_failure
+      report_failure
+      log(JSON.pretty_generate(results))
     end
 
     # Check if a package doesnt fall within a version range
@@ -48,12 +49,6 @@ module Salus::Scanners::PackageVersion
     end
 
     private
-
-    def report_error_status(msg)
-      report_error(msg)
-      report_stderr(msg)
-      @passed = false
-    end
 
     def parse_blocked_versions(blocked_versions)
       versions = []
