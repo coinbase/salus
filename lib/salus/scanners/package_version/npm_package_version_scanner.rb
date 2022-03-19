@@ -17,62 +17,35 @@ module Salus::Scanners::PackageVersion
       if @dependencies.key?(package_name)
         # repo_version: version used in the project
         repo_version = SemVersion.new(@dependencies[package_name].keys[0])
+        line_number = @dependencies[package_name][repo_version.to_s].to_s
         if repo_version
-          line_number = @dependencies[package_name][repo_version.to_s].to_s
-          if min_version.present?
-            violations.append(
-              check_min_version(package_name, line_number, repo_version, min_version)
-            )
-          end
-          if max_version.present?
-            violations.append(
-              check_max_version(package_name, line_number, repo_version, max_version)
-            )
-          end
-          if blocked_versions.present?
-            violations.append(
-              check_blocked_versions(package_name, line_number, repo_version, blocked_versions)
-            )
-          end
+          violations.append(
+            if compare_semver_version("MINIMUM_VERSION_CHECK", repo_version, min_version)
+              "Package version for (#{package_name}) (#{repo_version}) " \
+              "is less than minimum configured version (#{min_version}) on line " \
+              "{#{line_number}} in #{LOCK_FILE}."
+            end
+          )
+          violations.append(
+            if compare_semver_version("MAXIMUM_VERSION_CHECK", repo_version, max_version)
+              "Package version for (#{package_name}) (#{repo_version}) " \
+              "is greater than maximum configured version (#{max_version}) on line " \
+              "{#{line_number}} in #{LOCK_FILE}."
+            end
+          )
+          violations.append(
+            if compare_semver_version("BLOCKED_VERSION_CHECK", repo_version, blocked_versions)
+              "Package version for (#{package_name}) (#{repo_version}) " \
+              "matches the configured blocked version on line " \
+              "{#{line_number}} in #{LOCK_FILE}."
+            end
+          )
         end
       end
       violations.compact
     end
 
     private
-
-    def check_min_version(package_name, line_number, repo_version, min_version)
-      violation = nil
-      if repo_version < min_version
-        violation = "Package version for (#{package_name}) (#{repo_version}) " \
-        "is less than minimum configured version (#{min_version}) on line " \
-        "{#{line_number}} in #{LOCK_FILE}."
-      end
-      violation
-    end
-
-    def check_max_version(package_name, line_number, repo_version, max_version)
-      violation = nil
-      if repo_version > max_version
-        violation = "Package version for (#{package_name}) (#{repo_version}) " \
-          "is greater than maximum configured version (#{max_version}) on line "\
-          "{#{line_number}} in #{LOCK_FILE}."
-      end
-      violation
-    end
-
-    def check_blocked_versions(package_name, line_number, repo_version, blocked_versions)
-      violation = nil
-      blocked_versions.each do |blocked|
-        if repo_version == blocked
-          violation = "Package version for (#{package_name}) (#{repo_version}) " \
-          "matches the configured blocked version (#{blocked}) on line "\
-          "{#{line_number}} in #{LOCK_FILE}."
-          break
-        end
-      end
-      violation
-    end
 
     def generate_dependency_hash
       lock_file = "#{@repository.path_to_repo}/#{LOCK_FILE}"

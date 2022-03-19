@@ -40,7 +40,7 @@ module Salus::Scanners::PackageVersion
 
     # Check if a package doesnt fall within a version range
     # calls raise_error if it dosent fall withing the specified range
-    def check_for_violations(_package_name, _min_version, _max_version)
+    def check_for_violations(_package_name, _min_version, _max_version, _blocked_versions)
       raise NoMethodError
     end
 
@@ -56,6 +56,17 @@ module Salus::Scanners::PackageVersion
         versions.append(SemVersion.new(blocked_version.strip))
       end
       versions
+    end
+
+    def compare_semver_version(type, dependency_version, version_configured)
+      if version_configured.present?
+        case type
+        when "MINIMUM_VERSION_CHECK" then dependency_version < version_configured
+        when "MAXIMUM_VERSION_CHECK" then dependency_version > version_configured
+        when "BLOCKED_VERSION_CHECK" then version_configured.include? dependency_version
+        else false
+        end
+      end
     end
   end
 end

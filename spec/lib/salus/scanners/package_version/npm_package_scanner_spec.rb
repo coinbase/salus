@@ -47,7 +47,7 @@ describe Salus::Scanners::PackageVersion::NPMPackageScanner do
         scanner.run
         expect(scanner.report.passed?).to eq(false)
         expect(scanner.report.to_h[:logs]).to include(
-          "Package version for (mobx) (3.6.2) matches the configured blocked version (3.6.2) on"\
+          "Package version for (mobx) (3.6.2) matches the configured blocked version on"\
           " line {13} in package-lock.json."
         )
       end
