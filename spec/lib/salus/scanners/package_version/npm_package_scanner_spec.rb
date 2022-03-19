@@ -45,10 +45,13 @@ describe Salus::Scanners::PackageVersion::NPMPackageScanner do
         scanner = Salus::Scanners::PackageVersion::NPMPackageScanner.new(repository: repo,
           config: scanner_config_with_block)
         scanner.run
+        logs = scanner.report.to_h[:logs]
         expect(scanner.report.passed?).to eq(false)
-        expect(scanner.report.to_h[:logs]).to include(
-          "Package version for (mobx) (3.6.2) matches the configured blocked version on"\
-          " line {13} in package-lock.json."
+        expect(JSON.parse(logs)).to eq(
+          [
+            "Package version for (mobx) (3.6.2) matches the configured blocked version"\
+          " (3.1.1,3.6.2) on line {13} in package-lock.json."
+          ]
         )
       end
 

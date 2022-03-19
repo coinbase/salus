@@ -68,5 +68,41 @@ module Salus::Scanners::PackageVersion
         end
       end
     end
+
+    def format_min_violation_message(package_name:, package_version:, version:, file:, line: nil)
+      msg = if line.present?
+              "Package version for (#{package_name}) (#{package_version}) is less than minimum " \
+              "configured version (#{version}) on line {#{line}} in #{file}."
+            else
+              "Package version for (#{package_name}) (#{package_version}) is less than minimum " \
+              "configured version (#{version}) in #{file}."
+            end
+      msg
+    end
+
+    def format_max_violation_message(package_name:, package_version:, version:, file:, line: nil)
+      msg = if line.present?
+              "Package version for (#{package_name}) (#{package_version}) is greater than " \
+              "maximum configured version (#{version}) on line {#{line}} in #{file}."
+            else
+              "Package version for (#{package_name}) (#{package_version}) is greater than " \
+              "maximum configured version (#{version}) in #{file}."
+            end
+      msg
+    end
+
+    def format_blocked_violation_message(package_name:, package_version:, version:, file:,
+                                         line: nil)
+      version = version.map(&:to_s).join(",")
+      msg = if line.present?
+              "Package version for (#{package_name}) (#{package_version}) matches " \
+              "the configured blocked version (#{version}) on line {#{line}} "\
+              "in #{file}."
+            else
+              "Package version for (#{package_name}) (#{package_version}) matches " \
+              "the configured blocked version (#{version}) in #{file}."
+            end
+      msg
+    end
   end
 end

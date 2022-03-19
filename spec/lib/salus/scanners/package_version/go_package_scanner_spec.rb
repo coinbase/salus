@@ -50,10 +50,13 @@ describe Salus::Scanners::PackageVersion::GoPackageScanner do
         scanner = Salus::Scanners::PackageVersion::GoPackageScanner.new(repository: repo,
           config: scanner_config_with_block)
         scanner.run
+        logs = scanner.report.to_h[:logs]
         expect(scanner.report.passed?).to eq(false)
-        expect(scanner.report.to_h[:logs]).to include(
-          "Package version for (github.com/syncthing/syncthing) (1.14.0) matches"\
-          " the configured blocked version in go.sum."
+        expect(JSON.parse(logs)).to eq(
+          [
+            "Package version for (github.com/syncthing/syncthing) (1.14.0) matches"\
+              " the configured blocked version (1.14.0,1.5.0) in go.sum."
+          ]
         )
       end
 
