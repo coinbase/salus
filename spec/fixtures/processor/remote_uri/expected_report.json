@@ -83,6 +83,7 @@
       "ReportRubyGems",
       "ReportRustCrates",
       "ReportSwiftDeps",
+      "RubyPackageScanner",
       "RubyVersionScanner",
       "Semgrep",
       "YarnAudit"
@@ -188,6 +189,10 @@
         "scanner_timeout_s": 0
       },
       "ReportSwiftDeps": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "RubyPackageScanner": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
