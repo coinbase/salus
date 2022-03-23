@@ -29,6 +29,11 @@ scanner_configs:
         min_version: '1.1.0'
         max_version: '2.0.0'
         blocks: '1.5.0, 1.6.0'
+  RubyPackageScanner:
+    package_versions
+      actioncable:
+        max_version: '8.0.0'
+        blocks: '7.0.2.2'
 ```
 
 For now, we only support following version scanners:
@@ -36,4 +41,5 @@ For now, we only support following version scanners:
 ```
   NPMPackageScanner
   GoPackageScanner
+  RubyPackageScanner
 ```
