@@ -19,15 +19,15 @@ module Salus::Scanners::PackageVersion
         repo_version = SemVersion.new(@dependencies[package_name])
         if repo_version
           violations += [
-            if compare_semver_version("MINIMUM_VERSION_CHECK", repo_version, min_version)
+            if compare_semver_version(MIN_CHECK, repo_version, min_version)
               format_min_violation_message(package_name: package_name,
                 package_version: repo_version, file: LOCK_FILE, version: min_version)
             end,
-            if compare_semver_version("MAXIMUM_VERSION_CHECK", repo_version, max_version)
+            if compare_semver_version(MAX_CHECK, repo_version, max_version)
               format_max_violation_message(package_name: package_name,
                   package_version: repo_version, file: LOCK_FILE, version: max_version)
             end,
-            if compare_semver_version("BLOCKED_VERSION_CHECK", repo_version, blocked_versions)
+            if compare_semver_version(BLOCK_CHECK, repo_version, blocked_versions)
               format_blocked_violation_message(package_name: package_name,
                   package_version: repo_version, file: LOCK_FILE, version: blocked_versions)
             end
