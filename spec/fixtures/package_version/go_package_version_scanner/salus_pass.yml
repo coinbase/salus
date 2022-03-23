@@ -1,0 +1,10 @@
+active_scanners:
+  - GoPackageScanner
+
+scanner_configs:
+  GoPackageScanner:
+    package_versions:
+      github.com/syncthing/syncthing:
+        min_version: '1.0.0'
+        max_version: '4.0.0'
+        block: '1.8.1'
