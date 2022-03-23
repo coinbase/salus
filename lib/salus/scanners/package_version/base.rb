@@ -3,6 +3,9 @@ require 'salus/scanners/base'
 module Salus::Scanners::PackageVersion
   class Base < Salus::Scanners::Base
     class SemVersion < Gem::Version; end
+    MIN_CHECK = "MINIMUM_VERSION_CHECK".freeze
+    MAX_CHECK = "MAXIMUM_VERSION_CHECK".freeze
+    BLOCK_CHECK = "BLOCKED_VERSION_CHECK".freeze
 
     def initialize(repository:, config:)
       super
@@ -61,9 +64,9 @@ module Salus::Scanners::PackageVersion
     def compare_semver_version(type, dependency_version, version_configured)
       if version_configured.present?
         case type
-        when "MINIMUM_VERSION_CHECK" then dependency_version < version_configured
-        when "MAXIMUM_VERSION_CHECK" then dependency_version > version_configured
-        when "BLOCKED_VERSION_CHECK" then version_configured.include? dependency_version
+        when MIN_CHECK then dependency_version < version_configured
+        when MAX_CHECK then dependency_version > version_configured
+        when BLOCK_CHECK then version_configured.include? dependency_version
         else false
         end
       end
