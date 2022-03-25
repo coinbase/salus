@@ -17,14 +17,20 @@ module Sarif::PacakgeVersion
     end
 
     def parse_scan_report!
-      @scan_report.errors
+      logs = @scan_report.log('')
+      return [] if logs.strip.empty?
+
+      JSON.parse(@scan_report.to_h.dig(:logs))
+    rescue JSON::ParserError => e
+      bugsnag_notify(e.message)
+      []
     end
 
     def parse_issue(issue)
       {
         id: PACKAGE_VERSION_MISMATCH,
         name: "PackageVersion",
-        details: issue[:message],
+        details: issue,
         level: SEVERITY,
         uri: "",
         help_url: PACKAGE_VERSION_DOC_URI,

@@ -15,6 +15,7 @@ module Salus::Scanners::OSV
       "RUSTSEC" => "RustSec Advisory Database",
       "default" => "Open Source Vulnerabilitiy"
     }.freeze
+    GITHUB_DATABASE_STRING = "Github Advisory Database".freeze
 
     def run
       raise NoMethodError, 'implement in subclass'
@@ -29,6 +30,20 @@ module Salus::Scanners::OSV
     end
 
     private
+
+    # Group and select Github Advisory over other sources when available.
+    def group_vulnerable_dependencies(dependencies)
+      results = []
+      grouped = dependencies.group_by { |d| d[:ID] }
+      grouped.each do |_key, values|
+        vuln = {}
+        values.each do |v|
+          vuln = v if v[:Database] == GITHUB_DATABASE_STRING
+        end
+        results.append(vuln.empty? ? values[0] : vuln)
+      end
+      results
+    end
 
     def fetch_vulnerabilities(url)
       raise(StandardError, "OSV Scanner: Empty url supplied from base class") if url.empty?

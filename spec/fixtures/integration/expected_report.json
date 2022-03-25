@@ -1,5 +1,5 @@
 {
-  "version": "2.17.3",
+  "version": "2.17.5",
   "passed": true,
   "running_time": 0.0,
   "scans": {
@@ -75,11 +75,19 @@
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
+      "GoPackageScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
       "GoVersionScanner": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
       "Gosec": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "GradleOSV": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
@@ -92,6 +100,10 @@
         "scanner_timeout_s": 0
       },
       "NPMPackageScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "PythonOSV": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
@@ -132,6 +144,10 @@
         "scanner_timeout_s": 0
       },
       "ReportSwiftDeps": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "RubyPackageScanner": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },

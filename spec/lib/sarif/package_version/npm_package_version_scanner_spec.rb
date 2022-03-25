@@ -34,8 +34,8 @@ describe Sarif::NPMPackageScannerSarif do
       expect(sarif['runs'][0]['results']).to include(
         { "ruleId" => "PV0001",
          "ruleIndex" => 0, "level" => "error",
-         "message" => { "text" => "Package version for (mobx) (3.6.2)is less than minimum" \
-         " configured version (3.6.3) on line {13} in package-lock.json" },
+         "message" => { "text" => "Package version for (mobx) (3.6.2) is less than minimum" \
+         " configured version (3.6.3) on line {13} in package-lock.json." },
          "locations" => [{ "physicalLocation" => {
            "artifactLocation" => { "uri" => "package-lock.json",
          "uriBaseId" => "%SRCROOT%" }, "region" => {

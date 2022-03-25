@@ -16,6 +16,7 @@ module Salus::Scanners::OSV
 
     def run
       begin
+        # Find dependencies
         parser = Salus::GoDependencyParser.new(@repository.go_sum_path)
         parser.parse
         if parser.go_dependencies["parsed"].empty?
@@ -27,9 +28,9 @@ module Salus::Scanners::OSV
         report_error(e.message)
         return
       end
+      dependencies = parser.select_dependencies(parser.go_dependencies)
 
-      dependencies = select_dependencies(parser.go_dependencies)
-
+      # Fetch vulnerabilities
       @osv_vulnerabilities ||= fetch_vulnerabilities(GO_OSV_ADVISORY_URL)
       if @osv_vulnerabilities.nil?
         err_msg = "GoOSV: No vulnerabilities found to compare."
@@ -38,8 +39,9 @@ module Salus::Scanners::OSV
         return
       end
 
-      # Report scanner status
-      results = fetch_vulnerable_dependencies(dependencies)
+      # Match and Report scanner status
+      vulnerabilities_found = match_vulnerable_dependencies(dependencies)
+      results = group_vulnerable_dependencies(vulnerabilities_found)
       return report_success if results.empty?
 
       report_failure
@@ -47,25 +49,6 @@ module Salus::Scanners::OSV
     end
 
     private
-
-    # Find dependencies from the project
-    def select_dependencies(all_dependencies)
-      dependencies = {}
-      # Pick specific version of dependencies
-      # If multiple versions of dependencies are found then pick the max version to mimic MVS
-      # https://go.dev/ref/mod#minimal-version-selection
-      all_dependencies["parsed"].each do |dependency|
-        lib = dependency["namespace"] + "/" + dependency["name"]
-        version = dependency["version"].to_s.gsub('v', '').gsub('+incompatible', '')
-        if dependencies.key?(lib)
-          dependencies[lib] = version if SemVersion.new(version) >
-            SemVersion.new(dependencies[lib])
-        else
-          dependencies[lib] = version
-        end
-      end
-      dependencies
-    end
 
     # Match if dependency version found is in the range of
     # vulnerable dependency found.

@@ -17,6 +17,7 @@ module Salus::Scanners::OSV
 
     def run
       begin
+        # Find dependencies
         parser = Salus::MavenDependencyParser.new(@repository.pom_xml_path)
         parser.parse
         if parser.pom_xml_dependencies.empty?
@@ -29,6 +30,7 @@ module Salus::Scanners::OSV
         return
       end
 
+      # Fetch vulnerabilities
       @osv_vulnerabilities ||= fetch_vulnerabilities(MAVEN_OSV_ADVISORY_URL)
       if @osv_vulnerabilities.nil?
         err_msg = "MavenOSV: No vulnerabilities found to compare."
@@ -37,8 +39,9 @@ module Salus::Scanners::OSV
         return
       end
 
-      # Report scanner status
-      results = fetch_vulnerable_dependencies(parser.pom_xml_dependencies)
+      # Match and Report scanner status
+      vulnerabilities_found = match_vulnerable_dependencies(parser.pom_xml_dependencies)
+      results = group_vulnerable_dependencies(vulnerabilities_found)
       return report_success if results.empty?
 
       report_failure
