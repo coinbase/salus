@@ -102,7 +102,7 @@ RUN curl -fsSL "$GOSEC_DOWNLOAD_URL" -o gosec.tar.gz \
 ### sift
 ENV SIFT_VERSION v0.9.0
 
-RUN go get github.com/svent/sift@${SIFT_VERSION}
+RUN go install github.com/svent/sift@${SIFT_VERSION}
 
 
 ### semgrep
