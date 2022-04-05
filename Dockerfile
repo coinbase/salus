@@ -77,8 +77,8 @@ RUN cd /home \
 ### Golang
 # required for sift and gosec
 
-ENV GOLANG_VERSION 1.16.9
-ENV GOLANG_DOWNLOAD_SHA256 d2c095c95f63c2a3ef961000e0ecb9d81d5c68b6ece176e2a8a2db82dc02931c
+ENV GOLANG_VERSION 1.18
+ENV GOLANG_DOWNLOAD_SHA256 e85278e98f57cdb150fe8409e6e5df5343ecb13cebf03a5d5ff12bd55a80264f
 
 ENV GOLANG_TARBALL_FILE go$GOLANG_VERSION.linux-amd64.tar.gz
 ENV GOLANG_DOWNLOAD_URL https://golang.org/dl/${GOLANG_TARBALL_FILE}
@@ -102,7 +102,7 @@ RUN curl -fsSL "$GOSEC_DOWNLOAD_URL" -o gosec.tar.gz \
 ### sift
 ENV SIFT_VERSION v0.9.0
 
-RUN go get github.com/svent/sift@${SIFT_VERSION}
+RUN go install github.com/svent/sift@${SIFT_VERSION}
 
 
 ### semgrep
