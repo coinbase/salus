@@ -528,6 +528,8 @@ module Salus::Scanners
                      #  - you would have to modify your string to match #falsepositive
                      #    running the command `gosec -nosec-tag=#falsepositive .`
                      #    would match all occurrences of /* #falsepositive */ in go files
+                     # To prevent salus functionality from changing, this line adds a pound
+                     # sign to alternative nosec string
                      result = "-nosec-tag=##{config_value} " if result.include? "-nosec-tag="
                      result
                    else
