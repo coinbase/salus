@@ -518,7 +518,16 @@ module Salus::Scanners
                        join_by: join_by,
                        regex: type_value
                      )
-                     # if nosec tag is present, add pound sign `#` to alternative nosec string
+                     # In new versions of gosec, nosec-tag matches the exact string
+                     # For example, In previous versions;
+                     #  - running the command `gosec -nosec-tag=falsepositive .`
+                     #    would match all occurrences of /* #falsepositive */ in go files
+                     # In current versions:
+                     #  - running the command `gosec -nosec-tag=falsepositive .`
+                     #    would match only match /* falsepositive */ in go files
+                     #  - you would have to modify your string to match #falsepositive
+                     #    running the command `gosec -nosec-tag=#falsepositive .`
+                     #    would match all occurrences of /* #falsepositive */ in go files
                      result = "-nosec-tag=##{config_value} " if result.include? "-nosec-tag="
                      result
                    else
