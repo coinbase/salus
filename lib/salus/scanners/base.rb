@@ -508,7 +508,7 @@ module Salus::Scanners
                        )
                      end
                    when Regexp # Assume it is a string type if just regex is supplied
-                     build_option(
+                     result = build_option(
                        prefix: prefix,
                        suffix: suffix,
                        separator: separator,
@@ -518,6 +518,9 @@ module Salus::Scanners
                        join_by: join_by,
                        regex: type_value
                      )
+                     # if nosec tag is present, add pound sign `#` to alternative nosec string
+                     result = "-nosec-tag=##{config_value} " if result.include? "-nosec-tag="
+                     result
                    else
                      warning = "Could not interpolate config for #{keyword} "\
                        "defined by since the value provided was not a String, "\
