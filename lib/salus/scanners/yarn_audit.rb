@@ -9,14 +9,52 @@ module Salus::Scanners
   class YarnAudit < NodeAudit
     # the command was previously 'yarn audit --json', which had memory allocation issues
     # see https://github.com/yarnpkg/yarn/issues/7404
-    AUDIT_COMMAND = 'yarn audit --no-color'.freeze
+    LEGACY_YARN_AUDIT_COMMAND = 'yarn audit --no-color'.freeze
+    LATEST_YARN_AUDIT_COMMAND = 'yarn npm audit --all --json'.freeze
+    BREAKING_VERSION = "2.0.0".freeze
 
     def should_run?
       @repository.yarn_lock_present?
     end
 
     def run
-      command = "#{AUDIT_COMMAND} #{scan_deps}"
+      if Gem::Version.new(version) >= Gem::Version.new(BREAKING_VERSION)
+        handle_latest_yarn_audit
+      else
+        handle_legacy_yarn_audit
+      end
+    end
+
+    def handle_latest_yarn_audit
+      vulns = []
+      shell_return = run_shell(LATEST_YARN_AUDIT_COMMAND)
+
+      data = JSON.parse(shell_return.stdout)
+      data["advisories"].each do |advisory_id, advisory|
+        vulns.append({
+                       "Package" => advisory["module_name"],
+          "Patched in" => advisory["patched_versions"],
+          "More info" => advisory["url"],
+          "Severity" => advisory["severity"],
+          "Title" => advisory["title"],
+          "ID" => advisory_id
+                     })
+      end
+
+      excpts = fetch_exception_ids
+      report_info(:ignored_cves, excpts)
+      vulns.delete_if { |v| excpts.include? v['ID'] }
+      return report_success if vulns.empty?
+
+      chdir = File.expand_path(@repository&.path_to_repo)
+      Salus::YarnLock.new(File.join(chdir, 'yarn.lock')).add_line_number(vulns)
+      log(format_vulns(vulns))
+      report_stdout(vulns.to_json)
+      report_failure
+    end
+
+    def handle_legacy_yarn_audit
+      command = "#{LEGACY_YARN_AUDIT_COMMAND} #{scan_deps}"
       shell_return = run_shell(command)
 
       excpts = fetch_exception_ids.map(&:to_i)
@@ -54,7 +92,7 @@ module Salus::Scanners
     end
 
     def version
-      shell_return = run_shell('yarn audit --version')
+      shell_return = run_shell('yarn --version')
       # stdout looks like "1.22.0\n"
       shell_return.stdout&.strip
     end
