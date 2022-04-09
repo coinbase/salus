@@ -11,6 +11,7 @@ module Salus::Scanners
     # see https://github.com/yarnpkg/yarn/issues/7404
     LEGACY_YARN_AUDIT_COMMAND = 'yarn audit --no-color'.freeze
     LATEST_YARN_AUDIT_COMMAND = 'yarn npm audit --all --json'.freeze
+    YARN_VERSION_COMMAND = 'yarn --version'.freeze
     BREAKING_VERSION = "2.0.0".freeze
 
     def should_run?
@@ -37,7 +38,8 @@ module Salus::Scanners
           "More info" => advisory["url"],
           "Severity" => advisory["severity"],
           "Title" => advisory["title"],
-          "ID" => advisory_id
+          "ID" => advisory_id.to_i,
+          "Dependency of" => advisory["module_name"]
                      })
       end
 
@@ -46,8 +48,6 @@ module Salus::Scanners
       vulns.delete_if { |v| excpts.include? v['ID'] }
       return report_success if vulns.empty?
 
-      chdir = File.expand_path(@repository&.path_to_repo)
-      Salus::YarnLock.new(File.join(chdir, 'yarn.lock')).add_line_number(vulns)
       log(format_vulns(vulns))
       report_stdout(vulns.to_json)
       report_failure
@@ -92,7 +92,7 @@ module Salus::Scanners
     end
 
     def version
-      shell_return = run_shell('yarn --version')
+      shell_return = run_shell(YARN_VERSION_COMMAND)
       # stdout looks like "1.22.0\n"
       shell_return.stdout&.strip
     end

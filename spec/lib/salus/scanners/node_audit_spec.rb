@@ -122,6 +122,7 @@ describe Salus::Scanners::NodeAudit do
 
           process_status = ProcessStatusDouble.new(stub_status)
           stub_shell_return = Salus::ShellResult.new(stub_stdout, stub_stderr, process_status)
+          allow(scanner).to receive(:version).and_return('1.22.0') if klass_str == 'YarnAudit'
           allow(scanner).to receive(:run_shell).and_return(stub_shell_return)
 
           scanner.run
@@ -176,6 +177,7 @@ describe Salus::Scanners::NodeAudit do
 
           process_status = ProcessStatusDouble.new(stub_status)
           stub_shell_return = Salus::ShellResult.new(stub_stdout, stub_stderr, process_status)
+          allow(scanner).to receive(:version).and_return('1.22.0') if klass_str == 'YarnAudit'
           allow(scanner).to receive(:run_shell).and_return(stub_shell_return)
 
           scanner.run
@@ -216,6 +218,7 @@ describe Salus::Scanners::NodeAudit do
 
           process_status = ProcessStatusDouble.new(stub_status)
           stub_shell_return = Salus::ShellResult.new(stub_stdout, stub_stderr, process_status)
+          allow(scanner).to receive(:version).and_return('1.22.0') if klass_str == 'YarnAudit'
           allow(scanner).to receive(:run_shell).and_return(stub_shell_return)
 
           scanner.run
