@@ -33,13 +33,17 @@ module Salus::Scanners
       data["advisories"].each do |advisory_id, advisory|
         dependency_of = advisory["findings"]&.first&.[]("paths")
         vulns.append({
-                       "Package" => advisory["module_name"],
-          "Patched in" => advisory["patched_versions"],
-          "More info" => advisory["url"],
-          "Severity" => advisory["severity"],
-          "Title" => advisory["title"],
-          "ID" => advisory_id.to_i,
-          "Dependency of" => dependency_of.nil? ? advisory["module_name"] : dependency_of.join("")
+                       "Package" => advisory.dig("module_name"),
+                      "Patched in" => advisory.dig("patched_versions"),
+                      "More info" => advisory.dig("url"),
+                      "Severity" => advisory.dig("severity"),
+                      "Title" => advisory.dig("title"),
+                      "ID" => advisory_id.to_i,
+                      "Dependency of" => if dependency_of.nil?
+                                           advisory.dig("module_name")
+                                         else
+                                           dependency_of.join("")
+                                         end
                      })
       end
 
