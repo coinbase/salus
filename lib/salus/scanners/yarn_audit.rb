@@ -29,9 +29,9 @@ module Salus::Scanners
     def handle_latest_yarn_audit
       vulns = []
       shell_return = run_shell(LATEST_YARN_AUDIT_COMMAND)
-
       data = JSON.parse(shell_return.stdout)
       data["advisories"].each do |advisory_id, advisory|
+        dependency_of = advisory["findings"]&.first&.[]("paths")
         vulns.append({
                        "Package" => advisory["module_name"],
           "Patched in" => advisory["patched_versions"],
@@ -39,7 +39,7 @@ module Salus::Scanners
           "Severity" => advisory["severity"],
           "Title" => advisory["title"],
           "ID" => advisory_id.to_i,
-          "Dependency of" => advisory["module_name"]
+          "Dependency of" => dependency_of.nil? ? advisory["module_name"] : dependency_of.join("")
                      })
       end
 
