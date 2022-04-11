@@ -18,6 +18,12 @@ describe Salus::Scanners::NodeAudit do
   let(:stub_yarn_stdout) do
     File.read('spec/fixtures/yarn_audit/success_with_exceptions/stub_stdout.txt')
   end
+  let(:stub_yarn_stdout) do
+    File.read('spec/fixtures/yarn_audit/success_with_exceptions/stub_stdout.txt')
+  end
+  let(:stub_yarn_stdout_latest) do
+    File.read('spec/fixtures/yarn_audit/success_with_exceptions/stub_stdout_latest.json')
+  end
   let(:stub_yarn_stderr) { "" }
   let(:stub_yarn_exit_status) { 24 }
 
@@ -179,9 +185,33 @@ describe Salus::Scanners::NodeAudit do
           stub_shell_return = Salus::ShellResult.new(stub_stdout, stub_stderr, process_status)
           allow(scanner).to receive(:version).and_return('1.22.0') if klass_str == 'YarnAudit'
           allow(scanner).to receive(:run_shell).and_return(stub_shell_return)
-
           scanner.run
           expect(scanner.report.passed?).to eq(true)
+        end
+
+        it 'should record success and when expiration is future for yarn v3' do
+          repo = Salus::Repo.new("spec/fixtures/#{klass_snake_str}/success_with_exceptions")
+          config_file = YAML.load_file(
+            "spec/fixtures/#{klass_snake_str}/success_with_exceptions/salus-non-expired.yaml"
+          )
+          scanner = klass_obj.new(
+            repository: repo, config: config_file['scanner_configs'][klass_str]
+          )
+
+          if klass_str == "YarnAudit"
+            stub_stdout = stub_yarn_stdout_latest
+            stub_stderr = stub_yarn_stderr
+            stub_status = stub_yarn_exit_status
+
+            process_status = ProcessStatusDouble.new(stub_status)
+            stub_shell_return_latest = Salus::ShellResult.new(stub_stdout, stub_stderr,
+                                                              process_status)
+            allow(scanner).to receive(:version).and_return('3.1.0') if klass_str == 'YarnAudit'
+            allow(scanner).to receive(:run_shell).and_return(stub_shell_return_latest)
+
+            scanner.run
+            expect(scanner.report.passed?).to eq(true)
+          end
         end
 
         it 'should record failure and when expiration is past' do
@@ -223,6 +253,32 @@ describe Salus::Scanners::NodeAudit do
 
           scanner.run
           expect(scanner.report.passed?).to eq(true)
+        end
+
+        it 'should support integer ids for yarn v3' do
+          repo = Salus::Repo.new("spec/fixtures/#{klass_snake_str}/success_with_exceptions")
+          config_file = YAML.load_file(
+            "spec/fixtures/#{klass_snake_str}/success_with_exceptions/salus-integer-ids.yaml"
+          )
+          scanner = klass_obj.new(
+            repository: repo, config: config_file['scanner_configs'][klass_str]
+          )
+
+          if klass_str == "YarnAudit"
+            stub_stdout = stub_yarn_stdout_latest
+            stub_stderr = stub_yarn_stderr
+            stub_status = stub_yarn_exit_status
+
+            process_status = ProcessStatusDouble.new(stub_status)
+            stub_shell_return_latest = Salus::ShellResult.new(stub_stdout, stub_stderr,
+                                                              process_status)
+            allow(scanner).to receive(:version).and_return('3.1.0') if klass_str == 'YarnAudit'
+            allow(scanner).to receive(:run_shell).and_return(stub_shell_return_latest)
+
+            scanner.run
+
+            expect(scanner.report.passed?).to eq(true)
+          end
         end
       end
     end

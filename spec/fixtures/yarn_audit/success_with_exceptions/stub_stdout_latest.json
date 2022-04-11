@@ -1,0 +1,135 @@
+{
+  "actions": [
+    {
+      "isMajor": true,
+      "action": "install",
+      "resolves": [
+        {
+          "id": 1067361,
+          "path": "electron",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ],
+      "module": "electron",
+      "target": "18.0.3"
+    },
+    {
+      "isMajor": true,
+      "action": "install",
+      "resolves": [
+        {
+          "id": 1068218,
+          "path": "elliptic",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1069331,
+          "path": "elliptic",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ],
+      "module": "elliptic",
+      "target": "6.5.4"
+    }
+  ],
+  "advisories": {
+    "1006709": {
+      "findings": [
+        {
+          "version": "11.5.0",
+          "paths": [
+            "uglify-js"
+          ]
+        }
+      ],
+      "metadata": null,
+      "vulnerable_versions": "<13.6.6",
+      "module_name": "uglify-js",
+      "severity": "low",
+      "github_advisory_id": "GHSA-3p22-ghq8-v749",
+      "cves": [
+        "CVE-2022-21718"
+      ],
+      "access": "public",
+      "patched_versions": ">=13.6.6",
+      "cvss": {
+        "score": 3.4,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:H/UI:R/S:C/C:L/I:N/A:N"
+      },
+      "updated": "2022-03-22T19:19:22.000Z",
+      "recommendation": "Upgrade to version 13.6.6 or later",
+      "cwe": [
+        "CWE-668"
+      ],
+      "found_by": null,
+      "deleted": null,
+      "id": 1006709,
+      "references": "- https://github.com/electron/electron/security/advisories/GHSA-3p22-ghq8-v749\n- https://nvd.nist.gov/vuln/detail/CVE-2022-21718\n- https://github.com/electron/electron/pull/32178\n- https://github.com/electron/electron/pull/32240\n- https://github.com/advisories/GHSA-3p22-ghq8-v749",
+      "created": "2022-03-22T18:49:36.000Z",
+      "reported_by": null,
+      "title": "Renderers can obtain access to random bluetooth device without permission in Electron",
+      "npm_advisory_id": null,
+      "overview": "### Impact\nThis vulnerability allows renderers to obtain access to a random bluetooth device via the [web bluetooth API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Bluetooth_API) if the app has not configured a custom `select-bluetooth-device` event handler.  The device that is accessed is random and the attacker would have no way of selecting a specific device.\n\nAll current stable versions of Electron are affected.\n\n### Patches\nThis has been patched and the following Electron versions contain the fix:\n* `17.0.0-alpha.6`\n* `16.0.6`\n* `15.3.5`\n* `14.2.4`\n* `13.6.6`\n\n### Workarounds\nAdding this code to your app can workaround the issue.\n\n```js\napp.on('web-contents-created', (event, webContents) => {\n  webContents.on('select-bluetooth-device', (event, devices, callback) => {\n    // Prevent default behavior\n    event.preventDefault();\n    // Cancel the request\n    callback('');\n  });\n});\n```\n\nFor more information\nIf you have any questions or comments about this advisory, email us at security@electronjs.org.",
+      "url": "https://github.com/advisories/GHSA-3p22-ghq8-v749"
+    },
+    "1006708": {
+      "findings": [
+        {
+          "version": "5.2.1",
+          "paths": [
+            "uglify-js"
+          ]
+        }
+      ],
+      "metadata": null,
+      "vulnerable_versions": "<6.5.4",
+      "module_name": "uglify-js",
+      "severity": "moderate",
+      "github_advisory_id": "GHSA-r9p9-mrjm-926w",
+      "cves": [
+        "CVE-2020-28498"
+      ],
+      "access": "public",
+      "patched_versions": ">=6.5.4",
+      "cvss": {
+        "score": 6.8,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:C/C:H/I:N/A:N"
+      },
+      "updated": "2021-03-08T16:06:50.000Z",
+      "recommendation": "Upgrade to version 6.5.4 or later",
+      "cwe": [
+        "CWE-327"
+      ],
+      "found_by": null,
+      "deleted": null,
+      "id": 1006708,
+      "references": "- https://nvd.nist.gov/vuln/detail/CVE-2020-28498\n- https://github.com/indutny/elliptic/pull/244/commits\n- https://github.com/indutny/elliptic/commit/441b7428b0e8f6636c42118ad2aaa186d3c34c3f\n- https://github.com/christianlundkvist/blog/blob/master/2020_05_26_secp256k1_twist_attacks/secp256k1_twist_attacks.md\n- https://snyk.io/vuln/SNYK-JAVA-ORGWEBJARSNPM-1069836\n- https://snyk.io/vuln/SNYK-JS-ELLIPTIC-1064899\n- https://www.npmjs.com/package/elliptic\n- https://github.com/advisories/GHSA-r9p9-mrjm-926w",
+      "created": "2021-03-08T16:06:50.000Z",
+      "reported_by": null,
+      "title": "Use of a Broken or Risky Cryptographic Algorithm",
+      "npm_advisory_id": null,
+      "overview": "The npm package `elliptic` before version 6.5.4 are vulnerable to Cryptographic Issues via the secp256k1 implementation in elliptic/ec/key.js. There is no check to confirm that the public key point passed into the derive function actually exists on the secp256k1 curve. This results in the potential for the private key used in this implementation to be revealed after a number of ECDH operations are performed.",
+      "url": "https://github.com/advisories/GHSA-r9p9-mrjm-926w"
+    }
+  },
+  "muted": [],
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 1,
+      "moderate": 1,
+      "high": 1,
+      "critical": 0
+    },
+    "dependencies": 216,
+    "devDependencies": 52,
+    "optionalDependencies": 0,
+    "totalDependencies": 268
+  }
+}

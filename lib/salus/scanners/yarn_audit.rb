@@ -29,27 +29,28 @@ module Salus::Scanners
     def handle_latest_yarn_audit
       vulns = []
       shell_return = run_shell(LATEST_YARN_AUDIT_COMMAND)
-      data = JSON.parse(shell_return.stdout)
-      data["advisories"].each do |advisory_id, advisory|
-        dependency_of = advisory["findings"]&.first&.[]("paths")
-        vulns.append({
-                       "Package" => advisory.dig("module_name"),
-                      "Patched in" => advisory.dig("patched_versions"),
-                      "More info" => advisory.dig("url"),
-                      "Severity" => advisory.dig("severity"),
-                      "Title" => advisory.dig("title"),
-                      "ID" => advisory_id.to_i,
-                      "Dependency of" => if dependency_of.nil?
-                                           advisory.dig("module_name")
-                                         else
-                                           dependency_of.join("")
-                                         end
-                     })
-      end
-
       excpts = fetch_exception_ids
       report_info(:ignored_cves, excpts)
-      vulns.delete_if { |v| excpts.include? v['ID'] }
+
+      data = JSON.parse(shell_return.stdout)
+      data["advisories"].each do |advisory_id, advisory|
+        if excpts.exclude?(advisory_id)
+          dependency_of = advisory["findings"]&.first&.[]("paths")
+          vulns.append({
+                         "Package" => advisory.dig("module_name"),
+                        "Patched in" => advisory.dig("patched_versions"),
+                        "More info" => advisory.dig("url"),
+                        "Severity" => advisory.dig("severity"),
+                        "Title" => advisory.dig("title"),
+                        "ID" => advisory_id.to_i,
+                        "Dependency of" => if dependency_of.nil?
+                                             advisory.dig("module_name")
+                                           else
+                                             dependency_of.join("")
+                                           end
+                       })
+        end
+      end
       return report_success if vulns.empty?
 
       log(format_vulns(vulns))
