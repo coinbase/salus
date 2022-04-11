@@ -1,0 +1,17 @@
+input: .
+output: .retype
+url: # Add your website address here
+branding:
+  title: Salus
+  label: v2.17.6
+  logo: static/logo.png
+
+server:
+  host: 127.0.0.1
+
+
+links:
+- text: Getting Started
+  link: https://retype.com/guides/getting-started/
+footer:
+  copyright: "&copy; Copyright {{ year }}. All rights reserved."
