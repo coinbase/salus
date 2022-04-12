@@ -16,11 +16,16 @@ module Salus::Scanners::OSV
 
     def run
       # Find dependencies
-      dependencies = find_dependencies
-      if dependencies.empty?
-        err_msg = "GradleOSV: Failed to parse any dependencies from the project."
-        report_stderr(err_msg)
-        report_error(err_msg)
+      begin
+        parser = Salus::GradleDependencyParser.new(@repository.path_to_repo)
+        parser.parse
+        if parser.gradle_dependencies.empty?
+          err_msg = "GradleOSV: Failed to parse any dependencies from the project."
+          raise StandardError, err_msg
+        end
+      rescue StandardError => e
+        report_stderr(e.message)
+        report_error(e.message)
         return
       end
 
@@ -34,7 +39,7 @@ module Salus::Scanners::OSV
       end
 
       # Match and Report scanner status
-      vulnerabilities_found = match_vulnerable_dependencies(dependencies)
+      vulnerabilities_found = match_vulnerable_dependencies(parser.gradle_dependencies)
       results = group_vulnerable_dependencies(vulnerabilities_found)
       return report_success if results.empty?
 
@@ -104,32 +109,6 @@ module Salus::Scanners::OSV
         end
       end
       results
-    end
-
-    # Find dependencies from the project
-    def find_dependencies
-      shell_return = run_shell(['bin/parse_gradle_deps', @repository.path_to_repo], chdir: nil)
-      if !shell_return.success?
-        report_error(shell_return.stderr)
-        return []
-      end
-
-      begin
-        dependencies = JSON.parse(shell_return.stdout)
-      rescue JSON::ParserError
-        err_msg = "GradleOSV: Could not parse JSON returned by bin/parse_gradle_deps's stdout!"
-        report_stderr(err_msg)
-        report_error(err_msg)
-        return []
-      end
-
-      # Dedupe dependencies returned.
-      uniques = []
-      dependencies.group_by { |e| [e["group_id"], e["artifact_id"]] }.each do |_key, values|
-        uniques.append(values[0])
-      end
-
-      uniques
     end
 
     def format_vulnerability_result(match, version, introduced, fixed)
