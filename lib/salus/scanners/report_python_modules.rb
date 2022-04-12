@@ -5,22 +5,20 @@ require 'salus/scanners/base'
 module Salus::Scanners
   class ReportPythonModules < Base
     def run
-      shell_return = run_shell(['bin/report_python_modules',
-                                @repository.path_to_repo], chdir: nil)
-
-      if !shell_return.success?
-        report_error(shell_return.stderr)
-        return
+      begin
+        parser = Salus::PythonDependencyParser.new(@repository.path_to_repo)
+        parser.parse
+      rescue StandardError => e
+        report_stderr(e.message)
+        report_error(e.message)
       end
 
-      dependencies = JSON.parse(shell_return.stdout)
-
-      dependencies.each do |name, version|
+      parser.requirements_txt_dependencies.each do |dependency|
         report_dependency(
-          'requirements.txt',
-          type: 'pypi',
-          name: name,
-          version: version
+          dependency["dependency_file"],
+          type: dependency["type"],
+          name: dependency["name"],
+          version: dependency["version"]
         )
       end
     end
