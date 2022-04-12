@@ -40,7 +40,7 @@ module Salus::Scanners::OSV
       end
 
       # Match and Report scanner status
-      vulnerabilities_found = match_vulnerable_dependencies(dependencies)
+      vulnerabilities_found = match_vulnerable_dependencies(parser.requirements_txt_dependencies)
       results = group_vulnerable_dependencies(vulnerabilities_found)
       return report_success if results.empty?
 

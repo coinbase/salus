@@ -12,7 +12,6 @@ module Salus::Scanners
         report_stderr(e.message)
         report_error(e.message)
       end
-
       parser.requirements_txt_dependencies.each do |dependency|
         report_dependency(
           dependency["dependency_file"],
