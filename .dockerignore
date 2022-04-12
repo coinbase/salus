@@ -3,3 +3,5 @@
 /.github
 /coverage
 /coinbase_salus_clair_report-05-07-2019.html
+# No need to spend time copying docs for the build
+/docs
