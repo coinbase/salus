@@ -9,14 +9,57 @@ module Salus::Scanners
   class YarnAudit < NodeAudit
     # the command was previously 'yarn audit --json', which had memory allocation issues
     # see https://github.com/yarnpkg/yarn/issues/7404
-    AUDIT_COMMAND = 'yarn audit --no-color'.freeze
+    LEGACY_YARN_AUDIT_COMMAND = 'yarn audit --no-color'.freeze
+    LATEST_YARN_AUDIT_COMMAND = 'yarn npm audit --all --json'.freeze
+    YARN_VERSION_COMMAND = 'yarn --version'.freeze
+    BREAKING_VERSION = "2.0.0".freeze
 
     def should_run?
       @repository.yarn_lock_present?
     end
 
     def run
-      command = "#{AUDIT_COMMAND} #{scan_deps}"
+      if Gem::Version.new(version) >= Gem::Version.new(BREAKING_VERSION)
+        handle_latest_yarn_audit
+      else
+        handle_legacy_yarn_audit
+      end
+    end
+
+    def handle_latest_yarn_audit
+      vulns = []
+      shell_return = run_shell(LATEST_YARN_AUDIT_COMMAND)
+      excpts = fetch_exception_ids
+      report_info(:ignored_cves, excpts)
+
+      data = JSON.parse(shell_return.stdout)
+      data["advisories"].each do |advisory_id, advisory|
+        if excpts.exclude?(advisory_id)
+          dependency_of = advisory["findings"]&.first&.[]("paths")
+          vulns.append({
+                         "Package" => advisory.dig("module_name"),
+                        "Patched in" => advisory.dig("patched_versions"),
+                        "More info" => advisory.dig("url"),
+                        "Severity" => advisory.dig("severity"),
+                        "Title" => advisory.dig("title"),
+                        "ID" => advisory_id.to_i,
+                        "Dependency of" => if dependency_of.nil?
+                                             advisory.dig("module_name")
+                                           else
+                                             dependency_of.join("")
+                                           end
+                       })
+        end
+      end
+      return report_success if vulns.empty?
+
+      log(format_vulns(vulns))
+      report_stdout(vulns.to_json)
+      report_failure
+    end
+
+    def handle_legacy_yarn_audit
+      command = "#{LEGACY_YARN_AUDIT_COMMAND} #{scan_deps}"
       shell_return = run_shell(command)
 
       excpts = fetch_exception_ids.map(&:to_i)
@@ -54,7 +97,7 @@ module Salus::Scanners
     end
 
     def version
-      shell_return = run_shell('yarn audit --version')
+      shell_return = run_shell(YARN_VERSION_COMMAND)
       # stdout looks like "1.22.0\n"
       shell_return.stdout&.strip
     end
