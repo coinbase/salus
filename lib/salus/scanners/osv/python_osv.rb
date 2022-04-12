@@ -68,11 +68,11 @@ module Salus::Scanners::OSV
     # and return vulnerable dependencies
     def match_vulnerable_dependencies(dependencies)
       results = []
-      dependencies.each do |lib, version|
+      dependencies.each do |dependency|
+        version = dependency["version"].gsub("==", "")
         if version.present?
-          version = version.gsub("==", "")
           package_matches = @osv_vulnerabilities.select do |v|
-            v.dig("package", "name") == lib
+            v.dig("package", "name") == dependency["name"]
           end
 
           package_matches.each do |match|
