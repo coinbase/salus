@@ -17,11 +17,16 @@ module Salus::Scanners::OSV
 
     def run
       # Find dependencies
-      dependencies = find_dependencies
-      if dependencies.empty?
-        err_msg = "PythonOSV: Failed to parse any dependencies from the project."
-        report_stderr(err_msg)
-        report_error(err_msg)
+      begin
+        parser = Salus::PythonDependencyParser.new(@repository.path_to_repo)
+        parser.parse
+        if parser.requirements_txt_dependencies.empty?
+          err_msg = "PythonOSV: Failed to parse any dependencies from the project."
+          raise StandardError, err_msg
+        end
+      rescue StandardError => e
+        report_stderr(e.message)
+        report_error(e.message)
         return
       end
 
@@ -117,28 +122,6 @@ module Salus::Scanners::OSV
         "Severity": match.dig("database_specific",
                               "severity") || DEFAULT_SEVERITY
       }
-    end
-
-    # Find dependencies from the project
-    def find_dependencies
-      dependencies = {}
-      shell_return = run_shell(['bin/report_python_modules',
-                                @repository.path_to_repo], chdir: nil)
-      if !shell_return.success?
-        report_error(shell_return.stderr)
-        return {}
-      end
-
-      begin
-        dependencies = JSON.parse(shell_return.stdout)
-      rescue JSON::ParserError
-        err_msg = "PythonOSV: Could not parse JSON returned by bin/report_python_modules's stdout"
-        report_stderr(err_msg)
-        report_error(err_msg)
-        return {}
-      end
-
-      dependencies
     end
   end
 end
