@@ -1,0 +1,30 @@
+#!/usr/bin/env python
+
+import json
+from sys import argv
+import os
+
+# When run with no arguments, enumerate the dependencies in
+# ./requirements.txt; given an argument, enumerate the dependencies listed in
+# the requirements.txt in that directory
+path = 'requirements.txt'
+if len(argv) > 1:
+    path = os.path.join(argv[1], 'requirements.txt')
+
+# Note this will break for pip 20.1+
+try: # for pip >= 10
+    from pip._internal.req import parse_requirements
+except ImportError: # for pip <= 9.0.3
+    from pip.req import parse_requirements
+
+deps = parse_requirements(path, session="_")
+
+dependencies = {}
+
+for dependency in deps:
+    if hasattr(dependency.req, 'key'):
+      dependencies[dependency.req.key] = str(dependency.req.specifier)
+    else:
+      dependencies[dependency.req.name] = str(dependency.req.specifier)
+
+print(json.dumps(dependencies))
