@@ -179,6 +179,13 @@ describe Salus::Scanners::ReportRubyGems do
       expect(scanner.send(:find_licenses_for, gem_name,
                           gem_version)).to be_empty
     end
+
+    it 'should return an empty array if there exists no license for the gem' do
+      allow(JSON).to receive(:parse).and_return([])
+      stub_req_with(request_str, response_body_with_no_license, ok_code)
+      expect(scanner.send(:find_licenses_for, gem_name,
+                          gem_version)).to be_empty
+    end
   end
 
   describe '#spdx_license_for' do
