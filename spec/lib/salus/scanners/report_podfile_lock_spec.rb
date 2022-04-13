@@ -74,8 +74,7 @@ describe Salus::Scanners::ReportPodfileLock do
 
     errs = scanner.report.to_h.fetch(:errors)
     expect(errs.size).to eq(1)
-    expect(errs[0][:message]).to eq('Unable to parse Podfile.lock file
-')
+    expect(errs[0][:message]).to eq('Unable to parse Podfile.lock file')
   end
 
   it 'should report an error when an unparseable file is found' do
@@ -86,7 +85,6 @@ describe Salus::Scanners::ReportPodfileLock do
 
     errs = scanner.report.to_h.fetch(:errors)
     expect(errs.size).to eq(1)
-    expect(errs[0][:message]).to eq('No dependencies found in Podfile.lock!
-')
+    expect(errs[0][:message]).to eq('No dependencies found in Podfile.lock!')
   end
 end
