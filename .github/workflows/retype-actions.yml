@@ -19,5 +19,3 @@ jobs:
       - uses: retypeapp/action-github-pages@latest
         with:
           update-branch: true
-# Github Pages Hosting
-url: coinbase.github.io/salus
