@@ -8,7 +8,6 @@ module Salus::Scanners
 
     def run
       begin
-        puts @repository.podfile_lock_path
         parser = Salus::PodlockDependencyParser.new(@repository.podfile_lock_path)
         parser.parse
         if parser.podlock_dependencies.empty?

@@ -77,7 +77,6 @@ describe Salus::Scanners::ReportSwiftDeps do
 
     errs = scanner.report.to_h.fetch(:errors)
     expect(errs.size).to eq(1)
-    expect(errs[0][:message]).to eq('Unable to parse Package.resolved JSON
-')
+    expect(errs[0][:message]).to eq('Unable to parse Package.resolved JSON')
   end
 end

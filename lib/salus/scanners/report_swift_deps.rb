@@ -7,35 +7,26 @@ module Salus::Scanners
     class ReportSwiftDepsError < StandardError; end
 
     def run
-      shell_return =
-        run_shell(
-          "bin/parse_package_resolved #{@repository.package_resolved_path}",
-          chdir: nil
-        )
-
-      if !shell_return.success?
-        report_error(shell_return.stderr)
+      begin
+        parser = Salus::SwiftDependencyParser.new(@repository.package_resolved_path)
+        parser.parse
+        if parser.swift_dependencies.empty?
+          err_msg = "Could not parse dependencies from Package.resolved file"
+          raise StandardError, err_msg
+        end
+      rescue StandardError => e
+        report_stderr(e.message)
+        report_error(e.message)
         return
       end
-
-      begin
-        dependencies = JSON.parse(shell_return.stdout)
-
-        raise ReportSwiftDepsError if dependencies.nil?
-
-        dependencies.each do |dependency|
-          report_dependency(
-            'Package.resolved',
-            type: 'swift',
-            name: dependency['package'],
-            version: dependency['version'],
-            source: dependency['source']
-          )
-        end
-      rescue ReportSwiftDepsError, JSON::ParserError
-        err_msg = "Could not parse JSON returned by bin/parse_package_resolved's stdout!"
-        report_stderr(err_msg)
-        report_error(err_msg)
+      parser.swift_dependencies.each do |dependency|
+        report_dependency(
+          'Package.resolved',
+          type: 'swift',
+          name: dependency['package'],
+          version: dependency['version'],
+          source: dependency['source']
+        )
       end
     end
 
