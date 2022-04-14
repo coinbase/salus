@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="turbo-root" content="/salus">
+    <meta name="turbo-cache-control" content="no-cache">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 2.2">
+
+    <!-- Primary Meta Tags -->
+    <title>Salus Reports</title>
+    <meta name="title" content="Salus Reports">
+    <meta name="description" content="Salus compiles a report while executing each scanner and before finishing, this report is output in one or multiple ways." />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://coinbase.github.com/salus/salus_reports/">
+    <meta property="og:title" content="Salus Reports">
+    <meta property="og:description" content="Salus compiles a report while executing each scanner and before finishing, this report is output in one or multiple ways.">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://coinbase.github.com/salus/salus_reports/">
+    <meta property="twitter:title" content="Salus Reports">
+    <meta property="twitter:description" content="Salus compiles a report while executing each scanner and before finishing, this report is output in one or multiple ways.">
+
+    <script>(function () { var el = document.documentElement, m = localStorage.getItem("/salus/doc_theme"), wm = window.matchMedia; if (m === "dark" || (!m && wm && wm("(prefers-color-scheme: dark)").matches)) { el.classList.add("dark") } else { el.classList.remove("dark") } })();</script>
+
+    <link href="/salus/favicon.ico" rel="icon" />
+    <link href="/salus/resources/css/retype.css?v=2.2.703276461151" rel="stylesheet" data-turbo-track="reload" />
+
+    <script type="text/javascript" src="/salus/resources/js/config.js?v=2.2.703276461151" defer data-turbo-track="reload"></script>
+    <script type="text/javascript" src="/salus/resources/js/retype.js?v=2.2" defer data-turbo-track="reload"></script>
+    <script id="lunr-js" type="text/javascript" src="/salus/resources/js/lunr.js?v=2.2.703276461151" defer></script>
+    <script id="prism-js" type="text/javascript" src="/salus/resources/js/prism.js?v=2.2.703276461151" defer></script>
+</head>
+<body>
+    <div id="docs-app" class="relative text-base antialiased text-gray-700 bg-white font-body dark:bg-dark-850 dark:text-dark-300">
+        <div class="absolute bottom-0 left-0 bg-gray-100 dark:bg-dark-800" style="top: 5rem; right: 50%"></div>
+    
+        <header id="docs-site-header" class="sticky top-0 z-30 flex w-full h-16 bg-white border-b border-gray-200 md:h-20 dark:bg-dark-850 dark:border-dark-650">
+            <div class="container relative flex items-center justify-between grow pr-6 md:justify-start">
+                <!-- Mobile menu button skeleton -->
+                <button v-cloak class="skeleton docs-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-none rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+                <div v-cloak id="docs-sidebar-toggle"></div>
+        
+                <!-- Logo -->
+                <div class="flex items-center justify-between h-full py-2 md:w-75">
+                    <div class="flex items-center px-2 md:px-6">
+                        <a id="docs-site-logo" href="/salus/" class="flex items-center leading-snug text-2xl">
+                            <span class="w-10 mr-2 grow-0 shrink-0 overflow-hidden">
+                                <img class="max-h-10 dark:hidden md:inline-block" src="/salus/static/logo.png">
+                                <img class="max-h-10 hidden dark:inline-block" src="/salus/static/logo.png">
+                            </span>
+                            <span class="dark:text-white font-semibold line-clamp-1 md:line-clamp-2">Salus</span>
+                        </a><span class="hidden px-2 py-1 ml-4 text-sm font-semibold leading-none text-root-logo-label-text bg-root-logo-label-bg rounded-sm md:inline-block">v2.17.6</span>
+                    </div>
+        
+                    <span class="hidden h-8 border-r md:inline-block dark:border-dark-650"></span>
+                </div>
+        
+                <div class="flex justify-between md:grow">
+                    <!-- Top Nav -->
+                    <nav class="hidden md:flex">
+                        <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                            <li class="md:mr-6">
+                                <a class="inline-flex items-center py-2 md:mb-0 text-sm text-gray-400 whitespace-nowrap transition-colors duration-200 ease-linear md:text-blue-500 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200" href="/salus/">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="mb-px mr-1" width="18" height="18" viewBox="0 0 24 24" role="presentation">
+                                        <g fill="currentColor">
+                                            <path fill-rule="evenodd" d="M11.03 2.59a1.5 1.5 0 011.94 0l7.5 6.363a1.5 1.5 0 01.53 1.144V19.5a1.5 1.5 0 01-1.5 1.5h-5.75a.75.75 0 01-.75-.75V14h-2v6.25a.75.75 0 01-.75.75H4.5A1.5 1.5 0 013 19.5v-9.403c0-.44.194-.859.53-1.144l7.5-6.363zM12 3.734l-7.5 6.363V19.5h5v-6.25a.75.75 0 01.75-.75h3.5a.75.75 0 01.75.75v6.25h5v-9.403L12 3.734z"/>
+                                        </g>
+                                    </svg>
+                                    <span>Home</span>
+                                </a>
+                            </li>
+                            <li class="md:mr-6">
+                                <a class="inline-flex items-center py-2 md:mb-0 text-sm text-gray-400 whitespace-nowrap transition-colors duration-200 ease-linear md:text-blue-500 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200" href="https://github.com/coinbase/salus">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="mb-px mr-1" width="18" height="18" viewBox="0 0 24 24" role="presentation">
+                                        <g fill="currentColor">
+                                            <symbol id="mark-github-icon-symbol" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></symbol><use xlink:href="#mark-github-icon-symbol" />
+                                        </g>
+                                    </svg>
+                                    <span>Github</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+        
+                    <!-- Header Right Skeleton -->
+                    <div v-cloak class="flex justify-end grow skeleton">
+        
+                        <!-- Search input mock -->
+                        <div class="relative hidden w-40 lg:block lg:max-w-sm lg:ml-auto">
+                            <div class="absolute flex items-center justify-center h-full pl-3 dark:text-dark-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon-base" width="16" height="16" viewBox="0 0 24 24" aria-labelledby="icon" role="presentation"  style="margin-bottom: 1px;"><g fill="currentColor" ><path d="M21.71 20.29l-3.68-3.68A8.963 8.963 0 0020 11c0-4.96-4.04-9-9-9s-9 4.04-9 9 4.04 9 9 9c2.12 0 4.07-.74 5.61-1.97l3.68 3.68c.2.19.45.29.71.29s.51-.1.71-.29c.39-.39.39-1.03 0-1.42zM4 11c0-3.86 3.14-7 7-7s7 3.14 7 7c0 1.92-.78 3.66-2.04 4.93-.01.01-.02.01-.02.01-.01.01-.01.01-.01.02A6.98 6.98 0 0111 18c-3.86 0-7-3.14-7-7z" ></path></g></svg>
+                            </div>
+        
+                            <input class="w-full h-10 transition-colors duration-200 ease-in bg-gray-200 border border-transparent rounded md:text-sm hover:bg-white hover:border-gray-300 focus:outline-none focus:bg-white focus:border-gray-500 dark:bg-dark-600 dark:border-dark-600 placeholder-gray-400 dark:placeholder-dark-400"
+                            style="padding: 0.625rem 0.75rem 0.625rem 2rem" type="text" placeholder="Search" />
+                        </div>
+        
+                        <!-- Mobile search button mock -->
+                        <div class="flex items-center justify-center w-10 h-10 lg:hidden">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="shrink-0 icon-base" width="20" height="20" viewBox="0 0 24 24" aria-labelledby="icon" role="presentation"  style="margin-bottom: 0px;"><g fill="currentColor" ><path d="M21.71 20.29l-3.68-3.68A8.963 8.963 0 0020 11c0-4.96-4.04-9-9-9s-9 4.04-9 9 4.04 9 9 9c2.12 0 4.07-.74 5.61-1.97l3.68 3.68c.2.19.45.29.71.29s.51-.1.71-.29c.39-.39.39-1.03 0-1.42zM4 11c0-3.86 3.14-7 7-7s7 3.14 7 7c0 1.92-.78 3.66-2.04 4.93-.01.01-.02.01-.02.01-.01.01-.01.01-.01.02A6.98 6.98 0 0111 18c-3.86 0-7-3.14-7-7z" ></path></g></svg>
+                        </div>
+        
+                        <!-- Dark mode switch placehokder -->
+                        <div class="w-10 h-10 lg:ml-2"></div>
+        
+                        <!-- History button mock -->
+                        <div class="flex items-center justify-center w-10 h-10" style="margin-right: -0.625rem;">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="shrink-0 icon-base" width="22" height="22" viewBox="0 0 24 24" aria-labelledby="icon" role="presentation"  style="margin-bottom: 0px;"><g fill="currentColor" ><g ><path d="M12.01 6.01c-.55 0-1 .45-1 1V12a1 1 0 00.4.8l3 2.22a.985.985 0 001.39-.2.996.996 0 00-.21-1.4l-2.6-1.92V7.01c.02-.55-.43-1-.98-1z"></path><path d="M12.01 1.91c-5.33 0-9.69 4.16-10.05 9.4l-.29-.26a.997.997 0 10-1.34 1.48l1.97 1.79c.19.17.43.26.67.26s.48-.09.67-.26l1.97-1.79a.997.997 0 10-1.34-1.48l-.31.28c.34-4.14 3.82-7.41 8.05-7.41 4.46 0 8.08 3.63 8.08 8.09s-3.63 8.08-8.08 8.08c-2.18 0-4.22-.85-5.75-2.4a.996.996 0 10-1.42 1.4 10.02 10.02 0 007.17 2.99c5.56 0 10.08-4.52 10.08-10.08.01-5.56-4.52-10.09-10.08-10.09z"></path></g></g></svg>
+                        </div>
+                    </div>
+        
+                    <div v-cloak class="flex justify-end grow">
+                        <div id="docs-mobile-search-button"></div>
+                        <doc-search-desktop></doc-search-desktop>
+        
+                        <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                        <doc-history></doc-history>
+                    </div>
+                </div>
+            </div>
+        </header>
+    
+        <div class="container relative flex bg-white">
+            <!-- Sidebar Skeleton -->
+            <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-gray-100 border-gray-200 sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton dark:bg-dark-800 dark:border-dark-650">
+            
+                <!-- Render this div, if config.showSidebarFilter is `true` -->
+                <div class="flex items-center h-16 px-6">
+                    <input class="w-full h-8 px-3 py-2 transition-colors duration-200 ease-linear bg-white border border-gray-200 rounded shadow-none text-sm focus:outline-none focus:border-gray-600 dark:bg-dark-600 dark:border-dark-600" type="text" placeholder="Filter" />
+                </div>
+            
+                <div class="pl-6 mb-4 mt-1">
+                    <div class="w-32 h-3 mb-4 bg-gray-200 rounded-full loading dark:bg-dark-600"></div>
+                    <div class="w-48 h-3 mb-4 bg-gray-200 rounded-full loading dark:bg-dark-600"></div>
+                    <div class="w-40 h-3 mb-4 bg-gray-200 rounded-full loading dark:bg-dark-600"></div>
+                    <div class="w-32 h-3 mb-4 bg-gray-200 rounded-full loading dark:bg-dark-600"></div>
+                    <div class="w-48 h-3 mb-4 bg-gray-200 rounded-full loading dark:bg-dark-600"></div>
+                    <div class="w-40 h-3 mb-4 bg-gray-200 rounded-full loading dark:bg-dark-600"></div>
+                </div>
+            
+                <div class="shrink-0 mt-auto bg-transparent dark:border-dark-650">
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-400 dark:text-dark-400 hover:text-gray-700 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Sidebar component -->
+            <doc-sidebar v-cloak>
+                <template #sidebar-footer>
+                    <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-dark-650">
+            
+                        <div class="py-3 px-6 md:hidden border-b dark:border-dark-650">
+                            <nav>
+                                <ul class="flex flex-wrap justify-center items-center">
+                                    <li class="mr-6">
+                                        <a class="block py-1 text-sm whitespace-nowrap transition-colors duration-200 ease-linear text-blue-500 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200" href="/index.md">Home</a>
+                                    </li>
+                                    <li class="mr-6">
+                                        <a class="block py-1 text-sm whitespace-nowrap transition-colors duration-200 ease-linear text-blue-500 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200" href="https://github.com/coinbase/salus">Github</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+            
+                        <a class="flex items-center justify-center flex-nowrap h-16 text-gray-400 dark:text-dark-400 hover:text-gray-700 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                            <span class="text-xs whitespace-nowrap">Powered by</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                        </a>
+                    </div>
+                </template>
+            </doc-sidebar>
+    
+            <div class="grow min-w-0 dark:bg-dark-850">
+                <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+                <div class="flex">
+                    <div class="grow min-w-0 px-6 md:px-16">
+                        <main class="relative pt-6 pb-16">
+                            <div class="docs-markdown" id="docs-content">
+                                <!-- Rendered if sidebar right is enabled -->
+                                <div id="docs-sidebar-right-toggle"></div>
+                
+                                <!-- Page content  -->
+<doc-anchor-target id="salus-reports" class="break-words">
+    <h1>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#salus-reports">#</doc-anchor-trigger>
+        <span>Salus Reports</span>
+    </h1>
+</doc-anchor-target>
+<p>Salus compiles a report while executing each scanner and before finishing, this report is output in one or multiple ways.</p>
+<p>By default, Salus always prints the report to STDOUT. This can be turned off via the <code v-pre>--quiet</code> (<code v-pre>-q</code>) flag.</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<div class="codeblock-title">Running Salus without printing report to STDOUT</div>
+<pre class="language-bash"><code v-pre class="language-bash"> docker run --rm -t -v $(pwd):/home/repo coinbase/salus --quiet </code></pre>
+</doc-codeblock></div>
+<p>Additionally, Salus can be configured to send reports to both the local file system or remote HTTP endpoints. See the <a href="/salus/configuration/salus_configurations/">configuration documentation</a> for more detail.</p>
+<p>The destinations that receive reports can be configured using the <code v-pre>--reports</code> (<code v-pre>-r</code>) flag. Values for this flag follow the format <code v-pre>--reports &lt;report-key&gt;:&lt;report-pattern&gt;</code>, where <code v-pre>&lt;report-key&gt;</code> is the configuration key by which reports will be filtered, and <code v-pre>&lt;report-pattern&gt;</code> is the pattern that values corresponding to <code v-pre>&lt;report-key&gt;</code> must equal.</p>
+<p>For example, <code v-pre>--reports name:John</code> will filter reporting so that only reports with a <code v-pre>name</code> key set to <code v-pre>John</code> in their configuration receive scan reports.</p>
+<p>Salus reports contain the following information:</p>
+<ul>
+<li>Report format version - important for report consumers to correctly determine how to parse the report.</li>
+<li>Data about the codebase it scanned.</li>
+<li>The configuration that Salus used during the scan.</li>
+<li>The outcome of each scanner it ran.</li>
+<li>Information about the repo that might be useful for further analysis (such as what dependencies it has).</li>
+<li>Errors that happened during Salus execution.</li>
+</ul>
+<doc-anchor-target id="salus-report-format">
+    <h2>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#salus-report-format">#</doc-anchor-trigger>
+        <span>Salus Report Format</span>
+    </h2>
+</doc-anchor-target>
+<p>The report, structurally, is a Hash of the following form:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre class="language-json"><code v-pre class="language-json">{
+  &quot;version&quot;: &lt;String, semantic version of this report format&gt;,
+  &quot;project_name&quot;: &lt;String, comes from Salus configuration, typically used for identifying the codebase for this report&gt;,
+  &quot;custom_info&quot;: &lt;String or hash, comes from Salus configuration, used to pipe additional data from Salus runner to report consumer&gt;,
+  &quot;configuration&quot;: &lt;Hash, exact configuration used while Salus executed&gt;,
+  &quot;scans&quot;: {
+    &lt;String, scanner name&gt;: &lt;Boolean, true for pass, false for fail&gt;
+  },
+  &quot;info&quot;: {
+    &lt;String, info type&gt;: [
+      &lt;String, info&gt;
+    ]
+  },
+  &quot;errors&quot;: {
+     &lt;String, error origin&gt;: [
+       &lt;String, error message&gt;
+     ]
+  }
+}</code></pre>
+</doc-codeblock></div>
+<p>While the report above is in JSON form, Salus reports can also be generated in YAML, text, SARIF and CycloneDX form.</p>
+<doc-anchor-target id="cyclonedx-reports">
+    <h2>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#cyclonedx-reports">#</doc-anchor-trigger>
+        <span>CycloneDX Reports</span>
+    </h2>
+</doc-anchor-target>
+<p>CycloneDX is a lightweight software bill of materials (SBOM) standard designed for use in application security contexts and supply chain component analysis. Salus can leverage CycloneDX to standardize dependency reporting. For more information see <a href="https://cyclonedx.org/">CycloneDX Spec</a>.</p>
+<doc-anchor-target id="salus-scanners-with-cyclonedx-support">
+    <h3>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#salus-scanners-with-cyclonedx-support">#</doc-anchor-trigger>
+        <span>Salus Scanners with CycloneDX Support</span>
+    </h3>
+</doc-anchor-target>
+<p>The following Salus dependency scanners are currently planned to adapt to report CycloneDX output:</p>
+<ul>
+<li><a href="/salus/configuration/scanners/dependency_scanners/">Dependency Scanners</a></li>
+</ul>
+<doc-anchor-target id="example-cyclonedx-report">
+    <h3>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#example-cyclonedx-report">#</doc-anchor-trigger>
+        <span>Example CycloneDX Report</span>
+    </h3>
+</doc-anchor-target>
+<p>Below is an example of the structure of a CycloneDX report which will then be base64 encoded in the final json.</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre class="language-json"><code v-pre class="language-json">{
+  &quot;bomFormat&quot;: &quot;CycloneDX&quot;,
+  &quot;specVersion&quot;: &quot;1.3&quot;,
+  &quot;serialNumber&quot;: UUID for the BOM,
+  &quot;version&quot;: 1 (always set to 1),
+  &quot;components&quot;: [
+    {
+      &quot;type&quot;: &quot;library&quot; (Other options are application, framework, operating-system, device or file),
+      &quot;name&quot;: &quot;github.com/DataDog/datadog-go&quot;,
+      &quot;version&quot;: &quot;v4.2.0&quot; (component version),
+      &quot;purl&quot;: &quot;pkg:golang/github.com/DataDog/datadog-go@v4.2.0&quot; 
+    }
+  ]
+}</code></pre>
+</doc-codeblock></div>
+<p>Final json output:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre class="language-none"><code v-pre class="language-none">{
+  &quot;autoCreate&quot;: true,
+  &quot;projectName&quot;: &quot;&lt;String, project name&gt;&quot;,
+  &quot;projectVersion&quot;: &quot;1&quot;,
+  &quot;bom&quot;: &quot;&lt;base64 encoded cyclonedx report&gt;&quot;
+}
+</code></pre>
+</doc-codeblock></div>
+<doc-anchor-target id="sarif-reports">
+    <h2>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#sarif-reports">#</doc-anchor-trigger>
+        <span>SARIF Reports</span>
+    </h2>
+</doc-anchor-target>
+<p>SARIF is a standardized output format for static analysis tools. Considering the wide range of security tools that Salus currently supports, with each tool producing its own unique output; SARIF provides a generalized report format for all these tools. For more information about the SARIF format visit the <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html">SARIF website</a>.</p>
+<p>SARIF reports generated by Salus follow this format:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre class="language-json"><code v-pre class="language-json">{
+  &quot;version&quot;: &lt;String, SARIF version&gt;,
+  &quot;$schema&quot;: &lt;String, SARIF schema&gt;,
+  &quot;runs&quot;: [
+    {
+      &quot;tool&quot;: {
+        &quot;driver&quot;: {
+          &quot;name&quot;: &lt;String, Scanner name&gt;,
+          &quot;version&quot;: &lt;String, version of scanner used to generate report&gt;,
+          &quot;informationUri&quot;: &lt;String, Link to the scanner's webpage&gt;,
+          &quot;rules&quot;: [
+            &lt;reportingDescriptor(@3.49), unique objects for defining rules that were violated in the scan report&gt;
+          ]
+        }
+      },
+      &quot;conversion&quot;: {
+        &quot;tool&quot;: {
+          &quot;driver&quot;: {
+            &quot;name&quot;: &quot;Salus&quot;,
+            &quot;informationUri&quot;: &lt;String, Link to Salus project&gt;
+          }
+        }
+      },
+      &quot;results&quot;: [
+        &lt;resultObjects(@3.27), unique objects that define vulnerabilites highlited by a scanner after a scan&gt;
+      ],
+      &quot;invocations&quot;: [
+        {
+          &quot;executionSuccessful&quot;: &lt;Boolean, true if scanner ran successfuly, false if otherwise&gt;
+        }
+      ]
+    }
+  ]
+}</code></pre>
+</doc-codeblock></div>
+<doc-anchor-target id="salus-ids-for-sarif">
+    <h3>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#salus-ids-for-sarif">#</doc-anchor-trigger>
+        <span>Salus ID&#x27;s for SARIF</span>
+    </h3>
+</doc-anchor-target>
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>ID</th>
+<th style="text-align: center;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SAL001</td>
+<td style="text-align: center;">This Scanner Currently does not support Sarif</td>
+</tr>
+<tr>
+<td>SAL002</td>
+<td style="text-align: center;">Errors logged in a scanners json report</td>
+</tr>
+<tr>
+<td>SAL003</td>
+<td style="text-align: center;">Errors logged by scanner during invocation</td>
+</tr>
+</tbody>
+</table>
+</div>
+<doc-anchor-target id="salus-scanners-with-sarif-support">
+    <h3>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#salus-scanners-with-sarif-support">#</doc-anchor-trigger>
+        <span>Salus Scanners with SARIF support</span>
+    </h3>
+</doc-anchor-target>
+<p>The following salus scanners are currently adapted to report SARIF output:</p>
+<ul>
+<li>Gosec</li>
+<li>Yarn Audit</li>
+<li>NPM audit</li>
+</ul>
+<doc-anchor-target id="example-sarif-report">
+    <h3>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#example-sarif-report">#</doc-anchor-trigger>
+        <span>Example SARIF report</span>
+    </h3>
+</doc-anchor-target>
+<p>Report generated by scanning <a href="https://github.com/subosito/iglo.git">iglo</a></p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre class="language-json"><code v-pre class="language-json">{
+  &quot;version&quot;: &quot;2.1.0&quot;,
+  &quot;$schema&quot;: &quot;https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json&quot;,
+  &quot;runs&quot;: [
+    {
+      &quot;tool&quot;: {
+        &quot;driver&quot;: {
+          &quot;name&quot;: &quot;Gosec&quot;,
+          &quot;version&quot;: &quot;2.4.0&quot;,
+          &quot;informationUri&quot;: &quot;https://github.com/securego/gosec&quot;,
+          &quot;rules&quot;: [
+            {
+              &quot;id&quot;: &quot;G203&quot;,
+              &quot;name&quot;: &quot;CWE-79&quot;,
+              &quot;fullDescription&quot;: {
+                &quot;text&quot;: &quot;this method will not auto-escape HTML. Verify data is well formed. \nSeverity: MEDIUM\nConfidence: LOW\nCWE: https://cwe.mitre.org/data/definitions/79.html&quot;
+              },
+              &quot;helpUri&quot;: &quot;https://cwe.mitre.org/data/definitions/79.html&quot;,
+              &quot;help&quot;: {
+                &quot;text&quot;: &quot;More info: https://cwe.mitre.org/data/definitions/79.html&quot;,
+                &quot;markdown&quot;: &quot;[More info](https://cwe.mitre.org/data/definitions/79.html).&quot;
+              }
+            },
+            {
+              &quot;id&quot;: &quot;SAL002&quot;,
+              &quot;name&quot;: &quot;Golang Error&quot;,
+              &quot;fullDescription&quot;: {
+                &quot;text&quot;: &quot;Golang errors generated at runtime&quot;
+              },
+              &quot;helpUri&quot;: &quot;https://github.com/coinbase/salus/blob/master/docs/salus_reports.md&quot;,
+              &quot;help&quot;: {
+                &quot;text&quot;: &quot;More info: https://github.com/coinbase/salus/blob/master/docs/salus_reports.md&quot;,
+                &quot;markdown&quot;: &quot;[More info](https://github.com/coinbase/salus/blob/master/docs/salus_reports.md).&quot;
+              }
+            }
+          ]
+        }
+      },
+      &quot;conversion&quot;: {
+        &quot;tool&quot;: {
+          &quot;driver&quot;: {
+            &quot;name&quot;: &quot;Salus&quot;,
+            &quot;informationUri&quot;: &quot;https://github.com/coinbase/salus&quot;
+          }
+        }
+      },
+      &quot;results&quot;: [
+        {
+          &quot;ruleId&quot;: &quot;G203&quot;,
+          &quot;ruleIndex&quot;: 0,
+          &quot;level&quot;: &quot;error&quot;,
+          &quot;message&quot;: {
+            &quot;text&quot;: &quot;this method will not auto-escape HTML. Verify data is well formed. \nSeverity: MEDIUM\nConfidence: LOW\nCWE: https://cwe.mitre.org/data/definitions/79.html&quot;
+          },
+          &quot;locations&quot;: [
+            {
+              &quot;physicalLocation&quot;: {
+                &quot;artifactLocation&quot;: {
+                  &quot;uri&quot;: &quot;/home/repo/formatter.go&quot;,
+                  &quot;uriBaseId&quot;: &quot;%SRCROOT%&quot;
+                },
+                &quot;region&quot;: {
+                  &quot;startLine&quot;: 32,
+                  &quot;startColumn&quot;: 9,
+                  &quot;snippet&quot;: {
+                    &quot;text&quot;: &quot;31: \tb := bf.MarkdownCommon([]byte(str))\n32: \treturn template.HTML(string(b))\n33: }\n&quot;
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          &quot;ruleId&quot;: &quot;SAL0002&quot;,
+          &quot;ruleIndex&quot;: 3,
+          &quot;level&quot;: &quot;note&quot;,
+          &quot;message&quot;: {
+            &quot;text&quot;: &quot;could not import github.com/subosito/iglo (invalid package name: \&quot;\&quot;)&quot;
+          },
+          &quot;locations&quot;: [
+            {
+              &quot;physicalLocation&quot;: {
+                &quot;artifactLocation&quot;: {
+                  &quot;uri&quot;: &quot;/home/repo/examples/api-exporter/main.go&quot;,
+                  &quot;uriBaseId&quot;: &quot;%SRCROOT%&quot;
+                },
+                &quot;region&quot;: {
+                  &quot;startLine&quot;: 8,
+                  &quot;startColumn&quot;: 2,
+                  &quot;snippet&quot;: {
+                    &quot;text&quot;: &quot;&quot;
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ],
+      &quot;invocations&quot;: [
+        {
+          &quot;executionSuccessful&quot;: false
+        }
+      ]
+    },
+    {
+      &quot;tool&quot;: {
+        &quot;driver&quot;: {
+          &quot;name&quot;: &quot;Semgrep&quot;,
+          &quot;version&quot;: &quot;0.62.0&quot;,
+          &quot;informationUri&quot;: &quot;https://github.com/coinbase/salus&quot;,
+          &quot;rules&quot;: [
+
+          ]
+        }
+      },
+      &quot;conversion&quot;: {
+        &quot;tool&quot;: {
+          &quot;driver&quot;: {
+            &quot;name&quot;: &quot;Salus&quot;,
+            &quot;informationUri&quot;: &quot;https://github.com/coinbase/salus&quot;
+          }
+        }
+      },
+      &quot;results&quot;: [
+
+      ],
+      &quot;invocations&quot;: [
+        {
+          &quot;executionSuccessful&quot;: true,
+          &quot;toolExecutionNotifications&quot;: [
+            {
+              &quot;descriptor&quot;: {
+                &quot;id&quot;: &quot;SAL001&quot;
+              },
+              &quot;message&quot;: {
+                &quot;text&quot;: &quot;SARIF reports are not available for this scanner&quot;
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}</code></pre>
+</doc-codeblock></div>
+<doc-anchor-target id="example-reports">
+    <h2>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#example-reports">#</doc-anchor-trigger>
+        <span>Example Reports</span>
+    </h2>
+</doc-anchor-target>
+<p>Reports generated by scanning the <a href="https://github.com/rails/actioncable-examples">rails/actioncable-examples@916910c</a> repository.</p>
+<doc-anchor-target id="text-from-stdout">
+    <h3>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#text-from-stdout">#</doc-anchor-trigger>
+        <span><strong>Text from STDOUT:</strong></span>
+    </h3>
+</doc-anchor-target>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre class="language-bash"><code v-pre class="language-bash">#################### Salus Scan v1.0.0 for Project ####################
+
+	Brakeman =&gt; passed
+
+	BundleAudit =&gt; failed
+
+STDOUT:
+[
+  {
+    &quot;type&quot;: &quot;UnpatchedGem&quot;,
+    &quot;name&quot;: &quot;loofah&quot;,
+    &quot;version&quot;: &quot;2.0.3&quot;,
+    &quot;cve&quot;: &quot;CVE-2018-8048&quot;,
+    &quot;url&quot;: &quot;https://github.com/flavorjones/loofah/issues/144&quot;,
+    &quot;advisory_title&quot;: &quot;Loofah XSS Vulnerability&quot;,
+    &quot;description&quot;: &quot;Loofah allows non-whitelisted attributes to be present in sanitized\noutput when
+ input with specially-crafted HTML fragments.\n&quot;,
+    &quot;cvss&quot;: null,
+    &quot;osvdb&quot;: null,
+    &quot;patched_versions&quot;: [
+      &quot;&gt;= 2.2.1&quot;
+    ],
+    &quot;unaffected_versions&quot;: [
+    ]
+  },
+  ...
+
+	PatternSearch =&gt; passed
+
+	RepoNotEmpty =&gt; passed
+
+	ReportRubyGems
+
+	overall =&gt; failed</code></pre>
+</doc-codeblock></div>
+<doc-anchor-target id="yaml-form">
+    <h3>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#yaml-form">#</doc-anchor-trigger>
+        <span><strong>YAML Form:</strong></span>
+    </h3>
+</doc-anchor-target>
+<p>Long arrays have been shortened for brevity.</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre class="language-yaml"><code v-pre class="language-yaml">---
+:project_name: Project
+:scans:
+  Brakeman:
+    passed: true
+  BundleAudit:
+    passed: false
+    info:
+      unpatched_gem:
+      - :type: :UnpatchedGem
+        :name: loofah
+        :version: 2.0.3
+        :cve: CVE-2018-8048
+        :url: https://github.com/flavorjones/loofah/issues/144
+        :advisory_title: Loofah XSS Vulnerability
+        :description: |
+          Loofah allows non-whitelisted attributes to be present in sanitized
+          output when input with specially-crafted HTML fragments.
+        :cvss:
+        :osvdb:
+        :patched_versions:
+        - &quot;&gt;= 2.2.1&quot;
+        :unaffected_versions: []
+      - :type: :UnpatchedGem
+        :name: sprockets
+        :version: 3.7.1
+        :cve: CVE-2018-3760
+        :url: https://groups.google.com/forum/#!topic/ruby-security-ann/2S9Pwz2i16k
+        :advisory_title: Path Traversal in Sprockets
+        :description: |
+          Specially crafted requests can be used to access files that exist on
+          the filesystem that is outside an application's root directory, when the
+          Sprockets server is used in production.
+
+          All users running an affected release should either upgrade or use one of the work arounds immediately.
+
+          Workaround:
+          In Rails applications, work around this issue, set `config.assets.compile = false` and
+          `config.public_file_server.enabled = true` in an initializer and precompile the assets.
+
+           This work around will not be possible in all hosting environments and upgrading is advised.
+        :cvss:
+        :osvdb:
+        :patched_versions:
+        - &quot;&lt; 3.0.0, &gt;= 2.12.5&quot;
+        - &quot;&lt; 4.0.0, &gt;= 3.7.2&quot;
+        - &quot;&gt;= 4.0.0.beta8&quot;
+        :unaffected_versions: []
+  PatternSearch:
+    passed: true
+  RepoNotEmpty:
+    passed: true
+  ReportRubyGems:
+    info:
+      dependency:
+      - :dependency_file: Gemfile
+        :type: ruby
+        :version:
+      - :dependency_file: Gemfile
+        :type: bundler
+        :version: !ruby/object:Gem::Version
+          version: 1.15.1
+      - :dependency_file: Gemfile.lock
+        :type: gem
+        :name: actioncable
+        :version: 5.1.1
+        :source: rubygems repository https://rubygems.org/ or installed locally
+      - :dependency_file: Gemfile.lock
+        :type: gem
+        :name: actionmailer
+        :version: 5.1.1
+        :source: rubygems repository https://rubygems.org/ or installed locally
+  overall:
+    passed: false
+:info: {}
+:errors: {}
+:version: 1.0.0
+:custom_info: ''
+:configuration:
+  :sources:
+    :configured:
+    - file:///salus.yaml
+    :valid:
+    - file:///salus.yaml
+  active_scanners:
+  - Brakeman
+  - BundleAudit
+  - NPMAudit
+  - PatternSearch
+  - RepoNotEmpty
+  - ReportGoDep
+  - ReportNodeModules
+  - ReportPythonModules
+  - ReportRubyGems
+  enforced_scanners:
+  - RepoNotEmpty
+  - Brakeman
+  - BundleAudit
+  - NPMAudit
+  - PatternSearch
+  scanner_configs: {}
+  reports:
+  - uri: file://./repo/salus-report.txt
+    format: txt
+  - uri: file://./repo/salus-report.yaml
+    format: yaml
+    verbose: true
+  - uri: file://./repo/salus-report.json
+    format: json
+    verbose: true</code></pre>
+</doc-codeblock></div>
+<doc-anchor-target id="json-form">
+    <h3>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#json-form">#</doc-anchor-trigger>
+        <span><strong>JSON Form:</strong></span>
+    </h3>
+</doc-anchor-target>
+<p>Long arrays have been shortened for brevity.</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre class="language-json"><code v-pre class="language-json">{
+  &quot;project_name&quot;: &quot;Project&quot;,
+  &quot;scans&quot;: {
+    &quot;Brakeman&quot;: {
+      &quot;passed&quot;: true
+    },
+    &quot;BundleAudit&quot;: {
+      &quot;passed&quot;: false,
+      &quot;info&quot;: {
+        &quot;unpatched_gem&quot;: [
+          {
+            &quot;type&quot;: &quot;UnpatchedGem&quot;,
+            &quot;name&quot;: &quot;loofah&quot;,
+            &quot;version&quot;: &quot;2.0.3&quot;,
+            &quot;cve&quot;: &quot;CVE-2018-8048&quot;,
+            &quot;url&quot;: &quot;https://github.com/flavorjones/loofah/issues/144&quot;,
+            &quot;advisory_title&quot;: &quot;Loofah XSS Vulnerability&quot;,
+            &quot;description&quot;: &quot;Loofah allows non-whitelisted attributes to be present in sanitized\noutput when input with specially-crafted HTML fragments.\n&quot;,
+            &quot;cvss&quot;: null,
+            &quot;osvdb&quot;: null,
+            &quot;patched_versions&quot;: [
+              &quot;&gt;= 2.2.1&quot;
+            ],
+            &quot;unaffected_versions&quot;: [
+
+            ]
+          },
+          {
+            &quot;type&quot;: &quot;UnpatchedGem&quot;,
+            &quot;name&quot;: &quot;sprockets&quot;,
+            &quot;version&quot;: &quot;3.7.1&quot;,
+            &quot;cve&quot;: &quot;CVE-2018-3760&quot;,
+            &quot;url&quot;: &quot;https://groups.google.com/forum/#!topic/ruby-security-ann/2S9Pwz2i16k&quot;,
+            &quot;advisory_title&quot;: &quot;Path Traversal in Sprockets&quot;,
+            &quot;description&quot;: &quot;Specially crafted requests can be used to access files that exist on\nthe filesystem that is outside an application's root directory, when the\nSprockets server is used in production.\n\nAll users running an affected release should either upgrade or use one of the work arounds immediately.\n\nWorkaround:\nIn Rails applications, work around this issue, set `config.assets.compile = false` and\n`config.public_file_server.enabled = true` in an initializer and precompile the assets.\n\n This work around will not be possible in all hosting environments and upgrading is advised.\n&quot;,
+            &quot;cvss&quot;: null,
+            &quot;osvdb&quot;: null,
+            &quot;patched_versions&quot;: [
+              &quot;&lt; 3.0.0, &gt;= 2.12.5&quot;,
+              &quot;&lt; 4.0.0, &gt;= 3.7.2&quot;,
+              &quot;&gt;= 4.0.0.beta8&quot;
+            ],
+            &quot;unaffected_versions&quot;: [
+
+            ]
+          }
+        ]
+      }
+    },
+    &quot;PatternSearch&quot;: {
+      &quot;passed&quot;: true
+    },
+    &quot;RepoNotEmpty&quot;: {
+      &quot;passed&quot;: true
+    },
+    &quot;ReportRubyGems&quot;: {
+      &quot;info&quot;: {
+        &quot;dependency&quot;: [
+          {
+            &quot;dependency_file&quot;: &quot;Gemfile&quot;,
+            &quot;type&quot;: &quot;ruby&quot;,
+            &quot;version&quot;: null
+          },
+          {
+            &quot;dependency_file&quot;: &quot;Gemfile&quot;,
+            &quot;type&quot;: &quot;bundler&quot;,
+            &quot;version&quot;: &quot;1.15.1&quot;
+          },
+          {
+            &quot;dependency_file&quot;: &quot;Gemfile.lock&quot;,
+            &quot;type&quot;: &quot;gem&quot;,
+            &quot;name&quot;: &quot;actioncable&quot;,
+            &quot;version&quot;: &quot;5.1.1&quot;,
+            &quot;source&quot;: &quot;rubygems repository https://rubygems.org/ or installed locally&quot;
+          },
+          {
+            &quot;dependency_file&quot;: &quot;Gemfile.lock&quot;,
+            &quot;type&quot;: &quot;gem&quot;,
+            &quot;name&quot;: &quot;actionmailer&quot;,
+            &quot;version&quot;: &quot;5.1.1&quot;,
+            &quot;source&quot;: &quot;rubygems repository https://rubygems.org/ or installed locally&quot;
+          }
+        ]
+      }
+    },
+    &quot;overall&quot;: {
+      &quot;passed&quot;: false
+    }
+  },
+  &quot;info&quot;: {
+  },
+  &quot;errors&quot;: {
+  },
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;custom_info&quot;: &quot;&quot;,
+  &quot;configuration&quot;: {
+    &quot;sources&quot;: {
+      &quot;configured&quot;: [
+        &quot;file:///salus.yaml&quot;
+      ],
+      &quot;valid&quot;: [
+        &quot;file:///salus.yaml&quot;
+      ]
+    },
+    &quot;active_scanners&quot;: [
+      &quot;Brakeman&quot;,
+      &quot;BundleAudit&quot;,
+      &quot;NPMAudit&quot;,
+      &quot;PatternSearch&quot;,
+      &quot;RepoNotEmpty&quot;,
+      &quot;ReportGoDep&quot;,
+      &quot;ReportNodeModules&quot;,
+      &quot;ReportPythonModules&quot;,
+      &quot;ReportRubyGems&quot;
+    ],
+    &quot;enforced_scanners&quot;: [
+      &quot;RepoNotEmpty&quot;,
+      &quot;Brakeman&quot;,
+      &quot;BundleAudit&quot;,
+      &quot;NPMAudit&quot;,
+      &quot;PatternSearch&quot;
+    ],
+    &quot;scanner_configs&quot;: {
+    },
+    &quot;reports&quot;: [
+      {
+        &quot;uri&quot;: &quot;file://./repo/salus-report.txt&quot;,
+        &quot;format&quot;: &quot;txt&quot;
+      },
+      {
+        &quot;uri&quot;: &quot;file://./repo/salus-report.yaml&quot;,
+        &quot;format&quot;: &quot;yaml&quot;,
+        &quot;verbose&quot;: true
+      },
+      {
+        &quot;uri&quot;: &quot;file://./repo/salus-report.json&quot;,
+        &quot;format&quot;: &quot;json&quot;,
+        &quot;verbose&quot;: true
+      }
+    ]
+  }
+}</code></pre>
+</doc-codeblock></div>
+<doc-anchor-target id="example-with-errors">
+    <h4>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#example-with-errors">#</doc-anchor-trigger>
+        <span>Example with Errors</span>
+    </h4>
+</doc-anchor-target>
+<p>Reports generated by scanning the <a href="https://github.com/coinbase/traffic_jam">coinbase/traffic_jam@2b90aa5</a> ruby gem repo.</p>
+<doc-anchor-target id="text-from-stdout-1">
+    <h3>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#text-from-stdout-1">#</doc-anchor-trigger>
+        <span><strong>Text from STDOUT:</strong></span>
+    </h3>
+</doc-anchor-target>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre class="language-bash"><code v-pre class="language-bash">#################### Salus Scan v1.0.0 for Project ####################
+
+	PatternSearch =&gt; passed
+
+	RepoNotEmpty =&gt; passed
+
+	overall =&gt; passed
+
+==================== Salus Errors ====================
+	Salus - [{:type=&gt;&quot;NoMethodError&quot;, :message=&gt;&quot;undefined method `versions' for nil:NilClass&quot;, :location=&gt;&quot;/home/lib/salus/scanners/report_ruby_gems.rb:43:in `record_dependencies_from_gemfile'&quot;}]</code></pre>
+</doc-codeblock></div>
+<doc-anchor-target id="yaml-form-verbose">
+    <h3>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#yaml-form-verbose">#</doc-anchor-trigger>
+        <span><strong>YAML form verbose</strong></span>
+    </h3>
+</doc-anchor-target>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre class="language-yaml"><code v-pre class="language-yaml">---
+:project_name: Project
+:scans:
+  PatternSearch:
+    passed: true
+  RepoNotEmpty:
+    passed: true
+  overall:
+    passed: true
+:info: {}
+:errors:
+  Salus:
+  - :type: NoMethodError
+    :message: undefined method `versions' for nil:NilClass
+    :location: &quot;/home/lib/salus/scanners/report_ruby_gems.rb:43:in `record_dependencies_from_gemfile'&quot;
+:version: 1.0.0
+:custom_info: ''
+:configuration:
+  :sources:
+    :configured:
+    - file:///salus.yaml
+    :valid:
+    - file:///salus.yaml
+  active_scanners:
+  - Brakeman
+  - BundleAudit
+  - NPMAudit
+  - PatternSearch
+  - RepoNotEmpty
+  - ReportGoDep
+  - ReportNodeModules
+  - ReportPythonModules
+  - ReportRubyGems
+  enforced_scanners:
+  - RepoNotEmpty
+  - Brakeman
+  - BundleAudit
+  - NPMAudit
+  - PatternSearch
+  scanner_configs: {}
+  reports:
+  - uri: file://./repo/salus-report.yaml
+    format: yaml
+    verbose: true
+  - uri: file://./repo/salus-report.json
+    format: json
+    verbose: true</code></pre>
+</doc-codeblock></div>
+<doc-anchor-target id="json-form-verbose">
+    <h3>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#json-form-verbose">#</doc-anchor-trigger>
+        <span><strong>JSON form verbose</strong></span>
+    </h3>
+</doc-anchor-target>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre class="language-json"><code v-pre class="language-json">{
+  &quot;project_name&quot;: &quot;Project&quot;,
+  &quot;scans&quot;: {
+    &quot;PatternSearch&quot;: {
+      &quot;passed&quot;: true
+    },
+    &quot;RepoNotEmpty&quot;: {
+      &quot;passed&quot;: true
+    },
+    &quot;overall&quot;: {
+      &quot;passed&quot;: true
+    }
+  },
+  &quot;info&quot;: {
+  },
+  &quot;errors&quot;: {
+    &quot;Salus&quot;: [
+      {
+        &quot;type&quot;: &quot;NoMethodError&quot;,
+        &quot;message&quot;: &quot;undefined method `versions' for nil:NilClass&quot;,
+        &quot;location&quot;: &quot;/home/lib/salus/scanners/report_ruby_gems.rb:43:in `record_dependencies_from_gemfile'&quot;
+      }
+    ]
+  },
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;custom_info&quot;: &quot;&quot;,
+  &quot;configuration&quot;: {
+    &quot;sources&quot;: {
+      &quot;configured&quot;: [
+        &quot;file:///salus.yaml&quot;
+      ],
+      &quot;valid&quot;: [
+        &quot;file:///salus.yaml&quot;
+      ]
+    },
+    &quot;active_scanners&quot;: [
+      &quot;Brakeman&quot;,
+      &quot;BundleAudit&quot;,
+      &quot;NPMAudit&quot;,
+      &quot;PatternSearch&quot;,
+      &quot;RepoNotEmpty&quot;,
+      &quot;ReportGoDep&quot;,
+      &quot;ReportNodeModules&quot;,
+      &quot;ReportPythonModules&quot;,
+      &quot;ReportRubyGems&quot;
+    ],
+    &quot;enforced_scanners&quot;: [
+      &quot;RepoNotEmpty&quot;,
+      &quot;Brakeman&quot;,
+      &quot;BundleAudit&quot;,
+      &quot;NPMAudit&quot;,
+      &quot;PatternSearch&quot;
+    ],
+    &quot;scanner_configs&quot;: {
+    },
+    &quot;reports&quot;: [
+      {
+        &quot;uri&quot;: &quot;file://./repo/salus-report.yaml&quot;,
+        &quot;format&quot;: &quot;yaml&quot;,
+        &quot;verbose&quot;: true
+      },
+      {
+        &quot;uri&quot;: &quot;file://./repo/salus-report.json&quot;,
+        &quot;format&quot;: &quot;json&quot;,
+        &quot;verbose&quot;: true
+      }
+    ]
+  }
+}</code></pre>
+</doc-codeblock></div>
+
+                                
+                                <!-- Required only on API pages -->
+                                <doc-toolbar-member-filter-no-results />
+                            </div>
+                            <footer class="clear-both">
+                            
+                                <nav class="flex mt-14">
+                                    <div class="w-1/2">
+                                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-blue-500 dark:text-blue-400 border border-gray-300 hover:border-gray-400 dark:border-dark-650 dark:hover:border-dark-450 rounded-l-lg transition-colors duration-150 relative hover:z-5" href="/salus/configuration/scanners/yarn_audit/">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                                            <span>
+                                                <span class="block text-xs font-normal text-gray-400 dark:text-dark-400">Previous</span>
+                                                <span class="block mt-1">Yarn​Audit</span>
+                                            </span>
+                                        </a>
+                                    </div>
+                            
+                                    <div class="w-1/2">
+                                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-blue-500 dark:text-blue-400 border border-gray-300 hover:border-gray-400 dark:border-dark-650 dark:hover:border-dark-450 rounded-r-lg transition-colors duration-150 relative hover:z-5" href="/salus/guides/getting_started/">
+                                            <span>
+                                                <span class="block text-xs font-normal text-right text-gray-400 dark:text-dark-400">Next</span>
+                                                <span class="block mt-1">Getting started</span>
+                                            </span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                                        </a>
+                                    </div>
+                                </nav>
+                            </footer>
+                        </main>
+                
+                        <div class="border-t dark:border-dark-650 pt-6 mb-8">
+                            <footer class="flex flex-wrap items-center justify-between">
+                                <div>
+                                    <ul class="flex flex-wrap items-center text-sm">
+                                        <li>
+                                            <a class="inline-flex items-center mr-4 py-2 text-sm whitespace-nowrap transition-colors duration-200 ease-linear text-blue-500 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 md:mb-0" href="https://github.com/coinbase/salus">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="mb-px mr-1" width="18" height="18" viewBox="0 0 24 24" role="presentation">
+                                                    <g fill="currentColor">
+                                                        <symbol id="mark-github-icon-symbol" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></symbol><use xlink:href="#mark-github-icon-symbol" />
+                                                    </g>
+                                                </svg>
+                                                <span>Github</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="docs-copyright py-2 text-gray-500 dark:text-dark-350 text-sm leading-relaxed"><p>© Copyright 2022. All rights reserved.</p></div>
+                            </footer>
+                        </div>
+                    </div>
+                
+                    <!-- Rendered if sidebar right is enabled -->
+                    <!-- Sidebar right skeleton-->
+                    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-white border-gray-200 lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:transform-none sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton dark:bg-dark-850 dark:border-dark-650">
+                        <div class="pl-5">
+                            <div class="w-32 h-3 mb-4 bg-gray-200 dark:bg-dark-600 rounded-full loading"></div>
+                            <div class="w-48 h-3 mb-4 bg-gray-200 dark:bg-dark-600 rounded-full loading"></div>
+                            <div class="w-40 h-3 mb-4 bg-gray-200 dark:bg-dark-600 rounded-full loading"></div>
+                        </div>
+                    </div>
+                
+                    <!-- User should be able to hide sidebar right -->
+                    <doc-sidebar-right v-cloak></doc-sidebar-right>
+                </div>
+
+            </div>
+        </div>
+    
+        <doc-search-mobile></doc-search-mobile>
+        <doc-back-to-top></doc-back-to-top>
+    </div>
+
+
+    <div id="docs-overlay-target"></div>
+
+    <script>window.__DOCS__ = { "title": "Salus Reports", icon: "file", hasPrism: true, hasMermaid: false, hasMath: false }</script>
+</body>
+</html>
