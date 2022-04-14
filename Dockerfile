@@ -220,10 +220,10 @@ USER salus-cli
 WORKDIR /home
 
 # copy salus code
-COPY Gemfile Gemfile.lock /home
+COPY Gemfile Gemfile.lock /home/
 COPY bin /home/bin
 COPY lib /home/lib
-COPY salus-default.yaml /home
+COPY salus-default.yaml /home/
 
 # Make sure bundler is pointing to the previosuly installed dpes
 RUN gem install bundler -v'2.3.1' \
