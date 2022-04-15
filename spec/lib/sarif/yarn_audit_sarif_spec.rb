@@ -23,7 +23,9 @@ describe Sarif::YarnAuditSarif do
       it 'parses information correctly' do
         status = ProcessStatusDouble.new(stub_status_failure_2)
         stub_ret = Salus::ShellResult.new(stub_stdout_failure_2, stub_stderr_failure_2, status)
+        allow(scanner).to receive(:version).and_return('1.22.0')
         allow(scanner).to receive(:run_shell).and_return(stub_ret)
+
         scanner.run
         issue = JSON.parse(scanner.report.to_h[:info][:stdout])[0]
         yarn_sarif = Sarif::YarnAuditSarif.new(scanner.report, path)
@@ -88,12 +90,15 @@ describe Sarif::YarnAuditSarif do
       it 'should generate the right results and rules' do
         status = ProcessStatusDouble.new(stub_status_failure_4)
         stub_ret = Salus::ShellResult.new(stub_stdout_failure_4, stub_stderr_failure_4, status)
+        allow(scanner).to receive(:version).and_return('1.22.0')
         allow(scanner).to receive(:run_shell).and_return(stub_ret)
+
         scanner.run
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
 
         parsed_json = JSON.parse(report.to_sarif)
+
         result = parsed_json["runs"][0]["results"].first
         rule = parsed_json["runs"][0]["tool"]["driver"]["rules"].first
 

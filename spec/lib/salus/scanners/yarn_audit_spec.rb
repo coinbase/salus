@@ -24,13 +24,18 @@ describe Salus::Scanners::YarnAudit do
       repo = Salus::Repo.new('spec/fixtures/yarn_audit/failure')
       scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
       scanner.run
-
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
 
       repo = Salus::Repo.new('spec/fixtures/yarn_audit/failure-2')
       scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
       scanner.run
+      expect(scanner.report.to_h.fetch(:passed)).to eq(false)
 
+      repo = Salus::Repo.new('spec/fixtures/yarn_audit/failure_yarn_3')
+      config_data = YAML.load_file('spec/fixtures/yarn_audit/failure_yarn_3/'\
+                                    'salus.yaml')
+      scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: config_data)
+      scanner.run
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
     end
 
@@ -49,6 +54,24 @@ describe Salus::Scanners::YarnAudit do
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
       vulns = JSON.parse(scanner.report.to_h[:info][:stdout]).sort { |a, b| a["ID"] <=> b["ID"] }
       expect(vulns.size).to eq(7)
+
+      vulns.each do |vul|
+        ["Package", "Patched in", "Dependency of", "More info", "Severity", "Title"].each do |attr|
+          expect(vul[attr]).to be_kind_of(String)
+          expect(vul[attr]).not_to be_empty
+        end
+        expect(vul["ID"]).to be_kind_of(Integer)
+      end
+
+      repo = Salus::Repo.new('spec/fixtures/yarn_audit/failure_yarn_3')
+      config_data = YAML.load_file('spec/fixtures/yarn_audit/failure_yarn_3/'\
+        'salus.yaml')
+      scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: config_data)
+      scanner.run
+
+      expect(scanner.report.to_h.fetch(:passed)).to eq(false)
+      vulns = JSON.parse(scanner.report.to_h[:info][:stdout]).sort { |a, b| a["ID"] <=> b["ID"] }
+      expect(vulns.size).to eq(20)
 
       vulns.each do |vul|
         ["Package", "Patched in", "Dependency of", "More info", "Severity", "Title"].each do |attr|
@@ -119,6 +142,10 @@ describe Salus::Scanners::YarnAudit do
     context 'scanner version is valid' do
       it 'should return true' do
         repo = Salus::Repo.new('spec/fixtures/yarn_audit/success')
+        scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
+        expect(scanner.version).to be_a_valid_version
+
+        repo = Salus::Repo.new('spec/fixtures/yarn_audit/failure_yarn_3')
         scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
         expect(scanner.version).to be_a_valid_version
       end
