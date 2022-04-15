@@ -76,7 +76,7 @@ RUN pip install wheel \
 
 ### Ruby
 # ruby gems
-COPY Gemfile Gemfile.lock /home
+COPY Gemfile Gemfile.lock /home/
 RUN cd /home \
   && gem install bundler -v '2.3.1' \
   && bundle config --local path /root/vendor/bundle \
