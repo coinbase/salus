@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://coinbase.github.com/salus/sitemap.xml.gz
+Sitemap: https://kamsiy.github.io/salus/sitemap.xml.gz

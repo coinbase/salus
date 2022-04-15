@@ -16,25 +16,25 @@
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://coinbase.github.com/salus/">
+    <meta property="og:url" content="https://kamsiy.github.io/salus/">
     <meta property="og:title" content="Salus Overview">
     <meta property="og:description" content="Salus (Security Automation as a Lightweight Universal Scanner), named after the Roman goddess of protection">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://coinbase.github.com/salus/">
+    <meta property="twitter:url" content="https://kamsiy.github.io/salus/">
     <meta property="twitter:title" content="Salus Overview">
     <meta property="twitter:description" content="Salus (Security Automation as a Lightweight Universal Scanner), named after the Roman goddess of protection">
 
     <script>(function () { var el = document.documentElement, m = localStorage.getItem("/salus/doc_theme"), wm = window.matchMedia; if (m === "dark" || (!m && wm && wm("(prefers-color-scheme: dark)").matches)) { el.classList.add("dark") } else { el.classList.remove("dark") } })();</script>
 
-    <link href="/salus/favicon.ico" rel="icon" />
-    <link href="/salus/resources/css/retype.css?v=2.2.703276461151" rel="stylesheet" data-turbo-track="reload" />
+    <link href="/salus/static/favicon.ico" rel="icon" />
+    <link href="/salus/resources/css/retype.css?v=2.2.703360545996" rel="stylesheet" data-turbo-track="reload" />
 
-    <script type="text/javascript" src="/salus/resources/js/config.js?v=2.2.703276461151" defer data-turbo-track="reload"></script>
+    <script type="text/javascript" src="/salus/resources/js/config.js?v=2.2.703360545996" defer data-turbo-track="reload"></script>
     <script type="text/javascript" src="/salus/resources/js/retype.js?v=2.2" defer data-turbo-track="reload"></script>
-    <script id="lunr-js" type="text/javascript" src="/salus/resources/js/lunr.js?v=2.2.703276461151" defer></script>
-    <script id="prism-js" type="text/javascript" src="/salus/resources/js/prism.js?v=2.2.703276461151" defer></script>
+    <script id="lunr-js" type="text/javascript" src="/salus/resources/js/lunr.js?v=2.2.703360545996" defer></script>
+    <script id="prism-js" type="text/javascript" src="/salus/resources/js/prism.js?v=2.2.703360545996" defer></script>
 </head>
 <body>
     <div id="docs-app" class="relative text-base antialiased text-gray-700 bg-white font-body dark:bg-dark-850 dark:text-dark-300">
@@ -198,6 +198,78 @@
 <p>Salus is particularly useful for CI/CD pipelines because it becomes a centralized place to coordinate scanning across a large fleet of repositories. Typically, scanners are configured at the repository level for each project. This means that each repository must be updated when making org-wide changes to how the scanners are run. Instead, you can update Salus and all builds will instantly inherit the change.</p>
 <p>Salus provides extensive configurations that allow for global defaults and local tweaks. Finally, Salus can report metrics on each repository, such as what packages are included or what concerns exist. These reports can be centrally evaluated in your infrastructure to allow scalable security tracking.</p>
 <hr />
+<doc-anchor-target id="quick-start">
+    <h2>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#quick-start">#</doc-anchor-trigger>
+        <span>Quick Start</span>
+    </h2>
+</doc-anchor-target>
+<p>Docker is required to run Salus. The dependencies for the project are stored on a docker container, which helps reduce the number of steps required to run Salus.</p>
+<p>Check out the <a href="guides/getting_started/">Getting Started Guide</a> for detailed instructions or continue here for a more condensed process</p>
+<doc-anchor-target id="installation">
+    <h4>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#installation">#</doc-anchor-trigger>
+        <span>Installation</span>
+    </h4>
+</doc-anchor-target>
+<p>Docker is available on different operating systems. You can install the appropriate version for your operating system on the <a href="https://docs.docker.com/desktop/mac/install/">Docker website</a></p>
+<doc-tabs>
+<doc-tab id="mac">
+<template #title>Mac</template>
+<p><a href="https://docs.docker.com/desktop/mac/install/">Docker website</a></p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<div class="codeblock-title">Installing Docker with Homebrew</div>
+<pre class="language-none"><code v-pre class="language-none">brew install docker</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab id="windows">
+<template #title>Windows</template>
+<p><a href="https://docs.docker.com/desktop/windows/install/">Install Docker for Windows</a></p>
+</doc-tab>
+<doc-tab id="linux">
+<template #title>Linux</template>
+<p><a href="https://docs.docker.com/engine/install/">Install Docker for Linux</a></p>
+</doc-tab>
+</doc-tabs>
+<p>All Set! you are now ready to run Salus <span class="docs-emoji">&#x2728;</span></p>
+<doc-anchor-target id="running-salus">
+    <h4>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#running-salus">#</doc-anchor-trigger>
+        <span>Running Salus</span>
+    </h4>
+</doc-anchor-target>
+<p>Navigate to the root directory of the project you want to run Salus on</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre class="language-bash"><code v-pre class="language-bash">cd /path/to/repo</code></pre>
+</doc-codeblock></div>
+<p>Run the following line in the root directory (No edits necessary). This will run the latest Version of Salus.</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre class="language-bash"><code v-pre class="language-bash">docker run --rm -t -v $(pwd):/home/repo coinbase/Salus</code></pre>
+</doc-codeblock></div>
+<p>Running specific versions of Salus is also possible. All you need to do is provide the version tag</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<div class="codeblock-title">Running Salus Version 2.17.6</div>
+<pre class="language-bash"><code v-pre class="language-bash">docker run --rm -t -v $(pwd):/home/repo coinbase/Salus:2.17.6</code></pre>
+</doc-codeblock></div>
+<div class="flex mb-6">
+    <div class="shrink-0 w-1 rounded-tl rounded-bl bg-blue-500 dark:bg-blue-400"></div>
+    <div class="flex w-full py-4 border border-l-0 border-gray-300 rounded-tr rounded-br doc-alert bg-white dark:bg-dark-700 dark:border-dark-700" role="alert">
+        <div class="flex items-center ml-4 h-7">
+            <svg xmlns="http://www.w3.org/2000/svg" class="mb-px text-blue-500 dark:text-blue-400" width="22" height="22" viewBox="0 0 24 24" role="presentation">
+                <g fill="currentColor"><g>
+                    <path d="M12 1C5.93 1 1 5.93 1 12s4.93 11 11 11 11-4.93 11-11S18.07 1 12 1zm0 20c-4.96 0-9-4.04-9-9s4.04-9 9-9 9 4.04 9 9-4.04 9-9 9z"></path>
+                    <path d="M12 11c-.55 0-1 .45-1 1v4c0 .55.45 1 1 1s1-.45 1-1v-4c0-.55-.45-1-1-1zM12.01 7c-.56 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"></path>
+                    <path fill="none" d="M0 0h24v24H0z"></path>
+                </g></g>
+            </svg>
+        </div>
+        <div class="pr-5 ml-3 w-full">
+            <h5>Salus Releases</h5>
+<p>To view all versions of Salus, visit the <a href="https://github.com/coinbase/Salus/releases">releases page</a></p>
+        </div>
+    </div>
+</div>
+<hr />
 <doc-anchor-target id="supported-scanners">
     <h2>
         <doc-anchor-trigger class="header-anchor-trigger" to="#supported-scanners">#</doc-anchor-trigger>
@@ -205,7 +277,7 @@
     </h2>
 </doc-anchor-target>
 <p>Salus serves as an orchestrator for security scanners. Salus triggers the appropriate scanners if a project meets a scanner&#x27;s requirements</p>
-<p>Salus currently supports the following scanners:</p>
+<p>Salus currently supports the following open-source scanners:</p>
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
@@ -254,78 +326,71 @@
 </tbody>
 </table>
 </div>
-<hr />
-<doc-anchor-target id="dependency-tracking">
-    <h2>
-        <doc-anchor-trigger class="header-anchor-trigger" to="#dependency-tracking">#</doc-anchor-trigger>
-        <span>Dependency Tracking</span>
-    </h2>
+<div class="flex mb-6">
+    <div class="shrink-0 w-1 rounded-tl rounded-bl bg-blue-500 dark:bg-blue-400"></div>
+    <div class="flex w-full py-4 border border-l-0 border-gray-300 rounded-tr rounded-br doc-alert bg-white dark:bg-dark-700 dark:border-dark-700" role="alert">
+        <div class="flex items-center ml-4 h-7">
+            <svg xmlns="http://www.w3.org/2000/svg" class="mb-px text-blue-500 dark:text-blue-400" width="22" height="22" viewBox="0 0 24 24" role="presentation">
+                <g fill="currentColor"><g>
+                    <path d="M12 1C5.93 1 1 5.93 1 12s4.93 11 11 11 11-4.93 11-11S18.07 1 12 1zm0 20c-4.96 0-9-4.04-9-9s4.04-9 9-9 9 4.04 9 9-4.04 9-9 9z"></path>
+                    <path d="M12 11c-.55 0-1 .45-1 1v4c0 .55.45 1 1 1s1-.45 1-1v-4c0-.55-.45-1-1-1zM12.01 7c-.56 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"></path>
+                    <path fill="none" d="M0 0h24v24H0z"></path>
+                </g></g>
+            </svg>
+        </div>
+        <div class="pr-5 ml-3 w-full">
+            <h5>Request a Scanner</h5>
+<p>If there are other open-source scanners that would be great for salus, <a href="https://github.com/coinbase/salus/issues/new">please create an issue</a></p>
+        </div>
+    </div>
+</div>
+<doc-anchor-target id="additional-scanners">
+    <h3>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#additional-scanners">#</doc-anchor-trigger>
+        <span>Additional Scanners</span>
+    </h3>
 </doc-anchor-target>
-<p>Salus also provides dependency reporting for the following languages:</p>
-<ul>
-<li><a href="/salus/configuration/scanners/dependency_scanners/">Ruby</a></li>
-<li><a href="/salus/configuration/scanners/dependency_scanners/">Node.js</a> (Javascript)</li>
-<li><a href="/salus/configuration/scanners/dependency_scanners/">Python</a></li>
-<li><a href="/salus/configuration/scanners/dependency_scanners/">Go</a></li>
-<li><a href="/salus/configuration/scanners/dependency_scanners/">Rust</a></li>
-<li><a href="/salus/configuration/scanners/dependency_scanners/">Rust</a></li>
-<li><a href="/salus/configuration/scanners/dependency_scanners/">Swift</a></li>
-</ul>
-<hr />
-<doc-anchor-target id="quick-start">
-    <h2>
-        <doc-anchor-trigger class="header-anchor-trigger" to="#quick-start">#</doc-anchor-trigger>
-        <span>Quick Start</span>
-    </h2>
-</doc-anchor-target>
-<p>Docker is required to run Salus. The dependencies for the project are stored on a docker, which helps reduce the number of steps required to run Salus.</p>
-<p>Check out the <a href="guides/getting_started/">Getting Started Guide</a> for detailed instructions or continue here for a more condensed process</p>
-<doc-anchor-target id="installation">
-    <h4>
-        <doc-anchor-trigger class="header-anchor-trigger" to="#installation">#</doc-anchor-trigger>
-        <span>Installation</span>
-    </h4>
-</doc-anchor-target>
-<p>Docker is available on different operating systems. You can install the appropriate version for your operating system on the <a href="https://docs.docker.com/desktop/mac/install/">Docker website</a></p>
-<doc-tabs>
-<doc-tab id="mac">
-<template #title>Mac</template>
-<p><a href="https://docs.docker.com/desktop/mac/install/">Docker website</a></p>
-<div class="codeblock-wrapper"><doc-codeblock>
-<div class="codeblock-title">Installing Docker with Homebrew</div>
-<pre class="language-none"><code v-pre class="language-none">brew install docker</code></pre>
-</doc-codeblock></div>
-</doc-tab>
-<doc-tab id="windows">
-<template #title>Windows</template>
-<p><a href="https://docs.docker.com/desktop/windows/install/">Install Docker for Windows</a></p>
-</doc-tab>
-<doc-tab id="linux">
-<template #title>Linux</template>
-<p><a href="https://docs.docker.com/engine/install/">Install Docker for Linux</a></p>
-</doc-tab>
-</doc-tabs>
-<p>All Set! you are now ready to run Salus <span class="docs-emoji">&#x2728;</span></p>
-<doc-anchor-target id="running-salus">
-    <h4>
-        <doc-anchor-trigger class="header-anchor-trigger" to="#running-salus">#</doc-anchor-trigger>
-        <span>Running Salus</span>
-    </h4>
-</doc-anchor-target>
-<p>Navigate to the root directory of the project you want to run Salus on</p>
-<div class="codeblock-wrapper"><doc-codeblock>
-<pre class="language-bash"><code v-pre class="language-bash">cd /path/to/repo</code></pre>
-</doc-codeblock></div>
-<p>Run the following line in the root directory (No edits necessary). This will run the latest Version of Salus.</p>
-<div class="codeblock-wrapper"><doc-codeblock>
-<pre class="language-bash"><code v-pre class="language-bash">docker run --rm -t -v $(pwd):/home/repo coinbase/Salus</code></pre>
-</doc-codeblock></div>
-<p>Running specific versions of Salus is also possible. All you need to do is provide the version tag</p>
-<div class="codeblock-wrapper"><doc-codeblock>
-<div class="codeblock-title">Running Salus Version 2.17.6</div>
-<pre class="language-bash"><code v-pre class="language-bash">docker run --rm -t -v $(pwd):/home/repo coinbase/Salus:2.17.6</code></pre>
-</doc-codeblock></div>
-<p>To view all versions of Salus, visit the <a href="https://github.com/coinbase/Salus/releases">releases page</a></p>
+<p>In addition to the open-source options, Salus also provides its own scanners as well.</p>
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Scanner</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="">GradleOSV</a></td>
+<td>Finds vulnerable dependencies in a Gradle project. By default, GradleOSV Scanner pulls advisory information from <a href="https://osv.dev/">OSV - Database for open source vulnerabilities</a> to compare against the dependencies found by running <code v-pre>gradle dependencies</code>.</td>
+</tr>
+<tr>
+<td><a href="">GoOSV</a></td>
+<td>Finds vulnerable dependencies in a Golang project. By default, GoOSV Scanner pulls advisory information from <a href="https://osv.dev/">OSV - Database for open source vulnerabilities</a> to compare against the dependencies found in <code v-pre>go.sum</code>.</td>
+</tr>
+<tr>
+<td><a href="">MavenOSV</a></td>
+<td>Finds vulnerable dependencies in a Maven project. By default, MavenOSV Scanner pulls advisory information from <a href="https://osv.dev/">OSV - Database for open source vulnerabilities</a> to compare against the dependencies found in <code v-pre>pom.xml</code>.</td>
+</tr>
+<tr>
+<td><a href="">PythonOSV</a></td>
+<td>Finds vulnerable dependencies in a Python project. By default, PythonOSV Scanner pulls advisory information from <a href="https://osv.dev/">OSV - Database for open source vulnerabilities</a> to compare against the dependencies found in <code v-pre>requirements.txt</code>.</td>
+</tr>
+<tr>
+<td><a href="">Dependency Scanners</a></td>
+<td>These scanners are used to report modules or dependencies found in a project. Salus currently has scanners for the following languages: <a href="/salus/configuration/scanners/dependency_scanners/"><code v-pre>Ruby</code></a>, <a href="/salus/configuration/scanners/dependency_scanners/"><code v-pre>Node.js</code></a>, <a href="/salus/configuration/scanners/dependency_scanners/"><code v-pre>Javascript</code></a>,, <a href="/salus/configuration/scanners/dependency_scanners/"><code v-pre>Python</code></a>, <a href="/salus/configuration/scanners/dependency_scanners/"><code v-pre>Go</code></a>, <a href="/salus/configuration/scanners/dependency_scanners/"><code v-pre>Rust</code></a>, <a href="/salus/configuration/scanners/dependency_scanners/"><code v-pre>Rust</code></a>, <a href="/salus/configuration/scanners/dependency_scanners/"><code v-pre>Swift</code></a></td>
+</tr>
+<tr>
+<td><a href="">Language Version Scanners</a></td>
+<td>This scanner checks whether repository&#x27;s programming language version is within the range of configured versions.</td>
+</tr>
+<tr>
+<td><a href="">Package Version Scanners</a></td>
+<td>These scanner checks whether repository&#x27;s package version is within a range of configured versions. This allows you to block certain versions of a package or dependency in your project.</td>
+</tr>
+</tbody>
+</table>
+</div>
 <hr />
 <doc-anchor-target id="configurations">
     <h2>
@@ -408,7 +473,7 @@
                                         </li>
                                     </ul>
                                 </div>
-                                <div class="docs-copyright py-2 text-gray-500 dark:text-dark-350 text-sm leading-relaxed"><p>© Copyright 2022. All rights reserved.</p></div>
+                                <div class="docs-copyright py-2 text-gray-500 dark:text-dark-350 text-sm leading-relaxed"><p>© Copyright 2022 - Coinbase -  All rights reserved.</p></div>
                             </footer>
                         </div>
                     </div>
