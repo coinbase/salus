@@ -1,6 +1,6 @@
 input: ./
 output: .retype
-url: https://kamsiy.github.io/salus
+url: https://coinbase.github.io/salus
 branding:
   title: Salus
   label: v2.17.6
