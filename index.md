@@ -9,40 +9,10 @@ Salus is particularly useful for CI/CD pipelines because it becomes a centralize
 Salus provides extensive configurations that allow for global defaults and local tweaks. Finally, Salus can report metrics on each repository, such as what packages are included or what concerns exist. These reports can be centrally evaluated in your infrastructure to allow scalable security tracking.
 
 ---
-## Supported Scanners
-Salus serves as an orchestrator for security scanners. Salus triggers the appropriate scanners if a project meets a scanner's requirements
-
-Salus currently supports the following scanners:
-
-Scanner | Description
---- | --- 
-[Bandit](/configuration/scanners/bandit/) | This scanner executes [`Bandit 1.6.2`](https://pypi.org/project/bandit/) which looks for common security issues in Python code.
-[Brakeman](/configuration/scanners/brakeman.md) | This scanner executes [`Brakeman 4.10.0`](https://brakemanscanner.org/) which looks for vulnerable code in Rails projects.
-[semgrep](/configuration/scanners/semgrep.md) | This scanner executes [`semgrep 0.62.0`](https://semgrep.dev) which looks for semantic and syntactical patterns in code at the AST level.
-[BundleAudit](/configuration/scanners/bundle_audit.md) | This scanner executes [`bundle-audit 0.8.0`](https://github.com/rubysec/bundler-audit) which looks for CVEs in ruby gem dependencies.
-[Gosec](/configuration/scanners/gosec.md) | This scanner executes [`gosec 2.11.0`](https://github.com/securego/gosec) which looks for security problems in go code.
-[npm audit](/configuration/scanners/npm_audit.md) | This scanner executes [`npm audit 6.14.8`](https://docs.npmjs.com/getting-started/running-a-security-audit) which looks for CVEs in node module dependencies.
-[yarn audit](/configuration/scanners/yarn_audit.md) | This scanner executes [`yarn audit 1.22.0`](https://yarnpkg.com/lang/en/docs/cli/audit/) which looks for CVEs in node module dependencies.
-[PatternSearch](/configuration/scanners/pattern_search.md) | This scanner executes [`sift 0.9.0`](https://sift-tool.org/docs) which looks for certain strings in a project that might be dangerous or could require that certain strings be present.
-[Cargo Audit](/configuration/scanners/cargo_audit.md) | This scanner executes [`Cargo Audit 0.14.0`](https://github.com/RustSec/cargo-audit)scans Cargo.lock files for crates with security vulnerabilities reported to the RustSec Advisory Database
-
----
-
-## Dependency Tracking
-Salus also provides dependency reporting for the following languages:
-- [Ruby](/configuration/scanners/dependency_scanners/)
-- [Node.js](/configuration/scanners/dependency_scanners/) (Javascript)
-- [Python](/configuration/scanners/dependency_scanners/)
-- [Go](/configuration/scanners/dependency_scanners/)
-- [Rust](/configuration/scanners/dependency_scanners/)
-- [Rust](/configuration/scanners/dependency_scanners/)
-- [Swift](/configuration/scanners/dependency_scanners/)
-
----
 
 ## Quick Start 
 
-Docker is required to run Salus. The dependencies for the project are stored on a docker, which helps reduce the number of steps required to run Salus. 
+Docker is required to run Salus. The dependencies for the project are stored on a docker container, which helps reduce the number of steps required to run Salus. 
 
 Check out the [Getting Started Guide](guides/getting_started/) for detailed instructions or continue here for a more condensed process 
 
@@ -82,10 +52,48 @@ Running specific versions of Salus is also possible. All you need to do is provi
 ```sh Running Salus Version 2.17.6
 docker run --rm -t -v $(pwd):/home/repo coinbase/Salus:2.17.6
 ```
-
+!!! Salus Releases
 To view all versions of Salus, visit the [releases page](https://github.com/coinbase/Salus/releases)
+!!!
 
 ---
+
+## Supported Scanners
+Salus serves as an orchestrator for security scanners. Salus triggers the appropriate scanners if a project meets a scanner's requirements
+
+Salus currently supports the following open-source scanners:
+
+Scanner | Description
+--- | --- 
+[Bandit](/configuration/scanners/bandit/) | This scanner executes [`Bandit 1.6.2`](https://pypi.org/project/bandit/) which looks for common security issues in Python code.
+[Brakeman](/configuration/scanners/brakeman.md) | This scanner executes [`Brakeman 4.10.0`](https://brakemanscanner.org/) which looks for vulnerable code in Rails projects.
+[semgrep](/configuration/scanners/semgrep.md) | This scanner executes [`semgrep 0.62.0`](https://semgrep.dev) which looks for semantic and syntactical patterns in code at the AST level.
+[BundleAudit](/configuration/scanners/bundle_audit.md) | This scanner executes [`bundle-audit 0.8.0`](https://github.com/rubysec/bundler-audit) which looks for CVEs in ruby gem dependencies.
+[Gosec](/configuration/scanners/gosec.md) | This scanner executes [`gosec 2.11.0`](https://github.com/securego/gosec) which looks for security problems in go code.
+[npm audit](/configuration/scanners/npm_audit.md) | This scanner executes [`npm audit 6.14.8`](https://docs.npmjs.com/getting-started/running-a-security-audit) which looks for CVEs in node module dependencies.
+[yarn audit](/configuration/scanners/yarn_audit.md) | This scanner executes [`yarn audit 1.22.0`](https://yarnpkg.com/lang/en/docs/cli/audit/) which looks for CVEs in node module dependencies.
+[PatternSearch](/configuration/scanners/pattern_search.md) | This scanner executes [`sift 0.9.0`](https://sift-tool.org/docs) which looks for certain strings in a project that might be dangerous or could require that certain strings be present.
+[Cargo Audit](/configuration/scanners/cargo_audit.md) | This scanner executes [`Cargo Audit 0.14.0`](https://github.com/RustSec/cargo-audit)scans Cargo.lock files for crates with security vulnerabilities reported to the RustSec Advisory Database
+
+!!! Request a Scanner
+If there are other open-source scanners that would be great for salus, [please create an issue](https://github.com/coinbase/salus/issues/new)
+!!!
+
+### Additional Scanners
+In addition to the open-source options, Salus also provides its own scanners as well. 
+
+Scanner | Description
+--- | --- 
+[GradleOSV]() | Finds vulnerable dependencies in a Gradle project. By default, GradleOSV Scanner pulls advisory information from [OSV - Database for open source vulnerabilities](https://osv.dev/) to compare against the dependencies found by running `gradle dependencies`.
+[GoOSV]() | Finds vulnerable dependencies in a Golang project. By default, GoOSV Scanner pulls advisory information from [OSV - Database for open source vulnerabilities](https://osv.dev/) to compare against the dependencies found in `go.sum`.
+[MavenOSV]() | Finds vulnerable dependencies in a Maven project. By default, MavenOSV Scanner pulls advisory information from [OSV - Database for open source vulnerabilities](https://osv.dev/) to compare against the dependencies found in `pom.xml`.
+[PythonOSV]() | Finds vulnerable dependencies in a Python project. By default, PythonOSV Scanner pulls advisory information from [OSV - Database for open source vulnerabilities](https://osv.dev/) to compare against the dependencies found in `requirements.txt`.
+[Dependency Scanners]() | These scanners are used to report modules or dependencies found in a project. Salus currently has scanners for the following languages: [`Ruby`](/configuration/scanners/dependency_scanners/), [`Node.js`](/configuration/scanners/dependency_scanners/), [`Javascript`](/configuration/scanners/dependency_scanners/),, [`Python`](/configuration/scanners/dependency_scanners/), [`Go`](/configuration/scanners/dependency_scanners/), [`Rust`](/configuration/scanners/dependency_scanners/), [`Rust`](/configuration/scanners/dependency_scanners/), [`Swift`](/configuration/scanners/dependency_scanners/)
+[Language Version Scanners]() | This scanner checks whether repository's programming language version is within the range of configured versions.
+[Package Version Scanners]() | These scanner checks whether repository's package version is within a range of configured versions. This allows you to block certain versions of a package or dependency in your project.
+
+---
+
 ## Configurations
 Salus is [highly configurable](/configuration/salus_configurations/) to work in different environments and with different scanners. It supports [environment variable interpolation](/configuration/salus_configurations/#envar-interpolation) and [cascading configurations](/configuration/salus_configurations/#cascading-configurations) and can read configuration and post reports over HTTP.
 

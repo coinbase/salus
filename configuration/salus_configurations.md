@@ -190,7 +190,7 @@ custom_info:
 === enforced_scanners: `Array` or `String`
 enforced_scanners are scanners that cause Salus to fail if the scanner fails. Controlling this list will allow you to choose which scanners must pass for a CI environment to show a successful build. It can allow you to run new scanners in test mode while being tuned or rolled out across a fleet of builds.
 
-By default, we enforce all scanners which we deem to have low false positive rates. Strong defaults lower the risk of misconfiguration that could fail closed if the configuration was necessary to ensure certain scanners pass. Other scanners may need to graduate from the testing phase or should only be enforced explicitly by custom configuration.
+By default, Salus enforces all scanners which we deem to have low false positive rates. Strong defaults lower the risk of misconfiguration that could fail closed if the configuration was necessary to ensure certain scanners pass. Other scanners may need to graduate from the testing phase or should only be enforced explicitly by custom configuration.
 
 The following sample shows how to configure this option
 ```yml

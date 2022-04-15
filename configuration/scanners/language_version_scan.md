@@ -4,7 +4,7 @@ tags: [config, scanner]
 ---
 # Language Version Scan
 
-This scanner checks whether repository's programming language version is within the range of configured versions. 
+These scanners check whether a repository's programming language version is within the range of configured versions. 
 
 Salus Currently Supports the following Language Version Scanners
 

@@ -3,7 +3,7 @@ icon: dot
 ---
 # Package Version Scanning
 
-This scanner checks whether repository's package version is within a range of configured versions. This allows you to block certain versions of a package or dependency in your project. 
+These scanners checks whether a repository's package version is within a range of configured versions. This allows you to block certain versions of a package or dependency in your project. 
 
 Salus currently supports the following Package Version Scanners
 - NPMPackageScanner 
