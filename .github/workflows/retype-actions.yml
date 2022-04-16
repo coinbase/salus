@@ -7,15 +7,12 @@ on:
 
 jobs:
   publish:
-    name: Publish to retype branch
-
+    name: Generate web files for salus-website branch
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
-
       - uses: retypeapp/action-build@latest
-
       - uses: retypeapp/action-github-pages@latest
         with:
-          update-branch: true
+          branch: salus-website
+          github-token: ${{ secrets.GITHUB_TOKEN }}
