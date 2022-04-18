@@ -3,7 +3,7 @@ output: .retype
 url: https://coinbase.github.io/salus
 branding:
   title: Salus
-  label: v2.17.6
+  label: v2.17.7
   logo: static/logo.png
 
 links:
@@ -23,3 +23,7 @@ footer:
       link: https://github.com/coinbase/salus
     
   copyright: "&copy; Copyright {{ year }} - Coinbase -  All rights reserved."
+
+# Folders to exclude when generating html pages
+exclude:
+  - README.md
