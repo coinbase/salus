@@ -360,6 +360,30 @@ describe Salus::Scanners::Brakeman do
       scanner.run
       expect(scanner.report.passed?).to eq(true)
     end
+
+    it 'should report an error if ignore config value is not a string' do
+      repo = Salus::Repo.new(File.join(fixture_path, 'vulnerable_rails_app'))
+      scanner = Salus::Scanners::Brakeman.new(repository: repo, config: {
+                                                'ignore' => File.join(fixture_path,
+                                                                      'brakeman.ignore')
+                                              })
+      scanner.run
+
+      expect(scanner.report.passed?).to eq(false)
+      errors = scanner.report.to_h.fetch(:errors)
+      expect(errors[0][:message]).to include("No such file or directory @ rb_sysopen")
+    end
+
+    it 'should report an error if ignore config path does not exist' do
+      repo = Salus::Repo.new(File.join(fixture_path, 'vulnerable_rails_app'))
+      scanner = Salus::Scanners::Brakeman.new(repository: repo, config: {
+                                                'ignore' => ["brakeman.ignore"]
+                                              })
+      scanner.run
+      expect(scanner.report.passed?).to eq(false)
+      errors = scanner.report.to_h.fetch(:errors)
+      expect(errors[0][:message]).to include("no implicit conversion of Array into String")
+    end
   end
 
   describe '#should_run?' do

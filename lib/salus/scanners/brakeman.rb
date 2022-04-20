@@ -133,6 +133,9 @@ module Salus::Scanners
         return true if item.key?('expiration')
       end
       false
+    rescue TypeError, Errno::ENOENT => e
+      report_error(e.message)
+      bugsnag_notify(e)
     end
 
     def user_supplied_ignore?
