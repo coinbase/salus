@@ -380,7 +380,6 @@ describe Salus::Scanners::Brakeman do
                                                 'ignore' => ["brakeman.ignore"]
                                               })
       scanner.run
-      expect(scanner.report.passed?).to eq(false)
       errors = scanner.report.to_h.fetch(:errors)
       expect(errors[0][:message]).to include("no implicit conversion of Array into String")
     end
