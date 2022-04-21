@@ -38,7 +38,7 @@ describe Sarif::RubyPackageScannerSarif do
            "artifactLocation" => { "uri" => "Gemfile.lock",
          "uriBaseId" => "%SRCROOT%" }
          } }],
-           "properties" => { "severity" => "HIGH" }, "suppressions" => [{ "kind" => "external" }] }
+           "properties" => { "severity" => "HIGH" } }
       )
     end
   end

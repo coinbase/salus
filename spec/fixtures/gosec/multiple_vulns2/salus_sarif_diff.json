@@ -1,0 +1,71 @@
+{
+  "report_type": "salus_sarif_diff",
+  "filtered_results": [
+    {
+      "level": "error",
+      "locations": [
+        {
+          "physicalLocation": {
+            "artifactLocation": {
+              "uri": "hello.go",
+              "uriBaseId": "%SRCROOT%"
+            },
+            "region": {
+              "snippet": {
+                "text": "12: \n13: \th := md5.New()\n14: \tio.WriteString(h, password)\n"
+              },
+              "startColumn": 7,
+              "startLine": 13
+            }
+          }
+        }
+      ],
+      "message": {
+        "text": "Use of weak cryptographic primitive \nSeverity: MEDIUM\nConfidence: HIGH\nCWE: https://cwe.mitre.org/data/definitions/326.html"
+      },
+      "properties": {
+        "severity": "MEDIUM"
+      },
+      "ruleId": "G401",
+      "scanner_name": "Gosec"
+    },
+    {
+      "level": "error",
+      "locations": [
+        {
+          "physicalLocation": {
+            "artifactLocation": {
+              "uri": "hello.go",
+              "uriBaseId": "%SRCROOT%"
+            },
+            "region": {
+              "snippet": {
+                "text": "3: import (\n4: \t\"crypto/md5\"\n5: \t\"fmt\"\n"
+              },
+              "startColumn": 2,
+              "startLine": 4
+            }
+          }
+        }
+      ],
+      "message": {
+        "text": "Blocklisted import crypto/md5: weak cryptographic primitive \nSeverity: MEDIUM\nConfidence: HIGH\nCWE: https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "properties": {
+        "severity": "MEDIUM"
+      },
+      "ruleId": "G501",
+      "scanner_name": "Gosec"
+    }
+  ],
+  "builds": {
+    "url": "http://buildkite/builds/123456",
+    "service_name": "buildkite",
+    "salus_scheduled_workflow": "special_scheduled",
+    "branch": "master",
+    "commit": "1234abcd",
+    "git_ssh_url": "github.com/my_repo_url",
+    "org": "my_org",
+    "project": "my_repo"
+  }
+}

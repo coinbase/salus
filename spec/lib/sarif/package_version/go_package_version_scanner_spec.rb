@@ -38,7 +38,7 @@ describe Sarif::GoPackageScannerSarif do
            "artifactLocation" => { "uri" => "go.sum",
          "uriBaseId" => "%SRCROOT%" }
          } }],
-           "properties" => { "severity" => "HIGH" }, "suppressions" => [{ "kind" => "external" }] }
+           "properties" => { "severity" => "HIGH" } }
       )
     end
   end

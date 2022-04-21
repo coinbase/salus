@@ -98,7 +98,7 @@ describe Sarif::BaseSarif do
         expect(runs_object['results'][0]['suppressions'].nil?).to eq(true)
       end
 
-      it 'does not contain suppressed object when includes_suppressed config is false' do
+      it 'does not contain suppressed object when include_suppressed config is false' do
         parsed_issue = {
           id: 'SAL002',
           name: "Golang Error",
@@ -118,7 +118,7 @@ describe Sarif::BaseSarif do
         expect(runs_object['results'].empty?).to eq(true)
       end
 
-      it 'does contain suppressed object when includes_suppressed config is true' do
+      it 'does contain suppressed object when include_suppressed config is true' do
         parsed_issue = {
           id: 'SAL002',
           name: "Golang Error",
@@ -223,7 +223,7 @@ describe Sarif::BaseSarif do
         expect(runs_object['results'].empty?).to eq(true)
       end
 
-      it 'does not contain active scanner results when include_active is not present' do
+      it 'contains active scanner results when include_active is not present' do
         parsed_issue = {
           id: 'SAL002',
           name: "Golang Error",
@@ -240,7 +240,7 @@ describe Sarif::BaseSarif do
         adapter.instance_variable_set(:@logs, [parsed_issue])
         adapter.instance_variable_set(:@required, false)
         runs_object = adapter.build_runs_object(true)
-        expect(runs_object['results'].empty?).to eq(true)
+        expect(runs_object['results'].empty?).to eq(false)
       end
 
       it 'includes originalUriBaseIds' do

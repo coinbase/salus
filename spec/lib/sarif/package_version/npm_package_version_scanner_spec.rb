@@ -42,7 +42,7 @@ describe Sarif::NPMPackageScannerSarif do
            "startLine" => 13, "startColumn" => 1
          }
          } }],
-           "properties" => { "severity" => "HIGH" }, "suppressions" => [{ "kind" => "external" }] }
+           "properties" => { "severity" => "HIGH" } }
       )
     end
   end

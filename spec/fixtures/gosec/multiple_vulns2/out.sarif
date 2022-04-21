@@ -1,0 +1,248 @@
+{
+  "$schema": "https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/schemas/sarif-schema-2.1.0",
+  "runs": [
+    {
+      "conversion": {
+        "tool": {
+          "driver": {
+            "informationUri": "https://github.com/coinbase/salus",
+            "name": "Salus"
+          }
+        }
+      },
+      "invocations": [
+        {
+          "executionSuccessful": false
+        }
+      ],
+      "originalUriBaseIds": {
+        "PROJECTROOT": {
+          "uri": "file:///Users/gerald.nash@coinbase.com/external/salus/spec/fixtures/gosec/multiple_vulns2"
+        },
+        "SRCROOT": {
+          "uri": ".",
+          "uriBaseId": "PROJECTROOT"
+        }
+      },
+      "results": [
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "hello.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "snippet": {
+                    "text": "10: \n11: \tpassword := \"hhend77dyyydbh&^psNSSZ)JSM--_%\"\n12: \n"
+                  },
+                  "startColumn": 2,
+                  "startLine": 11
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Potential hardcoded credentials \nSeverity: HIGH\nConfidence: LOW\nCWE: https://cwe.mitre.org/data/definitions/798.html"
+          },
+          "properties": {
+            "severity": "HIGH"
+          },
+          "ruleId": "G101",
+          "ruleIndex": 0
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "hello.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "snippet": {
+                    "text": "12: \n13: \th := md5.New()\n14: \tio.WriteString(h, password)\n"
+                  },
+                  "startColumn": 7,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Use of weak cryptographic primitive \nSeverity: MEDIUM\nConfidence: HIGH\nCWE: https://cwe.mitre.org/data/definitions/326.html"
+          },
+          "properties": {
+            "severity": "MEDIUM"
+          },
+          "ruleId": "G401",
+          "ruleIndex": 1
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "hello.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "snippet": {
+                    "text": "3: import (\n4: \t\"crypto/md5\"\n5: \t\"fmt\"\n"
+                  },
+                  "startColumn": 2,
+                  "startLine": 4
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Blocklisted import crypto/md5: weak cryptographic primitive \nSeverity: MEDIUM\nConfidence: HIGH\nCWE: https://cwe.mitre.org/data/definitions/327.html"
+          },
+          "properties": {
+            "severity": "MEDIUM"
+          },
+          "ruleId": "G501",
+          "ruleIndex": 2
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "hello.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "snippet": {
+                    "text": "13: \th := md5.New()\n14: \tio.WriteString(h, password)\n15: \tfmt.Printf(\"%x\", h.Sum(nil))\n"
+                  },
+                  "startColumn": 2,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Errors unhandled. \nSeverity: LOW\nConfidence: HIGH\nCWE: https://cwe.mitre.org/data/definitions/703.html"
+          },
+          "properties": {
+            "severity": "LOW"
+          },
+          "ruleId": "G104",
+          "ruleIndex": 3
+        }
+      ],
+      "tool": {
+        "driver": {
+          "informationUri": "https://github.com/securego/gosec",
+          "name": "Gosec",
+          "properties": {
+            "salusEnforced": true
+          },
+          "rules": [
+            {
+              "fullDescription": {
+                "text": "Blocklisted import crypto/md5: weak cryptographic primitive \nSeverity: MEDIUM\nConfidence: HIGH\nCWE: https://cwe.mitre.org/data/definitions/327.html"
+              },
+              "help": {
+                "markdown": "[More info](https://cwe.mitre.org/data/definitions/327.html).",
+                "text": "More info: https://cwe.mitre.org/data/definitions/327.html"
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/327.html",
+              "id": "G501",
+              "messageStrings": {
+                "confidence": {
+                  "text": "HIGH"
+                },
+                "cwe": {
+                  "text": "https://cwe.mitre.org/data/definitions/327.html"
+                },
+                "severity": {
+                  "text": "MEDIUM"
+                }
+              },
+              "name": "CWE-327"
+            },
+            {
+              "fullDescription": {
+                "text": "Errors unhandled. \nSeverity: LOW\nConfidence: HIGH\nCWE: https://cwe.mitre.org/data/definitions/703.html"
+              },
+              "help": {
+                "markdown": "[More info](https://cwe.mitre.org/data/definitions/703.html).",
+                "text": "More info: https://cwe.mitre.org/data/definitions/703.html"
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/703.html",
+              "id": "G104",
+              "messageStrings": {
+                "confidence": {
+                  "text": "HIGH"
+                },
+                "cwe": {
+                  "text": "https://cwe.mitre.org/data/definitions/703.html"
+                },
+                "severity": {
+                  "text": "LOW"
+                }
+              },
+              "name": "CWE-703"
+            },
+            {
+              "fullDescription": {
+                "text": "Potential hardcoded credentials \nSeverity: HIGH\nConfidence: LOW\nCWE: https://cwe.mitre.org/data/definitions/798.html"
+              },
+              "help": {
+                "markdown": "[More info](https://cwe.mitre.org/data/definitions/798.html).",
+                "text": "More info: https://cwe.mitre.org/data/definitions/798.html"
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/798.html",
+              "id": "G101",
+              "messageStrings": {
+                "confidence": {
+                  "text": "LOW"
+                },
+                "cwe": {
+                  "text": "https://cwe.mitre.org/data/definitions/798.html"
+                },
+                "severity": {
+                  "text": "HIGH"
+                }
+              },
+              "name": "CWE-798"
+            },
+            {
+              "fullDescription": {
+                "text": "Use of weak cryptographic primitive \nSeverity: MEDIUM\nConfidence: HIGH\nCWE: https://cwe.mitre.org/data/definitions/326.html"
+              },
+              "help": {
+                "markdown": "[More info](https://cwe.mitre.org/data/definitions/326.html).",
+                "text": "More info: https://cwe.mitre.org/data/definitions/326.html"
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/326.html",
+              "id": "G401",
+              "messageStrings": {
+                "confidence": {
+                  "text": "HIGH"
+                },
+                "cwe": {
+                  "text": "https://cwe.mitre.org/data/definitions/326.html"
+                },
+                "severity": {
+                  "text": "MEDIUM"
+                }
+              },
+              "name": "CWE-326"
+            }
+          ],
+          "version": ""
+        }
+      }
+    }
+  ],
+  "version": "2.1.0"
+}
