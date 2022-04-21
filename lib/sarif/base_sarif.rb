@@ -138,6 +138,8 @@ module Sarif
 
         next if @required == false && @config['include_suppressed'] == false
 
+        next if @required == false && @config.fetch('include_active', false) == false
+
         rule = build_rule(parsed_issue)
         rules << rule if rule
         result = build_result(parsed_issue)

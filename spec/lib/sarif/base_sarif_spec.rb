@@ -98,7 +98,7 @@ describe Sarif::BaseSarif do
         expect(runs_object['results'][0]['suppressions'].nil?).to eq(true)
       end
 
-      it 'does not contain suppressed object when includes_suppresd config is false' do
+      it 'does not contain suppressed object when includes_suppressed config is false' do
         parsed_issue = {
           id: 'SAL002',
           name: "Golang Error",
@@ -118,7 +118,7 @@ describe Sarif::BaseSarif do
         expect(runs_object['results'].empty?).to eq(true)
       end
 
-      it 'does contains suppressed object when includes_suppresd config is true' do
+      it 'does contain suppressed object when includes_suppressed config is true' do
         parsed_issue = {
           id: 'SAL002',
           name: "Golang Error",
@@ -136,27 +136,6 @@ describe Sarif::BaseSarif do
         adapter.instance_variable_set(:@config, { "include_suppressed": true }.stringify_keys)
         runs_object = adapter.build_runs_object(true)
         expect(runs_object['results'].empty?).to eq(false)
-      end
-
-      it 'has a suppression object when scanner is not enforced and suppressions are included' do
-        parsed_issue = {
-          id: 'SAL002',
-          name: "Golang Error",
-          level: "NOTE",
-          details: 'error',
-          start_line: 1,
-          start_column: 1,
-          uri: '',
-          help_url: "https://github.com/coinbase/salus/blob/master/docs/salus_reports.md",
-          code: ""
-        }
-        adapter = Sarif::GosecSarif.new(scan_report, path)
-        adapter.instance_variable_set(:@logs, [parsed_issue])
-        adapter.instance_variable_set(:@config, { "include_suppressed": true }.stringify_keys)
-        adapter.instance_variable_set(:@required, false)
-        runs_object = adapter.build_runs_object(true)
-        expect(runs_object['results'].empty?).to eq(false)
-        expect(runs_object["invocations"][0][:executionSuccessful]).to eq(false)
       end
 
       it 'has salusEnforced false when supported scanner is not enforced' do
@@ -197,6 +176,68 @@ describe Sarif::BaseSarif do
         adapter.instance_variable_set(:@required, true)
         runs_object = adapter.build_runs_object(true)
         expect(runs_object['tool'][:driver]['properties'][:salusEnforced]).to eq(true)
+      end
+
+      it 'contains active scanner results when include_active is true' do
+        parsed_issue = {
+          id: 'SAL002',
+          name: "Golang Error",
+          level: "NOTE",
+          details: 'error',
+          start_line: 1,
+          start_column: 1,
+          uri: '',
+          help_url: "https://github.com/coinbase/salus/blob/master/docs/salus_reports.md",
+          code: ""
+        }
+        
+        adapter = Sarif::GosecSarif.new(scan_report, path)
+        adapter.instance_variable_set(:@logs, [parsed_issue])
+        adapter.instance_variable_set(:@config, { "include_active": true }.stringify_keys)
+        adapter.instance_variable_set(:@required, false)
+        runs_object = adapter.build_runs_object(true)
+        expect(runs_object['results'].empty?).to eq(false)
+      end
+
+      it 'does not contain active scanner results when include_active is false' do
+        parsed_issue = {
+          id: 'SAL002',
+          name: "Golang Error",
+          level: "NOTE",
+          details: 'error',
+          start_line: 1,
+          start_column: 1,
+          uri: '',
+          help_url: "https://github.com/coinbase/salus/blob/master/docs/salus_reports.md",
+          code: ""
+        }
+        
+        adapter = Sarif::GosecSarif.new(scan_report, path)
+        adapter.instance_variable_set(:@logs, [parsed_issue])
+        adapter.instance_variable_set(:@config, { "include_active": false }.stringify_keys)
+        adapter.instance_variable_set(:@required, false)
+        runs_object = adapter.build_runs_object(true)
+        expect(runs_object['results'].empty?).to eq(true)
+      end
+
+      it 'does not contain active scanner results when include_active is not present' do
+        parsed_issue = {
+          id: 'SAL002',
+          name: "Golang Error",
+          level: "NOTE",
+          details: 'error',
+          start_line: 1,
+          start_column: 1,
+          uri: '',
+          help_url: "https://github.com/coinbase/salus/blob/master/docs/salus_reports.md",
+          code: ""
+        }
+        
+        adapter = Sarif::GosecSarif.new(scan_report, path)
+        adapter.instance_variable_set(:@logs, [parsed_issue])
+        adapter.instance_variable_set(:@required, false)
+        runs_object = adapter.build_runs_object(true)
+        expect(runs_object['results'].empty?).to eq(true)
       end
 
       it 'includes originalUriBaseIds' do

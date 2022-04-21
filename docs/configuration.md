@@ -80,6 +80,8 @@ cascade_config:
 # The available options for the sarif_options keyword are:
 # 1) `include_suppressed: true/false` -This option allows users to include/exclude suppressed/excluded results 
 #    in their sarif reports. Currently this is supported for NPM audit reports
+# 2) `include_active: true/false` - This option allows users to include or exclude results from active (non enforced)
+#    scanners in their sarif reports.  Default is false.
 #
 # Additional options are also available for cyclonedx using the optional keyword: cyclonedx_options
 # The available options for the cyclonedx_options keyword are:
