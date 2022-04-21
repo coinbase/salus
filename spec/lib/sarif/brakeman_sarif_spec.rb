@@ -172,7 +172,7 @@ describe Sarif::BrakemanSarif do
       it 'should generate the right results and rules' do
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
-        sarif = JSON.parse(report.to_sarif({ 'include_active' => true }))
+        sarif = JSON.parse(report.to_sarif({ 'include_non_enforced' => true }))
         result = sarif["runs"][0]["results"].last
         rules = sarif["runs"][0]["tool"]["driver"]["rules"][1]
         # Check rule info

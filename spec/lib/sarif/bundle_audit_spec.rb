@@ -98,7 +98,7 @@ describe Sarif::BundleAuditSarif do
         report.add_scan_report(scanner.report, required: false)
         cve = 'CVE-2021-22885'
 
-        sarif = JSON.parse(report.to_sarif({ 'include_active' => true }))
+        sarif = JSON.parse(report.to_sarif({ 'include_non_enforced' => true }))
         results = sarif["runs"][0]["results"]
         result = results.detect { |r| r["ruleId"] == cve }
 

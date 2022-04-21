@@ -138,7 +138,7 @@ module Sarif
 
         not_required = (@required.nil? || @required == false)
 
-        next if not_required && @config.fetch('include_active', true) == false
+        next if not_required && @config.fetch('include_non_enforced', true) == false
 
         rule = build_rule(parsed_issue)
         rules << rule if rule

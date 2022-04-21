@@ -178,7 +178,7 @@ describe Sarif::BaseSarif do
         expect(runs_object['tool'][:driver]['properties'][:salusEnforced]).to eq(true)
       end
 
-      it 'contains active scanner results when include_active is true' do
+      it 'contains active scanner results when include_non_enforced is true' do
         parsed_issue = {
           id: 'SAL002',
           name: "Golang Error",
@@ -193,7 +193,7 @@ describe Sarif::BaseSarif do
 
         adapter = Sarif::GosecSarif.new(scan_report, path)
         adapter.instance_variable_set(:@logs, [parsed_issue])
-        adapter.instance_variable_set(:@config, { "include_active": true }.stringify_keys)
+        adapter.instance_variable_set(:@config, { "include_non_enforced": true }.stringify_keys)
         adapter.instance_variable_set(:@required, false)
         runs_object = adapter.build_runs_object(true)
         expect(runs_object['results'].empty?).to eq(false)
@@ -202,7 +202,7 @@ describe Sarif::BaseSarif do
         expect(runs_object['results'][0]['suppressions'].nil?).to eq(true)
       end
 
-      it 'does not contain active scanner results when include_active is false' do
+      it 'does not contain active scanner results when include_non_enforced is false' do
         parsed_issue = {
           id: 'SAL002',
           name: "Golang Error",
@@ -217,13 +217,13 @@ describe Sarif::BaseSarif do
 
         adapter = Sarif::GosecSarif.new(scan_report, path)
         adapter.instance_variable_set(:@logs, [parsed_issue])
-        adapter.instance_variable_set(:@config, { "include_active": false }.stringify_keys)
+        adapter.instance_variable_set(:@config, { "include_non_enforced": false }.stringify_keys)
         adapter.instance_variable_set(:@required, false)
         runs_object = adapter.build_runs_object(true)
         expect(runs_object['results'].empty?).to eq(true)
       end
 
-      it 'contains active scanner results when include_active is not present' do
+      it 'contains active scanner results when include_non_enforced is not present' do
         parsed_issue = {
           id: 'SAL002',
           name: "Golang Error",

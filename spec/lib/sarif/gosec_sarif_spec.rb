@@ -131,7 +131,7 @@ describe Sarif::GosecSarif do
       it 'should parse golang errors' do
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
-        sarif = JSON.parse(report.to_sarif({ 'include_active' => true }))
+        sarif = JSON.parse(report.to_sarif({ 'include_non_enforced' => true }))
         result = sarif["runs"][0]["results"][0]
         rules = sarif["runs"][0]["tool"]["driver"]["rules"]
 
@@ -155,7 +155,7 @@ describe Sarif::GosecSarif do
       it 'should generate the right results and rules' do
         report = Salus::Report.new(project_name: "Neon Genesis", repo_path: path)
         report.add_scan_report(scanner.report, required: false)
-        sarif = JSON.parse(report.to_sarif({ 'include_active' => true }))
+        sarif = JSON.parse(report.to_sarif({ 'include_non_enforced' => true }))
         result = sarif["runs"][0]["results"][0]
         rules = sarif["runs"][0]["tool"]["driver"]["rules"]
         # Check rule info
