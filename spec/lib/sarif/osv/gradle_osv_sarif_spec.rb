@@ -88,12 +88,7 @@ describe Sarif::GradleOSVSarif do
               "severity" =>  "LOW"
             },
             "ruleId" => "CVE-2020-8908",
-            "ruleIndex" => 0,
-            "suppressions" => [
-              {
-                "kind" => "external"
-              }
-            ]
+            "ruleIndex" => 0
         }
       )
 

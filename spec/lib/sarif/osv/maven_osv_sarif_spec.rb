@@ -88,12 +88,7 @@ describe Sarif::MavenOSVSarif do
               "severity" => "HIGH"
             },
             "ruleId" => "CVE-2018-15756",
-            "ruleIndex" => 5,
-            "suppressions" => [
-              {
-                "kind" => "external"
-              }
-            ]
+            "ruleIndex" => 5
         }
       )
 

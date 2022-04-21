@@ -86,12 +86,7 @@ describe Sarif::PythonOSVSarif do
               "severity" => "HIGH"
             },
             "ruleId" => "CVE-2020-29651",
-            "ruleIndex" => 0,
-            "suppressions" => [
-              {
-                "kind" => "external"
-              }
-            ]
+            "ruleIndex" => 0
         }
       )
 

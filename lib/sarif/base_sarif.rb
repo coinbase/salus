@@ -134,11 +134,9 @@ module Sarif
 
         next if !parsed_issue
 
-        next if parsed_issue[:suppressed] && @config['include_suppressed'] == false
+        next if @required == false && @config.fetch('include_suppressed', true) == false
 
-        next if @required == false && @config['include_suppressed'] == false
-
-        next if @required == false && @config.fetch('include_active', false) == false
+        next if @required == false && @config.fetch('include_active', true) == false
 
         rule = build_rule(parsed_issue)
         rules << rule if rule
