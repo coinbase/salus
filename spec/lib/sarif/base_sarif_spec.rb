@@ -197,6 +197,7 @@ describe Sarif::BaseSarif do
         adapter.instance_variable_set(:@required, false)
         runs_object = adapter.build_runs_object(true)
         expect(runs_object['results'].empty?).to eq(false)
+        expect(runs_object["tool"][:driver]["properties"][:salusEnforced]).to be_true
       end
 
       it 'does not contain active scanner results when include_active is false' do
