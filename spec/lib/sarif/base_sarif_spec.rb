@@ -190,7 +190,7 @@ describe Sarif::BaseSarif do
           help_url: "https://github.com/coinbase/salus/blob/master/docs/salus_reports.md",
           code: ""
         }
-        
+
         adapter = Sarif::GosecSarif.new(scan_report, path)
         adapter.instance_variable_set(:@logs, [parsed_issue])
         adapter.instance_variable_set(:@config, { "include_active": true }.stringify_keys)
@@ -211,7 +211,7 @@ describe Sarif::BaseSarif do
           help_url: "https://github.com/coinbase/salus/blob/master/docs/salus_reports.md",
           code: ""
         }
-        
+
         adapter = Sarif::GosecSarif.new(scan_report, path)
         adapter.instance_variable_set(:@logs, [parsed_issue])
         adapter.instance_variable_set(:@config, { "include_active": false }.stringify_keys)
@@ -232,7 +232,7 @@ describe Sarif::BaseSarif do
           help_url: "https://github.com/coinbase/salus/blob/master/docs/salus_reports.md",
           code: ""
         }
-        
+
         adapter = Sarif::GosecSarif.new(scan_report, path)
         adapter.instance_variable_set(:@logs, [parsed_issue])
         adapter.instance_variable_set(:@required, false)
