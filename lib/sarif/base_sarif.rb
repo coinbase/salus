@@ -145,7 +145,7 @@ module Sarif
         result = build_result(parsed_issue)
 
         # Add suppresion object for suppressed results
-        if parsed_issue[:suppressed] || @required == false
+        if parsed_issue[:suppressed]
           result['suppressions'] = [{
             'kind': 'external'
           }]
