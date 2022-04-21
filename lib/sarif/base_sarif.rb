@@ -134,9 +134,9 @@ module Sarif
 
         next if !parsed_issue
 
-        not_required = (@required.nil? || @required == false)
+        next if parsed_issue[:suppressed] && @config.fetch('include_suppressed', true) == false
 
-        next if not_required && @config.fetch('include_suppressed', true) == false
+        not_required = (@required.nil? || @required == false)
 
         next if not_required && @config.fetch('include_active', true) == false
 
