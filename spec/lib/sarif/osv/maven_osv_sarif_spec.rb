@@ -34,7 +34,7 @@ describe Sarif::MavenOSVSarif do
       scanner.run
       report = Salus::Report.new(project_name: "Neon Genesis")
       report.add_scan_report(scanner.report, required: false)
-      sarif = JSON.parse(report.to_sarif)
+      sarif = JSON.parse(report.to_sarif({ 'include_active' => true }))
 
       expect(sarif['runs'][0]['tool']['driver']['rules'][0]).to include(
         {

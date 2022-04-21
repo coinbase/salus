@@ -90,8 +90,9 @@ describe Sarif::CargoAuditSarif do
       it 'should generate the right results and rules' do
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
-        result = JSON.parse(report.to_sarif)["runs"][0]["results"][0]
-        rules = JSON.parse(report.to_sarif)["runs"][0]["tool"]["driver"]["rules"]
+        sarif = JSON.parse(report.to_sarif({ 'include_active' => true }))
+        result = sarif["runs"][0]["results"][0]
+        rules = sarif["runs"][0]["tool"]["driver"]["rules"]
         # Check rule info
         expect(rules[0]['id']).to eq("RUSTSEC-2019-0010")
         expect(rules[0]['name']).to eq("MultiDecoder::read() drops uninitialized memory of"\
