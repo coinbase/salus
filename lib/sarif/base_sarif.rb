@@ -134,16 +134,18 @@ module Sarif
 
         next if !parsed_issue
 
-        next if parsed_issue[:suppressed] && @config['include_suppressed'] == false
+        next if parsed_issue[:suppressed] && @config.fetch('include_suppressed', true) == false
 
-        next if @required == false && @config['include_suppressed'] == false
+        not_required = (@required.nil? || @required == false)
+
+        next if not_required && @config.fetch('include_non_enforced', true) == false
 
         rule = build_rule(parsed_issue)
         rules << rule if rule
         result = build_result(parsed_issue)
 
         # Add suppresion object for suppressed results
-        if parsed_issue[:suppressed] || @required == false
+        if parsed_issue[:suppressed]
           result['suppressions'] = [{
             'kind': 'external'
           }]

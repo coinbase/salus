@@ -15,7 +15,7 @@ describe Sarif::GoPackageScannerSarif do
       scanner.run
       report = Salus::Report.new(project_name: "Neon Genesis")
       report.add_scan_report(scanner.report, required: false)
-      sarif = JSON.parse(report.to_sarif)
+      sarif = JSON.parse(report.to_sarif({ 'include_non_enforced' => true }))
 
       # contains rule
       expect(sarif['runs'][0]['tool']['driver']['rules'][0]).to include(
@@ -38,7 +38,7 @@ describe Sarif::GoPackageScannerSarif do
            "artifactLocation" => { "uri" => "go.sum",
          "uriBaseId" => "%SRCROOT%" }
          } }],
-           "properties" => { "severity" => "HIGH" }, "suppressions" => [{ "kind" => "external" }] }
+           "properties" => { "severity" => "HIGH" } }
       )
     end
   end
