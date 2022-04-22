@@ -1,0 +1,192 @@
+{
+  "config": {
+    "active_scanners": [
+      "Gosec"
+    ],
+    "builds": {
+      "branch": "master",
+      "commit": "1234abcd",
+      "git_ssh_url": "github.com/my_repo_url",
+      "org": "my_org",
+      "project": "my_repo",
+      "salus_scheduled_workflow": "special_scheduled",
+      "service_name": "buildkite",
+      "url": "http://buildkite/builds/123456"
+    },
+    "enforced_scanners": [
+      "Brakeman",
+      "BundleAudit",
+      "CargoAudit",
+      "Gosec",
+      "NPMAudit",
+      "PatternSearch",
+      "RepoNotEmpty",
+      "Semgrep",
+      "YarnAudit"
+    ],
+    "report_uris": [
+      {
+        "format": "json",
+        "uri": "file:///Users/gerald.nash@coinbase.com/external/salus/spec/fixtures/gosec/multiple_vulns2/out.json"
+      },
+      {
+        "format": "sarif",
+        "uri": "file:///Users/gerald.nash@coinbase.com/external/salus/spec/fixtures/gosec/multiple_vulns2/out.sarif"
+      },
+      {
+        "format": "sarif_diff",
+        "uri": "file:///Users/gerald.nash@coinbase.com/external/salus/spec/fixtures/gosec/multiple_vulns2/salus_sarif_diff.json"
+      }
+    ],
+    "scanner_configs": {
+      "Bandit": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "Brakeman": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "BundleAudit": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "CargoAudit": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "GoOSV": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "GoPackageScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "GoVersionScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "Gosec": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "GradleOSV": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "MavenOSV": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "NPMAudit": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "NPMPackageScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "NodeAudit": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "PatternSearch": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "PythonOSV": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "RepoNotEmpty": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportGoDep": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportGradleDeps": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportNodeModules": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportPodfileLock": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportPomXml": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportPythonModules": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportRubyGems": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportRustCrates": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportSwiftDeps": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "RubyPackageScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "RubyVersionScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "Semgrep": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "YarnAudit": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      }
+    },
+    "sources": {
+      "configured": [
+        "file:///salus.yaml"
+      ],
+      "valid": [
+        "file:///salus.yaml"
+      ]
+    }
+  },
+  "errors": [
+
+  ],
+  "passed": false,
+  "running_time": 0.31,
+  "scans": {
+    "Gosec": {
+      "errors": [
+
+      ],
+      "info": {
+        "stdout": "{\n\t\"Golang errors\": {},\n\t\"Issues\": [\n\t\t{\n\t\t\t\"severity\": \"HIGH\",\n\t\t\t\"confidence\": \"LOW\",\n\t\t\t\"cwe\": {\n\t\t\t\t\"id\": \"798\",\n\t\t\t\t\"url\": \"https://cwe.mitre.org/data/definitions/798.html\"\n\t\t\t},\n\t\t\t\"rule_id\": \"G101\",\n\t\t\t\"details\": \"Potential hardcoded credentials\",\n\t\t\t\"file\": \"/Users/gerald.nash@coinbase.com/external/salus/spec/fixtures/gosec/multiple_vulns2/hello.go\",\n\t\t\t\"code\": \"10: \\n11: \\tpassword := \\\"hhend77dyyydbh\\u0026^psNSSZ)JSM--_%\\\"\\n12: \\n\",\n\t\t\t\"line\": \"11\",\n\t\t\t\"column\": \"2\",\n\t\t\t\"nosec\": false,\n\t\t\t\"suppressions\": null\n\t\t},\n\t\t{\n\t\t\t\"severity\": \"MEDIUM\",\n\t\t\t\"confidence\": \"HIGH\",\n\t\t\t\"cwe\": {\n\t\t\t\t\"id\": \"326\",\n\t\t\t\t\"url\": \"https://cwe.mitre.org/data/definitions/326.html\"\n\t\t\t},\n\t\t\t\"rule_id\": \"G401\",\n\t\t\t\"details\": \"Use of weak cryptographic primitive\",\n\t\t\t\"file\": \"/Users/gerald.nash@coinbase.com/external/salus/spec/fixtures/gosec/multiple_vulns2/hello.go\",\n\t\t\t\"code\": \"12: \\n13: \\th := md5.New()\\n14: \\tio.WriteString(h, password)\\n\",\n\t\t\t\"line\": \"13\",\n\t\t\t\"column\": \"7\",\n\t\t\t\"nosec\": false,\n\t\t\t\"suppressions\": null\n\t\t},\n\t\t{\n\t\t\t\"severity\": \"MEDIUM\",\n\t\t\t\"confidence\": \"HIGH\",\n\t\t\t\"cwe\": {\n\t\t\t\t\"id\": \"327\",\n\t\t\t\t\"url\": \"https://cwe.mitre.org/data/definitions/327.html\"\n\t\t\t},\n\t\t\t\"rule_id\": \"G501\",\n\t\t\t\"details\": \"Blocklisted import crypto/md5: weak cryptographic primitive\",\n\t\t\t\"file\": \"/Users/gerald.nash@coinbase.com/external/salus/spec/fixtures/gosec/multiple_vulns2/hello.go\",\n\t\t\t\"code\": \"3: import (\\n4: \\t\\\"crypto/md5\\\"\\n5: \\t\\\"fmt\\\"\\n\",\n\t\t\t\"line\": \"4\",\n\t\t\t\"column\": \"2\",\n\t\t\t\"nosec\": false,\n\t\t\t\"suppressions\": null\n\t\t},\n\t\t{\n\t\t\t\"severity\": \"LOW\",\n\t\t\t\"confidence\": \"HIGH\",\n\t\t\t\"cwe\": {\n\t\t\t\t\"id\": \"703\",\n\t\t\t\t\"url\": \"https://cwe.mitre.org/data/definitions/703.html\"\n\t\t\t},\n\t\t\t\"rule_id\": \"G104\",\n\t\t\t\"details\": \"Errors unhandled.\",\n\t\t\t\"file\": \"/Users/gerald.nash@coinbase.com/external/salus/spec/fixtures/gosec/multiple_vulns2/hello.go\",\n\t\t\t\"code\": \"13: \\th := md5.New()\\n14: \\tio.WriteString(h, password)\\n15: \\tfmt.Printf(\\\"%x\\\", h.Sum(nil))\\n\",\n\t\t\t\"line\": \"14\",\n\t\t\t\"column\": \"2\",\n\t\t\t\"nosec\": false,\n\t\t\t\"suppressions\": null\n\t\t}\n\t],\n\t\"Stats\": {\n\t\t\"files\": 1,\n\t\t\"lines\": 18,\n\t\t\"nosec\": 0,\n\t\t\"found\": 4\n\t},\n\t\"GosecVersion\": \"dev\"\n}"
+      },
+      "logs": "{\n\t\"Golang errors\": {},\n\t\"Issues\": [\n\t\t{\n\t\t\t\"severity\": \"HIGH\",\n\t\t\t\"confidence\": \"LOW\",\n\t\t\t\"cwe\": {\n\t\t\t\t\"id\": \"798\",\n\t\t\t\t\"url\": \"https://cwe.mitre.org/data/definitions/798.html\"\n\t\t\t},\n\t\t\t\"rule_id\": \"G101\",\n\t\t\t\"details\": \"Potential hardcoded credentials\",\n\t\t\t\"file\": \"/Users/gerald.nash@coinbase.com/external/salus/spec/fixtures/gosec/multiple_vulns2/hello.go\",\n\t\t\t\"code\": \"10: \\n11: \\tpassword := \\\"hhend77dyyydbh\\u0026^psNSSZ)JSM--_%\\\"\\n12: \\n\",\n\t\t\t\"line\": \"11\",\n\t\t\t\"column\": \"2\",\n\t\t\t\"nosec\": false,\n\t\t\t\"suppressions\": null\n\t\t},\n\t\t{\n\t\t\t\"severity\": \"MEDIUM\",\n\t\t\t\"confidence\": \"HIGH\",\n\t\t\t\"cwe\": {\n\t\t\t\t\"id\": \"326\",\n\t\t\t\t\"url\": \"https://cwe.mitre.org/data/definitions/326.html\"\n\t\t\t},\n\t\t\t\"rule_id\": \"G401\",\n\t\t\t\"details\": \"Use of weak cryptographic primitive\",\n\t\t\t\"file\": \"/Users/gerald.nash@coinbase.com/external/salus/spec/fixtures/gosec/multiple_vulns2/hello.go\",\n\t\t\t\"code\": \"12: \\n13: \\th := md5.New()\\n14: \\tio.WriteString(h, password)\\n\",\n\t\t\t\"line\": \"13\",\n\t\t\t\"column\": \"7\",\n\t\t\t\"nosec\": false,\n\t\t\t\"suppressions\": null\n\t\t},\n\t\t{\n\t\t\t\"severity\": \"MEDIUM\",\n\t\t\t\"confidence\": \"HIGH\",\n\t\t\t\"cwe\": {\n\t\t\t\t\"id\": \"327\",\n\t\t\t\t\"url\": \"https://cwe.mitre.org/data/definitions/327.html\"\n\t\t\t},\n\t\t\t\"rule_id\": \"G501\",\n\t\t\t\"details\": \"Blocklisted import crypto/md5: weak cryptographic primitive\",\n\t\t\t\"file\": \"/Users/gerald.nash@coinbase.com/external/salus/spec/fixtures/gosec/multiple_vulns2/hello.go\",\n\t\t\t\"code\": \"3: import (\\n4: \\t\\\"crypto/md5\\\"\\n5: \\t\\\"fmt\\\"\\n\",\n\t\t\t\"line\": \"4\",\n\t\t\t\"column\": \"2\",\n\t\t\t\"nosec\": false,\n\t\t\t\"suppressions\": null\n\t\t},\n\t\t{\n\t\t\t\"severity\": \"LOW\",\n\t\t\t\"confidence\": \"HIGH\",\n\t\t\t\"cwe\": {\n\t\t\t\t\"id\": \"703\",\n\t\t\t\t\"url\": \"https://cwe.mitre.org/data/definitions/703.html\"\n\t\t\t},\n\t\t\t\"rule_id\": \"G104\",\n\t\t\t\"details\": \"Errors unhandled.\",\n\t\t\t\"file\": \"/Users/gerald.nash@coinbase.com/external/salus/spec/fixtures/gosec/multiple_vulns2/hello.go\",\n\t\t\t\"code\": \"13: \\th := md5.New()\\n14: \\tio.WriteString(h, password)\\n15: \\tfmt.Printf(\\\"%x\\\", h.Sum(nil))\\n\",\n\t\t\t\"line\": \"14\",\n\t\t\t\"column\": \"2\",\n\t\t\t\"nosec\": false,\n\t\t\t\"suppressions\": null\n\t\t}\n\t],\n\t\"Stats\": {\n\t\t\"files\": 1,\n\t\t\"lines\": 18,\n\t\t\"nosec\": 0,\n\t\t\"found\": 4\n\t},\n\t\"GosecVersion\": \"dev\"\n}",
+      "passed": false,
+      "running_time": 0.25,
+      "scanner_name": "Gosec",
+      "version": "",
+      "warn": {
+        "scanner_version_error": "Unable to get Salus::Scanners::Gosec version"
+      }
+    }
+  },
+  "version": "2.18.0"
+}

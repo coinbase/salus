@@ -32,7 +32,7 @@ describe Sarif::GoOSVSarif do
       scanner.run
       report = Salus::Report.new(project_name: "Neon Genesis")
       report.add_scan_report(scanner.report, required: false)
-      sarif = JSON.parse(report.to_sarif)
+      sarif = JSON.parse(report.to_sarif({ 'include_non_enforced' => true }))
 
       expect(sarif['runs'][0]['tool']['driver']['rules'][0]).to include(
         {
@@ -77,8 +77,7 @@ describe Sarif::GoOSVSarif do
               "Crash due to malformed relay protocol message" },
             "properties" => { "severity" => "LOW" },
             "ruleId" => "CVE-2021-21404",
-            "ruleIndex" => 0,
-            "suppressions" => [{ "kind" => "external" }] }
+            "ruleIndex" => 0 }
       )
 
       filtered_sarif = report.apply_report_sarif_filters(sarif)
