@@ -97,7 +97,7 @@ describe Sarif::YarnAuditSarif do
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
 
-        parsed_json = JSON.parse(report.to_sarif)
+        parsed_json = JSON.parse(report.to_sarif({ 'include_active' => true }))
 
         result = parsed_json["runs"][0]["results"].first
         rule = parsed_json["runs"][0]["tool"]["driver"]["rules"].first

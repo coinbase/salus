@@ -1,0 +1,454 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/schemas/sarif-schema-2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "BundleAudit",
+          "version": "0.8.0",
+          "informationUri": "https://github.com/rubysec/bundler-audit/",
+          "rules": [
+            {
+              "id": "CVE-2020-8161",
+              "name": "Directory traversal in Rack::Directory app bundled with Rack",
+              "fullDescription": {
+                "text": "There was a possible directory traversal vulnerability in the Rack::Directory app\nthat is bundled with Rack.\n\nVersions Affected:  rack < 2.2.0\nNot affected:       Applications that do not use Rack::Directory.\nFixed Versions:     2.1.3, >= 2.2.0\n\nImpact\n------\n\nIf certain directories exist in a director that is managed by\n`Rack::Directory`, an attacker could, using this vulnerability, read the\ncontents of files on the server that were outside of the root specified in the\nRack::Directory initializer.\n\nWorkarounds\n-----------\n\nUntil such time as the patch is applied or their Rack version is upgraded,\nwe recommend that developers do not use Rack::Directory in their\napplications.\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "rack"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\"~> 2.1.3\", \">= 2.2.0\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Directory traversal in Rack::Directory app bundled with Rack"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "1.5.5"
+                }
+              },
+              "helpUri": "https://groups.google.com/forum/#!topic/ruby-security-ann/T4ZIsfRf2eA",
+              "help": {
+                "text": "More info: https://groups.google.com/forum/#!topic/ruby-security-ann/T4ZIsfRf2eA",
+                "markdown": "[More info](https://groups.google.com/forum/#!topic/ruby-security-ann/T4ZIsfRf2eA)."
+              }
+            },
+            {
+              "id": "CVE-2020-8130",
+              "name": "OS Command Injection in Rake",
+              "fullDescription": {
+                "text": "There is an OS command injection vulnerability in Ruby Rake < 12.3.3 in\nRake::FileList when supplying a filename that begins with the pipe character\n`|`.\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "rake"
+                },
+                "severity": {
+                  "text": "9.3"
+                },
+                "patched_versions": {
+                  "text": "[\">= 12.3.3\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "OS Command Injection in Rake"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "12.0.0"
+                }
+              },
+              "helpUri": "https://github.com/advisories/GHSA-jppv-gw3r-w3q8",
+              "help": {
+                "text": "More info: https://github.com/advisories/GHSA-jppv-gw3r-w3q8",
+                "markdown": "[More info](https://github.com/advisories/GHSA-jppv-gw3r-w3q8)."
+              }
+            },
+            {
+              "id": "CVE-2018-3760",
+              "name": "Path Traversal in Sprockets",
+              "fullDescription": {
+                "text": "Specially crafted requests can be used to access files that exist on\nthe filesystem that is outside an application's root directory, when the\nSprockets server is used in production.\n\nAll users running an affected release should either upgrade or use one of the work arounds immediately.\n\nWorkaround:\nIn Rails applications, work around this issue, set `config.assets.compile = false` and\n`config.public_file_server.enabled = true` in an initializer and precompile the assets.\n\n This work around will not be possible in all hosting environments and upgrading is advised.\n"
+              },
+              "messageStrings": {
+                "package_name": {
+                  "text": "sprockets"
+                },
+                "severity": {
+                  "text": ""
+                },
+                "patched_versions": {
+                  "text": "[\">= 2.12.5, < 3.0.0\", \">= 3.7.2, < 4.0.0\", \">= 4.0.0.beta8\"]"
+                },
+                "unaffected_versions": {
+                  "text": "[]"
+                },
+                "title": {
+                  "text": "Path Traversal in Sprockets"
+                },
+                "osvdb": {
+                  "text": ""
+                },
+                "type": {
+                  "text": "UnpatchedGem"
+                },
+                "version": {
+                  "text": "3.7.1"
+                }
+              },
+              "helpUri": "https://groups.google.com/forum/#!topic/ruby-security-ann/2S9Pwz2i16k",
+              "help": {
+                "text": "More info: https://groups.google.com/forum/#!topic/ruby-security-ann/2S9Pwz2i16k",
+                "markdown": "[More info](https://groups.google.com/forum/#!topic/ruby-security-ann/2S9Pwz2i16k)."
+              }
+            }
+          ],
+          "properties": {
+            "salusEnforced": true
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+        {
+          "ruleId": "CVE-2020-8161",
+          "level": "note",
+          "message": {
+            "text": "There was a possible directory traversal vulnerability in the Rack::Directory app\nthat is bundled with Rack.\n\nVersions Affected:  rack < 2.2.0\nNot affected:       Applications that do not use Rack::Directory.\nFixed Versions:     2.1.3, >= 2.2.0\n\nImpact\n------\n\nIf certain directories exist in a director that is managed by\n`Rack::Directory`, an attacker could, using this vulnerability, read the\ncontents of files on the server that were outside of the root specified in the\nRack::Directory initializer.\n\nWorkarounds\n-----------\n\nUntil such time as the patch is applied or their Rack version is upgraded,\nwe recommend that developers do not use Rack::Directory in their\napplications.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          },
+          "ruleIndex": 0
+        },
+        {
+          "ruleId": "CVE-2020-8130",
+          "level": "error",
+          "message": {
+            "text": "There is an OS command injection vulnerability in Ruby Rake < 12.3.3 in\nRake::FileList when supplying a filename that begins with the pipe character\n`|`.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": "9.3"
+          },
+          "ruleIndex": 1
+        },
+        {
+          "ruleId": "CVE-2018-3760",
+          "level": "note",
+          "message": {
+            "text": "Specially crafted requests can be used to access files that exist on\nthe filesystem that is outside an application's root directory, when the\nSprockets server is used in production.\n\nAll users running an affected release should either upgrade or use one of the work arounds immediately.\n\nWorkaround:\nIn Rails applications, work around this issue, set `config.assets.compile = false` and\n`config.public_file_server.enabled = true` in an initializer and precompile the assets.\n\n This work around will not be possible in all hosting environments and upgrading is advised.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Gemfile.lock",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": ""
+          },
+          "ruleIndex": 2
+        }
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": false
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Gosec",
+          "version": "2.7.0",
+          "informationUri": "https://github.com/securego/gosec",
+          "rules": [
+            {
+              "id": "G101",
+              "name": "CWE-798",
+              "fullDescription": {
+                "text": "Potential hardcoded credentials \nSeverity: HIGH\nConfidence: LOW\nCWE: https://cwe.mitre.org/data/definitions/798.html"
+              },
+              "messageStrings": {
+                "severity": {
+                  "text": "HIGH"
+                },
+                "confidence": {
+                  "text": "LOW"
+                },
+                "cwe": {
+                  "text": "https://cwe.mitre.org/data/definitions/798.html"
+                }
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/798.html",
+              "help": {
+                "text": "More info: https://cwe.mitre.org/data/definitions/798.html",
+                "markdown": "[More info](https://cwe.mitre.org/data/definitions/798.html)."
+              }
+            }
+          ],
+          "properties": {
+            "salusEnforced": true
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+        {
+          "ruleId": "G101",
+          "level": "error",
+          "message": {
+            "text": "Potential hardcoded credentials \nSeverity: HIGH\nConfidence: LOW\nCWE: https://cwe.mitre.org/data/definitions/798.html"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "bad.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 7,
+                  "startColumn": 9,
+                  "snippet": {
+                    "text": "6:     username := \"admin\"\n7:     var password = \"f62e5bcda4fae4f82370da0c6f20697b8f8447ef\"\n8: \n"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": "HIGH"
+          },
+          "ruleIndex": 0
+        },
+        {
+          "ruleId": "G101",
+          "level": "error",
+          "message": {
+            "text": "Potential hardcoded credentials \nSeverity: HIGH\nConfidence: LOW\nCWE: https://cwe.mitre.org/data/definitions/798.html"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "bad.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 70,
+                  "startColumn": 90,
+                  "snippet": {
+                    "text": "60:     username := \"admin\"\n7:     var password = \"f62e5bcda4fae4f82370da0c6f20697b8f8447ef\"\n8: \n"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": "HIGH"
+          },
+          "ruleIndex": 0
+        }
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": false
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "PatternSearch",
+          "version": "0.9.0",
+          "informationUri": "https://github.com/coinbase/salus/blob/master/docs/scanners/pattern_search.md",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": true
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "RepoNotEmpty",
+          "version": "",
+          "informationUri": "https://github.com/coinbase/salus/blob/master/docs/scanners/repository_not_blank.md",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": true
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "ReportRubyGems",
+          "version": "",
+          "informationUri": "https://github.com/coinbase/salus",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": false
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "toolExecutionNotifications": [
+            {
+              "descriptor": {
+                "id": "SAL001"
+              },
+              "message": {
+                "text": "SARIF reports are not available for this scanner"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Semgrep",
+          "version": "0.62.0",
+          "informationUri": "https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": true
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ]
+    }
+  ]
+}

@@ -94,7 +94,7 @@ describe Sarif::NPMAuditSarif do
         scanner.run
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
-        report_object = JSON.parse(report.to_sarif)['runs'][0]
+        report_object = JSON.parse(report.to_sarif({ 'include_non_enforced' => true }))['runs'][0]
         expect(report_object['results'].length).to eq(2)
         expect(report_object['invocations'][0]['executionSuccessful']).to eq(false)
 
@@ -128,9 +128,10 @@ describe Sarif::NPMAuditSarif do
 
         report = Salus::Report.new(project_name: "Neon Genesis")
         report.add_scan_report(scanner.report, required: false)
-        results = JSON.parse(report.to_sarif)["runs"][0]["results"]
+        sarif = JSON.parse(report.to_sarif({ 'include_non_enforced' => true }))
+        results = sarif["runs"][0]["results"]
         result = results[-2]
-        rules = JSON.parse(report.to_sarif)["runs"][0]["tool"]["driver"]["rules"]
+        rules = sarif["runs"][0]["tool"]["driver"]["rules"]
         rule = rules.first
 
         # Check rule info

@@ -1,0 +1,251 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/schemas/sarif-schema-2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "BundleAudit",
+          "version": "0.8.0",
+          "informationUri": "https://github.com/rubysec/bundler-audit/",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": true
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Gosec",
+          "version": "2.7.0",
+          "informationUri": "https://github.com/securego/gosec",
+          "rules": [
+            {
+              "id": "G101",
+              "name": "CWE-798",
+              "fullDescription": {
+                "text": "Potential hardcoded credentials \nSeverity: HIGH\nConfidence: LOW\nCWE: https://cwe.mitre.org/data/definitions/798.html"
+              },
+              "messageStrings": {
+                "severity": {
+                  "text": "HIGH"
+                },
+                "confidence": {
+                  "text": "LOW"
+                },
+                "cwe": {
+                  "text": "https://cwe.mitre.org/data/definitions/798.html"
+                }
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/798.html",
+              "help": {
+                "text": "More info: https://cwe.mitre.org/data/definitions/798.html",
+                "markdown": "[More info](https://cwe.mitre.org/data/definitions/798.html)."
+              }
+            }
+          ],
+          "properties": {
+            "salusEnforced": true
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+        {
+          "ruleId": "G101",
+          "level": "error",
+          "message": {
+            "text": "Potential hardcoded credentials \nSeverity: HIGH\nConfidence: LOW\nCWE: https://cwe.mitre.org/data/definitions/798.html"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "bad.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 7,
+                  "startColumn": 9,
+                  "snippet": {
+                    "text": "6:     username := \"admin\"\n7:     var password = \"f62e5bcda4fae4f82370da0c6f20697b8f8447ef\"\n8: \n"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "severity": "HIGH"
+          },
+          "ruleIndex": 0
+        }
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": false
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "PatternSearch",
+          "version": "0.9.0",
+          "informationUri": "https://github.com/coinbase/salus/blob/master/docs/scanners/pattern_search.md",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": true
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "RepoNotEmpty",
+          "version": "",
+          "informationUri": "https://github.com/coinbase/salus/blob/master/docs/scanners/repository_not_blank.md",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": true
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "ReportRubyGems",
+          "version": "",
+          "informationUri": "https://github.com/coinbase/salus",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": false
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "toolExecutionNotifications": [
+            {
+              "descriptor": {
+                "id": "SAL001"
+              },
+              "message": {
+                "text": "SARIF reports are not available for this scanner"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Semgrep",
+          "version": "0.62.0",
+          "informationUri": "https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md",
+          "rules": [
+
+          ],
+          "properties": {
+            "salusEnforced": true
+          }
+        }
+      },
+      "conversion": {
+        "tool": {
+          "driver": {
+            "name": "Salus",
+            "informationUri": "https://github.com/coinbase/salus"
+          }
+        }
+      },
+      "results": [
+
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ]
+    }
+  ]
+}
