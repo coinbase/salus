@@ -110,6 +110,18 @@ module Salus::Scanners
     def ignore_list
       return [] unless user_supplied_ignore?
 
+      if !@config['ignore'].is_a?(String)
+        msg = "Brakeman ignore path #{@config['ignore']} is a/an #{@config['ignore'].class} and"\
+        " not a String. "
+        report_error(msg)
+        return []
+      end
+
+      if !File.exist?(@config['ignore'])
+        msg = "Brakeman ignore path #{@config['ignore']} does not exist"
+        report_error(msg)
+        return []
+      end
       data = JSON.parse(File.read(@config['ignore']))
       return [] unless data.key?('ignored_warnings')
 
@@ -133,9 +145,6 @@ module Salus::Scanners
         return true if item.key?('expiration')
       end
       false
-    rescue TypeError, Errno::ENOENT => e
-      report_error(e.message)
-      bugsnag_notify(e)
     end
 
     def user_supplied_ignore?

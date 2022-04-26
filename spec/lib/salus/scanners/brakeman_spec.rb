@@ -371,17 +371,19 @@ describe Salus::Scanners::Brakeman do
 
       expect(scanner.report.passed?).to eq(false)
       errors = scanner.report.to_h.fetch(:errors)
-      expect(errors[0][:message]).to include("No such file or directory @ rb_sysopen")
+      expect(errors[0][:message]).to include("Brakeman ignore path"\
+        " #{File.join(fixture_path, 'brakeman.ignore')} does not exist")
     end
 
     it 'should report an error if ignore config path does not exist' do
       repo = Salus::Repo.new(File.join(fixture_path, 'vulnerable_rails_app'))
       scanner = Salus::Scanners::Brakeman.new(repository: repo, config: {
-                                                'ignore' => ["brakeman.ignore"]
+                                                'ignore' => ["config/brakeman.ignore"]
                                               })
       scanner.run
       errors = scanner.report.to_h.fetch(:errors)
-      expect(errors[0][:message]).to include("no implicit conversion of Array into String")
+      expect(errors[0][:message]).to include("Brakeman ignore path"\
+        " [\"config/brakeman.ignore\"] is a/an Array and not a String")
     end
   end
 
