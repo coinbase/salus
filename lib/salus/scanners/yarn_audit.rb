@@ -10,7 +10,9 @@ module Salus::Scanners
     # the command was previously 'yarn audit --json', which had memory allocation issues
     # see https://github.com/yarnpkg/yarn/issues/7404
     LEGACY_YARN_AUDIT_COMMAND = 'yarn audit --no-color'.freeze
-    LATEST_YARN_AUDIT_COMMAND = 'yarn npm audit --all --json'.freeze
+    LATEST_YARN_AUDIT_ALL_COMMAND = 'yarn npm audit --recursive --all --json'.freeze
+    LATEST_YARN_AUDIT_PROD_COMMAND = 'yarn npm audit --recursive --environment
+      production --json'.freeze
     YARN_VERSION_COMMAND = 'yarn --version'.freeze
     BREAKING_VERSION = "2.0.0".freeze
 
@@ -28,7 +30,15 @@ module Salus::Scanners
 
     def handle_latest_yarn_audit
       vulns = []
-      shell_return = run_shell(LATEST_YARN_AUDIT_COMMAND)
+
+      dep_types = @config.fetch('exclude_groups', [])
+      audit_command = if dep_types.include?('devDependencies')
+                        LATEST_YARN_AUDIT_PROD_COMMAND
+                      else
+                        LATEST_YARN_AUDIT_ALL_COMMAND
+                      end
+
+      shell_return = run_shell(audit_command)
       excpts = fetch_exception_ids
       report_info(:ignored_cves, excpts)
 
