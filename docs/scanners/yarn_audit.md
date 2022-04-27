@@ -33,8 +33,8 @@ scanner_configs:
     - devDependencies         # dev only dependencies
 ```
 
-NOTE: Only availabe for yarn > 2.0.0
 If you only want to scan transitive dependencies, then you want the following:
+> NOTE: Only availabe for yarn > 2.0.0
 ```yaml
 scanner_configs:
   YarnAudit:
