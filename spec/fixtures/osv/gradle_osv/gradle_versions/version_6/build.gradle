@@ -1,0 +1,14 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+// The compile keyword is deprecated but still available in gradle version 6.
+// However, its been removed in gradle version 7
+dependencies {
+  implementation group: 'test.test.test', name: 'sample', version: '2.6.2'
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+}
