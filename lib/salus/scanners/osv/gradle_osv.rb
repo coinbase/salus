@@ -15,6 +15,8 @@ module Salus::Scanners::OSV
     end
 
     def run
+      return if !parse_gradle_version
+
       # Find dependencies
       dependencies = find_dependencies
       if dependencies.empty?

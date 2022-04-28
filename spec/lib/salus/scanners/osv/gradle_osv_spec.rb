@@ -137,5 +137,34 @@ describe Salus::Scanners::OSV::GradleOSV do
         expect(scanner.report.to_h.fetch(:passed)).to eq(true)
       end
     end
+    context 'when given different gradle versions' do
+      let(:path_str) { "../../../../../spec/fixtures/osv/gradle_osv/gradle_versions/" }
+      let(:path_unsupported) { "unsupported_version" }
+      let(:path_v6) { "version_6" }
+      let(:path_v7) { "version_7" }
+      let(:fixture_path) { File.expand_path(path_str, __dir__) }
+
+      it 'runs gradle version 7 successfully' do
+        repo = Salus::Repo.new(File.join(fixture_path, path_v7))
+        scanner = Salus::Scanners::OSV::GradleOSV.new(repository: repo, config: {})
+        stub_req_with_valid_response
+        scanner.run
+        expect(scanner.report.to_h.fetch(:passed)).to eq(true)
+      end
+      it 'runs gradle version 6 successfully' do
+        repo = Salus::Repo.new(File.join(fixture_path, path_v6))
+        scanner = Salus::Scanners::OSV::GradleOSV.new(repository: repo, config: {})
+        stub_req_with_valid_response
+        scanner.run
+        expect(scanner.report.to_h.fetch(:passed)).to eq(true)
+      end
+      it 'reports errors for unsupported gradle versions' do
+        repo = Salus::Repo.new(File.join(fixture_path, path_unsupported))
+        scanner = Salus::Scanners::OSV::GradleOSV.new(repository: repo, config: {})
+        stub_req_with_valid_response
+        scanner.run
+        expect(scanner.report.to_h.fetch(:passed)).to eq(false)
+      end
+    end
   end
 end

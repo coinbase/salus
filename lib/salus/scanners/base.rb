@@ -14,6 +14,8 @@ module Salus::Scanners
     class ScannerTimeoutError < StandardError; end
     # Default unknown version for dependency scanners
     UNKNOWN_VERSION = ''.freeze
+    GRADLE7 = "/opt/gradle/gradle-7.3.3/bin/gradle".freeze
+    GRADLE6 = "/opt/gradle/gradle-6.9.2/bin/gradle".freeze
 
     include Salus::SalusBugsnag
 
@@ -562,6 +564,23 @@ module Salus::Scanners
       end
 
       scanner_timeout_config_param
+    end
+
+    def parse_gradle_version
+      shell_result = run_shell([GRADLE7 + " buildEnvironment"])
+      report_info('message', 'generated with gradle version 7') if shell_result.success?
+      return setup_gradle(GRADLE7) if shell_result.success?
+
+      shell_result = run_shell([GRADLE6 + " buildEnvironment"])
+      report_info('message', 'generated with gradle version 6') if shell_result.success?
+      return setup_gradle(GRADLE6) if shell_result.success?
+
+      report_error("Gradle Version Not supported. Please Upgrade to gradle version 6 and above")
+    end
+
+    def setup_gradle(version)
+      shell_result = run_shell(["export GRADLE_HOME=#{version}"])
+      shell_result.success?
     end
   end
 end
