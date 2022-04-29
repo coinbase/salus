@@ -4,6 +4,7 @@ require 'salus/scanners/base'
 
 module Salus::Scanners
   class ReportGradleDeps < Base
+    include Gradle
     def run
       dependencies = gradle_dependencies
 
