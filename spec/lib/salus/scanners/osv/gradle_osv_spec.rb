@@ -137,6 +137,7 @@ describe Salus::Scanners::OSV::GradleOSV do
         expect(scanner.report.to_h.fetch(:passed)).to eq(true)
       end
     end
+
     context 'when given different gradle versions' do
       let(:path_str) { "../../../../../spec/fixtures/osv/gradle_osv/gradle_versions/" }
       let(:path_unsupported) { "unsupported_version" }
@@ -151,6 +152,7 @@ describe Salus::Scanners::OSV::GradleOSV do
         scanner.run
         expect(scanner.report.to_h.fetch(:passed)).to eq(true)
       end
+
       it 'runs gradle version 6 successfully' do
         repo = Salus::Repo.new(File.join(fixture_path, path_v6))
         scanner = Salus::Scanners::OSV::GradleOSV.new(repository: repo, config: {})
@@ -158,6 +160,7 @@ describe Salus::Scanners::OSV::GradleOSV do
         scanner.run
         expect(scanner.report.to_h.fetch(:passed)).to eq(true)
       end
+
       it 'reports errors for unsupported gradle versions' do
         repo = Salus::Repo.new(File.join(fixture_path, path_unsupported))
         scanner = Salus::Scanners::OSV::GradleOSV.new(repository: repo, config: {})
