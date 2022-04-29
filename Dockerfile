@@ -183,7 +183,6 @@ COPY --from=builder /opt/gradle/gradle-7.3.3 /opt/gradle/gradle-7.3.3
 ENV PATH="/opt/gradle/gradle-7.3.3/bin:${PATH}"
 
 COPY --from=builder /opt/gradle/gradle-6.9.2 /opt/gradle/gradle-6.9.2
-ENV PATH="/opt/gradle/gradle-6.9.2/bin:${PATH}"
 
 RUN ln -sf /usr/local/go/bin/go /usr/local/bin
 RUN python -m easy_install pip==${PIP_VERSION} \

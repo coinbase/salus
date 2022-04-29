@@ -5,22 +5,7 @@ require 'salus/scanners/base'
 module Salus::Scanners
   class ReportGradleDeps < Base
     def run
-      return if !parse_gradle_version
-
-      shell_return = run_shell(['bin/parse_gradle_deps', @repository.path_to_repo], chdir: nil)
-      if !shell_return.success?
-        report_error(shell_return.stderr)
-        return
-      end
-
-      begin
-        dependencies = JSON.parse(shell_return.stdout)
-      rescue JSON::ParserError
-        err_msg = "Could not parse JSON returned by /home/bin/parse_gradle_deps's stdout!"
-        report_stderr(err_msg)
-        report_error(err_msg)
-        return
-      end
+      dependencies = gradle_dependencies
 
       dependencies.each do |dependency|
         group_id = dependency['group_id']

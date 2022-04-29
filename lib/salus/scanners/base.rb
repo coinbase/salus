@@ -566,21 +566,30 @@ module Salus::Scanners
       scanner_timeout_config_param
     end
 
-    def parse_gradle_version
-      shell_result = run_shell([GRADLE7 + " buildEnvironment"])
-      report_info('message', 'generated with gradle version 7') if shell_result.success?
-      return setup_gradle(GRADLE7) if shell_result.success?
+    def gradle_dependencies
+      dependency_metadata_regex = /-\s(?<group_id>.+):(?<artifact_id>.+):(?<version>.+)/
 
-      shell_result = run_shell([GRADLE6 + " buildEnvironment"])
-      report_info('message', 'generated with gradle version 6') if shell_result.success?
-      return setup_gradle(GRADLE6) if shell_result.success?
+      # 'gradle dependencies' command needs to be run in the folder where buid.gradle is present.
+      shell_result = run_shell("#{GRADLE7} dependencies")
 
-      report_error("Gradle Version Not supported. Please Upgrade to gradle version 6 and above")
-    end
+      shell_result = run_shell("#{GRADLE6} dependencies") if !shell_result.success?
+      if !shell_result.success?
+        report_error("Gradle Version Not supported. Please Upgrade to gradle version 6 and above")
+        return []
+      end
 
-    def setup_gradle(version)
-      shell_result = run_shell(["export GRADLE_HOME=#{version}"])
-      shell_result.success?
+      dependencies = []
+
+      shell_result.stdout.scan(dependency_metadata_regex).each do |dependency_properties|
+        dependency_hash = {}
+        dependency_hash[:group_id] = dependency_properties[0]
+        dependency_hash[:artifact_id] = dependency_properties[1]
+        dependency_hash[:version] = dependency_properties[2].split[0]
+        dependencies.append(dependency_hash) if !dependencies.include?(dependency_hash)
+      end
+
+      report_error('Could not parse dependencies of Gradle project') if dependencies.empty?
+      dependencies
     end
   end
 end
