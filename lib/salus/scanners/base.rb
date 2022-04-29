@@ -582,10 +582,10 @@ module Salus::Scanners
 
       shell_result.stdout.scan(dependency_metadata_regex).each do |dependency_properties|
         dependency_hash = {}
-        dependency_hash[:group_id] = dependency_properties[0]
-        dependency_hash[:artifact_id] = dependency_properties[1]
-        dependency_hash[:version] = dependency_properties[2].split[0]
-        dependencies.append(dependency_hash) if !dependencies.include?(dependency_hash)
+        dependency_hash['group_id'] = dependency_properties[0]
+        dependency_hash['artifact_id'] = dependency_properties[1]
+        dependency_hash['version'] = dependency_properties[2]
+        dependencies.append(dependency_hash)
       end
 
       report_error('Could not parse dependencies of Gradle project') if dependencies.empty?
