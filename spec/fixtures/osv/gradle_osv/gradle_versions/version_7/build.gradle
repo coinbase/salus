@@ -1,0 +1,13 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+// RuntimeOnly replaces runtime
+dependencies {
+  implementation group: 'test.test.test', name: 'sample', version: '2.6.2'
+  runtimeOnly group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+}

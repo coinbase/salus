@@ -3,6 +3,7 @@ require 'salus/scanners/osv/base'
 module Salus::Scanners::OSV
   class GradleOSV < Base
     class SemVersion < Gem::Version; end
+    include Gradle
 
     EMPTY_STRING = "".freeze
     DEFAULT_SOURCE = "https://osv.dev/list".freeze
@@ -15,8 +16,9 @@ module Salus::Scanners::OSV
     end
 
     def run
-      # Find dependencies
-      dependencies = find_dependencies
+      # Find dependencies from the project
+      dependencies = gradle_dependencies
+
       if dependencies.empty?
         err_msg = "GradleOSV: Failed to parse any dependencies from the project."
         report_stderr(err_msg)
@@ -104,32 +106,6 @@ module Salus::Scanners::OSV
         end
       end
       results
-    end
-
-    # Find dependencies from the project
-    def find_dependencies
-      shell_return = run_shell(['bin/parse_gradle_deps', @repository.path_to_repo], chdir: nil)
-      if !shell_return.success?
-        report_error(shell_return.stderr)
-        return []
-      end
-
-      begin
-        dependencies = JSON.parse(shell_return.stdout)
-      rescue JSON::ParserError
-        err_msg = "GradleOSV: Could not parse JSON returned by bin/parse_gradle_deps's stdout!"
-        report_stderr(err_msg)
-        report_error(err_msg)
-        return []
-      end
-
-      # Dedupe dependencies returned.
-      uniques = []
-      dependencies.group_by { |e| [e["group_id"], e["artifact_id"]] }.each do |_key, values|
-        uniques.append(values[0])
-      end
-
-      uniques
     end
 
     def format_vulnerability_result(match, version, introduced, fixed)
