@@ -1,0 +1,15 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+  implementation group: 'test.test.test', name: 'sample', version: '2.6.2'
+  runtime group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+}
+
+// Wrapper is a built in task. This feature for overriding of built in tasks were removed in Gradle version 5.
+task wrapper(type:Wrapper) { }
