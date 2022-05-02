@@ -17,6 +17,10 @@ module Gradle
     dependencies = []
 
     shell_result.stdout.scan(dependency_metadata_regex).each do |dependency_properties|
+      if dependency_properties.length < 3
+        report_error("Could not parse dependency metadata #{dependency_properties}")
+        next
+      end
       dependency_hash = {}
       dependency_hash['group_id'] = dependency_properties[0]
       dependency_hash['artifact_id'] = dependency_properties[1]
