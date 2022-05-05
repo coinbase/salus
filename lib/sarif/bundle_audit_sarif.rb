@@ -29,6 +29,7 @@ module Sarif
       if issue[:line_number]
         result[:start_line] = issue[:line_number]
         result[:start_column] = 1
+        result[:code] = issue[:name].to_s
       end
 
       if issue[:type] == "InsecureSource"
@@ -49,6 +50,13 @@ module Sarif
       when 7.0..10.0
         SARIF_WARNINGS[:error]
       end
+    end
+
+    def self.snippet_possibly_in_git_diff?(snippet, lines_added)
+      # snippet in sarif just has the package name (without spaces/version)
+      # actual snippet in Gemfile.lock looks like " nokogiri (>= 1.5.11, < 2.0.0)"
+      snippet = ' ' + snippet + ' ('
+      lines_added.keys.any? { |line| line.include? snippet }
     end
   end
 end
