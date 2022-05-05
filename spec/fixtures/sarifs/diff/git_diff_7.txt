@@ -1,0 +1,10 @@
+diff --git a/Gemfile.lock b/Gemfile.lock
+index 995b16a447..d3e6979312 100644
+--- a/Gemfile.lock
++++ b/Gemfile.lock
+@@ -844,6 +844,7 @@ GEM
+       nokogiri (>= 1.5.11, < 2.0.0)
++    helloworld (1.2.3)
++    bye (1.2.3)
+     fuubar (2.3.1)
+       rspec-core (~> 3.0)
