@@ -208,7 +208,6 @@ module Salus::Scanners
 
     def format_vulns(vulns)
       str = ""
-      # combine_vulns(vulns).each do |vul|
       vulns.each do |vul|
         vul.each do |k, v|
           str += "#{k}: #{v}\n"
