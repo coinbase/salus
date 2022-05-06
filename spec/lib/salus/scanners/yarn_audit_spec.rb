@@ -71,7 +71,7 @@ describe Salus::Scanners::YarnAudit do
 
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
       vulns = JSON.parse(scanner.report.to_h[:info][:stdout]).sort { |a, b| a["ID"] <=> b["ID"] }
-      expect(vulns.size).to eq(20)
+      expect(vulns.size).to eq(17)
 
       vulns.each do |vul|
         ["Package", "Patched in", "Dependency of", "More info", "Severity", "Title"].each do |attr|
@@ -80,6 +80,30 @@ describe Salus::Scanners::YarnAudit do
         end
         expect(vul["ID"]).to be_kind_of(Integer)
       end
+
+      id_vuls = vulns.select { |v| v['ID'] == 1_067_329 }
+      expect(id_vuls.size).to eq(1)
+      # vul has two merged dependdency of
+      expected_vul = { "Package" => "glob-parent",
+                      "Patched in" => ">=5.1.2",
+                      "Dependency of" => "chokidar, gulp",
+                      "More info" => "https://www.npmjs.com/advisories/1067329",
+                      "Severity" => "high",
+                      "Title" => "Regular expression denial of service in glob-parent",
+                      "ID" => 1_067_329 }
+      expect(id_vuls[0]).to eq(expected_vul)
+
+      id_vuls = vulns.select { |v| v['ID'] == 1_067_342 }
+      expect(id_vuls.size).to eq(1)
+      # vul has 1 dependency of
+      expected_vul = { "Package" => "minimist",
+                      "Patched in" => ">=1.2.6",
+                      "Dependency of" => "gulp-cssmin",
+                      "More info" => "https://www.npmjs.com/advisories/1067342",
+                      "Severity" => "critical",
+                      "Title" => "Prototype Pollution in minimist",
+                      "ID" => 1_067_342 }
+      expect(id_vuls[0]).to eq(expected_vul)
     end
 
     it 'should fail with error if there are errors' do

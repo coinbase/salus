@@ -53,6 +53,7 @@ module Salus::Scanners
       end
       return report_success if vulns.empty?
 
+      vulns = combine_vulns(vulns)
       log(format_vulns(vulns))
       report_stdout(vulns.to_json)
       report_failure
@@ -91,6 +92,7 @@ module Salus::Scanners
       chdir = File.expand_path(@repository&.path_to_repo)
 
       Salus::YarnLock.new(File.join(chdir, 'yarn.lock')).add_line_number(vulns)
+      vulns = combine_vulns(vulns)
       log(format_vulns(vulns))
       report_stdout(vulns.to_json)
       report_failure
@@ -184,8 +186,29 @@ module Salus::Scanners
       vuln['ID'] = id.to_i
     end
 
+    def combine_vulns(vulns)
+      uniq_vulns = {} # each key is uniq id
+
+      vulns.each do |vul|
+        id = vul['ID']
+        if uniq_vulns[id]
+          uniq_vulns[id]['Dependency of'].push vul['Dependency of']
+        else
+          uniq_vulns[id] = vul
+          uniq_vulns[id]['Dependency of'] = [uniq_vulns[id]['Dependency of']]
+        end
+      end
+
+      vulns = uniq_vulns.values
+      vulns.each do |vul|
+        vul['Dependency of'] = vul['Dependency of'].sort.join(', ')
+      end
+      vulns
+    end
+
     def format_vulns(vulns)
       str = ""
+      # combine_vulns(vulns).each do |vul|
       vulns.each do |vul|
         vul.each do |k, v|
           str += "#{k}: #{v}\n"
