@@ -141,23 +141,28 @@ describe Sarif::BundleAuditSarif do
 
   describe 'sarif diff' do
     context 'git diff support' do
-      it 'should find code in git diff' do
+      let(:new_lines_in_git_diff) do
         git_diff_file = 'spec/fixtures/sarifs/diff/git_diff_7.txt'
-        snippet = 'helloworld'
         git_diff = File.read(git_diff_file)
-        new_lines_in_git_diff = Sarif::BaseSarif.new_lines_in_git_diff(git_diff)
+        Sarif::BaseSarif.new_lines_in_git_diff(git_diff)
+      end
+
+      it 'should find code in git diff' do
+        snippet = 'helloworld'
         r = Sarif::BundleAuditSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
         expect(r).to be true
         snippet = 'bye'
         r = Sarif::BundleAuditSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
         expect(r).to be true
+      end
 
-        # should not match part of the package name
+      it 'should not match part of the package name' do
         snippet = 'hello'
         r = Sarif::BundleAuditSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
         expect(r).to be false
+      end
 
-        # should not match package that was in git diff but not added with this commit
+      it 'should not match package that was in git diff but not added with this commit' do
         snippet = 'fuubar'
         r = Sarif::BundleAuditSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
         expect(r).to be false
