@@ -29,7 +29,7 @@ module Sarif
       if issue[:line_number]
         result[:start_line] = issue[:line_number]
         result[:start_column] = 1
-        result[:code] = issue[:name].to_s
+        result[:code] = issue[:name].to_s # Code stores the gem name without version in snippet
       end
 
       if issue[:type] == "InsecureSource"
