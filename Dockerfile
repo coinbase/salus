@@ -5,7 +5,8 @@
 # The various scanners are installed in each multistage build
 # Our final image then copies the relevant binaries from each
 
-FROM ruby:2.7.2@sha256:0fee695f3bf397bb521d8ced9e30963835fac44bc27f46393a5b91941c8a40aa as builder
+FROM ruby:2.7.2  as builder
+#@sha256:0fee695f3bf397bb521d8ced9e30963835fac44bc27f46393a5b91941c8a40aa as builder
 
 # Maintainer has been deprecated in favor of using a maintainer label
 LABEL "maintainer"="security@coinbase.com"
@@ -52,17 +53,6 @@ WORKDIR /root
 #RUN python -m easy_install pip==${PIP_VERSION} \
 #  && python3 -m easy_install pip==${PIP_VERSION}
 
-### JDK
-RUN wget https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz -P /tmp
-RUN tar xvf /tmp/openjdk-17.0.2_linux-x64_bin.tar.gz -C /
-
-### Gradle
-RUN wget https://services.gradle.org/distributions/gradle-7.3.3-bin.zip -P /tmp
-RUN unzip -d /opt/gradle /tmp/gradle-*.zip
-ENV GRADLE_HOME="/opt/gradle/gradle-7.3.3"
-ENV PATH="${GRADLE_HOME}/bin:${PATH}"
-
-# TODO openjdk:19-jdk openjdk:17.0
 
 ### Python
 # Install bandit, python static code scanner
@@ -88,12 +78,29 @@ RUN cd /home \
 ENV SEMGREP_VERSION 0.62.0
 RUN pip3 install --user --no-cache-dir semgrep==${SEMGREP_VERSION}
 
+############################################
+# Java Tooling
+############################################
+FROM openjdk:11 as java-builder
+
+### Gradle 7
+RUN wget https://services.gradle.org/distributions/gradle-7.3.3-bin.zip -P /tmp
+RUN unzip -d /opt/gradle /tmp/gradle-*.zip
+
+### Gradle 6
+RUN wget https://services.gradle.org/distributions/gradle-6.9.2-bin.zip -P /tmp2
+RUN unzip -d /opt/gradle /tmp2/gradle-*.zip
+
+ENV GRADLE_HOME="/opt/gradle/gradle-7.3.3"
+ENV PATH="${GRADLE_HOME}/bin:${PATH}"
+
 
 ############################################
 # Golang Tooling
 ############################################
 
-FROM golang:1.18.0@sha256:478fcf47d5d8269f9b530784cca11b0386776b1d16417a5e694673e985f44253 as golang-builder 
+FROM golang:1.18.0  as golang-builder 
+#@sha256:478fcf47d5d8269f9b530784cca11b0386776b1d16417a5e694673e985f44253 as golang-builder 
 
 ENV GOSEC_VERSION 2.11.0
 ENV GOSEC_TARBALL_FILE gosec_${GOSEC_VERSION}_linux_amd64.tar.gz
@@ -113,9 +120,18 @@ RUN go install github.com/svent/sift@${SIFT_VERSION}
 # Rust Tooling (Rust, Cargo Audit, Ripgrep)
 ############################################
 
-FROM rust:1.60.0@sha256:1de9225709d9b3783261568682aa83ec1922e3ad7c43de40c83b0e5cd82e5d2f as rust-builder
+FROM rust:1.60.0 as rust-builder
 ENV CARGO_AUDIT_VERSION 0.14.0
-RUN cargo install cargo-audit --version "$CARGO_AUDIT_VERSION" && cargo install ripgrep --version 13.0.0
+
+RUN rustc --version && cargo --version
+RUN apt-get update && apt-get install -y --no-install-recommends cmake
+# && rm -rf /var/lib/apt/lists/*
+# List directory /var/lib/apt/lists/partial is missing
+
+RUN cargo install -f cargo-audit
+# --version "$CARGO_AUDIT_VERSION"
+RUN cargo install ripgrep --version 13.0.0
+
 
 ############################################
 # Node Tooling (Npm, Yarn, Yarn-lockfile)
@@ -125,7 +141,8 @@ RUN cargo install cargo-audit --version "$CARGO_AUDIT_VERSION" && cargo install 
 
 # This is quite old, we should update
 #FROM node:13.8.0@sha256:fccea1cdcd5725a32d59be757d71f01390906a23c81e953f0cea410d6fc95aaf as node-builder
-FROM node:17.8.0@sha256:87cea4658eb63b6bc1fb52a5f0c7f3c833615449f6e803cb8f2182f2a59ae09d as node-builder
+FROM node:17.8.0  as node-builder
+#@sha256:87cea4658eb63b6bc1fb52a5f0c7f3c833615449f6e803cb8f2182f2a59ae09d as node-builder
 COPY build/package.json build/yarn.lock /home/
 ENV NPM_VERSION 6.14.8
 ENV YARN_VERSION 1.22.0
@@ -142,7 +159,8 @@ RUN cd /home && yarn install \
 ############################################
 
 
-FROM ruby:2.7.2-slim@sha256:b9eebc5a6956f1def4698fac0930e7a1398a50c4198313fe87af0402cab8d149
+FROM ruby:2.7.2-slim
+#@sha256:b9eebc5a6956f1def4698fac0930e7a1398a50c4198313fe87af0402cab8d149
 
 ENV PATH="/root/.cargo/bin:/home/salus-cli/.local/bin:${PATH}"
 
@@ -187,6 +205,7 @@ RUN ln -sf /usr/local/go/bin/go /usr/local/bin # We could do an env var here too
 COPY --from=rust-builder /usr/local/cargo/bin/cargo /usr/local/bin
 COPY --from=rust-builder /usr/local/cargo/bin/rg /usr/bin/rg
 #COPY --from=rust-builder /root/.cargo /root/.cargo
+COPY --from=rust-builder /var/lib/apt/lists /var/lib/apt/lists
 
 # Copy over our gems and 
 #  /home/vendor/bundle/ruby/2.7.0/gems etc
@@ -200,8 +219,10 @@ COPY --from=node-builder /usr/local/bin/npm /usr/local/bin
 COPY --from=node-builder /usr/local/bin/yarn /usr/local/bin
 COPY --from=node-builder /usr/local/lib/node_modules /usr/local/lib/node_modules
 
-ENV JAVA_HOME /jdk-17.0.2
-COPY --from=builder /opt/gradle/gradle-7.3.3 /opt/gradle/gradle-7.3.3
+ENV JAVA_HOME /jdk-11.0.15
+COPY --from=java-builder /opt/gradle/gradle-7.3.3 /opt/gradle/gradle-7.3.3
+COPY --from=java-builder /opt/gradle/gradle-6.9.2 /opt/gradle/gradle-6.9.2
+
 ENV PATH="/opt/gradle/gradle-7.3.3/bin:${PATH}"
 
 ENV PIP_VERSION 18.1
