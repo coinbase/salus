@@ -25,11 +25,13 @@ describe Sarif::BundleAuditSarif do
         issue = { "type": "UnpatchedGem",
                   "cve": "CVE1234",
                   "url": '1',
-                  "line_number": 456 }
+                  "line_number": 456,
+                  "name": "boo" }
         parsed_issue = bundle_audit_sarif.parse_issue(issue)
         expect(parsed_issue[:id]).to eq("CVE1234")
         expect(parsed_issue[:start_line]).to eq(456)
         expect(parsed_issue[:start_column]).to eq(1)
+        expect(parsed_issue[:code]).to eq('boo')
 
         issue = { "osvdb": "osvd value",
           "url": '3', "line_number": 789 }
@@ -57,7 +59,8 @@ describe Sarif::BundleAuditSarif do
             help_url: "https://groups.google.com/g/rubyonrails-security/c/NiQl-48cXYI",
             uri: "Gemfile.lock",
             start_line: 8,
-            start_column: 1
+            start_column: 1,
+            code: 'actionpack'
           )
         else
           details = 'There is a possible DoS vulnerability in the Token Authentication logic in'
@@ -132,6 +135,37 @@ describe Sarif::BundleAuditSarif do
         expect(adapter.sarif_level(0)).to eq("note")
         expect(adapter.sarif_level(5.6)).to eq("warning")
         expect(adapter.sarif_level(9.7)).to eq("error")
+      end
+    end
+  end
+
+  describe 'sarif diff' do
+    context 'git diff support' do
+      let(:new_lines_in_git_diff) do
+        git_diff_file = 'spec/fixtures/sarifs/diff/git_diff_7.txt'
+        git_diff = File.read(git_diff_file)
+        Sarif::BaseSarif.new_lines_in_git_diff(git_diff)
+      end
+
+      it 'should find code in git diff' do
+        snippet = 'helloworld'
+        r = Sarif::BundleAuditSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
+        expect(r).to be true
+        snippet = 'bye'
+        r = Sarif::BundleAuditSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
+        expect(r).to be true
+      end
+
+      it 'should not match part of the package name' do
+        snippet = 'hello'
+        r = Sarif::BundleAuditSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
+        expect(r).to be false
+      end
+
+      it 'should not match package that was in git diff but not added with this commit' do
+        snippet = 'fuubar'
+        r = Sarif::BundleAuditSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
+        expect(r).to be false
       end
     end
   end
