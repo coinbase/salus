@@ -107,7 +107,7 @@ describe Salus::Report do
         report.add_scan_report(scan_report, required: true)
       end
 
-      to_h = { version: "2.18.2", passed: false,
+      to_h = { version: Salus::VERSION, passed: false,
         scans: {
           "DerpScanner" => { scanner_name: "DerpScanner",
                              passed: false,
