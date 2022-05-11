@@ -4,24 +4,29 @@ require 'salus/scanners/base'
 
 module Salus::Scanners
   class ReportGradleDeps < Base
-    include Gradle
-    def run
-      dependencies = gradle_dependencies
+    EMPTY_STRING = "".freeze
 
-      dependencies.each do |dependency|
-        group_id = dependency['group_id']
-        artifact_id = dependency['artifact_id']
+    def run
+      content = File.read(@repository.gradle_lockfile_path)
+      content.each_line do |line|
+        parts = line.split(":")
+        group_id = parts[0]
+        artifact_id = parts[1]
         report_dependency(
-          'build.gradle',
+          'gradle.lockfile',
           type: 'gradle',
           name: artifact_id.nil? ? group_id : "#{group_id}/#{artifact_id}",
-          version: dependency['version'].nil? ? UNKNOWN_VERSION : dependency['version']
+          version: if parts[2].include?("=")
+                     parts[2].split("=")[0]
+                   else
+                     EMPTY_STRING
+                   end
         )
       end
     end
 
     def should_run?
-      @repository.build_gradle_present?
+      @repository.gradle_lockfile_present?
     end
 
     def self.supported_languages

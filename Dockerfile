@@ -27,20 +27,6 @@ RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get inst
 
 WORKDIR /root
 
-### JDK
-RUN wget https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz -P /tmp
-RUN tar xvf /tmp/openjdk-11.0.2_linux-x64_bin.tar.gz -C /
-
-### Gradle 7
-RUN wget https://services.gradle.org/distributions/gradle-7.3.3-bin.zip -P /tmp
-RUN unzip -d /opt/gradle /tmp/gradle-*.zip
-
-### Gradle 6
-RUN wget https://services.gradle.org/distributions/gradle-6.9.2-bin.zip -P /tmp2
-RUN unzip -d /opt/gradle /tmp2/gradle-*.zip
-
-ENV GRADLE_HOME="/opt/gradle/gradle-7.3.3"
-ENV PATH="${GRADLE_HOME}/bin:${PATH}"
 
 ### Rust
 ENV RUST_VERSION 1.58.1
@@ -177,12 +163,7 @@ COPY --from=builder /root/.local /root/.local
 COPY --from=builder /root/.cargo /root/.cargo
 COPY --from=builder /usr/local/go /usr/local/go
 COPY --from=builder /usr/bin/rg /usr/bin/rg
-COPY --from=builder /jdk-11.0.2 /jdk-11.0.2
-ENV JAVA_HOME /jdk-11.0.2
-COPY --from=builder /opt/gradle/gradle-7.3.3 /opt/gradle/gradle-7.3.3
-ENV PATH="/opt/gradle/gradle-7.3.3/bin:${PATH}"
 
-COPY --from=builder /opt/gradle/gradle-6.9.2 /opt/gradle/gradle-6.9.2
 
 RUN ln -sf /usr/local/go/bin/go /usr/local/bin
 RUN python -m easy_install pip==${PIP_VERSION} \

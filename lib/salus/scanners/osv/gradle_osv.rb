@@ -3,7 +3,6 @@ require 'salus/scanners/osv/base'
 module Salus::Scanners::OSV
   class GradleOSV < Base
     class SemVersion < Gem::Version; end
-    include Gradle
 
     EMPTY_STRING = "".freeze
     DEFAULT_SOURCE = "https://osv.dev/list".freeze
@@ -12,12 +11,12 @@ module Salus::Scanners::OSV
         "/Maven/all.zip".freeze
 
     def should_run?
-      @repository.build_gradle_present?
+      @repository.gradle_lockfile_present?
     end
 
     def run
       # Find dependencies from the project
-      dependencies = gradle_dependencies
+      dependencies = find_dependencies
 
       if dependencies.empty?
         err_msg = "GradleOSV: Failed to parse any dependencies from the project."
@@ -45,6 +44,27 @@ module Salus::Scanners::OSV
     end
 
     private
+
+    # Find dependencies from the project
+    def find_dependencies
+      dependencies = []
+      content = File.read(@repository.gradle_lockfile_path)
+      content.each_line do |line|
+        parts = line.split(":")
+        if parts.length == 3
+          dependency_hash = {}
+          dependency_hash['group_id'] = parts[0]
+          dependency_hash['artifact_id'] = parts[1]
+          dependency_hash['version'] = if parts[2].include?("=")
+                                         parts[2].split("=")[0]
+                                       else
+                                         EMPTY_STRING
+                                       end
+          dependencies.append(dependency_hash)
+        end
+      end
+      dependencies
+    end
 
     # Match if dependency version found is in the range of
     # vulnerable dependency found.
