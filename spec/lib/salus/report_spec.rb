@@ -3,6 +3,7 @@ require_relative '../../spec_helper.rb'
 describe Salus::Report do
   let(:report) { build_report }
   let(:scan_reports) { (0...3).map { build_scan_report } }
+  SALUS_VERSION = Salus::VERSION
 
   describe '#to_s' do
     it 'should merge runs from the same scanner' do
@@ -13,7 +14,7 @@ describe Salus::Report do
         report.add_scan_report(scan_report, required: true)
       end
 
-      to_s = "==== Salus Scan v#{Salus::VERSION}\n\n" \
+      to_s = "==== Salus Scan v#{SALUS_VERSION}\n\n" \
         "==== DerpScanner: FAILED\n\n" \
         "==== Salus Configuration Files Used:\n\n\n\n" \
         "Overall scan status: FAILED\n\n" \
@@ -243,6 +244,7 @@ describe Salus::Report do
     end
 
     context 'HTTP report URI given with request parameters' do
+
       it 'should make a call to send the json report for http URI' do
         url = 'https://nerv.tk3/salus-report'
         params = { 'salus_report_param_name' => 'report',
@@ -262,7 +264,7 @@ describe Salus::Report do
            "\"DerpScanner\": {\n        \"errors\": [\n\n        ],\n        \"info\": {\n     "\
            "     \"asdf\": \"qwerty\"\n        },\n        \"passed\": false,\n        "\
            "\"scanner_name\": \"DerpScanner\",\n        \"warn\": {\n        }\n      }\n    "\
-           "},\n    \"version\": \"2.18.2\"\n  }\n}",
+           "},\n    \"version\": \"#{SALUS_VERSION}\"\n  }\n}",
            headers: { 'Accept' => '*/*',
           'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
           'Content-Type' => 'application/json',
@@ -285,7 +287,7 @@ describe Salus::Report do
             "- :message: derp\n  - :message: derp\n  - :message: derp\n  - :message: derp\n  - "\
             ":message: derp\n  :passed: false\n  :project_name: eva00\n  :scans:\n    DerpScanner:"\
             "\n      :errors: []\n      :info:\n        :asdf: qwerty\n      :passed: false\n     "\
-            " :scanner_name: DerpScanner\n      :warn: {}\n  :version: 2.18.2\n",
+            " :scanner_name: DerpScanner\n      :warn: {}\n  :version: #{SALUS_VERSION}\n",
            headers: { 'Accept' => '*/*',
           'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
           'Content-Type' => 'text/x-yaml',
@@ -305,7 +307,7 @@ describe Salus::Report do
         report.instance_variable_set(:@config, config)
 
         stub_request(:post, "https://nerv.tk3/salus-report").with(body: "{\"foo\"=>\"bar\", \"abc"\
-          "\"=>\"def\", \"report\"=>\"==== Salus Scan v2.18.2 for eva00\\n\\n==== Salus "\
+          "\"=>\"def\", \"report\"=>\"==== Salus Scan v#{SALUS_VERSION} for eva00\\n\\n==== Salus "\
           "Configuration Files Used:\\n\\n  word\\n\\n\\n==== Salus Errors\\n\\n  [\\n    {\\n    "\
           "  \\\"message\\\": \\\"derp\\\"\\n    },\\n    {\\n      \\\"message\\\": \\\"derp\\"\
           "\"\\n    },\\n    {\\n      \\\"message\\\": \\\"derp\\\"\\n    },\\n    {\\n      "\
