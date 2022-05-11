@@ -41,7 +41,8 @@ module Salus
       @config = Salus::Config.new(source_data, ignore_ids)
       @config.active_scanners = Set.new(cli_scanners_to_run) if !cli_scanners_to_run.empty?
 
-      report_uris = interpolate_local_report_uris(@config.report_uris)
+      report_uris = get_report_uris(report_filter)
+
       sources = {
         sources: {
           configured: configuration_sources,
@@ -214,6 +215,12 @@ module Salus
     end
 
     private
+
+    # Returns an empty array for reporting endpoints if report_filter is none
+    def get_report_uris(report_filter)
+      return [] if report_filter == NONE_REPORT_FILTER
+      interpolate_local_report_uris(@config.report_uris)
+    end
 
     # If the URI is local, we will need to prepend the repo_path since
     # the report URI is relative to the root of the repo. This allows us
