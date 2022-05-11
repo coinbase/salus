@@ -244,7 +244,6 @@ describe Salus::Report do
     end
 
     context 'HTTP report URI given with request parameters' do
-
       it 'should make a call to send the json report for http URI' do
         url = 'https://nerv.tk3/salus-report'
         params = { 'salus_report_param_name' => 'report',
