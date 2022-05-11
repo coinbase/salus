@@ -24,3 +24,6 @@ yarn-error.log
 
 # vscode
 .vscode
+
+# Intellij IDEA
+*.iml
