@@ -220,6 +220,7 @@ module Salus
     # Else it resolves URIs and returns
     def get_report_uris(report_filter)
       return [] if report_filter == NONE_REPORT_FILTER
+
       interpolate_local_report_uris(@config.report_uris)
     end
 
