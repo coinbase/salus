@@ -39,7 +39,9 @@ module Salus
       # Swift
       { handle: :package_resolved, filename: 'Package.resolved' },
       # Apple Ecosystem (macOS, iOS, etc)
-      { handle: :podfile_lock, filename: 'Podfile.lock' }
+      { handle: :podfile_lock, filename: 'Podfile.lock' },
+      # Solidity
+      { handle: :sol_file, filename: '.sol', wildcard: true }
     ].freeze
 
     # Define file checkers.
