@@ -198,6 +198,7 @@ RUN ln -sf /usr/local/go/bin/go /usr/local/bin
 RUN python -m easy_install pip==${PIP_VERSION} \
   && python3 -m easy_install pip==${PIP_VERSION}
 
+# Install solidity compiler
 ENV SOLC_VERSION 0.8.4
 RUN solc-select install ${SOLC_VERSION} && solc-select use ${SOLC_VERSION}
 
