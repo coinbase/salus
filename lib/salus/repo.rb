@@ -54,10 +54,7 @@ module Salus
 
         File.exist?("#{@path_to_repo}/#{file[:filename]}")
       end
-    end
 
-    # Define cached file getters.
-    IMPORTANT_FILES.each do |file|
       define_method file[:handle] do
         cache_handle = "@#{file[:handle]}_contents"
 

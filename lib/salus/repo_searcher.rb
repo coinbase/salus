@@ -15,7 +15,7 @@ module Salus
     # @param [String] path_to_repo The path to the directory to scan.
     # @param [Hash] scanner_config The settings for this scanner (from salus.yaml).
     #
-    def initialize(path_to_repo, scanner_config, auto_cleanup = true)
+    def initialize(path_to_repo, scanner_config, auto_cleanup: true)
       @path_to_repo = path_to_repo # "spec/fixtures/processor/recursive"
       @scanner_config = scanner_config # {"pass_on_raise"=>false, "scanner_timeout_s"=>0}
       @auto_cleanup = auto_cleanup

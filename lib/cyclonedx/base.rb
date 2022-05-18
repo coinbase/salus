@@ -52,7 +52,7 @@ module Cyclonedx
     end
 
     # Return version string to be used in purl or component
-    def version_string(dependency, is_purl_version = false)
+    def version_string(dependency, is_purl_version: false)
       # If the dependency is specified in a unlocked dependency file and an absolute version
       # is needed for the purl return empty
       if dependency[:dependency_file] == self.class::UNLOCKED_DEPENDENCY_FILE && is_purl_version

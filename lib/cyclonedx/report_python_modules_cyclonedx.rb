@@ -4,7 +4,7 @@ module Cyclonedx
     UNLOCKED_DEPENDENCY_FILE = "requirements.txt".freeze
 
     # Return version string to be used in purl or component
-    def version_string(dependency, is_purl_version = false)
+    def version_string(dependency, is_purl_version: false)
       # Check if dependency is pinned
       is_pinned = !!dependency[:version].match(/^==[0-9]/)
 

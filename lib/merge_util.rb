@@ -1,6 +1,6 @@
 class MergeUtil
   class << self
-    def deep_merge(hash_a = {}, hash_b = {}, combine_arrays = false)
+    def deep_merge(hash_a = {}, hash_b = {}, combine_arrays: false)
       return hash_a.deep_merge(hash_b || {}) unless combine_arrays
 
       hash_a.deep_merge(hash_b || {}) do |_k, v1, v2|
