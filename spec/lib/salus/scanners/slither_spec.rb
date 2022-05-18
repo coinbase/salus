@@ -34,6 +34,13 @@ describe Salus::Scanners::Slither do
       expect(scanner).to receive(:report_failure).and_call_original
       scanner.run
 
+      logs = scanner.report.to_h.fetch(:logs)
+      json_logs = JSON.parse(logs)
+      
+      expect(json_logs['results']['detectors'].length()).to eq(1)
+      expect(json_logs['results']['detectors'][0]['description']).to eq("C.f() (bad-contract.sol#4-8) "\
+      "contains an incorrect shift operation: a = 8 >> a (bad-contract.sol#6)\n")
+
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
     end
 

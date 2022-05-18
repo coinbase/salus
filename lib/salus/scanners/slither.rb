@@ -32,7 +32,6 @@ module Salus::Scanners
       report_failure
 
       if !stdout_json['success'] || !stdout_json['error'].nil?
-        # puts prettify_json_string(shell_return.stdout)
         # An error during compilation occurred
         scanning_error = stdout_json['error']
         report_error(scanning_error)
@@ -47,8 +46,7 @@ module Salus::Scanners
     end
 
     def version
-      shell_return = run_shell('slither --version')
-      shell_return.stdout.rstrip()
+      run_shell('slither --version').stdout.rstrip()
     end
 
     def self.supported_languages
