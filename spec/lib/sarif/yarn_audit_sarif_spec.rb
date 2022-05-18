@@ -177,7 +177,6 @@ describe Sarif::YarnAuditSarif do
         r = Sarif::YarnAuditSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
         expect(r).to be false
       end
-
     end
   end
 end
