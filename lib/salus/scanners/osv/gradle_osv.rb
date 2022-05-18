@@ -15,6 +15,10 @@ module Salus::Scanners::OSV
       @repository.build_gradle_present?
     end
 
+    def self.supported_languages
+      ['java']
+    end
+
     def run
       # Find dependencies from the project
       dependencies = gradle_dependencies

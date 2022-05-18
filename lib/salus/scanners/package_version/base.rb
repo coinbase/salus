@@ -51,6 +51,10 @@ module Salus::Scanners::PackageVersion
       self.class.name.sub('Salus::Scanners::PackageVersion::', '')
     end
 
+    def self.supported_languages
+      []
+    end
+
     private
 
     def parse_blocked_versions(blocked_versions)
