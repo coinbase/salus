@@ -15,6 +15,10 @@ module Salus::Scanners::OSV
       @repository.requirements_txt_present?
     end
 
+    def self.supported_languages
+      ['python']
+    end
+
     def run
       # Find dependencies
       dependencies = find_dependencies
