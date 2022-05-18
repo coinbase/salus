@@ -71,7 +71,6 @@ module Salus::Scanners::OSV
     def match_vulnerable_dependencies(dependencies)
       results = []
       dependencies.each do |dependency|
-        puts dependencies
         lib = "#{dependency['group_id']}:#{dependency['artifact_id']}"
 
         if dependency['version'].present?

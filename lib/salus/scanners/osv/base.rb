@@ -26,7 +26,7 @@ module Salus::Scanners::OSV
     end
 
     def self.supported_languages
-      raise NoMethodError, 'implement in subclass'
+      []
     end
 
     def name
