@@ -20,7 +20,12 @@ module Salus::Scanners
         run_shell("npm install", chdir: @repository.path_to_repo)
       end
       shell_return = run_shell(command, chdir: @repository.path_to_repo)
-      stdout_json = JSON.parse(shell_return.stdout)
+      stdout_json = begin 
+          JSON.parse(shell_return.stdout)
+        rescue JSON::ParserError
+          json_parser_error_msg = "Could not parse slither stdout"
+          "{ \"success\": false, \"error\": \"#{json_parser_error_msg}\" }"
+      end
 
       return report_success if shell_return.success?
 
@@ -33,7 +38,9 @@ module Salus::Scanners
         report_error(scanning_error)
         report_stderr(scanning_error)
       else
-        # shell_return.stdout will be JSON of the discovered vulnerabilities
+        report_stdout('To allowlist findings from a detector, add a `//slither-disable-next-line DETECTOR_NAME` '\
+      'comment before the offending line.\n\nFor example, `//slither-disable-next-line timestamp` will disable '\
+      'detection of `block.timestamp` usage by disabling the `timestamp` detector.')
         report_stdout(shell_return.stdout)
         log(prettify_json_string(shell_return.stdout))
       end

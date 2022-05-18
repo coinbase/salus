@@ -68,15 +68,14 @@ RUN pip install wheel \
   && mv .local/bin/bandit .local/bin/bandit2 \
   && pip3 install --user bandit==${BANDIT_VERSION}
 
-# Install solidity compiler version manager
+# Install solidity compiler version manager and 
+# slither, a solidity static code scanner
 ENV SOLC_SELECT_VERSION 0.2.1
-
-RUN pip3 install --user solc-select==${SOLC_SELECT_VERSION}
-ENV PATH="/root/.local/bin:${PATH}"
-
-# Install slither, solidity static code scanner
 ENV SLITHER_VERSION 0.8.3
-RUN pip3 install --user --no-cache-dir slither-analyzer==${SLITHER_VERSION}
+
+RUN pip3 install --user solc-select==${SOLC_SELECT_VERSION} \
+  && pip3 install --user --no-cache-dir slither-analyzer==${SLITHER_VERSION}
+ENV PATH="/root/.local/bin:${PATH}"
 
 
 ### Ruby
