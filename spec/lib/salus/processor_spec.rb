@@ -266,6 +266,15 @@ describe Salus::Processor do
           expect(req.body).to match_report_json(expected_report)
         end
       end
+
+      it 'Expect 0 report_uris for report_filter set to none' do
+        stub_request(:post, remote_uri)
+          .with(headers: { 'Content-Type' => 'application/json' })
+          .to_return(status: 202)
+        processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/remote_uri',
+                                         report_filter: 'none')
+        expect(processor.report.report_uris.size).to eq(0)
+      end
     end
 
     context 'local URI' do

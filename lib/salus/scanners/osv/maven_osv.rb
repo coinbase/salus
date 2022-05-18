@@ -15,6 +15,10 @@ module Salus::Scanners::OSV
       @repository.pom_xml_present?
     end
 
+    def self.supported_languages
+      ['java']
+    end
+
     def run
       begin
         # Find dependencies
