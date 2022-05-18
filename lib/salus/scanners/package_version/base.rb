@@ -52,7 +52,7 @@ module Salus::Scanners::PackageVersion
     end
 
     def self.supported_languages
-      raise NoMethodError, 'implement in subclass'
+      []
     end
 
     private
