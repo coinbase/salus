@@ -1,4 +1,4 @@
-require_relative '../../spec_helper.rb'
+require_relative '../../spec_helper'
 
 RSpec::Matchers.define :match_report_json do |expected|
   def remove_key(json_string, key = 'running_time')
@@ -162,7 +162,7 @@ describe Salus::Processor do
 
     it 'should override the configured active scanners when they\'re provided via command line' do
       processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/allowlist_scanners',
-        cli_scanners_to_run: %w[Brakeman CargoAudit NPMAudit])
+                                       cli_scanners_to_run: %w[Brakeman CargoAudit NPMAudit])
       processor.scan_project
 
       report_hsh = processor.report.to_h
@@ -175,7 +175,7 @@ describe Salus::Processor do
 
     it 'should scan the project using only scanners provided from the command line' do
       processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/allowlist_scanners',
-        cli_scanners_to_run: %w[Brakeman NPMAudit])
+                                       cli_scanners_to_run: %w[Brakeman NPMAudit])
       processor.scan_project
 
       expect(processor.passed?).to eq(false)
@@ -205,7 +205,7 @@ describe Salus::Processor do
       path = 'spec/fixtures/processor/recursive'
 
       processor = Salus::Processor.new(repo_path: path,
-        cli_scanners_to_run: %w[Brakeman NPMAudit])
+                                       cli_scanners_to_run: %w[Brakeman NPMAudit])
 
       processor.scan_project
 

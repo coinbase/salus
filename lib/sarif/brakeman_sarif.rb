@@ -22,7 +22,7 @@ module Sarif
     end
 
     def parse_error(error)
-      id = error['error'] + ' ' + error['location']
+      id = "#{error['error']} #{error['location']}"
       return nil if @issues.include?(id)
 
       @issues.add(id)

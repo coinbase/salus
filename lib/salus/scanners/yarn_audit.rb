@@ -37,14 +37,14 @@ module Salus::Scanners
         if excpts.exclude?(advisory_id)
           dependency_of = advisory["findings"]&.first&.[]("paths")
           vulns.append({
-                         "Package" => advisory.dig("module_name"),
-                        "Patched in" => advisory.dig("patched_versions"),
-                        "More info" => advisory.dig("url"),
-                        "Severity" => advisory.dig("severity"),
-                        "Title" => advisory.dig("title"),
+                         "Package" => advisory["module_name"],
+                        "Patched in" => advisory["patched_versions"],
+                        "More info" => advisory["url"],
+                        "Severity" => advisory["severity"],
+                        "Title" => advisory["title"],
                         "ID" => advisory_id.to_i,
                         "Dependency of" => if dependency_of.nil?
-                                             advisory.dig("module_name")
+                                             advisory["module_name"]
                                            else
                                              dependency_of.join("")
                                            end
@@ -128,7 +128,7 @@ module Salus::Scanners
           elsif curr_key == 'Path'
             prev_key = curr_key
           elsif prev_key != 'Path'
-            vuln[prev_key] += ' ' + val
+            vuln[prev_key] += " #{val}"
           end
         elsif lines[i].start_with?("└─") && lines[i].end_with?("─┘")
           vulns.add(vuln)

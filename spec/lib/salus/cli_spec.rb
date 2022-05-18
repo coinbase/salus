@@ -1,4 +1,4 @@
-require_relative '../../spec_helper.rb'
+require_relative '../../spec_helper'
 
 describe Salus::CLI do
   it 'returns non-zero exit when invalid params are passed' do

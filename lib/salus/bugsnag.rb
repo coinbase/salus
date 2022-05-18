@@ -10,7 +10,7 @@ if ENV['BUGSNAG_API_KEY']
 
     # Bugsnag requires a valid scheme, so add one if it's missing
     if !notify_endpoint.start_with?('http://', 'https://')
-      notify_endpoint = 'https://' + notify_endpoint
+      notify_endpoint = "https://#{notify_endpoint}"
     end
 
     config.set_endpoints(notify_endpoint, session_endpoint)

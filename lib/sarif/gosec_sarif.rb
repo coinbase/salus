@@ -40,7 +40,7 @@ module Sarif
       line = 1 if line.zero?
       column = 1 if column.zero?
 
-      id = error['error'] + ' ' + error['uri'] + ' ' + line.to_s
+      id = "#{error['error']} #{error['uri']} #{line}"
       return nil if @issues.include?(id)
 
       @issues.add(id)
@@ -61,7 +61,7 @@ module Sarif
       if issue[:id] == SCANNER_ERROR
         issue
       else
-        id = issue['details'] + ' ' + issue['file'] + ' ' + issue['line']
+        id = "#{issue['details']} #{issue['file']} #{issue['line']}"
         return nil if @issues.include?(id)
 
         # Newer gosecs have changed case to lower. Preparing to upgrade,

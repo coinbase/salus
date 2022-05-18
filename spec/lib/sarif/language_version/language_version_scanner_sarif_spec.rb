@@ -4,10 +4,10 @@ RSpec.shared_examples_for "language version scanner sarif" do |scanner_class,
                                                                invalid_version_repo_path,
                                                                error_msg|
   describe '#build_runs_object' do
-    let(:config_file) { YAML.load_file(invalid_version_repo_path + '/salus.yml') }
+    let(:config_file) { YAML.load_file("#{invalid_version_repo_path}/salus.yml") }
     let(:scanner) do
       scanner_class.new(repository: repo,
-                    config: config_file['scanner_configs'][scanner_name.to_s])
+                        config: config_file['scanner_configs'][scanner_name.to_s])
     end
     before { scanner.run }
 
@@ -74,7 +74,7 @@ RSpec.shared_examples_for "language version scanner sarif" do |scanner_class,
     end
 
     context 'no vulnerabilites found in project' do
-      let(:config_path) { valid_version_repo_path + '/salus.yml' }
+      let(:config_path) { "#{valid_version_repo_path}/salus.yml" }
       let(:config_file) { YAML.load_file(config_path) }
       let(:path) { valid_version_repo_path }
       let(:repo) { Salus::Repo.new(path) }

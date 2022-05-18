@@ -70,7 +70,7 @@ module Salus::Scanners
             status: shell_return.status
           )
           @gosec_failed = true
-          @gosec_stderr += shell_return.stderr + "\n"
+          @gosec_stderr += "#{shell_return.stderr}\n"
         end
         return report_failure
       end
@@ -96,7 +96,7 @@ module Salus::Scanners
           report_stdout(shell_return.stdout)
           log(shell_return.stdout)
         else
-          @gosec_stdout += shell_return.stdout + "\n"
+          @gosec_stdout += "#{shell_return.stdout}\n"
 
           if @gosec_json == {}
             @gosec_json['Golang errors'] = {}
@@ -113,7 +113,7 @@ module Salus::Scanners
           @gosec_json['Stats']['nosec'] += num_nosec
           @gosec_json['Stats']['found'] += num_found
           # add dir name to golang error keys
-          golang_errors = golang_errors.map { |ek, ev| [dir + '/' + ek, ev] }.to_h
+          golang_errors = golang_errors.transform_keys { |ek| "#{dir}/#{ek}" }
           @gosec_json['Golang errors'].merge!(golang_errors)
         end
       elsif lines_scanned.zero?
@@ -128,7 +128,7 @@ module Salus::Scanners
             "0 lines of code were scanned in #{dir}",
             status: shell_return.status
           )
-          @gosec_stderr += shell_return.stderr + "\n"
+          @gosec_stderr += "#{shell_return.stderr}\n"
         end
       else
         if dir.nil?
@@ -142,7 +142,7 @@ module Salus::Scanners
             "gosec exited with build error in #{dir}: #{shell_return.stderr}",
             status: shell_return.status
           )
-          @gosec_stderr += shell_return.stderr + "\n"
+          @gosec_stderr += "#{shell_return.stderr}\n"
         end
       end
     end

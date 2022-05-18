@@ -6,16 +6,16 @@ require 'cocoapods'
 
 podfile_lock = begin
   YAML.safe_load(File.read(ARGV[0]), [Symbol])
-               rescue StandardError
-                 warn 'Unable to parse Podfile.lock file'
-                 exit(1)
+rescue StandardError
+  warn 'Unable to parse Podfile.lock file'
+  exit(1)
 end
 
 lockfile = begin
   Pod::Lockfile.new(podfile_lock)
-           rescue StandardError
-             warn 'Unable to initialize Pod::Lockfile from YAML hash'
-             exit(1)
+rescue StandardError
+  warn 'Unable to initialize Pod::Lockfile from YAML hash'
+  exit(1)
 end
 
 # Checks the PODS and DEPENDENCIES section

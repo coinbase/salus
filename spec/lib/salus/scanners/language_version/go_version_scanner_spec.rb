@@ -1,4 +1,4 @@
-require_relative '../../../../spec_helper.rb'
+require_relative '../../../../spec_helper'
 
 describe Salus::Scanners::LanguageVersion::GoVersionScanner do
   describe '#run' do

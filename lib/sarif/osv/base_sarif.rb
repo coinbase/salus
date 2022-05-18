@@ -17,14 +17,14 @@ module Sarif::OSV
       logs = @scan_report.log('')
       return [] if logs.strip.empty?
 
-      JSON.parse(@scan_report.to_h.dig(:logs))
+      JSON.parse(@scan_report.to_h[:logs])
     rescue JSON::ParserError => e
       bugsnag_notify(e.message)
       []
     end
 
     def parse_issue(issue)
-      parsed_issue = {
+      {
         id: issue['ID'],
           name: SCANNER_NAME,
           level:  issue['Severity'],
@@ -40,8 +40,6 @@ module Sarif::OSV
           uri: OSV_URI.to_s,
           help_url: issue["Source"].to_s
       }
-
-      parsed_issue
     end
   end
 end

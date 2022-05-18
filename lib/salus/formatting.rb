@@ -38,7 +38,7 @@ module Salus
         index = 0
 
         while index < line.length
-          parts << line.slice(index, wrap) + "\n"
+          parts << "#{line.slice(index, wrap)}\n"
           index += wrap
         end
       end
@@ -90,7 +90,7 @@ module Salus
           length = uncolorize(string).length
           right_padding = 1 + max_lengths[index] - length
 
-          ' ' + string + (' ' * right_padding)
+          " #{string}#{' ' * right_padding}"
         end
 
         # Construct the stringified row, including the outer borders

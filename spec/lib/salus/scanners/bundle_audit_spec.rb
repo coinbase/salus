@@ -1,4 +1,4 @@
-require_relative '../../../spec_helper.rb'
+require_relative '../../../spec_helper'
 
 describe Salus::Scanners::BundleAudit do
   describe '#run' do
@@ -152,7 +152,7 @@ describe Salus::Scanners::BundleAudit do
         repo = Salus::Repo.new(dir)
         scanner = Salus::Scanners::BundleAudit.new(
           repository: repo,
-          config: { 'local_db' => dir + '/good_local_db' }
+          config: { 'local_db' => "#{dir}/good_local_db" }
         )
 
         scanner.run
@@ -211,8 +211,8 @@ describe Salus::Scanners::BundleAudit do
       dir_path = 'spec/fixtures/bundle_audit/local_db'
       repo = Salus::Repo.new(dir_path)
       scanner = Salus::Scanners::BundleAudit.new(repository: repo, config: {})
-      expect(scanner.valid_local_db?(dir_path + '/good_local_db')).to eq(true)
-      expect(scanner.valid_local_db?(dir_path + '/bad_local_db')).to eq(false)
+      expect(scanner.valid_local_db?("#{dir_path}/good_local_db")).to eq(true)
+      expect(scanner.valid_local_db?("#{dir_path}/bad_local_db")).to eq(false)
     end
   end
 end

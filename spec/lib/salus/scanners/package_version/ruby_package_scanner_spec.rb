@@ -1,4 +1,4 @@
-require_relative '../../../../spec_helper.rb'
+require_relative '../../../../spec_helper'
 
 describe Salus::Scanners::PackageVersion::RubyPackageScanner do
   let(:path) { 'spec/fixtures/package_version/ruby_package_version_scanner/' }
@@ -22,14 +22,14 @@ describe Salus::Scanners::PackageVersion::RubyPackageScanner do
     it 'should return false when Gemfile.lock file is absent' do
       repo = Salus::Repo.new('spec/fixtures/blank_repository')
       scanner = Salus::Scanners::PackageVersion::RubyPackageScanner.new(repository: repo,
-        config: {})
+                                                                        config: {})
       expect(scanner.should_run?).to eq(false)
     end
 
     it 'should return true if Gemfile.lock is present' do
       repo = Salus::Repo.new('spec/fixtures/bundle_audit/no_cves')
       scanner = Salus::Scanners::PackageVersion::RubyPackageScanner.new(repository: repo,
-        config: {})
+                                                                        config: {})
       expect(scanner.should_run?).to eq(true)
     end
   end
@@ -39,7 +39,7 @@ describe Salus::Scanners::PackageVersion::RubyPackageScanner do
       it 'should fail when package in repo does not fall within the specified package range' do
         repo = Salus::Repo.new('spec/fixtures/bundle_audit/cves_found')
         scanner = Salus::Scanners::PackageVersion::RubyPackageScanner.new(repository: repo,
-          config: scanner_config_with_range)
+                                                                          config: scanner_config_with_range)
         scanner.run
         logs = scanner.report.to_h[:logs]
         expect(scanner.report.passed?).to eq(false)
@@ -54,7 +54,7 @@ describe Salus::Scanners::PackageVersion::RubyPackageScanner do
       it 'should fail when package in repo matched blocked range' do
         repo = Salus::Repo.new('spec/fixtures/bundle_audit/cves_found')
         scanner = Salus::Scanners::PackageVersion::RubyPackageScanner.new(repository: repo,
-          config: scanner_config_with_block)
+                                                                          config: scanner_config_with_block)
         scanner.run
         logs = scanner.report.to_h[:logs]
         expect(scanner.report.passed?).to eq(false)
@@ -69,7 +69,7 @@ describe Salus::Scanners::PackageVersion::RubyPackageScanner do
       it 'should pass when Gemfile.lock file exists and nothing is configured for the scanner' do
         repo = Salus::Repo.new('spec/fixtures/bundle_audit/cves_found')
         scanner = Salus::Scanners::PackageVersion::RubyPackageScanner.new(repository: repo,
-            config: scanner_config)
+                                                                          config: scanner_config)
         scanner.run
         expect(scanner.report.passed?).to eq(true)
       end
@@ -77,7 +77,7 @@ describe Salus::Scanners::PackageVersion::RubyPackageScanner do
       it 'should pass when package falls within specified package range' do
         repo = Salus::Repo.new('spec/fixtures/bundle_audit/cves_found')
         scanner = Salus::Scanners::PackageVersion::RubyPackageScanner.new(repository: repo,
-          config: scanner_config_pass)
+                                                                          config: scanner_config_pass)
         scanner.run
         expect(scanner.report.passed?).to eq(true)
       end

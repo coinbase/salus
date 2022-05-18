@@ -10,7 +10,7 @@ describe Sarif::RubyPackageScannerSarif do
     let(:repo) { Salus::Repo.new('spec/fixtures/bundle_audit/cves_found') }
     it 'should generate error in report' do
       scanner = Salus::Scanners::PackageVersion::RubyPackageScanner.new(repository: repo,
-      config: scanner_config)
+                                                                        config: scanner_config)
       url = "https://github.com/coinbase/salus/blob/master/docs/scanners/package_version_scan.md"
       scanner.run
       report = Salus::Report.new(project_name: "Neon Genesis")

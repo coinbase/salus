@@ -22,7 +22,7 @@ module Sarif
     end
 
     def parse_error(error)
-      id = error['filename'] + ' ' + error['reason']
+      id = "#{error['filename']} #{error['reason']}"
       return nil if @issues.include?(id)
 
       @issues.add(id)
@@ -39,7 +39,7 @@ module Sarif
     def parse_issue(issue)
       return parse_error(issue) if !issue.key?('issue_text')
 
-      key = issue["filename"] + ' ' + issue["line_number"].to_s + ' ' + issue['issue_text']
+      key = "#{issue['filename']} #{issue['line_number']} #{issue['issue_text']}"
       return nil if @issues.include? key
 
       @issues.add(key)

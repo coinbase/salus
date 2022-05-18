@@ -1,4 +1,4 @@
-require_relative '../../../../spec_helper.rb'
+require_relative '../../../../spec_helper'
 
 describe Salus::Scanners::PackageVersion::GoPackageScanner do
   let(:path) { 'spec/fixtures/package_version/go_package_version_scanner/' }
@@ -33,7 +33,7 @@ describe Salus::Scanners::PackageVersion::GoPackageScanner do
       it 'should fail when package in repo does not fall within the specified package range' do
         repo = Salus::Repo.new('spec/fixtures/osv/go_osv/failure_vulnerability_present')
         scanner = Salus::Scanners::PackageVersion::GoPackageScanner.new(repository: repo,
-          config: scanner_config_with_range)
+                                                                        config: scanner_config_with_range)
         scanner.run
         logs = scanner.report.to_h[:logs]
         expect(scanner.report.passed?).to eq(false)
@@ -48,7 +48,7 @@ describe Salus::Scanners::PackageVersion::GoPackageScanner do
       it 'should fail when package in repo matched blocked range' do
         repo = Salus::Repo.new('spec/fixtures/osv/go_osv/failure_vulnerability_present')
         scanner = Salus::Scanners::PackageVersion::GoPackageScanner.new(repository: repo,
-          config: scanner_config_with_block)
+                                                                        config: scanner_config_with_block)
         scanner.run
         logs = scanner.report.to_h[:logs]
         expect(scanner.report.passed?).to eq(false)
@@ -63,7 +63,7 @@ describe Salus::Scanners::PackageVersion::GoPackageScanner do
       it 'should pass when go.sum file exists and nothing is configured for the scanner' do
         repo = Salus::Repo.new('spec/fixtures/osv/go_osv/success_no_vulnerability')
         scanner = Salus::Scanners::PackageVersion::GoPackageScanner.new(repository: repo,
-            config: scanner_config)
+                                                                        config: scanner_config)
         scanner.run
         expect(scanner.report.passed?).to eq(true)
       end
@@ -71,7 +71,7 @@ describe Salus::Scanners::PackageVersion::GoPackageScanner do
       it 'should pass when package falls within specified package range' do
         repo = Salus::Repo.new('spec/fixtures/osv/go_osv/success_no_vulnerability')
         scanner = Salus::Scanners::PackageVersion::GoPackageScanner.new(repository: repo,
-          config: scanner_config_pass)
+                                                                        config: scanner_config_pass)
         scanner.run
         expect(scanner.report.passed?).to eq(true)
       end

@@ -33,7 +33,7 @@ module Salus::Scanners
       parser.go_dependencies["parsed"].each do |dependency|
         record_dep_package(
           namespace: dependency["namespace"],
-          name: dependency["namespace"] + "/" + dependency["name"],
+          name: "#{dependency['namespace']}/#{dependency['name']}",
           reference: "N/A for go.mod/go.sum dependencies",
           version: dependency['version'],
           dependency_file: "go.sum",

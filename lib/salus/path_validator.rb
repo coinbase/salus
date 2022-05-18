@@ -10,7 +10,7 @@ module Salus
       path = Pathname.new(File.expand_path(path)).cleanpath.to_s
       rpath = File.expand_path(@base_path)
       return true if path == rpath
-      if !path.start_with?(rpath + "/") || path.include?("/.")
+      if !path.start_with?("#{rpath}/") || path.include?("/.")
         # the 2nd condition covers like abcd/.hidden_file or abcd/..filename
         # which cleanpath does not do anything about
         return false

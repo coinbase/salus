@@ -1,4 +1,4 @@
-require_relative '../../../../spec_helper.rb'
+require_relative '../../../../spec_helper'
 require 'json'
 
 describe Salus::Scanners::OSV::GoOSV do
@@ -85,7 +85,7 @@ describe Salus::Scanners::OSV::GoOSV do
         config_data = YAML.load_file(File.join(fixture_path,
                                                'failure_vulnerability_present/salus.yaml'))
         scanner = Salus::Scanners::OSV::GoOSV.new(repository: repo,
-            config: config_data["scanner_configs"]["GoOSV"])
+                                                  config: config_data["scanner_configs"]["GoOSV"])
         stub_req_with_valid_response
         scanner.run
 

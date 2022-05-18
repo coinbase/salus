@@ -1,4 +1,4 @@
-require_relative '../../spec_helper.rb'
+require_relative '../../spec_helper'
 
 describe Salus::Report do
   let(:report) { build_report }
@@ -264,11 +264,11 @@ describe Salus::Report do
            "     \"asdf\": \"qwerty\"\n        },\n        \"passed\": false,\n        "\
            "\"scanner_name\": \"DerpScanner\",\n        \"warn\": {\n        }\n      }\n    "\
            "},\n    \"version\": \"#{SALUS_VERSION}\"\n  }\n}",
-           headers: { 'Accept' => '*/*',
-          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-          'Content-Type' => 'application/json',
-          'User-Agent' => 'Faraday v1.3.0',
-          'X-Scanner' => 'salus' }
+            headers: { 'Accept' => '*/*',
+           'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+           'Content-Type' => 'application/json',
+           'User-Agent' => 'Faraday v1.3.0',
+           'X-Scanner' => 'salus' }
           ).to_return(status: 200, body: "", headers: {})
 
         expect { report.export_report }.not_to raise_error
@@ -287,11 +287,11 @@ describe Salus::Report do
             ":message: derp\n  :passed: false\n  :project_name: eva00\n  :scans:\n    DerpScanner:"\
             "\n      :errors: []\n      :info:\n        :asdf: qwerty\n      :passed: false\n     "\
             " :scanner_name: DerpScanner\n      :warn: {}\n  :version: #{SALUS_VERSION}\n",
-           headers: { 'Accept' => '*/*',
-          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-          'Content-Type' => 'text/x-yaml',
-          'User-Agent' => 'Faraday v1.3.0',
-          'X-Scanner' => 'salus' }).to_return(status: 200, body: "", headers: {})
+                headers: { 'Accept' => '*/*',
+               'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+               'Content-Type' => 'text/x-yaml',
+               'User-Agent' => 'Faraday v1.3.0',
+               'X-Scanner' => 'salus' }).to_return(status: 200, body: "", headers: {})
         expect { report.export_report }.not_to raise_error
       end
 
@@ -314,11 +314,11 @@ describe Salus::Report do
           "    }\\n  ]\\n\\n\\nOverall scan status: PASSED\\n\\n┌─────────┬──────────────┬────────"\
           "──┬────────┐\\n│ Scanner │ Running Time │ Required │ Passed │\\n├─────────┼────────────"\
           "──┼──────────┼────────┤\\n\\n└─────────┴──────────────┴──────────┴────────┘\"}",
-          headers: { 'Accept' => '*/*',
-          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-          'Content-Type' => 'text/plain',
-          'User-Agent' => 'Faraday v1.3.0',
-          'X-Scanner' => 'salus' }).to_return(status: 200, body: "", headers: {})
+                                                                  headers: { 'Accept' => '*/*',
+                                                                  'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+                                                                  'Content-Type' => 'text/plain',
+                                                                  'User-Agent' => 'Faraday v1.3.0',
+                                                                  'X-Scanner' => 'salus' }).to_return(status: 200, body: "", headers: {})
         expect { report.export_report }.not_to raise_error
       end
 

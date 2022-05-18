@@ -139,8 +139,7 @@ module Salus::Scanners
 
             errors << {
               status: shell_return.status,
-              stderr: (shell_return.stderr.split("\n").first || "") \
-              + "\n\n" + error_str
+              stderr: "#{shell_return.stderr.split("\n").first || ''}\n\n#{error_str}"
             }
           rescue JSON::ParserError
             # only take the first line of stderror because the other lines
@@ -231,12 +230,11 @@ module Salus::Scanners
 
     def message_from_hit(hit, match)
       has_external_config = !match['config'].nil?
-      msg = if has_external_config
-              hit['extra']['message'] + "\n\trule_id: " + hit['check_id']
-            else
-              match['message']
-            end
-      msg
+      if has_external_config
+        "#{hit['extra']['message']}\n\trule_id: #{hit['check_id']}"
+      else
+        match['message']
+      end
     end
 
     # returns nil if list is nil
@@ -247,7 +245,7 @@ module Salus::Scanners
     end
 
     def hit_to_string(hit, base_path)
-      "#{hit['path'].sub(base_path + '/', '')}:#{hit['start']['line']}:" \
+      "#{hit['path'].sub("#{base_path}/", '')}:#{hit['start']['line']}:" \
         "#{hit['extra']['lines']}".rstrip
     end
 

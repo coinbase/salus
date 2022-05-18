@@ -106,7 +106,7 @@ describe Sarif::MavenOSVSarif do
 
     it 'should generate an empty sarif report' do
       scanner = Salus::Scanners::OSV::MavenOSV.new(repository: repo,
-        config: scanner_config)
+                                                   config: scanner_config)
       stub_req_with_valid_response
       scanner.run
       report = Salus::Report.new(project_name: "Neon Genesis")

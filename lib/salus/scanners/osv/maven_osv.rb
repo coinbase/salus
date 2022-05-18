@@ -120,7 +120,7 @@ module Salus::Scanners::OSV
         "Patched Version": fixed,
         "ID": match.fetch("aliases", [match.fetch("id", [])])[0],
         "Database": match.fetch("database"),
-        "Summary": match.fetch("summary", match.dig("details")).strip,
+        "Summary": match.fetch("summary", match["details"]).strip,
         "References": match.fetch("references", []).collect do |p|
                         p["url"]
                       end.join(", "),

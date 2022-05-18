@@ -14,6 +14,7 @@ class Symbol
     end
   end
 end
+
 class String
   alias old_salus_compare <=>
   def <=>(other)
@@ -24,6 +25,7 @@ class String
     end
   end
 end
+
 module Salus
   class Report
     include Formatting
@@ -183,14 +185,14 @@ module Salus
     def to_yaml
       YAML.dump(to_h.deep_sort)
     rescue StandardError => e
-      bugsnag_notify(e.inspect + "\n" + e.message + "\nResult String: " + to_h.to_s)
+      bugsnag_notify("#{e.inspect}\n#{e.message}\nResult String: #{to_h}")
       YAML.dump(to_h)
     end
 
     def to_json
       JSON.pretty_generate(to_h.deep_sort)
     rescue StandardError => e
-      bugsnag_notify(e.inspect + "\n" + e.message + "\nResult String: " + to_h.to_s)
+      bugsnag_notify("#{e.inspect}\n#{e.message}\nResult String: #{to_h}")
       JSON.pretty_generate(to_h)
     end
 
@@ -199,7 +201,7 @@ module Salus
       begin
         sorted_sarif = JSON.parse(sarif_json).deep_sort
       rescue StandardError => e
-        bugsnag_notify(e.inspect + "\n" + e.message + "\nResult String: " + to_h.to_s)
+        bugsnag_notify("#{e.inspect}\n#{e.message}\nResult String: #{to_h}")
         sorted_sarif = JSON.parse(sarif_json)
       end
       # We will validate to ensure the applied filter
@@ -207,7 +209,7 @@ module Salus
       sarif_json = JSON.pretty_generate(sorted_sarif)
       Sarif::SarifReport.validate_sarif(apply_report_sarif_filters(sarif_json))
     rescue StandardError => e
-      bugsnag_notify(e.class.to_s + " " + e.message + "\nBuild Info:" + @builds.to_s)
+      bugsnag_notify("#{e.class} #{e.message}\nBuild Info:#{@builds}")
     end
 
     def to_sarif_diff
@@ -249,7 +251,7 @@ module Salus
       begin
         sorted_cyclonedx_bom = cyclonedx_bom.deep_sort
       rescue StandardError => e
-        bugsnag_notify(e.inspect + "\n" + e.message + "\nResult String: " + to_h.to_s)
+        bugsnag_notify("#{e.inspect}\n#{e.message}\nResult String: #{to_h}")
         sorted_cyclonedx_bom = cyclonedx_bom
       end
 
@@ -262,12 +264,12 @@ module Salus
       begin
         sorted_cyclonedx_report = cyclonedx_report.deep_sort
       rescue StandardError => e
-        bugsnag_notify(e.inspect + "\n" + e.message + "\nResult String: " + to_h.to_s)
+        bugsnag_notify("#{e.inspect}\n#{e.message}\nResult String: #{to_h}")
         sorted_cyclonedx_report = cyclonedx_report
       end
       JSON.pretty_generate(sorted_cyclonedx_report)
     rescue StandardError => e
-      bugsnag_notify(e.class.to_s + " " + e.message + "\nBuild Info:" + @builds.to_s)
+      bugsnag_notify("#{e.class} #{e.message}\nBuild Info:#{@builds}")
     end
 
     def publish_report(directive)
@@ -303,9 +305,7 @@ module Salus
 
     def satisfies_filter?(directive, filter_key, filter_value)
       directive.key?(filter_key) && (
-        # rubocop:disable Style/MultipleComparison
         directive[filter_key] == filter_value || filter_value == '*'
-        # rubocop:enable Style/MultipleComparison
       )
     end
 
@@ -417,7 +417,7 @@ module Salus
       begin
         body = to_h.deep_sort
       rescue StandardError => e
-        bugsnag_notify(e.inspect + "\n" + e.message + "\nResult String: " + to_h.to_s)
+        bugsnag_notify("#{e.inspect}\n#{e.message}\nResult String: #{to_h}")
         body = to_h
       end
       return YAML.dump(report_body_hash(config, body)) if config['format'] == 'yaml'

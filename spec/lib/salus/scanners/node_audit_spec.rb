@@ -1,4 +1,4 @@
-require_relative '../../../spec_helper.rb'
+require_relative '../../../spec_helper'
 
 # Make tripples of the class name, snake case name and the class.
 NODE_AUDIT_SCANNERS = [
@@ -116,11 +116,12 @@ describe Salus::Scanners::NodeAudit do
             repository: repo, config: config_file['scanner_configs'][klass_str]
           )
 
-          if klass_str == "NPMAudit"
+          case klass_str
+          when "NPMAudit"
             stub_stdout = stub_npm_stdout
             stub_stderr = stub_npm_stderr
             stub_status = stub_npm_exit_status
-          elsif klass_str == "YarnAudit"
+          when "YarnAudit"
             stub_stdout = stub_yarn_stdout
             stub_stderr = stub_yarn_stderr
             stub_status = stub_yarn_exit_status
@@ -171,11 +172,12 @@ describe Salus::Scanners::NodeAudit do
             repository: repo, config: config_file['scanner_configs'][klass_str]
           )
 
-          if klass_str == "NPMAudit"
+          case klass_str
+          when "NPMAudit"
             stub_stdout = stub_npm_stdout
             stub_stderr = stub_npm_stderr
             stub_status = stub_npm_exit_status
-          elsif klass_str == "YarnAudit"
+          when "YarnAudit"
             stub_stdout = stub_yarn_stdout
             stub_stderr = stub_yarn_stderr
             stub_status = stub_yarn_exit_status
@@ -236,11 +238,12 @@ describe Salus::Scanners::NodeAudit do
             repository: repo, config: config_file['scanner_configs'][klass_str]
           )
 
-          if klass_str == "NPMAudit"
+          case klass_str
+          when "NPMAudit"
             stub_stdout = stub_npm_stdout
             stub_stderr = stub_npm_stderr
             stub_status = stub_npm_exit_status
-          elsif klass_str == "YarnAudit"
+          when "YarnAudit"
             stub_stdout = stub_yarn_stdout
             stub_stderr = stub_yarn_stderr
             stub_status = stub_yarn_exit_status

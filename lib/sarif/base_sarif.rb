@@ -244,9 +244,7 @@ module Sarif
               if has_sarif_adapter?(scanner) && locations && !locations.empty? &&
                   locations.all? do |loc|
                     # rubocop outputs false positive here
-                    # rubocop:disable Lint/AssignmentInCondition
                     snippet = loc&.dig('physicalLocation', 'region', 'snippet', 'text')
-                    # rubocop:enable Lint/AssignmentInCondition
                     !snippet.to_s.empty? &&
                         !snippet_possibly_in_diff?(snippet, scanner, lines_added)
                   end

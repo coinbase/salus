@@ -1,4 +1,4 @@
-require_relative '../../spec_helper.rb'
+require_relative '../../spec_helper'
 
 describe Salus::Config do
   let(:config_file_1)            { File.read('spec/fixtures/config/salus.yaml') }

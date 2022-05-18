@@ -49,7 +49,7 @@ parsed_file.css('dependency').each do |dependency|
   group_id = dependency.at('groupId')
   artifact_id = dependency.at('artifactId')
   version = dependency.at('version')
-  version = properties.dig(version.children.to_s) || version.children.to_s unless version.nil?
+  version = properties[version.children.to_s] || version.children.to_s unless version.nil?
 
   dependency_hash = {}
   dependency_hash[:group_id] = group_id.nil? ? nil : group_id.children.to_s

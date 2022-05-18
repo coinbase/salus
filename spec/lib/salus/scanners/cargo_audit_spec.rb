@@ -1,4 +1,4 @@
-require_relative '../../../spec_helper.rb'
+require_relative '../../../spec_helper'
 
 describe Salus::Scanners::CargoAudit do
   describe '#should_run?' do

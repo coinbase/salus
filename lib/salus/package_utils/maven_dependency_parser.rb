@@ -4,6 +4,7 @@ require 'nokogiri'
 module Salus
   class MavenDependencyParser
     attr_reader :pom_xml_dependencies
+
     def initialize(path)
       msg = "pom.xml not found!"
       raise StandardError, msg unless File.exist?(path)
@@ -30,7 +31,7 @@ module Salus
         group_id = dependency.at('groupId')
         artifact_id = dependency.at('artifactId')
         version = dependency.at('version')
-        version = properties.dig(version.children.to_s) || version.children.to_s unless version.nil?
+        version = properties[version.children.to_s] || version.children.to_s unless version.nil?
 
         @pom_xml_dependencies.append({
                                        "group_id" => group_id.nil? ? nil : group_id.children.to_s,

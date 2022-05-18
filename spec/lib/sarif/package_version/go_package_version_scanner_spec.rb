@@ -10,7 +10,7 @@ describe Sarif::GoPackageScannerSarif do
     let(:repo) { Salus::Repo.new('spec/fixtures/osv/go_osv/failure_vulnerability_present') }
     it 'should generate error in report' do
       scanner = Salus::Scanners::PackageVersion::GoPackageScanner.new(repository: repo,
-      config: scanner_config)
+                                                                      config: scanner_config)
       url = "https://github.com/coinbase/salus/blob/master/docs/scanners/package_version_scan.md"
       scanner.run
       report = Salus::Report.new(project_name: "Neon Genesis")

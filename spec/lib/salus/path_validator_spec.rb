@@ -1,4 +1,4 @@
-require_relative '../../spec_helper.rb'
+require_relative '../../spec_helper'
 
 describe Salus::PathValidator do
   describe 'local_to_base?' do

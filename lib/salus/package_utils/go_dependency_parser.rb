@@ -2,6 +2,7 @@ module Salus
   class GoDependencyParser
     class SemVersion < Gem::Version; end
     attr_reader :go_dependencies
+
     def initialize(path)
       msg = "go.sum not found!"
       raise StandardError, msg unless File.exist?(path)
@@ -23,7 +24,7 @@ module Salus
       # If multiple versions of dependencies are found then pick the max version to mimic MVS
       # https://go.dev/ref/mod#minimal-version-selection
       all_dependencies["parsed"].each do |dependency|
-        lib = dependency["namespace"] + "/" + dependency["name"]
+        lib = "#{dependency['namespace']}/#{dependency['name']}"
         version = dependency["version"].to_s.gsub('v', '').gsub('+incompatible', '')
         if dependencies.key?(lib)
           dependencies[lib] = version if SemVersion.new(version) >

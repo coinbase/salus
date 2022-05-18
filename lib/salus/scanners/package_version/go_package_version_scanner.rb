@@ -21,15 +21,15 @@ module Salus::Scanners::PackageVersion
           violations += [
             if compare_semver_version(MIN_CHECK, repo_version, min_version)
               format_min_violation_message(package_name: package_name,
-                package_version: repo_version, file: LOCK_FILE, version: min_version)
+                                           package_version: repo_version, file: LOCK_FILE, version: min_version)
             end,
             if compare_semver_version(MAX_CHECK, repo_version, max_version)
               format_max_violation_message(package_name: package_name,
-                  package_version: repo_version, file: LOCK_FILE, version: max_version)
+                                           package_version: repo_version, file: LOCK_FILE, version: max_version)
             end,
             if compare_semver_version(BLOCK_CHECK, repo_version, blocked_versions)
               format_blocked_violation_message(package_name: package_name,
-                  package_version: repo_version, file: LOCK_FILE, version: blocked_versions)
+                                               package_version: repo_version, file: LOCK_FILE, version: blocked_versions)
             end
           ]
         end
@@ -42,8 +42,7 @@ module Salus::Scanners::PackageVersion
     def generate_dependency_hash
       parser = Salus::GoDependencyParser.new(@repository.go_sum_path)
       parser.parse
-      dependencies = parser.select_dependencies(parser.go_dependencies)
-      dependencies
+      parser.select_dependencies(parser.go_dependencies)
     end
   end
 end

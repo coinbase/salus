@@ -1,4 +1,4 @@
-require_relative '../../spec_helper.rb'
+require_relative '../../spec_helper'
 
 describe Salus::Repo do
   describe 'IMPORTANT_FILES runtime defined functions' do

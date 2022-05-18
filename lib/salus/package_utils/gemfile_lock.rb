@@ -7,7 +7,7 @@ module Salus
     def add_line_number(cve)
       pattern = case cve[:type]
                 when 'UnpatchedGem'
-                  cve[:name] + ' (' + cve[:version] + ')'
+                  "#{cve[:name]} (#{cve[:version]})"
                 when 'InsecureSource'
                   cve[:source]
                 end

@@ -1,5 +1,5 @@
 require 'fileutils'
-require_relative '../spec_helper.rb'
+require_relative '../spec_helper'
 
 describe Salus::CLI do
   # prevent actual system exits because they kill tests
@@ -203,7 +203,7 @@ describe Salus::CLI do
           diff_args = ['v2.json', 'v1.json']
           ENV['SALUS_CONFIGURATION'] = 'file:///salus_diff.yaml'
           exit_status = Salus.scan(quiet: true, repo_path: '.', sarif_diff_full: diff_args,
-                     git_diff: 'v1_diff.txt')
+                                   git_diff: 'v1_diff.txt')
           diff_file = 'diff_1_2.json'
           expect(File).to exist(diff_file)
           diff_sarif = JSON.parse(File.read(diff_file))
@@ -223,7 +223,7 @@ describe Salus::CLI do
           diff_args = ['report_sarif_pr.json', 'report_sarif_master.json']
           ENV['SALUS_CONFIGURATION'] = 'file:///salus.yaml'
           exit_status = Salus.scan(quiet: true, repo_path: '.', sarif_diff_full: diff_args,
-                     git_diff: 'git_diff_master_pr.txt')
+                                   git_diff: 'git_diff_master_pr.txt')
           diff_file = 'sarif_diff.json'
           expect(File).to exist(diff_file)
           diff_sarif = JSON.parse(File.read(diff_file))
@@ -240,7 +240,7 @@ describe Salus::CLI do
           diff_args = ['report_sarif_pr.json', 'report_sarif_master.json']
           ENV['SALUS_CONFIGURATION'] = 'file:///salus.yaml'
           exit_status = Salus.scan(quiet: true, repo_path: '.', sarif_diff_full: diff_args,
-                     git_diff: 'git_diff_master_pr.txt')
+                                   git_diff: 'git_diff_master_pr.txt')
           diff_file = 'sarif_diff.json'
           expect(File).to exist(diff_file)
           diff_sarif = JSON.parse(File.read(diff_file))

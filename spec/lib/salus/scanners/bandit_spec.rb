@@ -1,4 +1,4 @@
-require_relative '../../../spec_helper.rb'
+require_relative '../../../spec_helper'
 
 describe Salus::Scanners::Bandit do
   let(:py_dir) { 'spec/fixtures/python' }

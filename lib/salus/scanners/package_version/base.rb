@@ -7,10 +7,6 @@ module Salus::Scanners::PackageVersion
     MAX_CHECK = "MAXIMUM_VERSION_CHECK".freeze
     BLOCK_CHECK = "BLOCKED_VERSION_CHECK".freeze
 
-    def initialize(repository:, config:)
-      super
-    end
-
     def run
       # gather all package versions specified in scanner_config
       package_versions = @config['package_versions'] || []

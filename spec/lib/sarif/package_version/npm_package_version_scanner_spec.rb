@@ -12,7 +12,7 @@ describe Sarif::NPMPackageScannerSarif do
     let(:repo) { Salus::Repo.new('spec/fixtures/npm_audit/failure') }
     it 'should generate error in report' do
       scanner = Salus::Scanners::PackageVersion::NPMPackageScanner.new(repository: repo,
-      config: scanner_config)
+                                                                       config: scanner_config)
       url = "https://github.com/coinbase/salus/blob/master/docs/scanners/package_version_scan.md"
       scanner.run
       report = Salus::Report.new(project_name: "Neon Genesis")

@@ -110,7 +110,7 @@ module Salus::Scanners
       if advisories.empty?
         log('There are no advisories against your dependencies. Hooray!')
       else
-        log(tabulate_advisories(advisories) + "\n")
+        log("#{tabulate_advisories(advisories)}\n")
       end
 
       if unex_prod_advisory_ids.any?
@@ -153,12 +153,12 @@ module Salus::Scanners
 
     def abbreviate_title(title)
       TITLE_SUBSTITUTIONS.each { |from, to| title = title.gsub(from, to) }
-      title = title[0...(MAX_TITLE_LENGTH - 1)] + '~' if title.length > MAX_TITLE_LENGTH
+      title = "#{title[0...(MAX_TITLE_LENGTH - 1)]}~" if title.length > MAX_TITLE_LENGTH
       title
     end
 
     def abbreviate_module(mod)
-      mod = mod[0...(MAX_MODULE_LENGTH - 1)] + '~' if mod.length > MAX_MODULE_LENGTH
+      mod = "#{mod[0...(MAX_MODULE_LENGTH - 1)]}~" if mod.length > MAX_MODULE_LENGTH
       mod
     end
 

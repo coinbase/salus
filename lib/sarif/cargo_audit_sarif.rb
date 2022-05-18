@@ -26,12 +26,12 @@ module Sarif
 
     def parse_yanked(issue)
       package = issue['package']
-      return nil if issue.include?(package['name'] + '/ Yanked')
+      return nil if issue.include?("#{package['name']}/ Yanked")
 
-      @issues.add(package['name'] + '/ Yanked')
+      @issues.add("#{package['name']}/ Yanked")
       {
-        id: package['name'] + '/ Yanked',
-        name: package['name'] + '/ Yanked',
+        id: "#{package['name']}/ Yanked",
+        name: "#{package['name']}/ Yanked",
         level: "low",
         details: "Package:#{package['name']}\nVersion:#{package['version']}\nSource:"\
         "#{package['source']}\nKind: yanked",

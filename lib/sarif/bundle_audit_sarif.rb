@@ -34,7 +34,7 @@ module Sarif
 
       if issue[:type] == "InsecureSource"
         result[:id] = issue[:type]
-        result[:name] = issue[:type] + ' ' + issue[:source]
+        result[:name] = "#{issue[:type]} #{issue[:source]}"
         result[:details] = "Type: #{issue[:type]}\nSource: #{issue[:source]}"
       end
 
@@ -55,7 +55,7 @@ module Sarif
     def self.snippet_possibly_in_git_diff?(snippet, lines_added)
       # snippet in sarif just has the package name (without spaces/version)
       # actual snippet in Gemfile.lock looks like " nokogiri (>= 1.5.11, < 2.0.0)"
-      snippet = ' ' + snippet + ' ('
+      snippet = " #{snippet} ("
       lines_added.keys.any? { |line| line.include? snippet }
     end
   end

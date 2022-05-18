@@ -174,7 +174,7 @@ module Salus::Scanners
     def filepath_pattern(filepaths)
       return "" if filepaths.nil?
 
-      filepaths.map! { |path| '^' + path + '$' }
+      filepaths.map! { |path| "^#{path}$" }
       filepaths.join('|')
     end
   end

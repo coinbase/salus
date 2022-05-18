@@ -144,7 +144,7 @@ module Salus
         info = ignore_id.split(':')
         key = info[0] # "reports" in "reports:uri_1"
         id = info[1]  # "uri_1" in "reports:uri_1"
-        if config_data[key]&.is_a?(Array)
+        if config_data[key].is_a?(Array)
           config_data[key].each do |data|
             config_data[key].delete(data) if data.is_a?(Hash) && data["id"] == id
           end
@@ -203,11 +203,12 @@ module Salus
     end
 
     def all_none_some(superset, subset)
-      if subset == 'all'
+      case subset
+      when 'all'
         Set.new(superset) # entire set
-      elsif subset == 'none'
+      when 'none'
         Set.new           # empty set
-      elsif subset.is_a?(Array)
+      when Array
         Set.new(subset)   # subset
       else
         raise ArgumentError

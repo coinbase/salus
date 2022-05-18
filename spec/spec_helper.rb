@@ -149,6 +149,7 @@ end
 
 class ProcessStatusDouble
   attr_accessor :exitstatus
+
   def initialize(exitstatus)
     @exitstatus = exitstatus
   end

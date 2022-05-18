@@ -1,6 +1,7 @@
 module Salus
   class PackageLockJson
     attr_reader :deps
+
     def initialize(file_path)
       @content = File.read(file_path)
       @deps = {}

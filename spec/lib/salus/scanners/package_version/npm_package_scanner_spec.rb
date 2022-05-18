@@ -1,4 +1,4 @@
-require_relative '../../../../spec_helper.rb'
+require_relative '../../../../spec_helper'
 
 describe Salus::Scanners::PackageVersion::NPMPackageScanner do
   let(:path) { 'spec/fixtures/package_version/npm_package_version_scanner/' }
@@ -26,7 +26,7 @@ describe Salus::Scanners::PackageVersion::NPMPackageScanner do
       it 'should fail when package in repo does not fall within the specified package range' do
         repo = Salus::Repo.new('spec/fixtures/npm_audit/failure')
         scanner = Salus::Scanners::PackageVersion::NPMPackageScanner.new(repository: repo,
-          config: scanner_config)
+                                                                         config: scanner_config)
         scanner.run
         logs = scanner.report.to_h[:logs]
         expect(scanner.report.passed?).to eq(false)
@@ -43,7 +43,7 @@ describe Salus::Scanners::PackageVersion::NPMPackageScanner do
       it 'should fail when package in repo matched blocked range' do
         repo = Salus::Repo.new('spec/fixtures/npm_audit/failure')
         scanner = Salus::Scanners::PackageVersion::NPMPackageScanner.new(repository: repo,
-          config: scanner_config_with_block)
+                                                                         config: scanner_config_with_block)
         scanner.run
         logs = scanner.report.to_h[:logs]
         expect(scanner.report.passed?).to eq(false)
@@ -58,7 +58,7 @@ describe Salus::Scanners::PackageVersion::NPMPackageScanner do
       it 'should pass when package-lock file exists and nothing is configured for the scanner' do
         repo = Salus::Repo.new('spec/fixtures/npm_audit/failure')
         scanner = Salus::Scanners::PackageVersion::NPMPackageScanner.new(repository: repo,
-          config: {})
+                                                                         config: {})
         scanner.run
         expect(scanner.report.passed?).to eq(true)
       end
@@ -70,7 +70,7 @@ describe Salus::Scanners::PackageVersion::NPMPackageScanner do
         config['package_versions']['uglify-js']['max_version'] = '1.3.4'
         config['package_versions']['mobx']['block'] = '1.1.1'
         scanner = Salus::Scanners::PackageVersion::NPMPackageScanner.new(repository: repo,
-          config: config)
+                                                                         config: config)
         scanner.run
         expect(scanner.report.passed?).to eq(true)
       end
@@ -80,7 +80,7 @@ describe Salus::Scanners::PackageVersion::NPMPackageScanner do
         config = config_file
         config['scanner_configs']["NPMPackageScanner"] = []
         scanner = Salus::Scanners::PackageVersion::NPMPackageScanner.new(repository: repo,
-          config: config)
+                                                                         config: config)
         scanner.run
         expect(scanner.report.passed?).to eq(true)
       end

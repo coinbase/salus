@@ -3,10 +3,6 @@ module Cyclonedx
     TYPE = "pypi".freeze
     UNLOCKED_DEPENDENCY_FILE = "requirements.txt".freeze
 
-    def initialize(scan_report)
-      super(scan_report)
-    end
-
     # Return version string to be used in purl or component
     def version_string(dependency, is_purl_version = false)
       # Check if dependency is pinned

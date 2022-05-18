@@ -157,9 +157,8 @@ module Salus
       data = IO.popen(args, chdir: @path_to_repo).read
       return [] if data == ""
 
-      files = data.lines.map(&:strip)
+      data.lines.map(&:strip)
       # files are all relative to @path_to_repo
-      files
     end
 
     ##

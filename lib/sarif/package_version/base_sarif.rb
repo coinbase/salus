@@ -20,7 +20,7 @@ module Sarif::PacakgeVersion
       logs = @scan_report.log('')
       return [] if logs.strip.empty?
 
-      JSON.parse(@scan_report.to_h.dig(:logs))
+      JSON.parse(@scan_report.to_h[:logs])
     rescue JSON::ParserError => e
       bugsnag_notify(e.message)
       []

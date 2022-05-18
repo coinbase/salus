@@ -176,7 +176,7 @@ module Salus
       puts info
 
       [sarif_file_new, sarif_file_old].each do |f|
-        raise Exception, "sarif diff file name is empty #{f}" if f.nil? || f == ""
+        raise StandardError, "sarif diff file name is empty #{f}" if f.nil? || f == ""
       end
 
       sarif_file_new = File.join(@repo_path, sarif_file_new)
@@ -187,7 +187,7 @@ module Salus
       files.push git_diff if git_diff != ''
       files.each do |f|
         if !Salus::Report.new(repo_path: @repo_path).safe_local_report_path?(f)
-          raise Exception, "sarif/git diff file path should not be outside working dir #{f}"
+          raise StandardError, "sarif/git diff file path should not be outside working dir #{f}"
         end
       end
 
