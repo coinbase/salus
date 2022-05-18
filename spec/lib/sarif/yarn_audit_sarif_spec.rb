@@ -148,4 +148,36 @@ describe Sarif::YarnAuditSarif do
       expect(adapter.sarif_level("CRITICAL")).to eq("error")
     end
   end
+
+  describe 'sarif diff' do
+    context 'git diff support' do
+      let(:new_lines_in_git_diff) do
+        git_diff_file = 'spec/fixtures/sarifs/diff/git_diff_yarn.txt'
+        git_diff = File.read(git_diff_file)
+        Sarif::BaseSarif.new_lines_in_git_diff(git_diff)
+      end
+
+      it 'should find code in git diff' do
+        snippet = 'jspdf@2.3.1'
+        r = Sarif::YarnAuditSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
+        expect(r).to be true
+        snippet = 'text-segmentation@^1.0.2'
+        r = Sarif::YarnAuditSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
+        expect(r).to be true
+      end
+
+      it 'should not match part of the package name' do
+        snippet = 'jspdf'
+        r = Sarif::YarnAuditSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
+        expect(r).to be false
+      end
+
+      it 'should not match package that was in git diff but not added with this commit' do
+        snippet = 'fuubar'
+        r = Sarif::YarnAuditSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
+        expect(r).to be false
+      end
+
+    end
+  end
 end
