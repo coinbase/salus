@@ -56,11 +56,11 @@ module Salus
 
     # recursively store all dependency names as keys
     def get_dep_names(data)
-      if data.key?("dependencies")
-        data['dependencies'].each do |name, dep_info|
-          @deps[name] = {}
-          get_dep_names(dep_info) if dep_info['dependencies']
-        end
+      return unless data.key?("dependencies")
+
+      data['dependencies'].each do |name, dep_info|
+        @deps[name] = {}
+        get_dep_names(dep_info) if dep_info['dependencies']
       end
     end
   end
