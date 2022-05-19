@@ -87,6 +87,7 @@
       "RubyPackageScanner",
       "RubyVersionScanner",
       "Semgrep",
+      "Slither",
       "YarnAudit"
     ],
     "enforced_scanners": [
