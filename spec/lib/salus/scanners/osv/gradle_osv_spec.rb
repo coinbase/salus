@@ -88,7 +88,8 @@ describe Salus::Scanners::OSV::GradleOSV do
                                                'success_vulnerability_present_exception_added/'\
                                                'salus.yaml'))
         scanner = Salus::Scanners::OSV::GradleOSV.new(repository: repo,
-                                                      config: config_data["scanner_configs"]["GradleOSV"])
+                                                      config:
+                                                      config_data["scanner_configs"]["GradleOSV"])
         stub_req_with_valid_response
         scanner.run
 

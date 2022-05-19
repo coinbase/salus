@@ -87,7 +87,8 @@ describe Salus::Scanners::OSV::MavenOSV do
                                                'success_vulnerability_present_exception_added/'\
                                                'salus.yaml'))
         scanner = Salus::Scanners::OSV::MavenOSV.new(repository: repo,
-                                                     config: config_data["scanner_configs"]["MavenOSV"])
+                                                     config:
+                                                     config_data["scanner_configs"]["MavenOSV"])
         stub_req_with_valid_response
         scanner.run
 

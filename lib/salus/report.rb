@@ -304,9 +304,8 @@ module Salus
     end
 
     def satisfies_filter?(directive, filter_key, filter_value)
-      directive.key?(filter_key) && (
-        directive[filter_key] == filter_value || filter_value == '*'
-      )
+      directive.key?(filter_key) &&
+        [directive[filter_key], '*'].include?(filter_value)
     end
 
     def export_report

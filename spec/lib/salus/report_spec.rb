@@ -314,11 +314,13 @@ describe Salus::Report do
           "    }\\n  ]\\n\\n\\nOverall scan status: PASSED\\n\\n┌─────────┬──────────────┬────────"\
           "──┬────────┐\\n│ Scanner │ Running Time │ Required │ Passed │\\n├─────────┼────────────"\
           "──┼──────────┼────────┤\\n\\n└─────────┴──────────────┴──────────┴────────┘\"}",
-                                                                  headers: { 'Accept' => '*/*',
-                                                                  'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-                                                                  'Content-Type' => 'text/plain',
-                                                                  'User-Agent' => 'Faraday v1.3.0',
-                                                                  'X-Scanner' => 'salus' }).to_return(status: 200, body: "", headers: {})
+          headers: { 'Accept' => '*/*',
+          'Accept-Encoding' =>
+          'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Content-Type' => 'text/plain',
+          'User-Agent' => 'Faraday v1.3.0',
+          'X-Scanner' => 'salus' })
+          .to_return(status: 200, body: "", headers: {})
         expect { report.export_report }.not_to raise_error
       end
 

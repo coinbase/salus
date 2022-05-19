@@ -35,7 +35,8 @@ module Salus::Scanners::PackageVersion
             end,
             if compare_semver_version(BLOCK_CHECK, repo_version, blocked_versions)
               format_blocked_violation_message(package_name: package_name,
-                                               package_version: repo_version, version: blocked_versions,
+                                               package_version: repo_version,
+                                               version: blocked_versions,
                                                file: LOCK_FILE)
             end
           ]

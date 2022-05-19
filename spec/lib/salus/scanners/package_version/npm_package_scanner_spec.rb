@@ -42,8 +42,11 @@ describe Salus::Scanners::PackageVersion::NPMPackageScanner do
 
       it 'should fail when package in repo matched blocked range' do
         repo = Salus::Repo.new('spec/fixtures/npm_audit/failure')
-        scanner = Salus::Scanners::PackageVersion::NPMPackageScanner.new(repository: repo,
-                                                                         config: scanner_config_with_block)
+        scanner = Salus::Scanners::PackageVersion::NPMPackageScanner.new(
+          repository: repo,
+
+          config: scanner_config_with_block
+        )
         scanner.run
         logs = scanner.report.to_h[:logs]
         expect(scanner.report.passed?).to eq(false)

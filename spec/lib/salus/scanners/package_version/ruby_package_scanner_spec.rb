@@ -38,8 +38,10 @@ describe Salus::Scanners::PackageVersion::RubyPackageScanner do
     context 'Gemfile.lock file present' do
       it 'should fail when package in repo does not fall within the specified package range' do
         repo = Salus::Repo.new('spec/fixtures/bundle_audit/cves_found')
-        scanner = Salus::Scanners::PackageVersion::RubyPackageScanner.new(repository: repo,
-                                                                          config: scanner_config_with_range)
+        scanner = Salus::Scanners::PackageVersion::RubyPackageScanner.new(
+          repository: repo,
+          config: scanner_config_with_range
+        )
         scanner.run
         logs = scanner.report.to_h[:logs]
         expect(scanner.report.passed?).to eq(false)
@@ -53,8 +55,11 @@ describe Salus::Scanners::PackageVersion::RubyPackageScanner do
 
       it 'should fail when package in repo matched blocked range' do
         repo = Salus::Repo.new('spec/fixtures/bundle_audit/cves_found')
-        scanner = Salus::Scanners::PackageVersion::RubyPackageScanner.new(repository: repo,
-                                                                          config: scanner_config_with_block)
+        scanner = Salus::Scanners::PackageVersion::RubyPackageScanner.new(
+          repository: repo,
+
+          config: scanner_config_with_block
+        )
         scanner.run
         logs = scanner.report.to_h[:logs]
         expect(scanner.report.passed?).to eq(false)
@@ -76,8 +81,10 @@ describe Salus::Scanners::PackageVersion::RubyPackageScanner do
 
       it 'should pass when package falls within specified package range' do
         repo = Salus::Repo.new('spec/fixtures/bundle_audit/cves_found')
-        scanner = Salus::Scanners::PackageVersion::RubyPackageScanner.new(repository: repo,
-                                                                          config: scanner_config_pass)
+        scanner = Salus::Scanners::PackageVersion::RubyPackageScanner.new(
+          repository: repo,
+          config: scanner_config_pass
+        )
         scanner.run
         expect(scanner.report.passed?).to eq(true)
       end

@@ -32,8 +32,10 @@ describe Salus::Scanners::PackageVersion::GoPackageScanner do
     context 'go.sum file present' do
       it 'should fail when package in repo does not fall within the specified package range' do
         repo = Salus::Repo.new('spec/fixtures/osv/go_osv/failure_vulnerability_present')
-        scanner = Salus::Scanners::PackageVersion::GoPackageScanner.new(repository: repo,
-                                                                        config: scanner_config_with_range)
+        scanner = Salus::Scanners::PackageVersion::GoPackageScanner.new(
+          repository: repo,
+          config: scanner_config_with_range
+        )
         scanner.run
         logs = scanner.report.to_h[:logs]
         expect(scanner.report.passed?).to eq(false)
@@ -47,8 +49,10 @@ describe Salus::Scanners::PackageVersion::GoPackageScanner do
 
       it 'should fail when package in repo matched blocked range' do
         repo = Salus::Repo.new('spec/fixtures/osv/go_osv/failure_vulnerability_present')
-        scanner = Salus::Scanners::PackageVersion::GoPackageScanner.new(repository: repo,
-                                                                        config: scanner_config_with_block)
+        scanner = Salus::Scanners::PackageVersion::GoPackageScanner.new(
+          repository: repo,
+          config: scanner_config_with_block
+        )
         scanner.run
         logs = scanner.report.to_h[:logs]
         expect(scanner.report.passed?).to eq(false)
