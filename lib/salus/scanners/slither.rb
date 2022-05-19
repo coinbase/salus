@@ -16,9 +16,14 @@ module Salus::Scanners
       # Most Solidity projects will be Hardhat (https://hardhat.org/) or Truffle (https://trufflesuite.com/), 
       # which both use NPM to manage Solidity dependencies. We should NPM install in these cases to ensure 
       # Slither has the needed dependencies for scanning
-      if @repository.package_json_present?
+      truffle_script_present = @repository.truffle_js_present? || 
+        @repository.truffle_ts_present?
+      hardhat_config_present = @repository.hardhat_config_js_present? || 
+        @repository.hardhat_config_ts_present?
+      if (truffle_script_present || hardhat_config_present) && @repository.package_json_present?
         run_shell("npm install", chdir: @repository.path_to_repo)
       end
+
       shell_return = run_shell(command, chdir: @repository.path_to_repo)
       stdout_json = begin 
           JSON.parse(shell_return.stdout)

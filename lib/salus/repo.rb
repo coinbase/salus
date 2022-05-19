@@ -41,7 +41,11 @@ module Salus
       # Apple Ecosystem (macOS, iOS, etc)
       { handle: :podfile_lock, filename: 'Podfile.lock' },
       # Solidity
-      { handle: :sol_file, filename: '.sol', wildcard: true }
+      { handle: :sol_file, filename: '.sol', wildcard: true },
+      { handle: :truffle_js, filename: 'truffle.js' },
+      { handle: :truffle_ts, filename: 'truffle.ts' },
+      { handle: :hardhat_config_js, filename: 'hardhat.config.js' },
+      { handle: :hardhat_config_ts, filename: 'hardhat.config.ts' }
     ].freeze
 
     # Define file checkers.
