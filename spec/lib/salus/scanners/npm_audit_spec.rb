@@ -5,6 +5,7 @@ describe Salus::Scanners::NPMAudit do
     it 'should return false in the absence of package.json and friends' do
       repo = Salus::Repo.new('spec/fixtures/blank_repository')
       expect(repo.package_json_present?).to eq(false)
+      expect(repo.package_lock_json_present?).to eq(false)
 
       scanner = Salus::Scanners::NPMAudit.new(repository: repo, config: {})
       expect(scanner.should_run?).to eq(false)
