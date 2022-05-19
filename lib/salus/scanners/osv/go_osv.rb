@@ -14,6 +14,10 @@ module Salus::Scanners::OSV
       @repository.go_sum_present?
     end
 
+    def self.supported_languages
+      ['go']
+    end
+
     def run
       begin
         # Find dependencies

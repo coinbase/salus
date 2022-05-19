@@ -12,6 +12,10 @@ module Salus::Scanners::PackageVersion
       @repository.package_lock_json_present?
     end
 
+    def self.supported_languages
+      ['javascript']
+    end
+
     def check_for_violations(package_name, min_version, max_version, blocked_versions)
       violations = []
       if @dependencies.key?(package_name)
