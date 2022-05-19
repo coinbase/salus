@@ -58,7 +58,8 @@ module Salus
       define_method file[:handle] do
         cache_handle = "@#{file[:handle]}_contents"
 
-        if File.exist?("#{@path_to_repo}/#{file[:filename]}") && instance_variable_get(cache_handle).nil?
+        if File.exist?("#{@path_to_repo}/#{file[:filename]}") &&
+            instance_variable_get(cache_handle).nil?
           instance_variable_set(cache_handle, File.read("#{@path_to_repo}/#{file[:filename]}"))
         end
 
