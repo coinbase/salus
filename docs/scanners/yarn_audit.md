@@ -1,5 +1,8 @@
 # [YarnAudit](https://yarnpkg.com/lang/en/docs/cli/audit/)
 
+### [Legacy Yarn (< 2.0.0)](https://classic.yarnpkg.com/en/docs/cli/audit/)
+### [Latest Yarn (> 2.0.0)](https://yarnpkg.com/cli/npm/audit)
+
 Finds CVEs in Node modules included as dependencies in a project that is packaged by Yarn.
 
 This scanner allows you to select which types of dependencies to exclude. By default, all dependencies are included.
@@ -9,6 +12,7 @@ See https://yarnpkg.com/lang/en/docs/dependency-types/ for more info on dependen
 ```yaml
 scanner_configs:
   YarnAudit:
+    
     exclude_groups:
       # Including all 3 effectively disables yarn as yarn audit is a CVE scanner on dependencies
     - dependencies            # project dependencies
@@ -27,5 +31,14 @@ scanner_configs:
   YarnAudit:
     exclude_groups:
     - devDependencies         # dev only dependencies
+```
+
+If you only want to scan transitive dependencies, then you want the following:
+> NOTE: Only availabe for yarn > 2.0.0
+```yaml
+scanner_configs:
+  YarnAudit:
+    scan_depth: 
+     - recursive               # recurse and scan transitive dependencies
 ```
 See [NodeAudit](/docs/scanners/node_audit.md) doc for more configuration options.
