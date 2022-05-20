@@ -36,10 +36,11 @@ describe Salus::Scanners::Slither do
 
       logs = scanner.report.to_h.fetch(:logs)
       json_logs = JSON.parse(logs)
-      
-      expect(json_logs['results']['detectors'].length()).to eq(1)
-      expect(json_logs['results']['detectors'][0]['description']).to eq("C.f() (bad-contract.sol#4-8) "\
-      "contains an incorrect shift operation: a = 8 >> a (bad-contract.sol#6)\n")
+
+      expect(json_logs['results']['detectors'].length).to eq(1)
+      expect(json_logs['results']['detectors'][0]['description']).to eq("C.f() "\
+      "(bad-contract.sol#4-8) contains an incorrect shift operation: a = 8 >> a "\
+      "(bad-contract.sol#6)\n")
 
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
     end
@@ -61,8 +62,8 @@ describe Salus::Scanners::Slither do
       expect(scanner).not_to receive(:report_stdout)
       expect(scanner).not_to receive(:log)
       expect(scanner).to receive(:report_error).and_call_original
-      
-      # The error logged to stderr is an extremely long stack trace that's saturated 
+
+      # The error logged to stderr is an extremely long stack trace that's saturated
       # with whitespace. This makes it cumbersome to have in this test
       expect(scanner).to receive(:report_stderr)
 
