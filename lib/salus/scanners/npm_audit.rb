@@ -10,7 +10,7 @@ module Salus::Scanners
     AUDIT_COMMAND = 'npm audit --json'.freeze
 
     def should_run?
-      @repository.package_lock_json_present?
+      @repository.package_lock_json_present? && @repository.package_json_present?
     end
 
     def version
