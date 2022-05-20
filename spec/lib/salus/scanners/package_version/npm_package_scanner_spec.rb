@@ -19,6 +19,12 @@ describe Salus::Scanners::PackageVersion::NPMPackageScanner do
       scanner = Salus::Scanners::PackageVersion::NPMPackageScanner.new(repository: repo, config: {})
       expect(scanner.should_run?).to eq(true)
     end
+
+    it 'should return true if package lock has empty dependencies' do
+      repo = Salus::Repo.new('spec/fixtures/npm_audit/failure_empty_lock')
+      scanner = Salus::Scanners::PackageVersion::NPMPackageScanner.new(repository: repo, config: {})
+      expect(scanner.should_run?).to eq(true)
+    end
   end
 
   describe '#run' do
