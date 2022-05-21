@@ -37,6 +37,7 @@ module Sarif
       }
 
       if issue.key?("Line number")
+        puts issue["Package"]
         parsed_issue[:start_line] = issue['Line number']
         parsed_issue[:start_column] = 1
         parsed_issue[:code] = issue["Package"]
@@ -72,7 +73,7 @@ module Sarif
     end
 
     def self.snippet_possibly_in_git_diff?(snippet, lines_added)
-      snippet += ":"
+      snippet += "@"
       lines_added.keys.any? { |line| line.include? snippet }
     end
   end

@@ -158,16 +158,16 @@ describe Sarif::YarnAuditSarif do
       end
 
       it 'should find code in git diff' do
-        snippet = 'jspdf@2.3.1'
+        snippet = 'jspdf'
         r = Sarif::YarnAuditSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
         expect(r).to be true
-        snippet = 'text-segmentation@^1.0.2'
+        snippet = 'text-segmentation'
         r = Sarif::YarnAuditSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
         expect(r).to be true
       end
 
       it 'should not match part of the package name' do
-        snippet = 'jspdf'
+        snippet = 'jspd'
         r = Sarif::YarnAuditSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
         expect(r).to be false
       end
