@@ -35,9 +35,11 @@ module Sarif
         uri: "yarn.lock",
         help_url: issue['More info']
       }
-      if issue['Line number']
+
+      if issue.key?("Line number")
         parsed_issue[:start_line] = issue['Line number']
         parsed_issue[:start_column] = 1
+        parsed_issue[:code] = issue["Package"]
       end
       parsed_issue
     end
@@ -67,6 +69,11 @@ module Sarif
       else
         SARIF_WARNINGS[:note]
       end
+    end
+
+    def self.snippet_possibly_in_git_diff?(snippet, lines_added)
+      snippet += "@"
+      lines_added.keys.any? { |line| line.start_with? snippet }
     end
   end
 end
