@@ -44,6 +44,7 @@ module Sarif
       if issue[:line_number]
         parsed_issue[:start_line] = issue[:line_number]
         parsed_issue[:start_column] = 1
+        parsed_issue[:code] = issue[:module_name].to_s
       end
 
       parsed_issue
@@ -68,6 +69,11 @@ module Sarif
       invocation = super(scan_report, supported)
       invocation[:executionSuccessful] = @results.empty?
       invocation
+    end
+
+    def self.snippet_possibly_in_git_diff?(snippet, lines_added)
+      snippet = '"' + snippet + '":'
+      lines_added.keys.any? { |line| line.start_with? snippet }
     end
   end
 end

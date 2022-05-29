@@ -130,7 +130,7 @@ describe Sarif::NPMAuditSarif do
         report.add_scan_report(scanner.report, required: false)
         sarif = JSON.parse(report.to_sarif({ 'include_non_enforced' => true }))
         results = sarif["runs"][0]["results"]
-        result = results[-2]
+        result = results.select { |r| r['ruleId'] = '1005415' }[0]
         rules = sarif["runs"][0]["tool"]["driver"]["rules"]
         rule = rules.first
 
@@ -181,6 +181,38 @@ describe Sarif::NPMAuditSarif do
         report_object = JSON.parse(report.to_sarif)['runs'][0]
         uri = "https://docs.npmjs.com/cli/v7/commands/npm-audit"
         expect(report_object['tool']['driver']['informationUri']).to eq(uri)
+      end
+    end
+  end
+
+  describe 'sarif diff' do
+    context 'git diff support' do
+      let(:new_lines_in_git_diff) do
+        git_diff_file = 'spec/fixtures/sarifs/diff/git_diff_8.txt'
+        git_diff = File.read(git_diff_file)
+        Sarif::BaseSarif.new_lines_in_git_diff(git_diff)
+      end
+
+      it 'should find code in git diff' do
+        snippet = 'classnamesabcd'
+        r = Sarif::NPMAuditSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
+        expect(r).to be true
+
+        snippet = 'my-package-abc'
+        r = Sarif::NPMAuditSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
+        expect(r).to be true
+      end
+
+      it 'should not match part of the package name' do
+        snippet = 'class'
+        r = Sarif::NPMAuditSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
+        expect(r).to be false
+      end
+
+      it 'should not match package that was in git diff but not added with this commit' do
+        snippet = 'classnames'
+        r = Sarif::NPMAuditSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
+        expect(r).to be false
       end
     end
   end
