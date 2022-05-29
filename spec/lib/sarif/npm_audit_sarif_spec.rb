@@ -198,7 +198,7 @@ describe Sarif::NPMAuditSarif do
         r = Sarif::NPMAuditSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
         expect(r).to be true
 
-        snippet = 'my-package-abc'
+        snippet = 'my-package-abcd'
         r = Sarif::NPMAuditSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
         expect(r).to be true
       end
