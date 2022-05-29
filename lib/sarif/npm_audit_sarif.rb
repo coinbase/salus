@@ -72,7 +72,7 @@ module Sarif
     end
 
     def self.snippet_possibly_in_git_diff?(snippet, lines_added)
-      snippet = '"' + snippet + '":'
+      snippet = "\"" + snippet + "\":"
       lines_added.keys.include? snippet
     end
   end
