@@ -47,8 +47,8 @@ describe Salus::Scanners::Bandit do
       it 'should return true' do
         expect(repo.requirements_txt_present?).to eq(false)
         expect(repo.setup_cfg_present?).to eq(false)
-        py_file1 = 'spec/fixtures/python/py_files_only/p1.py'
-        py_file2 = 'spec/fixtures/python/py_files_only/p2.py'
+        py_file1 = 'spec/fixtures/python/py_files_only/subdir/p1.py'
+        py_file2 = 'spec/fixtures/python/py_files_only/subdir/p2.py'
         expect(repo.py_files_present?).to eq([py_file1, py_file2])
         expect(scanner.should_run?).to eq(false)
       end
