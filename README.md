@@ -1,3 +1,5 @@
+## Salus
+
 <p align="center">
   <a href="https://github.com/coinbase/salus">
     <img width="350px" alt="Salus" src="logo.png">
