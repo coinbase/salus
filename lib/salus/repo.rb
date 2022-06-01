@@ -27,6 +27,7 @@ module Salus
       # Python
       { handle: :requirements_txt, filename: 'requirements.txt' },
       { handle: :setup_cfg, filename: 'setup.cfg' },
+      { handle: :py_files, filename: '.py', wildcard: true },
       # Rust
       { handle: :cargo, filename: 'Cargo.toml' },
       { handle: :cargo_lock, filename: 'Cargo.lock' },
