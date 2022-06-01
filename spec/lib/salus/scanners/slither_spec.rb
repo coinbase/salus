@@ -72,6 +72,16 @@ describe Salus::Scanners::Slither do
   end
 
   describe '#run' do
+    it 'should error with npm install fails' do
+      repo = Salus::Repo.new('spec/fixtures/slither/solidity_truffle_bad_config')
+      scanner = Salus::Scanners::Slither.new(repository: repo, config: {})
+      scanner.run
+      expect(scanner.report.to_h.fetch(:passed)).to eq(false)
+      expect(scanner.report.to_h[:logs]).to eq(nil)
+      expect(scanner.report.to_h[:info][:stdout]).to eq(nil)
+      expect(scanner.report.to_h[:info][:stderr]).to start_with('npm install failed')
+    end
+
     it 'should pass when there are no vulnerabilities' do
       repo = Salus::Repo.new('spec/fixtures/slither/pure-solidity-good')
       scanner = Salus::Scanners::Slither.new(repository: repo, config: {})
