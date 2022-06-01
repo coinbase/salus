@@ -49,7 +49,10 @@ describe Salus::Scanners::Bandit do
         expect(repo.setup_cfg_present?).to eq(false)
         py_file1 = 'spec/fixtures/python/py_files_only/subdir/p1.py'
         py_file2 = 'spec/fixtures/python/py_files_only/subdir/p2.py'
-        expect(repo.py_files_present?).to eq([py_file1, py_file2])
+        py_files = repo.py_files_present?
+        expect(py_files.size).to eq(2)
+        expect(py_files).to include(py_file1)
+        expect(py_files).to include(py_file2)
         expect(scanner.should_run?).to eq(false)
       end
     end
