@@ -27,7 +27,6 @@ module Salus
       # Python
       { handle: :requirements_txt, filename: 'requirements.txt' },
       { handle: :setup_cfg, filename: 'setup.cfg' },
-      { handle: :py_files, filename: '.py', wildcard: true },
       # Rust
       { handle: :cargo, filename: 'Cargo.toml' },
       { handle: :cargo_lock, filename: 'Cargo.lock' },
@@ -40,7 +39,15 @@ module Salus
       # Swift
       { handle: :package_resolved, filename: 'Package.resolved' },
       # Apple Ecosystem (macOS, iOS, etc)
-      { handle: :podfile_lock, filename: 'Podfile.lock' }
+      { handle: :podfile_lock, filename: 'Podfile.lock' },
+      # Solidity
+      { handle: :sol_file, filename: '.sol', wildcard: true },
+      { handle: :truffle_js, filename: 'truffle.js' },
+      { handle: :truffle_ts, filename: 'truffle.ts' },
+      { handle: :truffle_config_js, filename: 'truffle-config.js' },
+      { handle: :truffle_config_ts, filename: 'truffle-config.ts' },
+      { handle: :hardhat_config_js, filename: 'hardhat.config.js' },
+      { handle: :hardhat_config_ts, filename: 'hardhat.config.ts' }
     ].freeze
 
     # Define file checkers.

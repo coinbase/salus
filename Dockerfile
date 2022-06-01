@@ -68,6 +68,15 @@ RUN pip install wheel \
   && mv .local/bin/bandit .local/bin/bandit2 \
   && pip3 install --user bandit==${BANDIT_VERSION}
 
+# Install solidity compiler version manager and 
+# slither, a solidity static code scanner
+ENV SOLC_SELECT_VERSION 0.2.1
+ENV SLITHER_VERSION 0.8.3
+
+RUN pip3 install --user solc-select==${SOLC_SELECT_VERSION} \
+  && pip3 install --user --no-cache-dir slither-analyzer==${SLITHER_VERSION}
+ENV PATH="/root/.local/bin:${PATH}"
+
 
 ### Ruby
 # ruby gems
@@ -187,6 +196,10 @@ COPY --from=builder /opt/gradle/gradle-6.9.2 /opt/gradle/gradle-6.9.2
 RUN ln -sf /usr/local/go/bin/go /usr/local/bin
 RUN python -m easy_install pip==${PIP_VERSION} \
   && python3 -m easy_install pip==${PIP_VERSION}
+
+# Install solidity compiler
+ENV SOLC_VERSION 0.8.4
+RUN solc-select install ${SOLC_VERSION} && solc-select use ${SOLC_VERSION}
 
 ### Salus
 WORKDIR /home
