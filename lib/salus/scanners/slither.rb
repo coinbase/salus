@@ -19,8 +19,8 @@ module Salus::Scanners
       # Most Solidity projects will be Hardhat (https://hardhat.org/) or Truffle (https://trufflesuite.com/),
       # which both use NPM to manage Solidity dependencies. We should NPM install in these cases
       # to ensure Slither has the needed dependencies for scanning
-      shell_return = run_shell("npm install", chdir: @repository.path_to_repo)
 
+      shell_return = run_shell("npm install", chdir: @repository.path_to_repo)
       if !shell_return.success?
         err_msg = 'npm install failed! ' + shell_return.stderr
         report_error(err_msg)
@@ -28,33 +28,44 @@ module Salus::Scanners
         return report_failure
       end
 
-      shell_return = run_shell(command, chdir: @repository.path_to_repo)
-      stdout_json = begin
-        JSON.parse(shell_return.stdout)
-                    rescue JSON::ParserError
-                      json_parser_error_msg = "Could not parse slither stdout"
-                      "{ \"success\": false, \"error\": \"#{json_parser_error_msg}\" }"
+      shell_return = run_shell("npm config set user 0")
+      if !shell_return.success?
+        err_msg = 'npm config set user failed! ' + shell_return.stderr
+        report_error(err_msg)
+        report_stderr(err_msg)
+        return report_failure
       end
 
+      shell_return = run_shell(command, chdir: @repository.path_to_repo)
       return report_success if shell_return.success?
 
       report_failure
 
-      if !stdout_json['success'] || !stdout_json['error'].nil?
+      begin
+        stdout_json = JSON.parse(shell_return.stdout)
+      rescue JSON::ParserError
+        err_msg = "Could not parse slither json stdout: " + shell_return.stdout
+        report_error(err_msg)
+        report_stderr(err_msg)
+        return
+      end
+
+      if !stdout_json['success'] || !stdout_json['error'].nil? || stdout_json['results'].nil?
         # An error during compilation occurred
         scanning_error = stdout_json['error']
         report_error(scanning_error)
         report_stderr(scanning_error)
       else
-        report_stdout(
-          'To allowlist findings from a detector, add a '\
-          '`//slither-disable-next-line DETECTOR_NAME` comment before the '\
-          'offending line.\n\nFor example, `//slither-disable-next-line '\
-          'timestamp` will disable detection of `block.timestamp` usage by disabling the '\
-          '`timestamp` detector.'
-        )
-        report_stdout(shell_return.stdout)
-        log(prettify_json_string(shell_return.stdout))
+        results = []
+        stdout_json['results']['detectors'].each do |r|
+          result = {}
+          %w[description first_markdown_element check impact confidence].each do |k|
+            result[k] = r[k]
+          end
+          results.push(result)
+        end
+        report_stdout(JSON.pretty_generate(results))
+        log(JSON.pretty_generate(results))
       end
     end
 
@@ -69,7 +80,10 @@ module Salus::Scanners
     protected
 
     def command
-      "slither . --json - --exclude-low --exclude-informational --exclude-optimization"
+      #      "slither . --json - --exclude-low --exclude-informational --exclude-optimization"
+      # "slither . --exclude-low --exclude-informational --exclude-optimization"
+      "slither . --json - --exclude-informational --exclude-optimization"
+      # "npm config set user 0; slither . --exclude-informational --exclude-optimization"
     end
 
     private

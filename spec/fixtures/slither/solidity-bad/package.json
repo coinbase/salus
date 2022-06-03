@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "leveldown": "^6.1.1",
+    "node-gyp-build": "^4.4.0"
+  }
+}

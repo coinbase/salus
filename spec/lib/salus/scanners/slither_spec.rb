@@ -83,54 +83,49 @@ describe Salus::Scanners::Slither do
     end
 
     it 'should pass when there are no vulnerabilities' do
-      repo = Salus::Repo.new('spec/fixtures/slither/pure-solidity-good')
+      repo = Salus::Repo.new('spec/fixtures/slither/solidity-good')
       scanner = Salus::Scanners::Slither.new(repository: repo, config: {})
       expect(scanner).not_to receive(:report_failure)
       scanner.run
       expect(scanner.report.to_h.fetch(:passed)).to eq(true)
     end
 
-    it 'should fail when there are vulnerabilities in a pure Solidity project' do
-      repo = Salus::Repo.new('spec/fixtures/slither/pure-solidity-bad')
+    it 'should fail when there are vulnerabilities' do
+      repo = Salus::Repo.new('spec/fixtures/slither/solidity-bad')
       scanner = Salus::Scanners::Slither.new(repository: repo, config: {})
-      expect(scanner).to receive(:report_failure).and_call_original
       scanner.run
 
-      logs = scanner.report.to_h.fetch(:logs)
-      json_logs = JSON.parse(logs)
-
-      expect(json_logs['results']['detectors'].length).to eq(1)
-      expect(json_logs['results']['detectors'][0]['description']).to eq("C.f() "\
-      "(bad-contract.sol#4-8) contains an incorrect shift operation: a = 8 >> a "\
-      "(bad-contract.sol#6)\n")
-
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
+      stdout = scanner.report.to_h[:info][:stdout]
+      stdout = JSON.parse(stdout)
+      expected_vul1 = { "description" => "C.f() (bad-contract.sol#4-8) contains an incorrect "\
+                                         "shift operation: a = 8 >> a (bad-contract.sol#6)\n",
+                       "first_markdown_element" => "contracts/bad-contract.sol#L4-L8",
+                       "check" => "incorrect-shift",
+                       "impact" => "High",
+                       "confidence" => "High" }
+      expected_vul2 = { "description" => "C.g() (bad-contract.sol#10-14) contains an incorrect "\
+                                         "shift operation: b = 8 >> b (bad-contract.sol#12)\n",
+                       "first_markdown_element" => "contracts/bad-contract.sol#L10-L14",
+                       "check" => "incorrect-shift",
+                       "impact" => "High",
+                       "confidence" => "High" }
+      expect(stdout.length).to eq(2)
+      expect(stdout).to include(expected_vul1)
+      expect(stdout).to include(expected_vul2)
     end
 
-    it 'should fail when there are vulnerabilities in a Solidity project with NPM dependencies' do
-      repo = Salus::Repo.new('spec/fixtures/slither/npm-dep-management')
+    it 'should report error if solidity code has invalid syntax' do
+      repo = Salus::Repo.new('spec/fixtures/slither/no-compile-truffle')
       scanner = Salus::Scanners::Slither.new(repository: repo, config: {})
-      expect(scanner).to receive(:report_failure).and_call_original
       scanner.run
 
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
-    end
-
-    it 'should report error if there were issues running slither' do
-      repo = Salus::Repo.new('spec/fixtures/slither/no-compile')
-      scanner = Salus::Scanners::Slither.new(repository: repo, config: {})
-
-      expect(scanner).to receive(:report_failure).and_call_original
-      expect(scanner).not_to receive(:report_stdout)
-      expect(scanner).not_to receive(:log)
-      expect(scanner).to receive(:report_error).and_call_original
-
-      # The error logged to stderr is an extremely long stack trace that's saturated
-      # with whitespace. This makes it cumbersome to have in this test
-      expect(scanner).to receive(:report_stderr)
-
-      scanner.run
-      expect(scanner.report.to_h.fetch(:passed)).to eq(false)
+      logs = scanner.report.to_h[:logs]
+      expect(logs).to eq(nil)
+      errs = scanner.report.to_h.fetch(:errors)
+      expect(errs.size).to eq(1)
+      expect(errs[0][:message]).to include('truffle compile` failed. Can you run it?')
     end
   end
 
