@@ -70,7 +70,7 @@ RUN pip install wheel \
 
 ENV SLITHER_VERSION 0.8.3
 RUN pip3 install --user --no-cache-dir slither-analyzer==${SLITHER_VERSION}
-ENV PATH="/root/.local/bin:${PATH}"
+#ENV PATH="/root/.local/bin:${PATH}"
 
 
 ### Ruby
