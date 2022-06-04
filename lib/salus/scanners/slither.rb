@@ -47,7 +47,6 @@ module Salus::Scanners
       end
 
       if !stdout_json['success'] || !stdout_json['error'].nil? || stdout_json['results'].nil?
-        # An error during compilation occurred
         scanning_error = stdout_json['error']
         report_error(scanning_error)
         report_stderr(scanning_error)
