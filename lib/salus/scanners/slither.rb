@@ -56,9 +56,10 @@ module Salus::Scanners
         ref_url_prefix = 'https://github.com/crytic/slither/wiki/Detector-Documentation#'
         stdout_json['results']['detectors'].each do |r|
           result = {}
-          %w[description first_markdown_element check impact confidence].each do |k|
+          %w[description check impact confidence].each do |k|
             result[k] = r[k]
           end
+          result['location'] = r['first_markdown_element']
           # slither json does not include reference urls
           # result['ref_url'] tag is not defined for all checks
           # if undefined, then the url will point to the top of the main documentation page
