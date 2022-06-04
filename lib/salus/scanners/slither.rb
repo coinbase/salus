@@ -46,10 +46,11 @@ module Salus::Scanners
         return
       end
 
-      if !stdout_json['success'] || !stdout_json['error'].nil? || stdout_json['results'].nil?
-        scanning_error = stdout_json['error']
-        report_error(scanning_error)
-        report_stderr(scanning_error)
+      if !stdout_json['success'] || !stdout_json['error'].nil? ||
+          stdout_json['results'].nil? || stdout_json['results']['detectors'].nil?
+        err_msg = 'Error extracting slither output: ' + shell_return.inspect
+        report_error(err_msg)
+        report_stderr(err_msg)
       else
         results = []
         stdout_json['results']['detectors'].each do |r|
