@@ -20,23 +20,19 @@ module Salus::Scanners
       # which both use NPM to manage Solidity dependencies. We should NPM install in these cases
       # to ensure Slither has the needed dependencies for scanning
 
-      shell_return = run_shell("npm install", chdir: @repository.path_to_repo)
-      if !shell_return.success?
-        err_msg = 'npm install failed! ' + shell_return.stderr
-        report_error(err_msg)
-        report_stderr(err_msg)
-        return report_failure
+      pre_slither_commands = ['npm install', 'npm config set user 0']
+      pre_slither_commands.each do |pcmd|
+        shell_return = run_shell(pcmd, chdir: @repository.path_to_repo)
+        if !shell_return.success?
+          err_msg = pcmd + ' failed! ' + shell_return.stderr
+          report_error(err_msg)
+          report_stderr(err_msg)
+          return report_failure
+        end
       end
 
-      shell_return = run_shell("npm config set user 0")
-      if !shell_return.success?
-        err_msg = 'npm config set user failed! ' + shell_return.stderr
-        report_error(err_msg)
-        report_stderr(err_msg)
-        return report_failure
-      end
-
-      shell_return = run_shell(command, chdir: @repository.path_to_repo)
+      slither_cmd = 'slither . --json - --exclude-informational --exclude-optimization'
+      shell_return = run_shell(slither_cmd, chdir: @repository.path_to_repo)
       return report_success if shell_return.success?
 
       report_failure
@@ -75,15 +71,6 @@ module Salus::Scanners
 
     def self.supported_languages
       ['solidity']
-    end
-
-    protected
-
-    def command
-      #      "slither . --json - --exclude-low --exclude-informational --exclude-optimization"
-      # "slither . --exclude-low --exclude-informational --exclude-optimization"
-      "slither . --json - --exclude-informational --exclude-optimization"
-      # "npm config set user 0; slither . --exclude-informational --exclude-optimization"
     end
 
     private
