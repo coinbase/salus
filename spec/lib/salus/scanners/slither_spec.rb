@@ -98,16 +98,19 @@ describe Salus::Scanners::Slither do
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
       stdout = scanner.report.to_h[:info][:stdout]
       stdout = JSON.parse(stdout)
+      expected_ref_url = "https://github.com/crytic/slither/wiki/Detector-Documentation#incorrect-shift"
       expected_vul1 = { "description" => "C.f() (bad-contract.sol#4-8) contains an incorrect "\
                                          "shift operation: a = 8 >> a (bad-contract.sol#6)\n",
                        "first_markdown_element" => "contracts/bad-contract.sol#L4-L8",
                        "check" => "incorrect-shift",
+                       "ref_url" => expected_ref_url,
                        "impact" => "High",
                        "confidence" => "High" }
       expected_vul2 = { "description" => "C.g() (bad-contract.sol#10-14) contains an incorrect "\
                                          "shift operation: b = 8 >> b (bad-contract.sol#12)\n",
                        "first_markdown_element" => "contracts/bad-contract.sol#L10-L14",
                        "check" => "incorrect-shift",
+                       "ref_url" => expected_ref_url,
                        "impact" => "High",
                        "confidence" => "High" }
       expect(stdout.length).to eq(2)
