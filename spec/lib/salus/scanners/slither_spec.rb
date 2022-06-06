@@ -145,8 +145,7 @@ describe Salus::Scanners::Slither do
   describe '#supported_languages' do
     context 'should return supported languages' do
       it 'should return solidity' do
-        langs = Salus::Scanners::Slither.supported_languages
-        expect(langs).to eq(['solidity'])
+        expect(described_class.supported_languages).to eq(['solidity'])
       end
     end
   end
