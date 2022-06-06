@@ -124,8 +124,7 @@ describe Salus::Scanners::Slither do
       scanner.run
 
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
-      logs = scanner.report.to_h[:logs]
-      expect(logs).to eq(nil)
+      expect(scanner.report.to_h[:logs]).to eq(nil)
       errs = scanner.report.to_h.fetch(:errors)
       expect(errs.size).to eq(1)
       expect(errs[0][:message]).to include('truffle compile` failed. Can you run it?')
