@@ -1,4 +1,4 @@
-## Salus
+
 
 <p align="center">
   <a href="https://github.com/coinbase/salus">
