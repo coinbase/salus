@@ -68,6 +68,8 @@ RUN pip install wheel \
   && mv .local/bin/bandit .local/bin/bandit2 \
   && pip3 install --user bandit==${BANDIT_VERSION}
 
+ENV SLITHER_VERSION 0.8.3
+RUN pip3 install --user --no-cache-dir slither-analyzer==${SLITHER_VERSION}
 
 ### Ruby
 # ruby gems
@@ -136,6 +138,10 @@ ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
 
 RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get install -y --no-install-recommends \
+  make \
+  cmake \
+  g++ \
+  gcc \
   python-minimal \
   python-setuptools \
   python3-minimal \
