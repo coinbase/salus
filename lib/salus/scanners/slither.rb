@@ -9,6 +9,15 @@ module Salus::Scanners
     include Salus::Formatting
 
     REF_URL_PREFIX = 'https://github.com/crytic/slither/wiki/Detector-Documentation#'.freeze
+    # TODO: in a separate PR, make --exclude-informational --exclude-optimization configurable
+    # --exclude-informational - exclude informational impact analyses
+    #     Ex. Variable names are too similar
+    # --exclude-optimization - exclude optimization impact analyses
+    #     Ex. Public function that could be declared external, which could affect gas cost
+    # These tend to report noisy results
+    # https://github.com/crytic/slither#detectors lists the detectors
+    # the bottom ones are informational/optimzation detectors (see impact column)
+    SLITHER_CMD = 'slither . --json - --exclude-informational --exclude-optimization'.freeze
 
     def should_run?
       # only support truffle/hardhat for now
@@ -33,16 +42,7 @@ module Salus::Scanners
         end
       end
 
-      # TODO: in a separate PR, make --exclude-informational --exclude-optimization configurable
-      # --exclude-informational - exclude informational impact analyses
-      #     Ex. Variable names are too similar
-      # --exclude-optimization - exclude optimization impact analyses
-      #     Ex. Public function that could be declared external, which could affect gas cost
-      # These tend to report noisy results
-      # https://github.com/crytic/slither#detectors lists the detectors
-      # the bottom ones are informational/optimzation detectors (see impact column)
-      slither_cmd = 'slither . --json - --exclude-informational --exclude-optimization'
-      shell_return = run_shell(slither_cmd, chdir: @repository.path_to_repo)
+      shell_return = run_shell(SLITHER_CMD, chdir: @repository.path_to_repo)
       return report_success if shell_return.success?
 
       report_failure
