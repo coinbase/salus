@@ -98,7 +98,7 @@ describe Salus::Scanners::Slither do
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
       stdout = scanner.report.to_h[:info][:stdout]
       stdout = JSON.parse(stdout)
-      expected_ref_url = Salus::Scanners::Slither::REF_URL_PREFIX + "#incorrect-shift"
+      expected_ref_url = Salus::Scanners::Slither::REF_URL_PREFIX + "incorrect-shift"
       expected_vul1 = { "description" => "C.f() (bad-contract.sol#4-8) contains an incorrect "\
                                          "shift operation: a = 8 >> a (bad-contract.sol#6)\n",
                        "location" => "contracts/bad-contract.sol#L4-L8",
