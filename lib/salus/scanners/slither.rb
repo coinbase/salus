@@ -56,6 +56,20 @@ module Salus::Scanners
         return
       end
 
+      process_parsed_output(stdout_json)
+    end
+
+    def version
+      run_shell('slither --version').stdout.rstrip
+    end
+
+    def self.supported_languages
+      ['solidity']
+    end
+
+    private
+
+    def process_parsed_output(stdout_json)
       if !stdout_json['success'] || !stdout_json['error'].nil? ||
           stdout_json['results'].nil? || stdout_json['results']['detectors'].nil?
         err_msg = 'Error extracting slither output: ' + shell_return.inspect
@@ -79,16 +93,6 @@ module Salus::Scanners
         log(JSON.pretty_generate(results))
       end
     end
-
-    def version
-      run_shell('slither --version').stdout.rstrip
-    end
-
-    def self.supported_languages
-      ['solidity']
-    end
-
-    private
 
     def has_package_config
       truffle_script_present = @repository.truffle_js_present? ||
