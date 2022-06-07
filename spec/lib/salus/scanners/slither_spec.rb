@@ -36,23 +36,25 @@ describe Salus::Scanners::Slither do
       expect(scanner.should_run?).to eq(false)
     end
 
-    it 'should return true with .sol file, package.json, and truffle config' do
-      # has package.json and truffle.js
+    it 'should return true with .sol file, package.json, and truffle.js' do
       repo = Salus::Repo.new('spec/fixtures/slither/solidity_truffle_js')
       scanner = Salus::Scanners::Slither.new(repository: repo, config: {})
       expect(scanner.should_run?).to eq(true)
+    end
 
-      # has package.json and truffle.ts
+    it 'should return true with .sol file, package.json, and truffle.ts' do
       repo = Salus::Repo.new('spec/fixtures/slither/solidity_truffle_ts')
       scanner = Salus::Scanners::Slither.new(repository: repo, config: {})
       expect(scanner.should_run?).to eq(true)
+    end
 
-      # has package.json and truffle-config.js
+    it 'should return true with .sol file, package.json, and truffle-config.js' do
       repo = Salus::Repo.new('spec/fixtures/slither/solidity_truffle_config_js')
       scanner = Salus::Scanners::Slither.new(repository: repo, config: {})
       expect(scanner.should_run?).to eq(true)
+    end
 
-      # has package.json and truffle-config.ts
+    it 'should return true with .sol file, package.json, and truffle-config.ts' do
       repo = Salus::Repo.new('spec/fixtures/slither/solidity_truffle_config_ts')
       scanner = Salus::Scanners::Slither.new(repository: repo, config: {})
       expect(scanner.should_run?).to eq(true)
