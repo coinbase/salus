@@ -8,6 +8,8 @@ module Salus::Scanners
   class Slither < Base
     include Salus::Formatting
 
+    REF_URL_PREFIX = 'https://github.com/crytic/slither/wiki/Detector-Documentation#'.freeze
+
     def should_run?
       # only support truffle/hardhat for now
       return false if !@repository.package_json_present? || !has_package_config
@@ -61,7 +63,6 @@ module Salus::Scanners
         report_stderr(err_msg)
       else
         results = []
-        ref_url_prefix = 'https://github.com/crytic/slither/wiki/Detector-Documentation#'
         stdout_json['results']['detectors'].each do |r|
           result = {}
           %w[description check impact confidence].each do |k|
@@ -71,7 +72,7 @@ module Salus::Scanners
           # slither json does not include reference urls
           # result['ref_url'] tag is not defined for all checks
           # if undefined, then the url will point to the top of the main documentation page
-          result['ref_url'] = ref_url_prefix + result['check']
+          result['ref_url'] = REF_URL_PREFIX + result['check']
           results.push(result)
         end
         report_stdout(JSON.pretty_generate(results))
