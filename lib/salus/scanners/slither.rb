@@ -56,7 +56,7 @@ module Salus::Scanners
         return
       end
 
-      process_parsed_output(stdout_json)
+      process_parsed_output(stdout_json, shell_return)
     end
 
     def version
@@ -69,7 +69,7 @@ module Salus::Scanners
 
     private
 
-    def process_parsed_output(stdout_json)
+    def process_parsed_output(stdout_json, shell_return)
       if !stdout_json['success'] || !stdout_json['error'].nil? ||
           stdout_json['results'].nil? || stdout_json['results']['detectors'].nil?
         err_msg = 'Error extracting slither output: ' + shell_return.inspect
