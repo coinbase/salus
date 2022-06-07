@@ -12,7 +12,7 @@ module Salus::Scanners
       # only support truffle/hardhat for now
       return false if !@repository.package_json_present? || !has_package_config
 
-      @repository.sol_file_present?
+      @repository.sol_file_present? != false
     end
 
     def run
