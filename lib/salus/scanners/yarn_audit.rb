@@ -172,8 +172,8 @@ module Salus::Scanners
       return '' if dep_types.empty?
 
       if dep_types.include?('devDependencies') &&
-        dep_types.include?('dependencies') &&
-        dep_types.include?('optionalDependencies')
+          dep_types.include?('dependencies') &&
+          dep_types.include?('optionalDependencies')
         report_error("No dependencies were scanned!")
         return ''
       elsif dep_types.include?('devDependencies') && dep_types.include?('dependencies')

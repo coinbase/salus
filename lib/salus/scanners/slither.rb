@@ -75,7 +75,7 @@ module Salus::Scanners
 
     def process_parsed_output(stdout_json, shell_return)
       if !stdout_json['success'] || !stdout_json['error'].nil? ||
-        stdout_json['results'].nil? || stdout_json['results']['detectors'].nil?
+          stdout_json['results'].nil? || stdout_json['results']['detectors'].nil?
         err_msg = 'Error extracting slither output: ' + shell_return.inspect
         report_error(err_msg)
         report_stderr(err_msg)
