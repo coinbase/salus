@@ -130,7 +130,7 @@ module Salus::Scanners
       rescue ApiTooManyRequestsError
         if retries < MAX_RETRIES_FOR_RUBY_GEMS_API
           retries += 1
-          max_sleep_seconds = Float(2 ** retries)
+          max_sleep_seconds = Float(2**retries)
           sleep rand(0..max_sleep_seconds)
           retry
         else
