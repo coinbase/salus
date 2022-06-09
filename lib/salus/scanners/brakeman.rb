@@ -6,6 +6,11 @@ require 'tempfile'
 
 module Salus::Scanners
   class Brakeman < Base
+
+    def self.scanner_type
+      'SAST'
+    end
+
     def run
       # Use JSON output since that will be the best for an API to receive and parse.
       # We need CI=true envar to ensure brakeman doesn't use an interactive display
@@ -215,8 +220,8 @@ module Salus::Scanners
       gemfile_path = "#{@repository.path_to_repo}/Gemfile"
       gemfile_lock_path = "#{@repository.path_to_repo}/Gemfile.lock"
       Bundler::Definition.build(gemfile_path, gemfile_lock_path, nil)
-        .dependencies.map(&:name)
-        .include?('rails')
+                         .dependencies.map(&:name)
+                         .include?('rails')
     end
 
     def has_app_dir?

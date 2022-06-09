@@ -5,6 +5,10 @@ require 'salus/scanners/base'
 
 module Salus::Scanners
   class NodeAudit < Base
+    def self.scanner_type
+      'DEPENDENCY'
+    end
+
     include Salus::Formatting
 
     # Structure to hold the relevant information about a given adivsory
@@ -12,10 +16,10 @@ module Salus::Scanners
 
     # Some common, easily-abbreviated terms to shorten advisory titles
     TITLE_SUBSTITUTIONS = {
-      'Regular Expression'    => 'Regex',
-      'Denial of Service'     => 'DoS',
+      'Regular Expression' => 'Regex',
+      'Denial of Service' => 'DoS',
       'Remote Code Execution' => 'RCE',
-      'Cross-Site Scripting'  => 'XSS'
+      'Cross-Site Scripting' => 'XSS'
     }.freeze
 
     # Cap title and module name length to avoid the table getting too wide
@@ -41,10 +45,10 @@ module Salus::Scanners
         advisory = raw_advisories_for_id.first
 
         module_name = advisory.fetch(:module_name)
-        title       = advisory.fetch(:title)
-        severity    = advisory.fetch(:severity)
-        url         = advisory.fetch(:url)
-        excepted    = exception_ids.include?(id)
+        title = advisory.fetch(:title)
+        severity = advisory.fetch(:severity)
+        url = advisory.fetch(:url)
+        excepted = exception_ids.include?(id)
 
         # Each advisory corresponds to some instance of the vulnerable
         # package, which may exist as in multiple nodes of the dependency
@@ -90,22 +94,22 @@ module Salus::Scanners
         advisories_by_id.fetch(id).prod?
       end
 
-      prod_advisory_ids      = prod_advisories.map(&:id).sort_by(&:to_i)
-      dev_advisory_ids       = dev_advisories.map(&:id).sort_by(&:to_i)
+      prod_advisory_ids = prod_advisories.map(&:id).sort_by(&:to_i)
+      dev_advisory_ids = dev_advisories.map(&:id).sort_by(&:to_i)
       unex_prod_advisory_ids = unex_prod_advisories.map(&:id).sort_by(&:to_i)
-      prod_exception_ids     = prod_exception_ids.sort_by(&:to_i)
-      dev_exception_ids      = dev_exception_ids.sort_by(&:to_i)
-      useless_exception_ids  = useless_exception_ids.sort_by(&:to_i)
+      prod_exception_ids = prod_exception_ids.sort_by(&:to_i)
+      dev_exception_ids = dev_exception_ids.sort_by(&:to_i)
+      useless_exception_ids = useless_exception_ids.sort_by(&:to_i)
 
       # The _id suffix isn't super interesting information from the perspective of an
       # external consumer just drop it
-      report_info(:prod_advisories,            prod_advisory_ids)
-      report_info(:dev_advisories,             dev_advisory_ids)
+      report_info(:prod_advisories, prod_advisory_ids)
+      report_info(:dev_advisories, dev_advisory_ids)
       report_info(:unexcepted_prod_advisories, unex_prod_advisory_ids)
-      report_info(:exceptions,                 useful_exception_ids)
-      report_info(:prod_exceptions,            prod_exception_ids)
-      report_info(:dev_exceptions,             dev_exception_ids)
-      report_info(:useless_exceptions,         useless_exception_ids)
+      report_info(:exceptions, useful_exception_ids)
+      report_info(:prod_exceptions, prod_exception_ids)
+      report_info(:dev_exceptions, dev_exception_ids)
+      report_info(:useless_exceptions, useless_exception_ids)
 
       if advisories.empty?
         log('There are no advisories against your dependencies. Hooray!')

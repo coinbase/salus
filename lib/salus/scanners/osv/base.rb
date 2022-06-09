@@ -17,6 +17,10 @@ module Salus::Scanners::OSV
     }.freeze
     GITHUB_DATABASE_STRING = "Github Advisory Database".freeze
 
+    def self.scanner_type
+      'DEPENDENCY'
+    end
+
     def run
       raise NoMethodError, 'implement in subclass'
     end

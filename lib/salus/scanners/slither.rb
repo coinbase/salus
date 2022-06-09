@@ -26,6 +26,10 @@ module Salus::Scanners
       @repository.sol_file_present? != false
     end
 
+    def self.scanner_type
+      'SAST'
+    end
+
     def run
       # Most Solidity projects will be Hardhat (https://hardhat.org/) or Truffle (https://trufflesuite.com/),
       # which both use NPM to manage Solidity dependencies. We should NPM install in these cases
@@ -71,7 +75,7 @@ module Salus::Scanners
 
     def process_parsed_output(stdout_json, shell_return)
       if !stdout_json['success'] || !stdout_json['error'].nil? ||
-          stdout_json['results'].nil? || stdout_json['results']['detectors'].nil?
+        stdout_json['results'].nil? || stdout_json['results']['detectors'].nil?
         err_msg = 'Error extracting slither output: ' + shell_return.inspect
         report_error(err_msg)
         report_stderr(err_msg)

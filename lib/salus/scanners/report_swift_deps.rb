@@ -6,6 +6,10 @@ module Salus::Scanners
   class ReportSwiftDeps < Base
     class ReportSwiftDepsError < StandardError; end
 
+    def self.scanner_type
+      'SBOM_REPORT'
+    end
+
     def run
       shell_return =
         run_shell(

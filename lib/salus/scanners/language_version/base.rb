@@ -5,6 +5,10 @@ module Salus::Scanners::LanguageVersion
   class Base < Salus::Scanners::Base
     class SemVersion < Gem::Version; end
 
+    def self.scanner_type
+      'SAST'
+    end
+
     def run
       if lang_version.nil?
         error_msg = "Please supply the path to a " \

@@ -16,6 +16,10 @@ require 'salus/scanners/base'
 
 module Salus::Scanners
   class PatternSearch < Base
+    def self.scanner_type
+      'SAST'
+    end
+
     def run
       global_exclude_directory_flags = flag_list('--exclude-dirs', @config['exclude_directory'])
       global_exclude_extension_flags = extension_flag('--exclude-ext', @config['exclude_extension'])

@@ -15,6 +15,10 @@ module Salus::Scanners
       @repository.cargo_lock_present?
     end
 
+    def self.scanner_type
+      'DEPENDENCY'
+    end
+
     def run
       shell_return = run_shell(command, chdir: @repository.path_to_repo)
 
@@ -102,7 +106,7 @@ module Salus::Scanners
       #     --no-local-crates         Vulnerability querying does not consider local crates
       # Note that -D is not yet supported with --json
 
-      opts = ["--json"]  # return vulnerabilities in an easily digestible manner (JSON)
+      opts = ["--json"] # return vulnerabilities in an easily digestible manner (JSON)
       opts << "-c never" # to prevent color chars in stderr upon failure
       opts += fetch_exception_ids.map { |id| "--ignore #{id}" }
 

@@ -6,15 +6,20 @@ require 'json'
 
 module Salus::Scanners
   class Gosec < Base
+
+    def self.scanner_type
+      'SAST'
+    end
+
     def run
       # 'run_from_dirs' specifies a list of subdirs to run salus from
       # if not specified, then run_from_dir will mimic the original gosec 'run' behavior
       return run_from_dir if @config['run_from_dirs'].nil?
 
       @gosec_failed = false
-      @gosec_stderr = ''   # combined stderr on all runs (one for each configured subdir)
-      @gosec_stdout = ''   # ...      stdout ...
-      @gosec_json = {}     # combined json result on all runs
+      @gosec_stderr = '' # combined stderr on all runs (one for each configured subdir)
+      @gosec_stdout = '' # ...      stdout ...
+      @gosec_json = {} # combined json result on all runs
       run_from_dirs = @config['run_from_dirs'].sort
       run_from_dirs_val = @config.delete('run_from_dirs')
       run_from_dirs.each do |dir|
@@ -76,10 +81,10 @@ module Salus::Scanners
       end
 
       shell_return_json = JSON.parse(shell_return.stdout)
-      lines_scanned = shell_return_json['Stats']['lines']  # number of lines scanned
-      files_scanned = shell_return_json['Stats']['files']  # number of files scanned
-      num_nosec = shell_return_json['Stats']['nosec']  # number of nosec
-      num_found = shell_return_json['Stats']['found']  # number found
+      lines_scanned = shell_return_json['Stats']['lines'] # number of lines scanned
+      files_scanned = shell_return_json['Stats']['files'] # number of files scanned
+      num_nosec = shell_return_json['Stats']['nosec'] # number of nosec
+      num_found = shell_return_json['Stats']['found'] # number found
       golang_errors = shell_return_json['Golang errors'] # a hash of compile errors
       found_issues = shell_return_json['Issues'] # a list of found issues
 
@@ -146,6 +151,7 @@ module Salus::Scanners
         end
       end
     end
+
     # rubocop:enable Style/IfInsideElse
 
     def version
@@ -169,12 +175,12 @@ module Salus::Scanners
           nosec: :bool, # Ignores #nosec comments when set
           'nosec-tag': /\A\S+\z/, # Set an alternative string for #nosec
           include: { # Comma separated list of rules IDs to include
-            type: :list,
-            regex: /\AG\d{3}\z/i
+                     type: :list,
+                     regex: /\AG\d{3}\z/i
           },
           exclude: { # Comma separated list of rules IDs to exclude
-            type: :list,
-            regex: /\AG\d{3}\z/i
+                     type: :list,
+                     regex: /\AG\d{3}\z/i
           },
           sort: :bool, # Sort issues by severity
           # Filter out the issues with a lower severity than the given value.
