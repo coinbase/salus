@@ -75,13 +75,13 @@ module Salus::Scanners
 
     def process_parsed_output(stdout_json, shell_return)
       if !stdout_json['success'] || !stdout_json['error'].nil? ||
-        stdout_json['results'].nil? || stdout_json['results']['detectors'].nil?
-        err_msg = 'Error extracting slither output: ' + shell_return.inspect
-        report_error(err_msg)
-        report_stderr(err_msg)
+          stdout_json['results'].nil? || stdout_json['results']['detectors'].nil?
+          err_msg = 'Error extracting slither output: ' + shell_return.inspect
+          report_error(err_msg)
+          report_stderr(err_msg)
       else
-        results = []
-        stdout_json['results']['detectors'].each do |r|
+          results = []
+          stdout_json['results']['detectors'].each do |r|
           result = {}
           %w[description check impact confidence].each do |k|
             result[k] = r[k]
