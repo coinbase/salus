@@ -27,13 +27,13 @@ module Salus
       # Python
       { handle: :requirements_txt, filename: 'requirements.txt' },
       { handle: :setup_cfg, filename: 'setup.cfg' },
-      { handle: :py_files, filename: '.py', wildcard: true },
+      { handle: :py_files, filename: '*.py', wildcard: true },
       # Rust
       { handle: :cargo, filename: 'Cargo.toml' },
       { handle: :cargo_lock, filename: 'Cargo.lock' },
       # Mobile Scanners
-      { handle: :android_app, filename: '.apk', wildcard: true },
-      { handle: :ios_app, filename: '.ipa', wildcard: true },
+      { handle: :android_app, filename: '*.apk', wildcard: true },
+      { handle: :ios_app, filename: '*.ipa', wildcard: true },
       # Java
       { handle: :pom_xml, filename: 'pom.xml' },
       { handle: :build_gradle, filename: 'build.gradle' },
@@ -42,7 +42,7 @@ module Salus
       # Apple Ecosystem (macOS, iOS, etc)
       { handle: :podfile_lock, filename: 'Podfile.lock' },
       # Solidity
-      { handle: :sol_file, filename: '.sol', wildcard: true },
+      { handle: :sol_file, filename: '*.sol', wildcard: true },
       { handle: :truffle_js, filename: 'truffle.js' },
       { handle: :truffle_ts, filename: 'truffle.ts' },
       { handle: :truffle_config_js, filename: 'truffle-config.js' },
@@ -55,7 +55,7 @@ module Salus
     IMPORTANT_FILES.each do |file|
       define_method :"#{file[:handle]}_present?" do
         if file[:wildcard]
-          files = run_rg("rg", "--files", "-g", file[:filename])
+          files = Dir["#{@path_to_repo}/**/*#{file[:filename]}"]
           return false unless files.any?
 
           return files
