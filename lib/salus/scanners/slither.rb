@@ -26,6 +26,10 @@ module Salus::Scanners
       @repository.sol_file_present? != false
     end
 
+    def self.scanner_type
+      Salus::ScannerTypes::SAST
+    end
+
     def run
       # Most Solidity projects will be Hardhat (https://hardhat.org/) or Truffle (https://trufflesuite.com/),
       # which both use NPM to manage Solidity dependencies. We should NPM install in these cases

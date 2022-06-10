@@ -9,6 +9,10 @@ module Salus::Scanners
   class NPMAudit < NodeAudit
     AUDIT_COMMAND = 'npm audit --json'.freeze
 
+    def self.scanner_type
+      Salus::ScannerTypes::DEPENDENCY
+    end
+
     def should_run?
       @repository.package_lock_json_present? && @repository.package_json_present?
     end

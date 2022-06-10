@@ -20,6 +20,10 @@ module Salus::Scanners
       @repository.yarn_lock_present?
     end
 
+    def self.scanner_type
+      Salus::ScannerTypes::DEPENDENCY
+    end
+
     def run
       if Gem::Version.new(version) >= Gem::Version.new(BREAKING_VERSION)
         handle_latest_yarn_audit
@@ -60,16 +64,16 @@ module Salus::Scanners
           dependency_of = advisory["findings"]&.first&.[]("paths")
           vulns.append({
                          "Package" => advisory.dig("module_name"),
-                        "Patched in" => advisory.dig("patched_versions"),
-                        "More info" => advisory.dig("url"),
-                        "Severity" => advisory.dig("severity"),
-                        "Title" => advisory.dig("title"),
-                        "ID" => advisory_id.to_i,
-                        "Dependency of" => if dependency_of.nil?
-                                             advisory.dig("module_name")
-                                           else
-                                             dependency_of.join("")
-                                           end
+                         "Patched in" => advisory.dig("patched_versions"),
+                         "More info" => advisory.dig("url"),
+                         "Severity" => advisory.dig("severity"),
+                         "Title" => advisory.dig("title"),
+                         "ID" => advisory_id.to_i,
+                         "Dependency of" => if dependency_of.nil?
+                                              advisory.dig("module_name")
+                                            else
+                                              dependency_of.join("")
+                                            end
                        })
         end
       end

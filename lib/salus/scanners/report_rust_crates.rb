@@ -11,6 +11,10 @@ require 'salus/scanners/base'
 
 module Salus::Scanners
   class ReportRustCrates < Base
+    def self.scanner_type
+      Salus::ScannerTypes::SBOM_REPORT
+    end
+
     LOCK_FILE = 'Cargo.lock'.freeze
     MANIFEST_FILE = 'Cargo.toml'.freeze
 

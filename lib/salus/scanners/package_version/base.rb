@@ -3,12 +3,17 @@ require 'salus/scanners/base'
 module Salus::Scanners::PackageVersion
   class Base < Salus::Scanners::Base
     class SemVersion < Gem::Version; end
+
     MIN_CHECK = "MINIMUM_VERSION_CHECK".freeze
     MAX_CHECK = "MAXIMUM_VERSION_CHECK".freeze
     BLOCK_CHECK = "BLOCKED_VERSION_CHECK".freeze
 
     def initialize(repository:, config:)
       super
+    end
+
+    def self.scanner_type
+      Salus::ScannerTypes::DEPENDENCY
     end
 
     def run

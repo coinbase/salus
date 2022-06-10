@@ -41,6 +41,10 @@ module Salus::Scanners
   class BundleAudit < Base
     class UnvalidGemVulnError < StandardError; end
 
+    def self.scanner_type
+      Salus::ScannerTypes::DEPENDENCY
+    end
+
     def run
       # return
       # Ensure the DB is up to date

@@ -6,6 +6,10 @@ require 'tempfile'
 
 module Salus::Scanners
   class Brakeman < Base
+    def self.scanner_type
+      Salus::ScannerTypes::SAST
+    end
+
     def run
       # Use JSON output since that will be the best for an API to receive and parse.
       # We need CI=true envar to ensure brakeman doesn't use an interactive display

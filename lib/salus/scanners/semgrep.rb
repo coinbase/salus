@@ -26,6 +26,10 @@ module Salus::Scanners
     # https://github.com/returntocorp/semgrep/blob/9ac58092cb8ac02bb1f41f59808d4f03a5b8206e/semgrep/semgrep/util.py#L11-L18
     SEMGREP_EXIT_CODES = (1..7).to_a
     # rubocop:disable Metrics/AbcSize
+    def self.scanner_type
+      Salus::ScannerTypes::SAST
+    end
+
     def run
       global_exclude_flags = flag_list('--exclude', @config['exclude'])
 
@@ -175,6 +179,7 @@ module Salus::Scanners
         failure_messages.each { |message| log(message) }
       end
     end
+
     # rubocop:enable Metrics/AbcSize
 
     def should_run?

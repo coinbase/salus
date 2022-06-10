@@ -5,6 +5,10 @@ require 'salus/scanners/base'
 
 module Salus::Scanners
   class Bandit < Base
+    def self.scanner_type
+      Salus::ScannerTypes::SAST
+    end
+
     def run
       # bandit compiled with python3
       copts = config_options

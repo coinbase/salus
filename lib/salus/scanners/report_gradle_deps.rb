@@ -4,7 +4,12 @@ require 'salus/scanners/base'
 
 module Salus::Scanners
   class ReportGradleDeps < Base
+    def self.scanner_type
+      Salus::ScannerTypes::SBOM_REPORT
+    end
+
     include Gradle
+
     def run
       dependencies = gradle_dependencies
 
