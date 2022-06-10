@@ -55,7 +55,7 @@ module Salus
     IMPORTANT_FILES.each do |file|
       define_method :"#{file[:handle]}_present?" do
         if file[:wildcard]
-          files = Dir["#{@path_to_repo}/**/*#{file[:filename]}"]
+          files = run_rg("rg", "--files", "-g", file[:filename])
           return false unless files.any?
 
           return files
@@ -94,6 +94,19 @@ module Salus
 
     def initialize(path_to_repo = nil)
       @path_to_repo = path_to_repo
+    end
+
+    ##
+    # @param [Array] args CLI rg command and options to run
+    # @return [Array<String>] Relative path of files returned
+    # from running the command.
+    def run_rg(*args)
+      data = IO.popen(args, chdir: @path_to_repo).read
+      return [] if data == ""
+
+      files = data.lines.map(&:strip)
+      # files are all relative to @path_to_repo
+      files
     end
   end
 end
