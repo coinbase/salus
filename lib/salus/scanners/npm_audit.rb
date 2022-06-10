@@ -10,7 +10,7 @@ module Salus::Scanners
     AUDIT_COMMAND = 'npm audit --json'.freeze
 
     def self.scanner_type
-      'DEPENDENCY'
+      Salus::ScannerTypes::DEPENDENCY
     end
 
     def should_run?

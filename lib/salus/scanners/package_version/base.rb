@@ -13,7 +13,7 @@ module Salus::Scanners::PackageVersion
     end
 
     def self.scanner_type
-      'DEPENDENCY'
+      Salus::ScannerTypes::DEPENDENCY
     end
 
     def run

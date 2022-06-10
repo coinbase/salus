@@ -17,7 +17,7 @@ require 'salus/scanners/base'
 module Salus::Scanners
   class PatternSearch < Base
     def self.scanner_type
-      'SAST'
+      Salus::ScannerTypes::SAST
     end
 
     def run

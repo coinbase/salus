@@ -7,7 +7,7 @@ require 'net/http'
 module Salus::Scanners
   class ReportRubyGems < Base
     def self.scanner_type
-      'SBOM_REPORT'
+      Salus::ScannerTypes::SBOM_REPORT
     end
 
     class RubyGemsApiError < StandardError; end

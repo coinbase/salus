@@ -12,7 +12,7 @@ require 'salus/scanners/base'
 module Salus::Scanners
   class ReportRustCrates < Base
     def self.scanner_type
-      'SBOM_REPORT'
+      Salus::ScannerTypes::SBOM_REPORT
     end
 
     LOCK_FILE = 'Cargo.lock'.freeze

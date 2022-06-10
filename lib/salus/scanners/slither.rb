@@ -27,7 +27,7 @@ module Salus::Scanners
     end
 
     def self.scanner_type
-      'SAST'
+      Salus::ScannerTypes::SAST
     end
 
     def run

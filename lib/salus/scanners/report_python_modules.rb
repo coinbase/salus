@@ -5,7 +5,7 @@ require 'salus/scanners/base'
 module Salus::Scanners
   class ReportPythonModules < Base
     def self.scanner_type
-      'SBOM_REPORT'
+      Salus::ScannerTypes::SBOM_REPORT
     end
 
     def run

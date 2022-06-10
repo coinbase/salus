@@ -6,7 +6,7 @@ require 'salus/scanners/base'
 module Salus::Scanners
   class NodeAudit < Base
     def self.scanner_type
-      'DEPENDENCY'
+      Salus::ScannerTypes::DEPENDENCY
     end
 
     include Salus::Formatting

@@ -5,7 +5,7 @@ require 'salus/scanners/base'
 module Salus::Scanners
   class ReportPomXml < Base
     def self.scanner_type
-      'SBOM_REPORT'
+      Salus::ScannerTypes::SBOM_REPORT
     end
 
     UNKNOWN_VERSION = ''.freeze

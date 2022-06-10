@@ -6,7 +6,7 @@ module Salus::Scanners::LanguageVersion
     class SemVersion < Gem::Version; end
 
     def self.scanner_type
-      'SAST'
+      Salus::ScannerTypes::SAST
     end
 
     def run

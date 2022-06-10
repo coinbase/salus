@@ -42,7 +42,7 @@ module Salus::Scanners
     class UnvalidGemVulnError < StandardError; end
 
     def self.scanner_type
-      'DEPENDENCY'
+      Salus::ScannerTypes::DEPENDENCY
     end
 
     def run

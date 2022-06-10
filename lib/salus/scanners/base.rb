@@ -54,7 +54,7 @@ module Salus::Scanners
     end
 
     def self.scanner_type
-      ''
+      raise NoMethodError, 'implement in subclass'
     end
 
     def version_valid?(version)

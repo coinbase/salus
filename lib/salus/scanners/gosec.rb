@@ -7,7 +7,7 @@ require 'json'
 module Salus::Scanners
   class Gosec < Base
     def self.scanner_type
-      'SAST'
+      Salus::ScannerTypes::SAST
     end
 
     def run

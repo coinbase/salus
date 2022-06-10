@@ -7,7 +7,7 @@ require 'tempfile'
 module Salus::Scanners
   class Brakeman < Base
     def self.scanner_type
-      'SAST'
+      Salus::ScannerTypes::SAST
     end
 
     def run

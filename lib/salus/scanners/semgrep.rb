@@ -27,7 +27,7 @@ module Salus::Scanners
     SEMGREP_EXIT_CODES = (1..7).to_a
     # rubocop:disable Metrics/AbcSize
     def self.scanner_type
-      'SAST'
+      Salus::ScannerTypes::SAST
     end
 
     def run
