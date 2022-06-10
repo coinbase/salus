@@ -55,7 +55,7 @@ module Salus
     IMPORTANT_FILES.each do |file|
       define_method :"#{file[:handle]}_present?" do
         if file[:wildcard]
-          files = Dir["#{@path_to_repo}/**/*#{file[:filename]}"]
+          files = run_rg("rg", "--files", "-g", file[:filename])
           return false unless files.any?
 
           return files
@@ -104,7 +104,7 @@ module Salus
       data = IO.popen(args, chdir: @path_to_repo).read
       return [] if data == ""
 
-      files = data.lines.map(&:strip)
+      files = data.lines.map{|file| File.join(path_to_repo, file.strip)}
       # files are all relative to @path_to_repo
       files
     end
