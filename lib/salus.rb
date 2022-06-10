@@ -14,6 +14,7 @@ require 'cyclonedx/report'
 require 'salus/report_request'
 require 'salus/repo_searcher'
 require 'salus/path_validator'
+require 'salus/scanner_types'
 
 module Salus
   VERSION = '2.19.0'.freeze
