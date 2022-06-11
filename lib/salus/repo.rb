@@ -104,8 +104,8 @@ module Salus
       data = IO.popen(args, chdir: @path_to_repo).read
       return [] if data == ""
 
-      files = data.lines.map{|file| File.join(path_to_repo, file.strip)}
-      # files are all relative to @path_to_repo
+      files = data.lines.map { |file| File.join(path_to_repo, file.strip) }
+      
       files
     end
   end
