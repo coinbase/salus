@@ -77,7 +77,7 @@ module Salus::Scanners
     def config_opts
       opts = ''
       if @config['filter-paths'].to_s != ''
-        # Note: Slither webpage says filter-paths value is either a regular path or a regular expression
+        # Note: Slither webpage says filter-paths value is either a regular path or a regex
         #       But `slither --help` says it is a comma separated list of paths, which is incorrect.
         #       A list of paths must be joined by | as in a regular expression, not comma
         #        opts += ' --filter-paths "' + @config['filter-paths'].to_s + '"'
