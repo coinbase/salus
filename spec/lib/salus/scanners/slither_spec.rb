@@ -150,4 +150,65 @@ describe Salus::Scanners::Slither do
       end
     end
   end
+
+  describe '#config options' do
+    context 'filter-paths' do
+      let(:repo_dir) { 'spec/fixtures/slither/solidity-bad2' }
+      let(:repo) { Salus::Repo.new(repo_dir) }
+
+      it 'should report two vulneraiblities with empty config' do
+        scanner = Salus::Scanners::Slither.new(repository: repo, config: {})
+        scanner.run
+
+        expect(scanner.report.to_h.fetch(:passed)).to eq(false)
+        stdout = scanner.report.to_h[:info][:stdout]
+        stdout = JSON.parse(stdout)
+        expected_ref_url = Salus::Scanners::Slither::REF_URL_PREFIX + "incorrect-shift"
+        expected_vul1 = { "description" => "C.f() (bad-contract1.sol#4-8) contains an incorrect "\
+                                           "shift operation: a = 8 >> a (bad-contract1.sol#6)\n",
+                          "location" => "contracts/bad-contract1.sol#L4-L8",
+                          "check" => "incorrect-shift",
+                          "ref_url" => expected_ref_url,
+                          "impact" => "High",
+                          "confidence" => "High" }
+        expected_vul2 = { "description" => "D.g() (bad-contract2.sol#4-8) contains an incorrect "\
+                                          "shift operation: b = 8 >> b (bad-contract2.sol#6)\n",
+                         "location" => "contracts/bad-contract2.sol#L4-L8",
+                         "check" => "incorrect-shift",
+                         "ref_url" => expected_ref_url,
+                         "impact" => "High",
+                         "confidence" => "High" }
+        expect(stdout.length).to eq(2)
+        expect(stdout).to include(expected_vul1)
+        expect(stdout).to include(expected_vul2)
+      end
+
+      it 'should apply filter-paths with one path' do
+        config_file = "#{repo_dir}/salus_filter_paths_single.yaml"
+        config = Salus::Config.new([File.read(config_file)]).scanner_configs['Slither']
+        scanner = Salus::Scanners::Slither.new(repository: repo, config: config)
+        scanner.run
+        expect(scanner.report.to_h.fetch(:passed)).to eq(false)
+        stdout = scanner.report.to_h[:info][:stdout]
+        stdout = JSON.parse(stdout)
+        expected_ref_url = Salus::Scanners::Slither::REF_URL_PREFIX + "incorrect-shift"
+        expected_vul = { "description" => "D.g() (bad-contract2.sol#4-8) contains an incorrect "\
+                                          "shift operation: b = 8 >> b (bad-contract2.sol#6)\n",
+                         "location" => "contracts/bad-contract2.sol#L4-L8",
+                         "check" => "incorrect-shift",
+                         "ref_url" => expected_ref_url,
+                         "impact" => "High",
+                         "confidence" => "High" }
+        expect(stdout.length).to eq(1)
+        expect(stdout[0]).to eq(expected_vul)
+      end
+      it 'should apply filter-paths if multiple paths' do
+        config_file = "#{repo_dir}/salus_filter_paths_multiple.yaml"
+        config = Salus::Config.new([File.read(config_file)]).scanner_configs['Slither']
+        scanner = Salus::Scanners::Slither.new(repository: repo, config: config)
+        scanner.run
+        expect(scanner.report.to_h.fetch(:passed)).to eq(true)
+      end
+    end
+  end
 end
