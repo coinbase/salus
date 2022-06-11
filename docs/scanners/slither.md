@@ -9,5 +9,5 @@ Only projects that use truffle or hardhat configs are supported.
 ```yaml
 scanner_configs:
   Slither:
-    filter-paths: contracts/file1.sol|contracts/file2.sol  # exclude file/dir paths, separate with |
+    filter-paths: file1.sol|file2.sol  # exclude file/dir paths, separate with |
 ```
