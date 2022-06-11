@@ -202,6 +202,7 @@ describe Salus::Scanners::Slither do
         expect(stdout.length).to eq(1)
         expect(stdout[0]).to eq(expected_vul)
       end
+
       it 'should apply filter-paths if multiple paths' do
         config_file = "#{repo_dir}/salus_filter_paths_multiple.yaml"
         config = Salus::Config.new([File.read(config_file)]).scanner_configs['Slither']
