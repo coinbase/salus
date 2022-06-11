@@ -46,7 +46,8 @@ module Salus::Scanners
         end
       end
 
-      shell_return = run_shell(SLITHER_CMD, chdir: @repository.path_to_repo)
+      scmd = SLITHER_CMD + config_opts
+      shell_return = run_shell(scmd, chdir: @repository.path_to_repo)
       return report_success if shell_return.success?
 
       report_failure
@@ -72,6 +73,18 @@ module Salus::Scanners
     end
 
     private
+
+    def config_opts
+      opts = ''
+      if @config['filter-paths'].to_s != ''
+        # Note: Slither webpage says filter-paths value is either a regular path or a regular expression
+        #       But `slither --help` says it is a comma separated list of paths, which is incorrect.
+        #       A list of paths must be joined by | as in a regular expression, not comma
+        #        opts += ' --filter-paths "' + @config['filter-paths'].to_s + '"'
+        opts += ' --filter-paths ' + @config['filter-paths'].to_s + ''
+      end
+      opts
+    end
 
     def process_parsed_output(stdout_json, shell_return)
       if !stdout_json['success'] || !stdout_json['error'].nil? ||
