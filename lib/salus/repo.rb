@@ -1,3 +1,5 @@
+require 'salus/repo_searcher'
+
 module Salus
   class Repo
     attr_reader :path_to_repo
@@ -51,14 +53,19 @@ module Salus
       { handle: :hardhat_config_ts, filename: 'hardhat.config.ts' }
     ].freeze
 
+    #Define config for RepoSearcher
+    config = { "pass_on_raise" => false, "scanner_timeout_s" => 0 }
+
     # Define file checkers.
     IMPORTANT_FILES.each do |file|
       define_method :"#{file[:handle]}_present?" do
         if file[:wildcard]
-          files = run_rg("rg", "--files", "-g", file[:filename])
+          files = RepoSearcher.new(@path_to_repo, config).run_rg("rg", "--files", "-g", file[:filename])
           return false unless files.any?
 
-          return files
+          # Prepend path_to_repo to the relative filepath
+          appended_files = files.map { |filepath| File.join(path_to_repo, filepath) }
+          return appended_files
         end
 
         File.exist?("#{@path_to_repo}/#{file[:filename]}")
