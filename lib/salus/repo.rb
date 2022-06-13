@@ -61,7 +61,7 @@ module Salus
       define_method :"#{file[:handle]}_present?" do
         if file[:wildcard]
           files = RepoSearcher.new(@path_to_repo, config)
-                              .run_rg("rg", "--files", "-g", file[:filename])
+            .run_rg("rg", "--files", "-g", file[:filename])
           return false unless files.any?
 
           # Prepend path_to_repo to the relative filepath
