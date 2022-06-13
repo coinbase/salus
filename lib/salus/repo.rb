@@ -103,18 +103,5 @@ module Salus
     def initialize(path_to_repo = nil)
       @path_to_repo = path_to_repo
     end
-
-    ##
-    # @param [Array] args CLI rg command and options to run
-    # @return [Array<String>] Relative path of files returned
-    # from running the command.
-    def run_rg(*args)
-      data = IO.popen(args, chdir: @path_to_repo).read
-      return [] if data == ""
-
-      files = data.lines.map { |file| File.join(path_to_repo, file.strip) }
-
-      files
-    end
   end
 end
