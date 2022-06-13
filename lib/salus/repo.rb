@@ -53,14 +53,15 @@ module Salus
       { handle: :hardhat_config_ts, filename: 'hardhat.config.ts' }
     ].freeze
 
-    #Define config for RepoSearcher
+    # Define config for RepoSearcher
     config = { "pass_on_raise" => false, "scanner_timeout_s" => 0 }
 
     # Define file checkers.
     IMPORTANT_FILES.each do |file|
       define_method :"#{file[:handle]}_present?" do
         if file[:wildcard]
-          files = RepoSearcher.new(@path_to_repo, config).run_rg("rg", "--files", "-g", file[:filename])
+          files = RepoSearcher.new(@path_to_repo, config)
+                  .run_rg("rg", "--files", "-g", file[:filename])
           return false unless files.any?
 
           # Prepend path_to_repo to the relative filepath
