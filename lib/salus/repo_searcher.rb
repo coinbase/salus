@@ -55,6 +55,19 @@ module Salus
       files_copied&.uniq
     end
 
+    ##
+    # @param [Array] args CLI rg command and options to run
+    # @return [Array<String>] Relative path of files returned
+    # from running the command.
+    def run_rg(*args)
+      data = IO.popen(args, chdir: @path_to_repo).read
+      return [] if data == ""
+
+      files = data.lines.map(&:strip)
+      # files are all relative to @path_to_repo
+      files
+    end
+
     protected
 
     ##
@@ -147,19 +160,6 @@ module Salus
     # the mathces
     def search_files_containing(content)
       run_rg("rg", "-l", content)
-    end
-
-    ##
-    # @param [Array] args CLI rg command and options to run
-    # @return [Array<String>] Relative path of files returned
-    # from running the command.
-    def run_rg(*args)
-      data = IO.popen(args, chdir: @path_to_repo).read
-      return [] if data == ""
-
-      files = data.lines.map(&:strip)
-      # files are all relative to @path_to_repo
-      files
     end
 
     ##
