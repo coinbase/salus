@@ -82,12 +82,8 @@ module Salus::Scanners
         #       A list of paths must be joined by | as in a regular expression, not comma
         opts += ' --filter-paths ' + @config['filter-paths'].to_s + ''
       end
-      if !@config.key?('exclude-informational') || @config['exclude-informational']
-        opts += ' --exclude-informational'
-      end
-      if !@config.key?('exclude-optimization') || @config['exclude-optimization']
-        opts += ' --exclude-optimization'
-      end
+      opts += ' --exclude-informational' if @config.dig('exclude-informational')
+      opts += ' --exclude-optimization' if @config.dig('exclude-optimization')
       opts
     end
 
