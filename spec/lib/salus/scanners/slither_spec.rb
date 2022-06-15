@@ -157,7 +157,10 @@ describe Salus::Scanners::Slither do
       let(:repo) { Salus::Repo.new(repo_dir) }
 
       it 'should report two vulneraiblities with empty config' do
-        scanner = Salus::Scanners::Slither.new(repository: repo, config: {})
+        scanner = Salus::Scanners::Slither.new(repository: repo, config: {
+                                                 "exclude-optimization" => true,
+          "exclude-informational" => true
+                                               })
         scanner.run
 
         expect(scanner.report.to_h.fetch(:passed)).to eq(false)
