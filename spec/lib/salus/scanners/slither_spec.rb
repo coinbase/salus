@@ -97,7 +97,10 @@ describe Salus::Scanners::Slither do
 
     it 'should fail when there are vulnerabilities' do
       repo = Salus::Repo.new('spec/fixtures/slither/solidity-bad')
-      scanner = Salus::Scanners::Slither.new(repository: repo, config: {})
+      scanner = Salus::Scanners::Slither.new(repository: repo, config: {
+                                               "exclude-optimization" => true,
+"exclude-informational" => true
+                                             })
       scanner.run
 
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
