@@ -1,0 +1,4 @@
+scanner_configs:
+  Slither:
+    filter-paths: contracts/bad-contract1.sol
+    exclude-optimization: false

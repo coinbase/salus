@@ -211,5 +211,47 @@ describe Salus::Scanners::Slither do
         expect(scanner.report.to_h.fetch(:passed)).to eq(true)
       end
     end
+
+    context 'exclude-optimization' do
+      let(:repo_dir) { 'spec/fixtures/slither/solidity-bad3' }
+      let(:repo) { Salus::Repo.new(repo_dir) }
+      
+      it 'should exclude optimization findings when true' do
+        config_file = "#{repo_dir}/salus_exclude_optimization.yaml"
+        config = Salus::Config.new([File.read(config_file)]).scanner_configs['Slither']
+        scanner = Salus::Scanners::Slither.new(repository: repo, config: config)
+        scanner.run
+        expect(scanner.report.to_h.fetch(:passed)).to eq(true)
+      end
+
+      it 'should include optimization findings when false' do
+        config_file = "#{repo_dir}/salus_include_optimization.yaml"
+        config = Salus::Config.new([File.read(config_file)]).scanner_configs['Slither']
+        scanner = Salus::Scanners::Slither.new(repository: repo, config: config)
+        scanner.run
+        expect(scanner.report.to_h.fetch(:passed)).to eq(false)
+      end
+    end
+
+    context 'exclude-informational' do
+      let(:repo_dir) { 'spec/fixtures/slither/solidity-bad3' }
+      let(:repo) { Salus::Repo.new(repo_dir) }
+
+      it 'should exclude informational findings when configured' do
+        config_file = "#{repo_dir}/salus_exclude_informational.yaml"
+        config = Salus::Config.new([File.read(config_file)]).scanner_configs['Slither']
+        scanner = Salus::Scanners::Slither.new(repository: repo, config: config)
+        scanner.run
+        expect(scanner.report.to_h.fetch(:passed)).to eq(true)
+      end
+
+      it 'should include informational findings when configured' do
+        config_file = "#{repo_dir}/salus_include_informational.yaml"
+        config = Salus::Config.new([File.read(config_file)]).scanner_configs['Slither']
+        scanner = Salus::Scanners::Slither.new(repository: repo, config: config)
+        scanner.run
+        expect(scanner.report.to_h.fetch(:passed)).to eq(false)
+      end
+    end
   end
 end
