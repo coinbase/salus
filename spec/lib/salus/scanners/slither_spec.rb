@@ -215,7 +215,7 @@ describe Salus::Scanners::Slither do
     context 'exclude-optimization' do
       let(:repo_dir) { 'spec/fixtures/slither/solidity-bad3' }
       let(:repo) { Salus::Repo.new(repo_dir) }
-      
+
       it 'should exclude optimization findings when true' do
         config_file = "#{repo_dir}/salus_exclude_optimization.yaml"
         config = Salus::Config.new([File.read(config_file)]).scanner_configs['Slither']
