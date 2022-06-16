@@ -26,6 +26,7 @@ module Salus
 
   EXIT_SUCCESS = 0
   EXIT_FAILURE = 1
+  EXIT_HARD_ERROR = 2
 
   FULL_SARIF_DIFF_FORMAT = 'sarif_diff_full'.freeze
 
@@ -33,6 +34,8 @@ module Salus
 
   class << self
     include SalusBugsnag
+
+    attr_accessor :hard_error_encountered
 
     # rubocop:disable Metrics/ParameterLists
     def scan(
@@ -87,7 +90,12 @@ module Salus
       heartbeat_thr&.kill
 
       # System exit with success or failure - useful for CI builds.
-      system_exit(processor.passed? ? EXIT_SUCCESS : EXIT_FAILURE)
+      exit_status = if Salus.hard_error_encountered
+                      EXIT_HARD_ERROR
+                    else
+                      processor.passed? ? EXIT_SUCCESS : EXIT_FAILURE
+                    end
+      system_exit(exit_status)
     end
 
     def process_sarif_full_diff(processor, sarif_diff_full, git_diff)
@@ -129,3 +137,5 @@ module Salus
     end
   end
 end
+
+Salus.hard_error_encountered = false

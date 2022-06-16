@@ -76,6 +76,60 @@ describe Salus::CLI do
       end
     end
 
+    context 'Hard errors' do
+      it 'Should exit with Salus::EXIT_HARD_ERROR with hard error even if pass_on_raise=true' do
+        Dir.chdir('spec/fixtures/bundle_audit/cves_found') do
+          ENV['SALUS_CONFIGURATION'] = 'file:///salus_malformed_pass_on_raise.yaml'
+          expect(
+            Salus.scan(repo_path: '.', quiet: true)
+          ).to eq(Salus::EXIT_HARD_ERROR)
+
+          out_sarif = 'm_sarif.json'
+          expect(File).to exist(out_sarif)
+          sarif_content = JSON.parse(File.read(out_sarif))
+          remove_file(out_sarif)
+
+          expected_invocation = { "executionSuccessful" => false,
+                                 "toolExecutionNotifications" =>
+                                 [{ "descriptor" => { "id" => "SAL003" },
+                                   "level" => "error",
+                                   "message" => { "text" => "==== Salus Errors\n[\n  {\n    "\
+                                   "\"exception\": {\n      "\
+                                   "\"advisory_id\": 1234\n    },\n    "\
+                                   "\"hard_error\": true,\n    \"message\": "\
+                                   "\"malformed exception; expected a hash with "\
+                                   "keys advisory_id, changed_by, notes\"\n  }\n]" } }] }
+          expect(sarif_content['runs'][0]['invocations'][0]).to eq(expected_invocation)
+        end
+      end
+
+      it 'Should exit with Salus::EXIT_HARD_ERROR with hard error even if pass_on_raise=false' do
+        Dir.chdir('spec/fixtures/bundle_audit/cves_found') do
+          ENV['SALUS_CONFIGURATION'] = 'file:///salus_malformed_pass_on_raise_false.yaml'
+          expect(
+            Salus.scan(repo_path: '.', quiet: true)
+          ).to eq(Salus::EXIT_HARD_ERROR)
+
+          out_sarif = 'm_sarif.json'
+          expect(File).to exist(out_sarif)
+          sarif_content = JSON.parse(File.read(out_sarif))
+          remove_file(out_sarif)
+
+          expected_invocation = { "executionSuccessful" => false,
+                                 "toolExecutionNotifications" =>
+                                 [{ "descriptor" => { "id" => "SAL003" },
+                                   "level" => "error",
+                                   "message" => { "text" => "==== Salus Errors\n[\n  {\n    "\
+                                   "\"exception\": {\n      "\
+                                   "\"advisory_id\": 1234\n    },\n    "\
+                                   "\"hard_error\": true,\n    \"message\": "\
+                                   "\"malformed exception; expected a hash with "\
+                                   "keys advisory_id, changed_by, notes\"\n  }\n]" } }] }
+          expect(sarif_content['runs'][0]['invocations'][0]).to eq(expected_invocation)
+        end
+      end
+    end
+
     context 'local_uri paths' do
       it 'should not write local report bad file path' do
         Dir.chdir('spec/fixtures/repo2') do

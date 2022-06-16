@@ -1,0 +1,12 @@
+reports:
+  - uri: file://m_sarif.json
+    format: sarif
+
+active_scanners:
+  - BundleAudit
+
+scanner_configs:
+  BundleAudit:
+    pass_on_raise: true
+    exceptions:
+      - advisory_id: 1234
