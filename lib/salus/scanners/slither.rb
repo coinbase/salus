@@ -84,6 +84,10 @@ module Salus::Scanners
       end
       opts += ' --exclude-informational' if @config.dig('exclude-informational')
       opts += ' --exclude-optimization' if @config.dig('exclude-optimization')
+
+      exceptions = fetch_exception_ids
+      opts += ' --exclude ' + exceptions.join('|') if exceptions.count.positive?
+
       opts
     end
 

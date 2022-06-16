@@ -137,6 +137,50 @@ describe Salus::Scanners::Slither do
       expect(errs.size).to eq(1)
       expect(errs[0][:message]).to include('truffle compile` failed. Can you run it?')
     end
+
+    context 'for vulnerability exceptions' do
+      it 'should exclude multiple exceptions from the result' do
+        repo = Salus::Repo.new('spec/fixtures/slither/solidity-bad')
+        scanner = Salus::Scanners::Slither.new(repository: repo, config: { 'exceptions' => [
+                                                 { 'advisory_id' => "incorrect-shift",
+                                                   'expiration' => '2200-12-31',
+                                                   'changed_by' => 'appsec', 'notes' => 'foo1' },
+                                                 { 'advisory_id' => "dead-code",
+                                                   'expiration' => '2200-12-31',
+                                                   'changed_by' => 'appsec', 'notes' => 'foo2' }
+                                               ] })
+
+        scanner.run
+
+        expect(scanner.report.to_h.fetch(:passed)).to eq(false)
+        stdout = scanner.report.to_h[:info][:stdout]
+        stdout = JSON.parse(stdout)
+        detectors = stdout.map { |x| x["check"] }
+        expect(detectors).not_to include("incorrect-shift")
+        expect(detectors).not_to include("dead-code")
+      end
+
+      it 'should exclude only the active exceptions from the result' do
+        repo = Salus::Repo.new('spec/fixtures/slither/solidity-bad')
+        scanner = Salus::Scanners::Slither.new(repository: repo, config: { 'exceptions' => [
+                                                 { 'advisory_id' => "incorrect-shift",
+                                                   'expiration' => '2200-12-31',
+                                                   'changed_by' => 'appsec', 'notes' => 'foo1' },
+                                                 { 'advisory_id' => "dead-code",
+                                                   'expiration' => '1999-12-31',
+                                                   'changed_by' => 'appsec', 'notes' => 'foo2' }
+                                               ] })
+
+        scanner.run
+
+        expect(scanner.report.to_h.fetch(:passed)).to eq(false)
+        stdout = scanner.report.to_h[:info][:stdout]
+        stdout = JSON.parse(stdout)
+        detectors = stdout.map { |x| x["check"] }
+        expect(detectors).not_to include("incorrect-shift")
+        expect(detectors).to include("dead-code")
+      end
+    end
   end
 
   describe '#version_valid?' do
