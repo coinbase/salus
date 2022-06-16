@@ -26,6 +26,8 @@ module Salus
 
   EXIT_SUCCESS = 0
   EXIT_FAILURE = 1
+  # report_error(:hard_error => true) will cause EXIT_HARD_ERROR
+  # meaning salus will always fail even if pass_on_raise=true
   EXIT_HARD_ERROR = 2
 
   FULL_SARIF_DIFF_FORMAT = 'sarif_diff_full'.freeze
