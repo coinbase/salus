@@ -1,0 +1,4 @@
+scanner_configs:
+  Slither:
+    exclude-informational: false
+    exclude-optimization: true

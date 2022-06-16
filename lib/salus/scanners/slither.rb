@@ -17,7 +17,7 @@ module Salus::Scanners
     # These tend to report noisy results
     # https://github.com/crytic/slither#detectors lists the detectors
     # the bottom ones are informational/optimzation detectors (see impact column)
-    SLITHER_CMD = 'slither . --json - --exclude-informational --exclude-optimization'.freeze
+    SLITHER_CMD = 'slither . --json -'.freeze
 
     def should_run?
       # only support truffle/hardhat for now
@@ -82,6 +82,8 @@ module Salus::Scanners
         #       A list of paths must be joined by | as in a regular expression, not comma
         opts += ' --filter-paths ' + @config['filter-paths'].to_s + ''
       end
+      opts += ' --exclude-informational' if @config.dig('exclude-informational')
+      opts += ' --exclude-optimization' if @config.dig('exclude-optimization')
       opts
     end
 
