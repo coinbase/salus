@@ -30,12 +30,19 @@ module Salus::Scanners
       Salus::ScannerTypes::SAST
     end
 
+    def pre_slither_commands
+      if @repository.yarn_lock_present?
+        ['yarn install']
+      else
+        ['npm install', 'npm config set user 0']
+      end
+    end
+
     def run
       # Most Solidity projects will be Hardhat (https://hardhat.org/) or Truffle (https://trufflesuite.com/),
       # which both use NPM to manage Solidity dependencies. We should NPM install in these cases
       # to ensure Slither has the needed dependencies for scanning
 
-      pre_slither_commands = ['npm install', 'npm config set user 0']
       pre_slither_commands.each do |pcmd|
         shell_return = run_shell(pcmd, chdir: @repository.path_to_repo)
         if !shell_return.success?

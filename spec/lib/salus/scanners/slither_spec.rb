@@ -73,6 +73,22 @@ describe Salus::Scanners::Slither do
     end
   end
 
+  describe '#pre_slither_commands' do
+    it 'should return yarn command if there is yarn.lock' do
+      repo = Salus::Repo.new('spec/fixtures/slither/solidity_hardhat_js_yarn')
+      scanner = Salus::Scanners::Slither.new(repository: repo, config: {})
+      expected_pre_commands = ['yarn install']
+      expect(scanner.pre_slither_commands).to eq(expected_pre_commands)
+    end
+
+    it 'should return npm commands if no yarn.lock' do
+      repo = Salus::Repo.new('spec/fixtures/slither/solidity_hardhat_js')
+      scanner = Salus::Scanners::Slither.new(repository: repo, config: {})
+      expected_pre_commands = ['npm install', 'npm config set user 0']
+      expect(scanner.pre_slither_commands).to eq(expected_pre_commands)
+    end
+  end
+
   describe '#run' do
     it 'should error with npm install fails' do
       repo = Salus::Repo.new('spec/fixtures/slither/solidity_truffle_bad_config')
