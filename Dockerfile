@@ -68,9 +68,6 @@ RUN pip install wheel \
   && mv .local/bin/bandit .local/bin/bandit2 \
   && pip3 install --user bandit==${BANDIT_VERSION}
 
-ENV SLITHER_VERSION 0.8.3
-RUN pip3 install --user --no-cache-dir slither-analyzer==${SLITHER_VERSION}
-
 ### Ruby
 # ruby gems
 COPY Gemfile Gemfile.lock /home/
