@@ -96,9 +96,7 @@ module Salus::Scanners
           Timeout.timeout(scanner_timeout) { run }
         end
 
-        if @report.errors.any?
-          pass_on_raise ? @report.pass : @report.fail
-        end
+        update_report_status(pass_on_raise) if @report.errors.any?
       rescue Timeout::Error
         error_message = "Scanner #{name} timed out after #{scanner_timeout} seconds"
         timeout_error_data = {
@@ -106,8 +104,7 @@ module Salus::Scanners
           error_class: ScannerTimeoutError
         }
 
-        pass_on_raise ? @report.pass : @report.fail
-
+        update_report_status(pass_on_raise)
         record_error(timeout_error_data)
         bugsnag_notify(error_message)
 
@@ -120,7 +117,7 @@ module Salus::Scanners
           backtrace: e.backtrace.take(5)
         }
 
-        pass_on_raise ? @report.pass : @report.fail
+        update_report_status(pass_on_raise)
 
         # Record the error so that the Salus report captures the issue.
         record_error(error_data)
@@ -190,9 +187,9 @@ module Salus::Scanners
 
     # Report an error in a scanner.
     def report_error(message, hsh = {})
+      Salus.hard_error_encountered = true if hsh.dig(:hard_error) == true
       hsh[:message] = message
       @report.error(hsh)
-
       message = "#{@report.scanner_name} error: #{message}, build: #{@builds}" if @builds
       bugsnag_notify(message)
     end
@@ -204,6 +201,12 @@ module Salus::Scanners
     end
 
     protected
+
+    def update_report_status(pass_on_raise)
+      return @report.fail if @report.errors.any? { |err| err.dig(:hard_error) == true }
+
+      pass_on_raise ? @report.pass : @report.fail
+    end
 
     def record_error(error)
       @report.error(error)
@@ -363,7 +366,8 @@ module Salus::Scanners
         unless except.valid?
           report_error(
             'malformed exception; expected a hash with keys advisory_id, changed_by, notes',
-            exception: exception
+            exception: exception,
+            hard_error: true
           )
           next
         end
