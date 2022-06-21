@@ -87,7 +87,6 @@
       "RubyPackageScanner",
       "RubyVersionScanner",
       "Semgrep",
-      "Slither",
       "YarnAudit"
     ],
     "enforced_scanners": [
@@ -207,10 +206,6 @@
         "scanner_timeout_s": 0
       },
       "Semgrep": {
-        "pass_on_raise": false,
-        "scanner_timeout_s": 0
-      },
-      "Slither": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
