@@ -76,6 +76,7 @@ module Salus::Scanners::OSV
         if dependency['version'].present?
           version = dependency['version']
           # Cleanup version string to handle case like -
+          # dependency.xx.xx:1.1.1 -> 1.5.0
           # 1.2.1.somestring / 9999.0-empty-to-avoid-conflict-with-test /
           # 30.3.0-deprecated-use-gradle-api
           version = version.split("->")[1].strip if version.include? "->"
