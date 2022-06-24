@@ -24,3 +24,4 @@ This section describes high-level check-list style steps for adding a programmin
 
 ## References
 - Slither scanner support Pull Request: https://github.com/coinbase/salus/pull/623/files#
+  - Note: Slither is not compatible with Salus License, hence it has been removed from Salus
