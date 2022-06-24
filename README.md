@@ -120,6 +120,8 @@ Contribution to this project is extremely welcome and it's our sincere hope that
 
 You can read more about [getting your development environment set up](docs/development.md), or [the architecture of Salus](docs/architecture.md).
 
+You can also find [steps to add a new scanner to Salus](docs/adding_scanner.md)
+
 ## 📃 License
 
 This project is available open source under the terms of the [Apache 2.0 License](https://opensource.org/licenses/Apache-2.0).
