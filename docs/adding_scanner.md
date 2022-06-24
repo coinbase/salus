@@ -9,12 +9,12 @@ This section describes high-level check-list style steps for adding a programmin
 
 - Make sure to evaluate various scanners available for scanning security vulnerabilities for a programming language 
 - If your scanner will use any open source libraries or projects please review the open source software policy.  
-- Updating Dockerfile for installing the scanner. Sample Pull request: https://github.com/coinbase/salus/pull/623/files#
+- Updating Dockerfile for installing the scanner. Sample Pull request: https://github.com/coinbase/salus/pull/563
 - Add/Update Documentation: Make sure to update the README.MD file and also add a scanner specific documentation in https://github.com/coinbase/salus/tree/master/docs/scanners
   - Update lib/salus/repo.rb with the IMPORTANT files we look for in the repo to enable a particular scanner
-- Add scanner to lib/salus/scanners sample PR https://github.com/coinbase/salus/pull/623/files#
+- Add scanner to lib/salus/scanners sample PR https://github.com/coinbase/salus/pull/563
   - Make sure to provide scanned_languages and scanner_type
-- Add Unit-tests, sample PR https://github.com/coinbase/salus/pull/623/files#
+- Add Unit-tests, sample PR https://github.com/coinbase/salus/pull/563
 - Ensure SARIF report generation logic is added
 - Write up a Test plan and furnish details with the test plan run results in the Pull Request to help speed up merging process
 - Make scanner configurable, for example "filter-paths" to ignore mocks/tests, exclude-informational, exclude-optimization to reduce noise or false positives
@@ -23,5 +23,4 @@ This section describes high-level check-list style steps for adding a programmin
 - Update salus.yaml on the repos for enabling scanner as an active-scanner
 
 ## References
-- Slither scanner support Pull Request: https://github.com/coinbase/salus/pull/623/files#
-  - Note: Slither is not compatible with Salus License, hence it has been removed from Salus
+- GradleOSV scanner support Pull Request: https://github.com/coinbase/salus/pull/563
