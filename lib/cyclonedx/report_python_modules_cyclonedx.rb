@@ -7,6 +7,18 @@ module Cyclonedx
       super(scan_report)
     end
 
+    def build_component(dependency)
+      super.merge({
+                    "licenses": licenses_for(dependency)
+                  })
+    end
+
+    def licenses_for(dependency)
+      return [] if dependency[:licenses].nil?
+
+      dependency[:licenses].map { |license| { "license" => { "id" => license } } }
+    end
+
     # Return version string to be used in purl or component
     def version_string(dependency, is_purl_version = false)
       # Check if dependency is pinned
