@@ -1,4 +1,6 @@
 require 'salus/scanners/base'
+require 'uri'
+require 'net/http'
 
 # Report python library usage
 
@@ -20,7 +22,6 @@ module Salus::Scanners
       dependencies = JSON.parse(shell_return.stdout)
 
       dependencies.each do |name, version|
-        puts find_licenses_for(name)
         report_dependency(
           'requirements.txt',
           type: 'pypi',
