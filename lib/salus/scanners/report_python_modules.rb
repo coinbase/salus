@@ -51,7 +51,7 @@ module Salus::Scanners
 
       licenses = JSON.parse(res.body).dig("info", "license")
       [licenses]
-    rescue RubyGemsApiError, StandardError => e
+    rescue PyPiApiError, StandardError => e
       msg = "Unable to gather license information " \
         "using pypi api " \
         "with error message #{e.class}: #{e.message}"
