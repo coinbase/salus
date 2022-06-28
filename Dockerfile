@@ -41,7 +41,7 @@ RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get inst
   cmake \
   pkg-config \
   wget \
-  unzip  && apt-get clean
+  unzip && apt-get clean
 
 
 # The apt-get clean above is to reduce the size of the image by removing
@@ -69,14 +69,16 @@ RUN pip install wheel \
 COPY Gemfile Gemfile.lock /home/
 RUN cd /home \
   && gem install bundler -v '2.3.1' \
-  && bundle config --local path /root/vendor/bundle \
+  && bundle config --local path /root/vendor \
+  && bundle config set force_ruby_platform true \
   && gem update --system \
-  && bundle install --deployment --no-cache --clean --with scanners \
-  && bundle exec bundle audit update
+  && bundle install --jobs 4 --deployment --no-cache --clean --with scanners \
+ --path /root/vendor
 
 ### Semgrep
 ENV SEMGREP_VERSION 0.62.0
 RUN pip3 install --user --no-cache-dir semgrep==${SEMGREP_VERSION}
+
 
 ############################################
 # Java Tooling
@@ -158,7 +160,6 @@ RUN cd /home && yarn install \
 ####
 ############################################
 
-
 FROM ruby:2.7.2-slim
 #@sha256:b9eebc5a6956f1def4698fac0930e7a1398a50c4198313fe87af0402cab8d149
 
@@ -207,14 +208,15 @@ COPY --from=rust-builder /usr/local/cargo/bin/rg /usr/bin/rg
 #COPY --from=rust-builder /root/.cargo /root/.cargo
 COPY --from=rust-builder /var/lib/apt/lists /var/lib/apt/lists
 
-# Copy over our gems and 
-#  /home/vendor/bundle/ruby/2.7.0/gems etc
-COPY --from=builder /root/vendor /home/vendor
+# Copy over our gems
+COPY --chown=salus-cli:salus-cli --from=builder /root/vendor /home/vendor
 COPY --from=builder /root/.local /root/.local
 
 
 # Copy npm & yarn binaries
 # Not needed unless we want to run npm from image
+
+COPY --from=node-builder /usr/local/bin/node /usr/local/bin
 COPY --from=node-builder /usr/local/bin/npm /usr/local/bin
 COPY --from=node-builder /usr/local/bin/yarn /usr/local/bin
 COPY --from=node-builder /usr/local/lib/node_modules /usr/local/lib/node_modules
@@ -240,17 +242,18 @@ USER salus-cli
 # ENV HOME /home
 WORKDIR /home
 
-# copy salus code
-COPY Gemfile Gemfile.lock /home/
+# Copy salus code
+COPY Gemfile /home/
 COPY bin /home/bin
 COPY lib /home/lib
 COPY salus-default.yaml /home/
 
-# Make sure bundler is pointing to the previosuly installed dpes
+# Make sure bundler is pointing to the previosuly installed deps
 RUN gem install bundler -v'2.3.1' \
-  && bundle config --local path /home/vendor/bundle \
-  && bundle config --local without development:test
+  && bundle config --local path /home/vendor \
+  && bundle config --local with deployment:scanners
 
-
+COPY Gemfile Gemfile.lock ./
+ 
 # run the salus scan when this docker container is run
 ENTRYPOINT ["bundle", "exec", "./bin/salus", "scan"]

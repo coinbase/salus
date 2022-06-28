@@ -6,11 +6,12 @@
 # docker run salus-tests
 
 FROM salus-local
+USER root
 
-RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get install -y libicu-dev && apt-get install -y --no-install-recommends \
   make gcc
 
-COPY Gemfile Gemfile.lock ./
+COPY Gemfile ./
 
 RUN bundle install --with test
 
