@@ -68,11 +68,6 @@ RUN pip install wheel \
   && mv .local/bin/bandit .local/bin/bandit2 \
   && pip3 install --user bandit==${BANDIT_VERSION}
 
-
-ENV PIPDEPTREE_VERSION 2.2.1
-RUN pip3 install --user pipdeptree==${PIPDEPTREE_VERSION}
-RUN pip3 install --user pipgrip
-
 ### Ruby
 # ruby gems
 COPY Gemfile Gemfile.lock /home/
