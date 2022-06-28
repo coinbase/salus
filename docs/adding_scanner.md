@@ -9,8 +9,8 @@ This section describes high-level check-list style steps for adding a programmin
 
 #### Pre Check
 - Evaluate various scanners available for scanning security vulnerabilities for a programming language and select the best one to integrate. This allows us to have a single high quality scanner compared to multiple low quality scanners.
-- Please review the LICENSE specified by the scanner or open source libraries or projects that will be included. Example [LICENSE](https://github.com/PyCQA/bandit/blob/main/LICENSE).
-
+- Please review the LICENSE specified by the scanner or open source libraries or projects that will be included. Libraries with permissive [LICENSE](https://github.com/PyCQA/bandit/blob/main/LICENSE) such as Apache License 2.0 is preferred over libraries with restrictive LICENSE.
+ 
 
 #### Implementation
 - Update [Dockerfile](https://github.com/coinbase/salus/blob/master/Dockerfile) to install any dependencies that are required to run the scanner. Sample [PR](https://github.com/coinbase/salus/pull/563).
