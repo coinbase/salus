@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+
+dependencies {
+    // testImplementation group: 'com.google.guava', name: 'guava', version: '30.1-jre'
+    testImplementation('org.apache.logging.log4j:log4j-api:2.17.1') {
+        force = true
+    }
+    testImplementation('org.apache.logging.log4j:log4j-api:2.11.2') {
+        force = true
+    }
+}
+
+

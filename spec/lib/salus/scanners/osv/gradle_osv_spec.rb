@@ -95,6 +95,16 @@ describe Salus::Scanners::OSV::GradleOSV do
         expect(scanner.report.to_h.fetch(:passed)).to eq(true)
       end
 
+      it 'should pass when resolved dependencies are found in build.gradle' do
+        repo = Salus::Repo.new(File.join(fixture_path, 'success_resolved_dependency'))
+
+        scanner = Salus::Scanners::OSV::GradleOSV.new(repository: repo, config: {})
+        stub_req_with_valid_response
+        scanner.run
+
+        expect(scanner.report.to_h.fetch(:passed)).to eq(true)
+      end
+
       it 'should fail when no dependencies are found in build.gradle' do
         repo = Salus::Repo.new(File.join(fixture_path, 'no_dependency_found'))
 
