@@ -77,6 +77,8 @@ module Salus
         return process_sarif_full_diff(processor, sarif_diff_full, git_diff)
       end
 
+      return processor.auto_fix if ENV['AUTOFIX'].to_s == 'true'
+
       ### Scan Project ###
       # Scan project with Salus client.
       processor.scan_project

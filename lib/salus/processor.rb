@@ -129,6 +129,18 @@ module Salus
       [threads, files_copied]
     end
 
+    def auto_fix
+      Config::SCANNERS.each do |scanner_name, scanner_class|
+        next unless @config.scanner_active?(scanner_name)
+
+        if scanner_class.instance_methods.include?(:auto_fix)
+          config = @config.scanner_configs.fetch(scanner_name, {})
+          scanner = scanner_class.new(repository: Repo.new(@repo_path), config: config)
+          scanner.auto_fix
+        end
+      end
+    end
+
     def scan_project
       # Record overall running time of the scan
       threads = []

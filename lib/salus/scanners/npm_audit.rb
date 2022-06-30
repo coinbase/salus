@@ -27,6 +27,20 @@ module Salus::Scanners
       ['javascript']
     end
 
+    def auto_fix
+      puts "**** RUNNING NPM AUTO FIX ****"
+      cmd = "npm audit fix"
+      Dir.chdir(@repository.path_to_repo) do
+        res = run_shell(cmd)
+        puts "RES = #{res.inspect}"
+      end
+      # TODO: check results for success/error
+
+      # expected_outfiles = ['package-lock.json']
+      # append .autofix to each outfile name
+      # return new filenames and whether cmd ran successfully
+    end
+
     private
 
     def audit_command_with_options
