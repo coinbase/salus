@@ -35,7 +35,7 @@ module Salus::Scanners
       res = nil
       Dir.chdir(@repository.path_to_repo) do
         res = run_shell(cmd)
-        puts "Result from #{cmd} = #{res.inspect}"
+        # puts "Result from #{cmd} = #{res.inspect}"
       end
 
       if res.success?
