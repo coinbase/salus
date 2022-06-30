@@ -29,6 +29,7 @@ module Salus::Scanners
 
     def auto_fix
       puts "**** RUNNING NPM AUTO FIX ****"
+      file_map = {}
       cmd = "npm audit fix"
       res = nil
       Dir.chdir(@repository.path_to_repo) do
@@ -37,13 +38,18 @@ module Salus::Scanners
       end
 
       if res.success?
-        expected_outfiles = ['package-lock.json', 'package.json']
-        expected_outfiles.map! { |f| f + '.autofix' }
-        [expected_outfiles, true] # true for ran successfully
+        file_map = {
+          'package-lock.json' => 'package-lock.json.autofix',
+          'package.json' => 'package.json.autofix'
+        }
+        # TODO: copy files for renaming
       else
         puts "ERROR! #{cmd} failed"
-        [{}, false]  # false for failure
       end
+
+      # if success then file_map maps updated files to new names
+      # if failure then file_map remains empty map
+      file_map
     end
 
     private
