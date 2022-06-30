@@ -48,6 +48,7 @@ module Salus::Scanners
           new_name = File.join(@repository.path_to_repo, new_name)
           FileUtils.cp(name, new_name)
         end
+        puts "Yay! #{cmd} ran successfully"
       else
         puts "ERROR! #{cmd} failed"
       end
