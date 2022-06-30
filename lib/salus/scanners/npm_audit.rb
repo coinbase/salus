@@ -1,3 +1,4 @@
+require 'fileutils'
 require 'json'
 require 'salus/scanners/node_audit'
 
@@ -42,7 +43,11 @@ module Salus::Scanners
           'package-lock.json' => 'package-lock.json.autofix',
           'package.json' => 'package.json.autofix'
         }
-        # TODO: copy files for renaming
+        file_map.each do |name, new_name|
+          name = File.join(@repository.path_to_repo, name)
+          new_name = File.join(@repository.path_to_repo, new_name)
+          FileUtils.cp(name, new_name)
+        end
       else
         puts "ERROR! #{cmd} failed"
       end
