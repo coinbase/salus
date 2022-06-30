@@ -30,15 +30,20 @@ module Salus::Scanners
     def auto_fix
       puts "**** RUNNING NPM AUTO FIX ****"
       cmd = "npm audit fix"
+      res = nil
       Dir.chdir(@repository.path_to_repo) do
         res = run_shell(cmd)
-        puts "RES = #{res.inspect}"
+        puts "Result from #{cmd} = #{res.inspect}"
       end
-      # TODO: check results for success/error
 
-      # expected_outfiles = ['package-lock.json']
-      # append .autofix to each outfile name
-      # return new filenames and whether cmd ran successfully
+      if res.success?
+        expected_outfiles = ['package-lock.json', 'package.json']
+        expected_outfiles.map! { |f| f + '.autofix' }
+        [expected_outfiles, true] # true for ran successfully
+      else
+        puts "ERROR! #{cmd} failed"
+        [{}, false]  # false for failure
+      end
     end
 
     private
