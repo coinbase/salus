@@ -16,7 +16,7 @@ module Cyclonedx
     def licenses_for(dependency)
       return [] if dependency[:licenses].nil?
 
-      dependency[:licenses].map { |license| { "license" => { "id" => license } } }
+      dependency[:licenses].map { |license| { "license": { "id" => license } } }
     end
 
     # Return version string to be used in purl or component
