@@ -225,6 +225,12 @@ module Salus
       JSON.pretty_generate(diff_report)
     end
 
+    def to_autofix
+      h = {}
+      h['a'] = 'b'
+      h
+    end
+
     def get_sarif_results(sarif_data)
       sarif_results = Set.new
       sarif_data["runs"].each do |run|
@@ -283,6 +289,7 @@ module Salus
                       when 'sarif_diff' then to_sarif_diff
                       when 'sarif_diff_full' then to_full_sarif_diff
                       when 'cyclonedx-json' then to_cyclonedx(directive['cyclonedx_options'] || {})
+                      when 'autofix' then to_autofix
                       else
                         raise ExportReportError, "unknown report format #{directive['format']}"
                       end

@@ -27,6 +27,36 @@ module Salus::Scanners
       ['javascript']
     end
 
+    def auto_fix
+      puts "**** RUNNING NPM AUTO FIX ****"
+      file_map = {}
+      cmd = "npm audit fix"
+      res = nil
+      Dir.chdir(@repository.path_to_repo) do
+        res = run_shell(cmd)
+        # puts "Result from #{cmd} = #{res.inspect}"
+      end
+
+      if res.success?
+        file_map = {
+          'package-lock.json' => 'package-lock.json.autofix',
+          'package.json' => 'package.json.autofix'
+        }
+        file_map.each do |name, new_name|
+          name = File.join(@repository.path_to_repo, name)
+          new_name = File.join(@repository.path_to_repo, new_name)
+          FileUtils.cp(name, new_name)
+        end
+        puts "Yay! #{cmd} ran successfully. Updated files renamed to\n#{file_map.inspect}"
+      else
+        puts "ERROR! #{cmd} failed"
+      end
+
+      # if success then file_map maps updated files to new names
+      # if failure then file_map remains empty map
+      file_map
+    end
+
     private
 
     def audit_command_with_options

@@ -142,6 +142,8 @@ module Salus::Scanners
       end
 
       unex_prod_advisories.empty? ? report_success : report_failure
+
+      auto_fix if self.class.instance_methods.include?(:auto_fix)
     end
 
     def should_run?
