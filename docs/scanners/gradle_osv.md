@@ -4,14 +4,14 @@ Finds vulnerable dependencies in a Gradle project. By default, GradleOSV Scanner
 
 ## Configuration
 
-To enable Gradle Scanning, add the following configuration to build.gradle for repo with single project or a repo with multiple sub projects.
+To enable Gradle Scanning, add the following configuration to root build.gradle.
 ```java
 # Single Project setup
-task reportDependencies(type: reportDependencies) {}
+task reportDependencies(type: DependencyReportTask) {}
 
 # Muti Project setup
 subprojects {
-    task allDeps(type: DependencyReportTask) {}
+    task reportDependencies(type: DependencyReportTask) {}
 }
 ```
 
