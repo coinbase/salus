@@ -6,5 +6,8 @@ repositories {
     mavenCentral()
 }
 
+task reportDependencies(type: DependencyReportTask) {}
+
+
 dependencies {
 }

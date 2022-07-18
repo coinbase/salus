@@ -6,9 +6,9 @@ module Gradle
     dependency_metadata_regex = /-\s(?<group_id>.+):(?<artifact_id>.+):(?<version>.+)/
 
     # 'gradle dependencies' command needs to be run in the folder where buid.gradle is present.
-    shell_result = run_shell("#{GRADLE7} dependencies")
+    shell_result = run_shell("#{GRADLE7} reportDependencies")
 
-    shell_result = run_shell("#{GRADLE6} dependencies") if !shell_result.success?
+    shell_result = run_shell("#{GRADLE6} reportDependencies") if !shell_result.success?
     if !shell_result.success?
       report_error("Gradle Version Not supported. Please Upgrade to gradle version 6 and above")
       return []

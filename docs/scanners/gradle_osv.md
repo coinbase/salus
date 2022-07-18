@@ -4,6 +4,17 @@ Finds vulnerable dependencies in a Gradle project. By default, GradleOSV Scanner
 
 ## Configuration
 
+To enable Gradle Scanning, add the following configuration to build.gradle for repo with single project or a repo with multiple sub projects.
+```java
+# Single Project setup
+task reportDependencies(type: reportDependencies) {}
+
+# Muti Project setup
+subprojects {
+    task allDeps(type: DependencyReportTask) {}
+}
+```
+
 When a CVE is present in a dependency, the best course of action is to upgrade the dependency to a patched version. However, if there is currently no patch available or its a false positive you can use the following configuration option to ignore a particular CVE.
 
 ```yaml

@@ -6,6 +6,8 @@ repositories {
     mavenCentral()
 }
 
+task reportDependencies(type: DependencyReportTask) {}
+
 // RuntimeOnly replaces runtime
 dependencies {
   implementation group: 'test.test.test', name: 'sample', version: '2.6.2'
