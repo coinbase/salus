@@ -50,7 +50,7 @@ module Salus::Scanners
         url = advisory.fetch(:url)
         excepted = exception_ids.include?(id)
 
-        # Each advisory corresponds to some instance of the vulnerable
+        # Before NPM 8, each advisory corresponded to some instance of the vulnerable
         # package, which may exist as in multiple nodes of the dependency
         # tree. advisory[:findings] is an array of objects looking roughly
         # like:
@@ -65,8 +65,10 @@ module Salus::Scanners
 
         # For all advisories,
         prod = raw_advisories_for_id.any? do |raw_advisory|
-          # any there there any instances in the prod dependency tree?
-          raw_advisory.fetch(:findings).any? { |finding| !finding.fetch(:dev, false) }
+          if raw_advisory.has_key?(:findings)
+            # any there there any instances in the prod dependency tree?
+            raw_advisory.fetch(:findings).any? { |finding| !finding.fetch(:dev, false) }
+          end
         end
 
         Advisory.new(id, module_name, title, severity, url, prod, excepted)

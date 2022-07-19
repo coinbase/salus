@@ -29,14 +29,17 @@ module Salus::Scanners
 
     private
 
-    def audit_command_with_options
+    def prod_only_audit_command
       command = AUDIT_COMMAND
-      command += " --production" if @config["production"] == true
+      command += " --only=prod"
       command
     end
 
     def scan_for_cves(chdir: File.expand_path(@repository&.path_to_repo))
-      raw = run_shell(audit_command_with_options).stdout
+      if @config["production"] == true
+      else
+      end
+      raw = run_shell(prod_only_audit_command).stdout
       json = JSON.parse(raw, symbolize_names: true)
 
       if json.key?(:error)
@@ -44,18 +47,35 @@ module Salus::Scanners
         summary = json[:error][:summary] || '<none>'
 
         message =
-          "`#{audit_command_with_options}` failed unexpectedly (error code #{code}):\n" \
+          "`#{prod_only_audit_command}` failed unexpectedly (error code #{code}):\n" \
           "```\n#{summary}\n```"
 
         raise message
       end
-
-      if json[:advisories] && !json[:advisories].empty?
-        Salus::PackageLockJson.new(File.join(chdir, 'package-lock.json')).add_line_number(json)
-      end
+      
       report_stdout(json)
 
-      json.fetch(:advisories).values
+
+      if !json.has_key?(:vulnerabilities)
+        if json[:advisories] && !json[:advisories].empty?
+          Salus::PackageLockJson.new(File.join(chdir, 'package-lock.json')).add_line_number(json)
+        end
+  
+        return json.fetch(:advisories).values
+      else
+        all_vulns = json.fetch(:vulnerabilities).map do |_, dependency_vulns|
+          dependency_vulns.fetch(:via)
+        end
+  
+        all_vulns = all_vulns.flatten
+  
+        all_vulns.each do |vuln|
+          vuln[:module_name] = vuln.delete :name
+          vuln[:id] = vuln.delete :source
+        end
+
+        return all_vulns
+      end
     end
   end
 end
