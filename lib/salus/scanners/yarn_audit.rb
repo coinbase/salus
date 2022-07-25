@@ -15,7 +15,7 @@ module Salus::Scanners
                   ' production --json'.freeze
     YARN_VERSION_COMMAND = 'yarn --version'.freeze
     BREAKING_VERSION = "2.0.0".freeze
-    YARN_INSTALL_COMMAND = 'yarn install'.freeze
+    YARN_COMMAND = 'yarn'.freeze
 
     def should_run?
       @repository.yarn_lock_present?
@@ -204,7 +204,7 @@ module Salus::Scanners
 
       # Run yarn install to regenerate yarn.lock file
       # Return contents of package.json and yarn.lock as results
-      reinstall_dependencies = run_shell(YARN_INSTALL_COMMAND)
+      reinstall_dependencies = run_shell(YARN_COMMAND)
       if reinstall_dependencies.success?
         updates["yarn.lock"] = @repository.yarn_lock
         updates["package.json"] = @repository.package_json
