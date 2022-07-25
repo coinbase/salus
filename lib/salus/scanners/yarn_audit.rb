@@ -121,7 +121,7 @@ module Salus::Scanners
       Salus::YarnLock.new(File.join(chdir, 'yarn.lock')).add_line_number(vulns)
       vulns = combine_vulns(vulns)
 
-      run_auto_fix(vulns)
+      # run_auto_fix(vulns)
 
       log(format_vulns(vulns))
       report_stdout(vulns.to_json)
