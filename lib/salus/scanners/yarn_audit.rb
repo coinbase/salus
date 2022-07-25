@@ -15,6 +15,7 @@ module Salus::Scanners
                   ' production --json'.freeze
     YARN_VERSION_COMMAND = 'yarn --version'.freeze
     BREAKING_VERSION = "2.0.0".freeze
+    YARN_INSTALL_COMMAND = 'yarn install'.freeze
 
     def should_run?
       @repository.yarn_lock_present?
@@ -119,6 +120,9 @@ module Salus::Scanners
 
       Salus::YarnLock.new(File.join(chdir, 'yarn.lock')).add_line_number(vulns)
       vulns = combine_vulns(vulns)
+
+      run_auto_fix(vulns)
+
       log(format_vulns(vulns))
       report_stdout(vulns.to_json)
       report_failure
@@ -184,6 +188,28 @@ module Salus::Scanners
       command << 'dependencies ' unless dep_types.include?('dependencies')
       command << 'devDependencies ' unless dep_types.include?('devDependencies')
       command << 'optionalDependencies ' unless dep_types.include?('optionalDependencies')
+    end
+
+    def run_auto_fix(vulnerabilities)
+      updates = {}
+      # This method forces indirect dependency updates
+      # There is an issue with package - lerna
+      # TODO - Validate if this works for direct dependency or it would need to
+      # updated directly in package.json
+      vulnerabilities.each do |vulnerability|
+        package = vulnerability["Package"]
+        regex = /^(#{package}.*?)\n\n/m
+        @repository.yarn_lock.gsub!(regex, '')
+      end
+
+      # Run yarn install to regenerate yarn.lock file
+      # Return contents of package.json and yarn.lock as results
+      reinstall_dependencies = run_shell(YARN_INSTALL_COMMAND)
+      if reinstall_dependencies.success?
+        updates["yarn.lock"] = @repository.yarn_lock
+        updates["package.json"] = @repository.package_json
+      end
+      updates
     end
 
     # severity and vuln title in the yarn output looks like
