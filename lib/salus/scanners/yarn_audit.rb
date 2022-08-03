@@ -325,12 +325,40 @@ module Salus::Scanners
       paths.each do |path|
         if path == package
           puts "Direct dependency"
-          # fix_direct_dependency_v2(package)
+          fix_direct_dependency_v2(package, patched_version)
         else
+          puts "Indirect dependency"
           fix_indirect_dependency_v2(path, patched_version)
         end
       end
     end
+
+    def fix_direct_dependency_v2(package, patched_version)
+      # update dependencies, devdependencies, resolution
+      package_json = JSON.parse(@repository.package_json)
+      current_package_info = run_shell("yarn info #{package} --json")
+      current_package_info = JSON.parse(current_package_info.stdout)
+      list_of_versions = current_package_info["data"]["versions"]
+      version_to_update_to = select_upgrade_version(patched_version, list_of_versions)
+      
+      if package_json["dependencies"].key?(package)
+        package_json["dependencies"][package] = "^#{version_to_update_to}"
+      end
+
+      if package_json["resolutions"].key?(package)
+        package_json["resolutions"][package] = "^#{version_to_update_to}"
+      end
+
+      if package_json["devDependencies"].key?(package)
+        package_json["devDependencies"][package] = "^#{version_to_update_to}"
+      end
+      # Final result for package_json
+      puts package_json
+    end
+
+
+
+
 
     def fix_indirect_dependency_v2(path, patched_version)
       yarn_lock = @repository.yarn_lock
@@ -362,13 +390,9 @@ module Salus::Scanners
           updated_section.gsub!(/(integrity.*)/, integrity)
           yarn_lock.sub!(/^(#{name}.*?)\n\n/m, updated_section)
         end
+         # Final result for yarn.lock
         puts yarn_lock
       end
-
-      # yarn_lock.scan(parent_package_regex).each do |dep|
-      #   puts dep
-      #   puts dep.to_s.match(/(#{affected_package}.*)/)
-      # end
     end
 
     def select_upgrade_version(patched_version, list_of_versions)
