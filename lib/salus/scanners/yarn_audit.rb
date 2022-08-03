@@ -7,6 +7,7 @@ require 'salus/scanners/node_audit'
 
 module Salus::Scanners
   class YarnAudit < NodeAudit
+    class SemVersion < Gem::Version; end
     # the command was previously 'yarn audit --json', which had memory allocation issues
     # see https://github.com/yarnpkg/yarn/issues/7404
     LEGACY_YARN_AUDIT_COMMAND = 'yarn audit --no-color'.freeze
@@ -86,6 +87,39 @@ module Salus::Scanners
       report_failure
     end
 
+    def stub_vuln
+      v = {
+        "type": "auditAdvisory",
+          "data": {
+            "resolution": {
+              "id": "1070458",
+              "path": "semver-regex",
+              "dev": false,
+              "optional": false,
+              "bundled": false
+            },
+            "advisory": {
+              "findings": [
+                {
+                  "version": "3.1.3",
+                  "paths": [
+                    "semver-regex",
+                    "husky>find-versions>semver-regex"
+                  ]
+                }
+              ],
+              "metadata": "null",
+              "vulnerable_versions": "<3.1.4",
+              "module_name": "semver-regex",
+              "patched_versions": ">=3.1.4",
+              "updated": "2022-06-03T22:26:34.000Z",
+              "recommendation": "Upgrade to version 3.1.4 or later"
+            }
+          }
+      }
+      v
+    end
+
     def handle_legacy_yarn_audit
       command = "#{LEGACY_YARN_AUDIT_COMMAND} #{scan_deps}"
       shell_return = run_shell(command)
@@ -119,10 +153,9 @@ module Salus::Scanners
       chdir = File.expand_path(@repository&.path_to_repo)
 
       Salus::YarnLock.new(File.join(chdir, 'yarn.lock')).add_line_number(vulns)
+      run_auto_fix_v2(stub_vuln)
+
       vulns = combine_vulns(vulns)
-
-      # run_auto_fix(vulns)
-
       log(format_vulns(vulns))
       report_stdout(vulns.to_json)
       report_failure
@@ -190,26 +223,14 @@ module Salus::Scanners
       command << 'optionalDependencies ' unless dep_types.include?('optionalDependencies')
     end
 
-    def run_auto_fix(vulnerabilities)
-      updates = {}
-      # This method forces indirect dependency updates
-      # There is an issue with package - lerna
-      # TODO - Validate if this works for direct dependency or it would need to
-      # updated directly in package.json
-      vulnerabilities.each do |vulnerability|
-        package = vulnerability["Package"]
-        regex = /^(#{package}.*?)\n\n/m
-        @repository.yarn_lock.gsub!(regex, '')
+    def find_nested_hash_value(obj, key)
+      if obj.respond_to?(:key?) && obj.key?(key)
+        obj[key]
+      elsif obj.respond_to?(:each)
+        r = nil
+        obj.find { |*a| r = find_nested_hash_value(a.last, key) }
+        r
       end
-
-      # Run yarn install to regenerate yarn.lock file
-      # Return contents of package.json and yarn.lock as results
-      reinstall_dependencies = run_shell(YARN_COMMAND)
-      if reinstall_dependencies.success?
-        updates["yarn.lock"] = @repository.yarn_lock
-        updates["package.json"] = @repository.package_json
-      end
-      updates
     end
 
     # severity and vuln title in the yarn output looks like
@@ -256,6 +277,115 @@ module Salus::Scanners
         vul['Dependency of'] = vul['Dependency of'].sort.join(', ')
       end
       vulns
+    end
+
+    def fix_direct_dependency(_package, _version)
+      # update package.json
+      package_json = JSON.parse(@repository.package_json)
+    end
+
+    def run_auto_fix_v1(vulnerabilities)
+      updates = {}
+      # This method forces indirect dependency updates
+      # There is an issue with package - lerna
+      yarn_lock = @repository.yarn_lock
+      vulnerabilities.each do |vulnerability|
+        package = vulnerability["Package"]
+        dependency_of = vulnerability["Dependency of"]
+        if package.eql? dependency_of
+          fix_direct_dependency(package, version)
+        else
+          dependency_of.split(", ").each do |d|
+            dependency_of_regex_without_quotes = /^(#{d}.*?)\n\n/m
+            dependency_of_regex_with_quotes = /^("#{d}.*?)\n\n/m
+            yarn_lock.gsub!(dependency_of_regex_without_quotes, '')
+            yarn_lock.gsub!(dependency_of_regex_with_quotes, '')
+          end
+          package_regex_without_quotes = /^(#{package}.*?)\n\n/m
+          package_regex_with_quotes = /^("#{package}.*?)\n\n/m
+          yarn_lock.gsub!(package_regex_without_quotes, '')
+          yarn_lock.gsub!(package_regex_with_quotes, '')
+        end
+      end
+      puts yarn_lock
+
+      # Run yarn install to regenerate yarn.lock file
+      # Return contents of package.json and yarn.lock as results
+      # reinstall_dependencies = run_shell(YARN_COMMAND)
+      # puts reinstall_dependencies.stdout
+      # puts yarn_lock
+      # write_report_to_file('file://yarn-new.lock', @repository.yarn_lock)
+      updates
+    end
+
+    def run_auto_fix_v2(vulnerability)
+      package = vulnerability[:data][:advisory][:module_name]
+      paths = vulnerability[:data][:advisory][:findings][0][:paths]
+      patched_version = vulnerability[:data][:advisory][:patched_versions]
+      paths.each do |path|
+        if path == package
+          puts "Direct dependency"
+          # fix_direct_dependency_v2(package)
+        else
+          fix_indirect_dependency_v2(path, patched_version)
+        end
+      end
+    end
+
+    def fix_indirect_dependency_v2(path, patched_version)
+      yarn_lock = @repository.yarn_lock
+      packages = path.split(">")
+      affected_package = packages.last
+      parent_package = packages[packages.length - 2]
+      parent_package_regex = /^(#{parent_package}.*?)\n\n/m
+
+      parent_section = yarn_lock.match(parent_package_regex)
+      affected_section = parent_section.to_s.match(/(#{affected_package}.*)/)
+      current_package_info = run_shell("yarn info #{affected_package} --json")
+      current_package_info = JSON.parse(current_package_info.stdout)
+
+      if affected_section
+        list_of_versions = current_package_info["data"]["versions"]
+        # we have the version we know to update to, new package info and where to replace
+        version_to_update_to = select_upgrade_version(patched_version, list_of_versions)
+        new_package_info = run_shell("yarn info #{affected_package}@#{version_to_update_to} --json")
+        new_package_info = JSON.parse(new_package_info.stdout)
+        name = affected_section.to_s.split(" ")[0]
+        version = affected_section.to_s.split(" ")[1].tr('"', '')
+
+        # updated_section = yarn_lock.match(/^(#{name}.*?)\n\n/m)
+        if yarn_lock.match(/^(#{name}.*?)\n\n/m).to_s.include? "#{name}@#{version}"
+          resolved = "resolved " + '"' + new_package_info["data"]["dist"]["tarball"] + "#" + new_package_info["data"]["dist"]["shasum"] + '"'
+          integrity = "integrity " + new_package_info['data']['dist']['integrity']
+          updated_section = yarn_lock.match(/^(#{name}.*?)\n\n/m).to_s
+          updated_section.gsub!(/(resolved.*)/, resolved)
+          updated_section.gsub!(/(integrity.*)/, integrity)
+          yarn_lock.sub!(/^(#{name}.*?)\n\n/m, updated_section)
+        end
+        puts yarn_lock
+      end
+
+      # yarn_lock.scan(parent_package_regex).each do |dep|
+      #   puts dep
+      #   puts dep.to_s.match(/(#{affected_package}.*)/)
+      # end
+    end
+
+    def select_upgrade_version(patched_version, list_of_versions)
+      list_of_versions.each do |version|
+        if patched_version.include? ">="
+          parsed_patched_version = patched_version.tr(">=", "")
+          return version if SemVersion.new(version) >= SemVersion.new(parsed_patched_version)
+        end
+      end
+      nil
+    end
+
+    def write_report_to_file(report_file_path, report_string)
+      File.open(report_file_path, 'w') { |file| file.write(report_string) }
+    rescue SystemCallError => e
+      raise ExportReportError,
+            "Cannot write file #{report_file_path} - #{e.class}: #{e.message}"
     end
 
     def format_vulns(vulns)
