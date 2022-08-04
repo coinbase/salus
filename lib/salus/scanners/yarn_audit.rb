@@ -88,12 +88,12 @@ module Salus::Scanners
     end
 
     def stub_vuln
-      v = {
+      v = [{
         "type": "auditAdvisory",
           "data": {
             "resolution": {
               "id": "1070458",
-              "path": "semver-regex",
+              "path": "nanoid",
               "dev": false,
               "optional": false,
               "bundled": false
@@ -103,20 +103,47 @@ module Salus::Scanners
                 {
                   "version": "3.1.3",
                   "paths": [
-                    "semver-regex",
-                    "husky>find-versions>semver-regex"
+                    "mocha>nanoid"
                   ]
                 }
               ],
               "metadata": "null",
               "vulnerable_versions": "<3.1.4",
-              "module_name": "semver-regex",
-              "patched_versions": ">=3.1.4",
+              "module_name": "nanoid",
+              "patched_versions": ">=3.1.31",
               "updated": "2022-06-03T22:26:34.000Z",
               "recommendation": "Upgrade to version 3.1.4 or later"
             }
           }
-      }
+      },
+           {
+             "type": "auditAdvisory",
+               "data": {
+                 "resolution": {
+                   "id": "1070458",
+                   "path": "follow-redirects",
+                   "dev": false,
+                   "optional": false,
+                   "bundled": false
+                 },
+                 "advisory": {
+                   "findings": [
+                     {
+                       "version": "3.1.3",
+                       "paths": [
+                         "http-proxy>follow-redirects"
+                       ]
+                     }
+                   ],
+                   "metadata": "null",
+                   "vulnerable_versions": "<3.1.4",
+                   "module_name": "follow-redirects",
+                   "patched_versions": ">=1.14.8",
+                   "updated": "2022-06-03T22:26:34.000Z",
+                   "recommendation": "Upgrade to version 3.1.4 or later"
+                 }
+               }
+           }]
       v
     end
 
@@ -319,56 +346,59 @@ module Salus::Scanners
     end
 
     def run_auto_fix_v2(vulnerability)
-      package = vulnerability[:data][:advisory][:module_name]
-      paths = vulnerability[:data][:advisory][:findings][0][:paths]
-      patched_version = vulnerability[:data][:advisory][:patched_versions]
-      paths.each do |path|
-        if path == package
-          puts "Direct dependency"
-          fix_direct_dependency_v2(package, patched_version)
-        else
-          puts "Indirect dependency"
-          fix_indirect_dependency_v2(path, patched_version)
+      # package_json = JSON.parse(@repository.package_json)
+      # yarn_lock = @repository.yarn_lock
+      vulnerability.each do |v|
+        package = v[:data][:advisory][:module_name]
+        paths = v[:data][:advisory][:findings][0][:paths]
+        patched_version = v[:data][:advisory][:patched_versions]
+        paths.each do |path|
+          if path == package
+            puts "Direct dependency"
+            fix_direct_dependency_v2(package, patched_version)
+          else
+            puts "Indirect dependency"
+            fix_indirect_dependency_v2(path, patched_version)
+          end
         end
       end
+      puts @repository.yarn_lock
     end
 
     def fix_direct_dependency_v2(package, patched_version)
       # update dependencies, devdependencies, resolution
-      package_json = JSON.parse(@repository.package_json)
       current_package_info = run_shell("yarn info #{package} --json")
       current_package_info = JSON.parse(current_package_info.stdout)
       list_of_versions = current_package_info["data"]["versions"]
       version_to_update_to = select_upgrade_version(patched_version, list_of_versions)
-      
-      if package_json["dependencies"].key?(package)
-        package_json["dependencies"][package] = "^#{version_to_update_to}"
+
+      if @repository.package_json["dependencies"].key?(package)
+        @repository.package_json["dependencies"][package] = "^#{version_to_update_to}"
       end
 
-      if package_json["resolutions"].key?(package)
-        package_json["resolutions"][package] = "^#{version_to_update_to}"
+      if @repository.package_json["resolutions"].key?(package)
+        @repository.package_json["resolutions"][package] = "^#{version_to_update_to}"
       end
 
-      if package_json["devDependencies"].key?(package)
-        package_json["devDependencies"][package] = "^#{version_to_update_to}"
+      if @repository.package_json["devDependencies"].key?(package)
+        @repository.package_json["devDependencies"][package] = "^#{version_to_update_to}"
       end
-      # Final result for package_json
-      puts package_json
     end
 
-
-
-
-
     def fix_indirect_dependency_v2(path, patched_version)
-      yarn_lock = @repository.yarn_lock
+      # TODO
+      # 1. better parsing of dependency block - handle quotes / no quotes / avoid substring match
+      # 2. Update parent block to use caret if fixed dependency
+      # 3. Handle private registries
+      # 4. In vulns sometimes there are multiple advisories and when one is saying go to 1.1.1 and other is saying go to 1.1.2
+      # select the higher version to go.
       packages = path.split(">")
       affected_package = packages.last
       parent_package = packages[packages.length - 2]
       parent_package_regex = /^(#{parent_package}.*?)\n\n/m
 
-      parent_section = yarn_lock.match(parent_package_regex)
-      affected_section = parent_section.to_s.match(/(#{affected_package}.*)/)
+      parent_section = @repository.yarn_lock.match(parent_package_regex)
+      affected_section = parent_section.to_s.match(/(#{affected_package} .*)/)
       current_package_info = run_shell("yarn info #{affected_package} --json")
       current_package_info = JSON.parse(current_package_info.stdout)
 
@@ -378,27 +408,36 @@ module Salus::Scanners
         version_to_update_to = select_upgrade_version(patched_version, list_of_versions)
         new_package_info = run_shell("yarn info #{affected_package}@#{version_to_update_to} --json")
         new_package_info = JSON.parse(new_package_info.stdout)
-        name = affected_section.to_s.split(" ")[0]
-        version = affected_section.to_s.split(" ")[1].tr('"', '')
+        splits = affected_section.to_s.split(" ", 2)
+        name = splits[0]
+        version = splits[1].tr('"', '')
 
-        # updated_section = yarn_lock.match(/^(#{name}.*?)\n\n/m)
-        if yarn_lock.match(/^(#{name}.*?)\n\n/m).to_s.include? "#{name}@#{version}"
+        # Update parent block to use caret if fixed dependency
+        if version.exclude?("^")
+          @repository.yarn_lock.sub!(/#{affected_section}/, name + ' "^' + version_to_update_to + '"')
+        end
+
+        # This block needs more work to acurately match the subsection
+        if @repository.yarn_lock.match(/^(#{name}.*?)\n\n/m).to_s.include? "#{name}@#{version}"
+          # This is to edit the actual subsection
+          version = "version " + '"' + version_to_update_to + '"'
           resolved = "resolved " + '"' + new_package_info["data"]["dist"]["tarball"] + "#" + new_package_info["data"]["dist"]["shasum"] + '"'
           integrity = "integrity " + new_package_info['data']['dist']['integrity']
-          updated_section = yarn_lock.match(/^(#{name}.*?)\n\n/m).to_s
+          updated_section = @repository.yarn_lock.match(/^(#{name}.*?)\n\n/m).to_s
+          updated_section.gsub!(/(version.*)/, version)
           updated_section.gsub!(/(resolved.*)/, resolved)
           updated_section.gsub!(/(integrity.*)/, integrity)
-          yarn_lock.sub!(/^(#{name}.*?)\n\n/m, updated_section)
+          # puts updated_section
+          @repository.yarn_lock.sub!(/^(#{name}.*?)\n\n/m, updated_section)
         end
-         # Final result for yarn.lock
-        puts yarn_lock
+        # Final result for yarn.lock
       end
     end
 
     def select_upgrade_version(patched_version, list_of_versions)
       list_of_versions.each do |version|
         if patched_version.include? ">="
-          parsed_patched_version = patched_version.tr(">=", "")
+          parsed_patched_version = patched_version.tr(">=", "").tr(">= ", "")
           return version if SemVersion.new(version) >= SemVersion.new(parsed_patched_version)
         end
       end
