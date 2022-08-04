@@ -81,16 +81,16 @@ describe Salus::Scanners::YarnAudit do
         expect(vul["ID"]).to be_kind_of(Integer)
       end
 
-      id_vuls = vulns.select { |v| v['ID'] == 1_067_329 }
+      id_vuls = vulns.select { |v| v['ID'] == 1_070_415 }
       expect(id_vuls.size).to eq(1)
       # vul has two merged dependdency of
-      expected_vul = { "Package" => "glob-parent",
-                      "Patched in" => ">=5.1.2",
-                      "Dependency of" => "chokidar, gulp",
-                      "More info" => "https://www.npmjs.com/advisories/1067329",
+      expected_vul = { "Package" => "nth-check",
+                      "Patched in" => ">=2.0.1",
+                      "Dependency of" => "rollup-plugin-postcss",
+                      "More info" => "https://www.npmjs.com/advisories/1070415",
                       "Severity" => "high",
-                      "Title" => "Regular expression denial of service in glob-parent",
-                      "ID" => 1_067_329 }
+                      "Title" => "Inefficient Regular Expression Complexity in nth-check",
+                      "ID" => 1_070_415 }
       expect(id_vuls[0]).to eq(expected_vul)
 
       id_vuls = vulns.select { |v| v['ID'] == 1_067_342 }
