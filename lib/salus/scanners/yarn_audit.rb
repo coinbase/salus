@@ -10,7 +10,7 @@ module Salus::Scanners
     # the command was previously 'yarn audit --json', which had memory allocation issues
     # see https://github.com/yarnpkg/yarn/issues/7404
     LEGACY_YARN_AUDIT_COMMAND = 'yarn audit --no-color'.freeze
-    LATEST_YARN_AUDIT_ALL_COMMAND = 'yarn npm audit --all --json'.freeze
+    LATEST_YARN_AUDIT_ALL_COMMAND = 'yarn npm audit --json'.freeze
     LATEST_YARN_AUDIT_PROD_COMMAND = 'yarn npm audit --environment'\
                   ' production --json'.freeze
     YARN_VERSION_COMMAND = 'yarn --version'.freeze
