@@ -1,5 +1,6 @@
 require 'json'
 require 'salus/scanners/node_audit'
+require 'salus/versions'
 
 # Yarn Audit scanner integration. Flags known malicious or vulnerable
 # dependencies in javascript projects that are packaged with yarn.
@@ -8,6 +9,7 @@ require 'salus/scanners/node_audit'
 module Salus::Scanners
   class YarnAudit < NodeAudit
     class SemVersion < Gem::Version; end
+    class ExportReportError < StandardError; end
     # the command was previously 'yarn audit --json', which had memory allocation issues
     # see https://github.com/yarnpkg/yarn/issues/7404
     LEGACY_YARN_AUDIT_COMMAND = 'yarn audit --no-color'.freeze
@@ -183,8 +185,8 @@ module Salus::Scanners
       run_auto_fix_v2(stub_vuln)
 
       vulns = combine_vulns(vulns)
-      log(format_vulns(vulns))
-      report_stdout(vulns.to_json)
+      # log(format_vulns(vulns))
+      # report_stdout(vulns.to_json)
       report_failure
     end
 
@@ -362,6 +364,7 @@ module Salus::Scanners
           end
         end
       end
+      # write_report_to_file("yarn-new.lock", @repository.yarn_lock)
       puts @repository.yarn_lock
     end
 
@@ -385,6 +388,15 @@ module Salus::Scanners
       end
     end
 
+    # def find_package_info(package, version=nil)
+    #   if version.nil?
+    #     info = run_shell("yarn info #{package} --json")
+    #     if info.success?
+    #       results = info.stdout
+    #       return JSON.parse(results)
+    #     end
+    #   else
+
     def fix_indirect_dependency_v2(path, patched_version)
       # TODO
       # 1. better parsing of dependency block - handle quotes / no quotes / avoid substring match
@@ -395,7 +407,7 @@ module Salus::Scanners
       packages = path.split(">")
       affected_package = packages.last
       parent_package = packages[packages.length - 2]
-      parent_package_regex = /^(#{parent_package}.*?)\n\n/m
+      parent_package_regex = /^(#{parent_package}@.*?)\n\n/m
 
       parent_section = @repository.yarn_lock.match(parent_package_regex)
       affected_section = parent_section.to_s.match(/(#{affected_package} .*)/)
@@ -418,19 +430,20 @@ module Salus::Scanners
         end
 
         # This block needs more work to acurately match the subsection
-        if @repository.yarn_lock.match(/^(#{name}.*?)\n\n/m).to_s.include? "#{name}@#{version}"
-          # This is to edit the actual subsection
-          version = "version " + '"' + version_to_update_to + '"'
-          resolved = "resolved " + '"' + new_package_info["data"]["dist"]["tarball"] + "#" + new_package_info["data"]["dist"]["shasum"] + '"'
-          integrity = "integrity " + new_package_info['data']['dist']['integrity']
-          updated_section = @repository.yarn_lock.match(/^(#{name}.*?)\n\n/m).to_s
-          updated_section.gsub!(/(version.*)/, version)
-          updated_section.gsub!(/(resolved.*)/, resolved)
-          updated_section.gsub!(/(integrity.*)/, integrity)
-          # puts updated_section
-          @repository.yarn_lock.sub!(/^(#{name}.*?)\n\n/m, updated_section)
+        # if @repository.yarn_lock.match(/^(#{name}.*?)\n\n/m).to_s.include? "#{name}@#{version}"
+        # This is to edit the actual subsection
+        @repository.yarn_lock.scan(/^("|)(#{name}.*?)\n\n/m).each do |subsection|
+          if subsection.join.include? "#{name}@#{version}"
+            temp = subsection.join
+            updated_version = "version " + '"' + version_to_update_to + '"'
+            resolved = "resolved " + '"' + new_package_info["data"]["dist"]["tarball"] + "#" + new_package_info["data"]["dist"]["shasum"] + '"'
+            integrity = "integrity " + new_package_info['data']['dist']['integrity']
+            temp.sub!(/(version.*)/, updated_version)
+            temp.sub!(/(resolved.*)/, resolved)
+            temp.sub!(/(integrity.*)/, integrity)
+            @repository.yarn_lock.sub!(subsection.join, temp)
+          end
         end
-        # Final result for yarn.lock
       end
     end
 
@@ -442,13 +455,6 @@ module Salus::Scanners
         end
       end
       nil
-    end
-
-    def write_report_to_file(report_file_path, report_string)
-      File.open(report_file_path, 'w') { |file| file.write(report_string) }
-    rescue SystemCallError => e
-      raise ExportReportError,
-            "Cannot write file #{report_file_path} - #{e.class}: #{e.message}"
     end
 
     def format_vulns(vulns)
