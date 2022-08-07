@@ -182,11 +182,11 @@ module Salus::Scanners
       chdir = File.expand_path(@repository&.path_to_repo)
 
       Salus::YarnLock.new(File.join(chdir, 'yarn.lock')).add_line_number(vulns)
-      run_auto_fix_v2(stub_vuln)
+      run_auto_fix(stub_vuln)
 
       vulns = combine_vulns(vulns)
-      # log(format_vulns(vulns))
-      # report_stdout(vulns.to_json)
+      log(format_vulns(vulns))
+      report_stdout(vulns.to_json)
       report_failure
     end
 
@@ -308,46 +308,7 @@ module Salus::Scanners
       vulns
     end
 
-    def fix_direct_dependency(_package, _version)
-      # update package.json
-      package_json = JSON.parse(@repository.package_json)
-    end
-
-    def run_auto_fix_v1(vulnerabilities)
-      updates = {}
-      # This method forces indirect dependency updates
-      # There is an issue with package - lerna
-      yarn_lock = @repository.yarn_lock
-      vulnerabilities.each do |vulnerability|
-        package = vulnerability["Package"]
-        dependency_of = vulnerability["Dependency of"]
-        if package.eql? dependency_of
-          fix_direct_dependency(package, version)
-        else
-          dependency_of.split(", ").each do |d|
-            dependency_of_regex_without_quotes = /^(#{d}.*?)\n\n/m
-            dependency_of_regex_with_quotes = /^("#{d}.*?)\n\n/m
-            yarn_lock.gsub!(dependency_of_regex_without_quotes, '')
-            yarn_lock.gsub!(dependency_of_regex_with_quotes, '')
-          end
-          package_regex_without_quotes = /^(#{package}.*?)\n\n/m
-          package_regex_with_quotes = /^("#{package}.*?)\n\n/m
-          yarn_lock.gsub!(package_regex_without_quotes, '')
-          yarn_lock.gsub!(package_regex_with_quotes, '')
-        end
-      end
-      puts yarn_lock
-
-      # Run yarn install to regenerate yarn.lock file
-      # Return contents of package.json and yarn.lock as results
-      # reinstall_dependencies = run_shell(YARN_COMMAND)
-      # puts reinstall_dependencies.stdout
-      # puts yarn_lock
-      # write_report_to_file('file://yarn-new.lock', @repository.yarn_lock)
-      updates
-    end
-
-    def run_auto_fix_v2(vulnerability)
+    def run_auto_fix(vulnerability)
       # package_json = JSON.parse(@repository.package_json)
       # yarn_lock = @repository.yarn_lock
       vulnerability.each do |v|
@@ -357,18 +318,18 @@ module Salus::Scanners
         paths.each do |path|
           if path == package
             puts "Direct dependency"
-            fix_direct_dependency_v2(package, patched_version)
+            fix_direct_dependency(package, patched_version)
           else
             puts "Indirect dependency"
-            fix_indirect_dependency_v2(path, patched_version)
+            fix_indirect_dependency(path, patched_version)
           end
         end
       end
-      # write_report_to_file("yarn-new.lock", @repository.yarn_lock)
+      # write to file - replace or create new file
       puts @repository.yarn_lock
     end
 
-    def fix_direct_dependency_v2(package, patched_version)
+    def fix_direct_dependency(package, patched_version)
       # update dependencies, devdependencies, resolution
       vulnerable_package_info = run_shell("yarn info #{package} --json")
       vulnerable_package_info = JSON.parse(vulnerable_package_info.stdout)
@@ -388,12 +349,12 @@ module Salus::Scanners
       end
     end
 
-    def fix_indirect_dependency_v2(path, patched_version)
+    def fix_indirect_dependency(path, patched_version)
       # TODO
       # 1. better parsing of dependency block - handle quotes / no quotes / avoid substring match
       # 2. Update parent block to use caret if fixed dependency
       # 3. Handle private registries
-      # 4. In vulns sometimes there are multiple advisories and when one is saying go to 1.1.1 
+      # 4. In vulns sometimes there are multiple advisories and when one is saying go to 1.1.1
       # and other is saying go to 1.1.2
       # select the higher version to go.
       # 5. Error handling and when to fail updates
