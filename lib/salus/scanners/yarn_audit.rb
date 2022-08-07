@@ -370,9 +370,9 @@ module Salus::Scanners
 
     def fix_direct_dependency_v2(package, patched_version)
       # update dependencies, devdependencies, resolution
-      current_package_info = run_shell("yarn info #{package} --json")
-      current_package_info = JSON.parse(current_package_info.stdout)
-      list_of_versions = current_package_info["data"]["versions"]
+      vulnerable_package_info = run_shell("yarn info #{package} --json")
+      vulnerable_package_info = JSON.parse(vulnerable_package_info.stdout)
+      list_of_versions = vulnerable_package_info["data"]["versions"]
       version_to_update_to = select_upgrade_version(patched_version, list_of_versions)
 
       if @repository.package_json["dependencies"].key?(package)
@@ -388,63 +388,81 @@ module Salus::Scanners
       end
     end
 
-    # def find_package_info(package, version=nil)
-    #   if version.nil?
-    #     info = run_shell("yarn info #{package} --json")
-    #     if info.success?
-    #       results = info.stdout
-    #       return JSON.parse(results)
-    #     end
-    #   else
-
     def fix_indirect_dependency_v2(path, patched_version)
       # TODO
       # 1. better parsing of dependency block - handle quotes / no quotes / avoid substring match
       # 2. Update parent block to use caret if fixed dependency
       # 3. Handle private registries
-      # 4. In vulns sometimes there are multiple advisories and when one is saying go to 1.1.1 and other is saying go to 1.1.2
+      # 4. In vulns sometimes there are multiple advisories and when one is saying go to 1.1.1 
+      # and other is saying go to 1.1.2
       # select the higher version to go.
+      # 5. Error handling and when to fail updates
       packages = path.split(">")
-      affected_package = packages.last
+      vulnerable_package = packages.last
       parent_package = packages[packages.length - 2]
+
+      # find subparent block to understand heirarchy
       parent_package_regex = /^(#{parent_package}@.*?)\n\n/m
-
       parent_section = @repository.yarn_lock.match(parent_package_regex)
-      affected_section = parent_section.to_s.match(/(#{affected_package} .*)/)
-      current_package_info = run_shell("yarn info #{affected_package} --json")
-      current_package_info = JSON.parse(current_package_info.stdout)
+      dependency = parent_section.to_s.match(/(#{vulnerable_package} .*)/)
 
-      if affected_section
-        list_of_versions = current_package_info["data"]["versions"]
+      # get current package info
+      vulnerable_package_info = get_package_info(vulnerable_package)
+
+      if dependency
+        list_of_versions = vulnerable_package_info["data"]["versions"]
         # we have the version we know to update to, new package info and where to replace
         version_to_update_to = select_upgrade_version(patched_version, list_of_versions)
-        new_package_info = run_shell("yarn info #{affected_package}@#{version_to_update_to} --json")
-        new_package_info = JSON.parse(new_package_info.stdout)
-        splits = affected_section.to_s.split(" ", 2)
+        updated_package_info = get_package_info(vulnerable_package, version_to_update_to)
+        splits = dependency.to_s.split(" ", 2)
         name = splits[0]
-        version = splits[1].tr('"', '')
+        current_version = splits[1].tr('"', '')
 
-        # Update parent block to use caret if fixed dependency
-        if version.exclude?("^")
-          @repository.yarn_lock.sub!(/#{affected_section}/, name + ' "^' + version_to_update_to + '"')
-        end
+        # Override package definition to allow upgrades
+        allow_patch_versions(dependency, current_version, version_to_update_to)
 
-        # This block needs more work to acurately match the subsection
-        # if @repository.yarn_lock.match(/^(#{name}.*?)\n\n/m).to_s.include? "#{name}@#{version}"
-        # This is to edit the actual subsection
+        # Search for the block to replace
         @repository.yarn_lock.scan(/^("|)(#{name}.*?)\n\n/m).each do |subsection|
-          if subsection.join.include? "#{name}@#{version}"
+          # Validate its the correct block
+          if subsection.join.include? "#{name}@#{current_version}"
             temp = subsection.join
-            updated_version = "version " + '"' + version_to_update_to + '"'
-            resolved = "resolved " + '"' + new_package_info["data"]["dist"]["tarball"] + "#" + new_package_info["data"]["dist"]["shasum"] + '"'
-            integrity = "integrity " + new_package_info['data']['dist']['integrity']
-            temp.sub!(/(version.*)/, updated_version)
-            temp.sub!(/(resolved.*)/, resolved)
-            temp.sub!(/(integrity.*)/, integrity)
-            @repository.yarn_lock.sub!(subsection.join, temp)
+            updates = get_updated_block(version_to_update_to, updated_package_info)
+            if updates
+              temp.sub!(/(version.*)/, updates[:version])
+              temp.sub!(/(resolved.*)/, updates[:resolved])
+              temp.sub!(/(integrity.*)/, updates[:integrity])
+              @repository.yarn_lock.sub!(subsection.join, temp)
+            end
           end
         end
       end
+    end
+
+    def get_package_info(package, version = nil)
+      info = if version.nil?
+               run_shell("yarn info #{package} --json")
+             else
+               run_shell("yarn info #{package}@#{version} --json")
+             end
+      JSON.parse(info.stdout)
+    end
+
+    def allow_patch_versions(dependency, current_version, version_to_update_to)
+      # ~version	Approximately equivalent to version, i.e., only accept new patch versions
+      # ^version	Compatible with version, i.e., accept new minor and patch versions
+      if current_version.exclude?("^") || current_version.include?("~")
+        @repository.yarn_lock.sub!(/#{dependency}/, name + ' "^' + version_to_update_to + '"')
+      end
+    end
+
+    def get_updated_block(version, package_info)
+      updates = {
+        version: "version " + '"' + version + '"',
+        resolved: "resolved " + '"' + package_info["data"]["dist"]["tarball"] + "#" \
+          + package_info["data"]["dist"]["shasum"] + '"',
+        integrity: "integrity " + package_info['data']['dist']['integrity']
+      }
+      updates
     end
 
     def select_upgrade_version(patched_version, list_of_versions)
