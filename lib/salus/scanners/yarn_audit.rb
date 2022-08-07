@@ -369,11 +369,12 @@ module Salus::Scanners
 
       # get current package info
       vulnerable_package_info = get_package_info(vulnerable_package)
+      list_of_versions_available = vulnerable_package_info["data"]["versions"]
+      # we have the version we know to update to, new package info and where to replace
+      # handle allow major or not
+      version_to_update_to = select_upgrade_version(patched_version, list_of_versions_available)
 
-      if dependency
-        list_of_versions = vulnerable_package_info["data"]["versions"]
-        # we have the version we know to update to, new package info and where to replace
-        version_to_update_to = select_upgrade_version(patched_version, list_of_versions)
+      if dependency && version_to_update_to
         updated_package_info = get_package_info(vulnerable_package, version_to_update_to)
         splits = dependency.to_s.split(" ", 2)
         name = splits[0]
@@ -386,14 +387,8 @@ module Salus::Scanners
         @repository.yarn_lock.scan(/^("|)(#{name}.*?)\n\n/m).each do |subsection|
           # Validate its the correct block
           if subsection.join.include? "#{name}@#{current_version}"
-            temp = subsection.join
-            updates = get_updated_block(version_to_update_to, updated_package_info)
-            if updates
-              temp.sub!(/(version.*)/, updates[:version])
-              temp.sub!(/(resolved.*)/, updates[:resolved])
-              temp.sub!(/(integrity.*)/, updates[:integrity])
-              @repository.yarn_lock.sub!(subsection.join, temp)
-            end
+            block = subsection.join
+            update_block(version_to_update_to, updated_package_info, subsection, block)
           end
         end
       end
@@ -416,14 +411,19 @@ module Salus::Scanners
       end
     end
 
-    def get_updated_block(version, package_info)
+    def update_block(version, package_info, section, block)
       updates = {
         version: "version " + '"' + version + '"',
         resolved: "resolved " + '"' + package_info["data"]["dist"]["tarball"] + "#" \
           + package_info["data"]["dist"]["shasum"] + '"',
         integrity: "integrity " + package_info['data']['dist']['integrity']
       }
-      updates
+      if updates
+        block.sub!(/(version.*)/, updates[:version])
+        block.sub!(/(resolved.*)/, updates[:resolved])
+        block.sub!(/(integrity.*)/, updates[:integrity])
+        @repository.yarn_lock.sub!(section.join, block)
+      end
     end
 
     def select_upgrade_version(patched_version, list_of_versions)
