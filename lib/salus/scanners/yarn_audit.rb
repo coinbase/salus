@@ -147,13 +147,10 @@ module Salus::Scanners
           line_split = lines[i].split("│")
           curr_key = line_split[1].strip
           val = line_split[2].strip
-
-          if curr_key != "" && curr_key != 'Path'
+          if curr_key != ""
             vuln[curr_key] = val
             prev_key = curr_key
-          elsif curr_key == 'Path'
-            prev_key = curr_key
-          elsif prev_key != 'Path'
+          else
             vuln[prev_key] += ' ' + val
           end
         elsif lines[i].start_with?("└─") && lines[i].end_with?("─┘")
