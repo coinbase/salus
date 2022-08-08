@@ -91,7 +91,6 @@ describe Salus::Scanners::YarnAudit do
                       "Severity" => "high",
                       "Title" => "Inefficient Regular Expression Complexity in nth-check",
                       "ID" => 1_070_415 }
-
       expect(id_vuls[0]).to eq(expected_vul)
 
       id_vuls = vulns.select { |v| v['ID'] == 1_067_342 }
