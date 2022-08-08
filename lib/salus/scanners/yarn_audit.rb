@@ -25,7 +25,7 @@ module Salus::Scanners
     end
 
     def run
-      @vulns_w_paths = {}
+      @vulns_w_paths = []
       if Gem::Version.new(version) >= Gem::Version.new(BREAKING_VERSION)
         handle_latest_yarn_audit
       else
