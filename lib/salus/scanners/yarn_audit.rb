@@ -182,6 +182,7 @@ module Salus::Scanners
       chdir = File.expand_path(@repository&.path_to_repo)
 
       Salus::YarnLock.new(File.join(chdir, 'yarn.lock')).add_line_number(vulns)
+      
       run_auto_fix(stub_vuln)
 
       vulns = combine_vulns(vulns)
@@ -372,6 +373,7 @@ module Salus::Scanners
       list_of_versions_available = vulnerable_package_info["data"]["versions"]
       # we have the version we know to update to, new package info and where to replace
       # handle allow major or not
+      # log why certain package was not updated
       version_to_update_to = select_upgrade_version(patched_version, list_of_versions_available)
 
       if dependency && version_to_update_to
