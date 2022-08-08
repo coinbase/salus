@@ -159,11 +159,11 @@ module Salus::Scanners
       patched_version = select_upgrade_version(patched_version_range, list_of_versions)
 
       if !patched_version.nil?
-        if @packages["dependencies"].key?(package)
+        if @packages.dig("dependencies", package) != nil
           @packages["dependencies"][package] = "^#{patched_version}"
         end
 
-        if @packages["devDependencies"].key?(package)
+        if @packages.dig("devDependencies", package) != nil
           @packages["devDependencies"][package] = "^#{patched_version}"
         end
       end
