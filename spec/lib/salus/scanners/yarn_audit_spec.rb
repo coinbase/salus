@@ -93,6 +93,13 @@ describe Salus::Scanners::YarnAudit do
                       "ID" => 1_070_415 }
       expect(id_vuls[0]).to eq(expected_vul)
 
+      id_vuls_w_paths = scanner.instance_variable_get(:@vulns_w_paths)
+        .select { |v| v['ID'] == 1_070_415 }
+      expect(id_vuls.size).to eq(1)
+      expected_vul['Path'] = "rollup-plugin-postcss > cssnano > cssnano-preset-default > "\
+                             "postcss-svgo > svgo > css-select > nth-check"
+      expect(id_vuls_w_paths[0]).to eq(expected_vul)
+
       id_vuls = vulns.select { |v| v['ID'] == 1_067_342 }
       expect(id_vuls.size).to eq(1)
       # vul has 1 dependency of
@@ -104,6 +111,12 @@ describe Salus::Scanners::YarnAudit do
                       "Title" => "Prototype Pollution in minimist",
                       "ID" => 1_067_342 }
       expect(id_vuls[0]).to eq(expected_vul)
+
+      id_vuls_w_paths = scanner.instance_variable_get(:@vulns_w_paths)
+        .select { |v| v['ID'] == 1_067_342 }
+      expect(id_vuls.size).to eq(1)
+      expected_vul['Path'] = "gulp-cssmin > gulp-util > minimist"
+      expect(id_vuls_w_paths[0]).to eq(expected_vul)
     end
 
     it 'should fail with error if there are errors' do

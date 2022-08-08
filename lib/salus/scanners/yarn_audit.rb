@@ -25,6 +25,7 @@ module Salus::Scanners
     end
 
     def run
+      @vulns_w_paths = {}
       if Gem::Version.new(version) >= Gem::Version.new(BREAKING_VERSION)
         handle_latest_yarn_audit
       else
@@ -86,7 +87,6 @@ module Salus::Scanners
     end
 
     def handle_legacy_yarn_audit
-      @vulns_w_paths = {}
       command = "#{LEGACY_YARN_AUDIT_COMMAND} #{scan_deps}"
       shell_return = run_shell(command)
 
