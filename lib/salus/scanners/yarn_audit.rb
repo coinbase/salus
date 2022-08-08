@@ -90,65 +90,65 @@ module Salus::Scanners
       report_failure
     end
 
-    def stub_vuln
-      v = [{
-        "type": "auditAdvisory",
-          "data": {
-            "resolution": {
-              "id": "1070458",
-              "path": "nanoid",
-              "dev": false,
-              "optional": false,
-              "bundled": false
-            },
-            "advisory": {
-              "findings": [
-                {
-                  "version": "3.1.3",
-                  "paths": [
-                    "mocha>nanoid"
-                  ]
-                }
-              ],
-              "metadata": "null",
-              "vulnerable_versions": "<3.1.4",
-              "module_name": "nanoid",
-              "patched_versions": ">=3.1.31",
-              "updated": "2022-06-03T22:26:34.000Z",
-              "recommendation": "Upgrade to version 3.1.4 or later"
-            }
-          }
-      },
-           {
-             "type": "auditAdvisory",
-               "data": {
-                 "resolution": {
-                   "id": "1070458",
-                   "path": "follow-redirects",
-                   "dev": false,
-                   "optional": false,
-                   "bundled": false
-                 },
-                 "advisory": {
-                   "findings": [
-                     {
-                       "version": "3.1.3",
-                       "paths": [
-                         "http-proxy>follow-redirects"
-                       ]
-                     }
-                   ],
-                   "metadata": "null",
-                   "vulnerable_versions": "<3.1.4",
-                   "module_name": "follow-redirects",
-                   "patched_versions": ">=1.14.8",
-                   "updated": "2022-06-03T22:26:34.000Z",
-                   "recommendation": "Upgrade to version 3.1.4 or later"
-                 }
-               }
-           }]
-      v
-    end
+    # def stub_vuln
+    #   v = [{
+    #     "type": "auditAdvisory",
+    #       "data": {
+    #         "resolution": {
+    #           "id": "1070458",
+    #           "path": "nanoid",
+    #           "dev": false,
+    #           "optional": false,
+    #           "bundled": false
+    #         },
+    #         "advisory": {
+    #           "findings": [
+    #             {
+    #               "version": "3.1.3",
+    #               "paths": [
+    #                 "mocha>nanoid"
+    #               ]
+    #             }
+    #           ],
+    #           "metadata": "null",
+    #           "vulnerable_versions": "<3.1.4",
+    #           "module_name": "nanoid",
+    #           "patched_versions": ">=3.1.31",
+    #           "updated": "2022-06-03T22:26:34.000Z",
+    #           "recommendation": "Upgrade to version 3.1.4 or later"
+    #         }
+    #       }
+    #   },
+    #        {
+    #          "type": "auditAdvisory",
+    #            "data": {
+    #              "resolution": {
+    #                "id": "1070458",
+    #                "path": "follow-redirects",
+    #                "dev": false,
+    #                "optional": false,
+    #                "bundled": false
+    #              },
+    #              "advisory": {
+    #                "findings": [
+    #                  {
+    #                    "version": "3.1.3",
+    #                    "paths": [
+    #                      "http-proxy>follow-redirects"
+    #                    ]
+    #                  }
+    #                ],
+    #                "metadata": "null",
+    #                "vulnerable_versions": "<3.1.4",
+    #                "module_name": "follow-redirects",
+    #                "patched_versions": ">=1.14.8",
+    #                "updated": "2022-06-03T22:26:34.000Z",
+    #                "recommendation": "Upgrade to version 3.1.4 or later"
+    #              }
+    #            }
+    #        }]
+    #   v
+    # end
 
     def handle_legacy_yarn_audit
       command = "#{LEGACY_YARN_AUDIT_COMMAND} #{scan_deps}"
@@ -185,8 +185,8 @@ module Salus::Scanners
       chdir = File.expand_path(@repository&.path_to_repo)
 
       Salus::YarnLock.new(File.join(chdir, 'yarn.lock')).add_line_number(vulns)
-      
-      run_auto_fix(stub_vuln)
+
+      run_auto_fix
 
       vulns = combine_vulns(vulns)
       log(format_vulns(vulns))
@@ -309,30 +309,24 @@ module Salus::Scanners
       vulns
     end
 
-
-    def run_auto_fix(vulnerability)
-      # package_json = JSON.parse(@repository.package_json)
-      # yarn_lock = @repository.yarn_lock
-      vulnerability.each do |v|
-        package = v[:data][:advisory][:module_name]
-        paths = v[:data][:advisory][:findings][0][:paths]
-        patched_version = v[:data][:advisory][:patched_versions]
-        paths.each do |path|
-          if path == package
-            puts "Direct dependency"
-            fix_direct_dependency(package, patched_version)
-          else
-            puts "Indirect dependency"
-            fix_indirect_dependency(path, patched_version)
-          end
+    def run_auto_fix
+      # TODO: Preprocessing to combine vulns by path / max version
+      @vulns_w_paths.each do |vuln|
+        path = vuln["Path"]
+        package = vuln["Package"]
+        if path == package
+          fix_direct_dependency(vuln)
+        else
+          fix_indirect_dependency(vuln)
         end
       end
-      # write to file - replace or create new file
-      puts @repository.yarn_lock
     end
 
-    def fix_direct_dependency(package, patched_version)
+    def fix_direct_dependency(vuln)
       # update dependencies, devdependencies, resolution
+      package = vuln["Package"]
+      patched_version = vuln["Patched in"]
+
       vulnerable_package_info = run_shell("yarn info #{package} --json")
       vulnerable_package_info = JSON.parse(vulnerable_package_info.stdout)
       list_of_versions = vulnerable_package_info["data"]["versions"]
@@ -351,7 +345,7 @@ module Salus::Scanners
       end
     end
 
-    def fix_indirect_dependency(path, patched_version)
+    def fix_indirect_dependency(vuln)
       # TODO
       # 1. better parsing of dependency block - handle quotes / no quotes / avoid substring match
       # 2. Update parent block to use caret if fixed dependency
@@ -360,6 +354,9 @@ module Salus::Scanners
       # and other is saying go to 1.1.2
       # select the higher version to go.
       # 5. Error handling and when to fail updates
+      path = vuln["Path"]
+      patched_version = vuln["Patched in"]
+
       packages = path.split(">")
       vulnerable_package = packages.last
       parent_package = packages[packages.length - 2]
@@ -437,6 +434,7 @@ module Salus::Scanners
         end
       end
       nil
+    end
 
     def deep_copy_wo_paths(vulns)
       vuln_list = []
