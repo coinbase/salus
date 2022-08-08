@@ -25,6 +25,7 @@ module Salus::Scanners
     end
 
     def run
+      @vulns_w_paths = []
       if Gem::Version.new(version) >= Gem::Version.new(BREAKING_VERSION)
         handle_latest_yarn_audit
       else
@@ -108,6 +109,8 @@ module Salus::Scanners
       # lines contain 1 or more vuln tables
 
       vulns = parse_output(table_lines)
+      @vulns_w_paths = deep_copy_wo_paths(vulns)
+      vulns.each { |vul| vul.delete('Path') }
       vuln_ids = vulns.map { |v| v['ID'] }
       report_info(:vulnerabilities, vuln_ids.uniq)
 
@@ -147,13 +150,10 @@ module Salus::Scanners
           line_split = lines[i].split("│")
           curr_key = line_split[1].strip
           val = line_split[2].strip
-
-          if curr_key != "" && curr_key != 'Path'
+          if curr_key != ""
             vuln[curr_key] = val
             prev_key = curr_key
-          elsif curr_key == 'Path'
-            prev_key = curr_key
-          elsif prev_key != 'Path'
+          else
             vuln[prev_key] += ' ' + val
           end
         elsif lines[i].start_with?("└─") && lines[i].end_with?("─┘")
@@ -230,6 +230,16 @@ module Salus::Scanners
         vul['Dependency of'] = vul['Dependency of'].sort.join(', ')
       end
       vulns
+    end
+
+    def deep_copy_wo_paths(vulns)
+      vuln_list = []
+      vulns.each do |vuln|
+        vt = {}
+        vuln.each { |k, v| vt[k] = v }
+        vuln_list.push vt
+      end
+      vuln_list
     end
 
     def format_vulns(vulns)
