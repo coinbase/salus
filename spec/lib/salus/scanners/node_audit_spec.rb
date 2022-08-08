@@ -6,7 +6,7 @@ NODE_AUDIT_SCANNERS = [
   ['YarnAudit', 'yarn_audit', Salus::Scanners::YarnAudit]
 ].freeze
 
-describe Salus::Scanners::NodeAudit, :focus do
+describe Salus::Scanners::NodeAudit do
   let(:stub_npm_stdout) do
     JSON.parse(File.read('spec/fixtures/npm_audit/success_with_exceptions/stub_stdout.txt'))
   end
