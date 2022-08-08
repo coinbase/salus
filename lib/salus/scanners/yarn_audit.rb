@@ -13,7 +13,7 @@ module Salus::Scanners
     # the command was previously 'yarn audit --json', which had memory allocation issues
     # see https://github.com/yarnpkg/yarn/issues/7404
     LEGACY_YARN_AUDIT_COMMAND = 'yarn audit --no-color'.freeze
-    LATEST_YARN_AUDIT_ALL_COMMAND = 'yarn npm audit --all --json'.freeze
+    LATEST_YARN_AUDIT_ALL_COMMAND = 'yarn npm audit --json'.freeze
     LATEST_YARN_AUDIT_PROD_COMMAND = 'yarn npm audit --environment'\
                   ' production --json'.freeze
     YARN_VERSION_COMMAND = 'yarn --version'.freeze
@@ -29,6 +29,7 @@ module Salus::Scanners
     end
 
     def run
+      @vulns_w_paths = []
       if Gem::Version.new(version) >= Gem::Version.new(BREAKING_VERSION)
         handle_latest_yarn_audit
       else
@@ -172,6 +173,8 @@ module Salus::Scanners
       # lines contain 1 or more vuln tables
 
       vulns = parse_output(table_lines)
+      @vulns_w_paths = deep_copy_wo_paths(vulns)
+      vulns.each { |vul| vul.delete('Path') }
       vuln_ids = vulns.map { |v| v['ID'] }
       report_info(:vulnerabilities, vuln_ids.uniq)
 
@@ -214,13 +217,10 @@ module Salus::Scanners
           line_split = lines[i].split("│")
           curr_key = line_split[1].strip
           val = line_split[2].strip
-
-          if curr_key != "" && curr_key != 'Path'
+          if curr_key != ""
             vuln[curr_key] = val
             prev_key = curr_key
-          elsif curr_key == 'Path'
-            prev_key = curr_key
-          elsif prev_key != 'Path'
+          else
             vuln[prev_key] += ' ' + val
           end
         elsif lines[i].start_with?("└─") && lines[i].end_with?("─┘")
@@ -308,6 +308,7 @@ module Salus::Scanners
       end
       vulns
     end
+
 
     def run_auto_fix(vulnerability)
       # package_json = JSON.parse(@repository.package_json)
@@ -436,6 +437,15 @@ module Salus::Scanners
         end
       end
       nil
+
+    def deep_copy_wo_paths(vulns)
+      vuln_list = []
+      vulns.each do |vuln|
+        vt = {}
+        vuln.each { |k, v| vt[k] = v }
+        vuln_list.push vt
+      end
+      vuln_list
     end
 
     def format_vulns(vulns)
