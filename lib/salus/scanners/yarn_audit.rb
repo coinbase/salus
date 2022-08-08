@@ -33,7 +33,7 @@ module Salus::Scanners
       end
       if @repository.package_json_present?
         @packages = JSON.parse(@repository.package_json)
-        # TODO: Serialize @packages to JSON and export the 
+        # TODO: Serialize @packages to JSON and export the
         #       updated contents to some package-autofixed.json file
         pp @packages
         auto_fix_vulns
@@ -138,16 +138,14 @@ module Salus::Scanners
       @vulns_w_paths.each do |vuln|
         path = vuln["Path"]
         package = vuln["Package"]
-        # vuln["Path"] for some indirect dependency "foo" 
+        # vuln["Path"] for some indirect dependency "foo"
         # looks like "foo > bar > baz".
-        # vuln["Path"] for some direct dependency "foo" 
+        # vuln["Path"] for some direct dependency "foo"
         # looks like "foo"
         is_direct_dep = path == package
 
         # TODO: Fix indirect dependencies as well
-        if is_direct_dep
-          fix_direct_dependency(vuln)
-        end
+        fix_direct_dependency(vuln) if is_direct_dep
       end
     end
 
@@ -160,7 +158,7 @@ module Salus::Scanners
       list_of_versions = vulnerable_package_info["data"]["versions"]
       patched_version = select_upgrade_version(patched_version_range, list_of_versions)
 
-      if patched_version != nil
+      if !patched_version.nil?
         if @packages["dependencies"].key?(package)
           @packages["dependencies"][package] = "^#{patched_version}"
         end
@@ -172,7 +170,9 @@ module Salus::Scanners
     end
 
     def select_upgrade_version(patched_version_range, versions_list)
-      version_range_details = patched_version_range.match(/(?<operator>(<|>)?(=|~)?)?(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)/)
+      version_range_details =
+        patched_version_range
+          .match(/(?<operator>(<|>)?(=|~)?)?(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)/)
       major = version_range_details['major'].to_i
       minor = version_range_details['minor'].to_i
       patch = version_range_details['patch'].to_i
@@ -181,7 +181,7 @@ module Salus::Scanners
 
       # We reverse the list to search from the
       # latest versions first to the oldest versions last
-      return versions_list.reverse.find do |potential_upgrade_version|
+      versions_list.reverse.find do |potential_upgrade_version|
         semver_categories = potential_upgrade_version.split('.')
         potential_major = semver_categories[0].to_i
         potential_minor = semver_categories[1].to_i
@@ -195,9 +195,13 @@ module Salus::Scanners
         when '^'
           return true if potential_major == major && potential_minor >= minor
         when '~'
-          return true if potential_major == major && potential_minor == minor && potential_patch >= patch
+          if potential_major == major && potential_minor == minor && potential_patch >= patch
+            return true
+          end
         when '=', '=='
-          return true if potential_major == major && potential_minor == minor && potential_patch == patch
+          if potential_major == major && potential_minor == minor && potential_patch == patch
+            return true
+          end
         end
       end
     end
