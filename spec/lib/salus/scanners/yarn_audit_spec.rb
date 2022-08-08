@@ -56,8 +56,7 @@ describe Salus::Scanners::YarnAudit do
       expect(vulns.size).to eq(7)
 
       vulns.each do |vul|
-        ["Package", "Patched in", "Dependency of", "Path",
-         "More info", "Severity", "Title"].each do |attr|
+        ["Package", "Patched in", "Dependency of", "More info", "Severity", "Title"].each do |attr|
           expect(vul[attr]).to be_kind_of(String)
           expect(vul[attr]).not_to be_empty
         end
@@ -75,8 +74,7 @@ describe Salus::Scanners::YarnAudit do
       expect(vulns.size).to eq(17)
 
       vulns.each do |vul|
-        ["Package", "Patched in", "Dependency of", "Path",
-         "More info", "Severity", "Title"].each do |attr|
+        ["Package", "Patched in", "Dependency of", "More info", "Severity", "Title"].each do |attr|
           expect(vul[attr]).to be_kind_of(String)
           expect(vul[attr]).not_to be_empty
         end
@@ -89,8 +87,6 @@ describe Salus::Scanners::YarnAudit do
       expected_vul = { "Package" => "nth-check",
                       "Patched in" => ">=2.0.1",
                       "Dependency of" => "rollup-plugin-postcss",
-                      "Path" => "rollup-plugin-postcss > cssnano > cssnano-preset-default > "\
-                                "postcss-svgo > svgo > css-select > nth-check",
                       "More info" => "https://www.npmjs.com/advisories/1070415",
                       "Severity" => "high",
                       "Title" => "Inefficient Regular Expression Complexity in nth-check",
@@ -104,7 +100,6 @@ describe Salus::Scanners::YarnAudit do
       expected_vul = { "Package" => "minimist",
                       "Patched in" => ">=1.2.6",
                       "Dependency of" => "gulp-cssmin",
-                      "Path" => "gulp-cssmin > gulp-util > minimist",
                       "More info" => "https://www.npmjs.com/advisories/1067342",
                       "Severity" => "critical",
                       "Title" => "Prototype Pollution in minimist",

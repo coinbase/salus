@@ -86,6 +86,7 @@ module Salus::Scanners
     end
 
     def handle_legacy_yarn_audit
+      @vulns_w_paths = {}
       command = "#{LEGACY_YARN_AUDIT_COMMAND} #{scan_deps}"
       shell_return = run_shell(command)
 
@@ -108,6 +109,8 @@ module Salus::Scanners
       # lines contain 1 or more vuln tables
 
       vulns = parse_output(table_lines)
+      @vulns_w_paths = deep_copy_wo_paths(vulns)
+      vulns.each { |vul| vul.delete('Path') }
       vuln_ids = vulns.map { |v| v['ID'] }
       report_info(:vulnerabilities, vuln_ids.uniq)
 
@@ -227,6 +230,16 @@ module Salus::Scanners
         vul['Dependency of'] = vul['Dependency of'].sort.join(', ')
       end
       vulns
+    end
+
+    def deep_copy_wo_paths(vulns)
+      vuln_list = []
+      vulns.each do |vuln|
+        vt = {}
+        vuln.each { |k, v| vt[k] = v }
+        vuln_list.push vt
+      end
+      vuln_list
     end
 
     def format_vulns(vulns)
