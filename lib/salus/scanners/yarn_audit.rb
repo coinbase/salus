@@ -31,6 +31,13 @@ module Salus::Scanners
       else
         handle_legacy_yarn_audit
       end
+      if @repository.package_json_present?
+        @packages = JSON.parse(@repository.package_json)
+        # TODO: Serialize @packages to JSON and export the 
+        #       updated contents to some package-autofixed.json file
+        pp @packages
+        auto_fix_vulns
+      end
     end
 
     def handle_latest_yarn_audit
@@ -125,6 +132,74 @@ module Salus::Scanners
       log(format_vulns(vulns))
       report_stdout(vulns.to_json)
       report_failure
+    end
+
+    def auto_fix_vulns
+      @vulns_w_paths.each do |vuln|
+        path = vuln["Path"]
+        package = vuln["Package"]
+        # vuln["Path"] for some indirect dependency "foo" 
+        # looks like "foo > bar > baz".
+        # vuln["Path"] for some direct dependency "foo" 
+        # looks like "foo"
+        is_direct_dep = path == package
+
+        # TODO: Fix indirect dependencies as well
+        if is_direct_dep
+          fix_direct_dependency(vuln)
+        end
+      end
+    end
+
+    def fix_direct_dependency(vuln)
+      package = vuln["Package"]
+      patched_version_range = vuln["Patched in"]
+
+      vulnerable_package_info = run_shell("yarn info #{package} --json")
+      vulnerable_package_info = JSON.parse(vulnerable_package_info.stdout)
+      list_of_versions = vulnerable_package_info["data"]["versions"]
+      patched_version = select_upgrade_version(patched_version_range, list_of_versions)
+
+      if patched_version != nil
+        if @packages["dependencies"].key?(package)
+          @packages["dependencies"][package] = "^#{patched_version}"
+        end
+
+        if @packages["devDependencies"].key?(package)
+          @packages["devDependencies"][package] = "^#{patched_version}"
+        end
+      end
+    end
+
+    def select_upgrade_version(patched_version_range, versions_list)
+      version_range_details = patched_version_range.match(/(?<operator>(<|>)?(=|~)?)?(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)/)
+      major = version_range_details['major'].to_i
+      minor = version_range_details['minor'].to_i
+      patch = version_range_details['patch'].to_i
+
+      range_operator = version_range_details['operator']
+
+      # We reverse the list to search from the
+      # latest versions first to the oldest versions last
+      return versions_list.reverse.find do |potential_upgrade_version|
+        semver_categories = potential_upgrade_version.split('.')
+        potential_major = semver_categories[0].to_i
+        potential_minor = semver_categories[1].to_i
+        potential_patch = semver_categories[2].to_i
+
+        case range_operator
+        when '>'
+          return true if potential_minor > minor
+        when '>='
+          return true if potential_minor >= minor
+        when '^'
+          return true if potential_major == major && potential_minor >= minor
+        when '~'
+          return true if potential_major == major && potential_minor == minor && potential_patch >= patch
+        when '=', '=='
+          return true if potential_major == major && potential_minor == minor && potential_patch == patch
+        end
+      end
     end
 
     def version
