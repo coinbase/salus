@@ -39,7 +39,11 @@ module Salus::Scanners
           fixed_file = 'package-autofixed.json'
           File.open(fixed_file, 'w') { |file| file.write('Hello World!') }
 
-          puts "WARNING: autofix:true but cannot find #{fixed_file}" if !File.exist?(fixed_file)
+          err_msg = "\n***** WARNING: autofix:true but cannot find #{fixed_file}"
+          if !File.exist?(fixed_file)
+            puts "YarnAudit WARNING #{err_msg}\n"
+            bugsnag_notify(err_msg)
+          end
         end
       end
     end
