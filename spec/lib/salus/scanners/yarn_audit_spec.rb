@@ -175,6 +175,33 @@ describe Salus::Scanners::YarnAudit do
     end
   end
 
+  describe 'fix_direct_dependency' do
+    fit 'fixes vulnerable direct dependencies via the @packages object' do
+      repo = Salus::Repo.new('spec/fixtures/yarn_audit/failure')
+      scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
+      vuln = {
+        "Package" => "uglify-js",
+        "Path" => "uglify-js",
+        "Patched in" => ">=2.6.0"
+      }
+      initial_packages = JSON.parse(repo.package_json)
+      scanner.run
+      scanner.fix_direct_dependency(vuln)
+      fixed_packages = scanner.instance_variable_get(:@packages)
+      pp initial_packages
+      pp fixed_packages
+      # make sure fixed_packages are different and greater version
+    end
+
+    it 'fails when fixing indirect dependencies' do
+    end
+  end
+
+  describe 'select_upgrade_version' do
+    it '' do
+    end
+  end
+
   describe '#version_valid?' do
     context 'scanner version is valid' do
       it 'should return true' do

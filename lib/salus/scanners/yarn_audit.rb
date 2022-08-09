@@ -156,6 +156,7 @@ module Salus::Scanners
       begin
         vulnerable_package_info = JSON.parse(vulnerable_package_info)
       rescue StandardError
+        report_error("yarn info #{package} --json did not return JSON")
         return
       end
       list_of_versions = vulnerable_package_info["data"]["versions"]
@@ -209,6 +210,8 @@ module Salus::Scanners
           if potential_major == major && potential_minor == minor && potential_patch == patch
             return true
           end
+        else
+          return false
         end
       end
     end
