@@ -40,8 +40,8 @@ describe Salus::Scanners::YarnAudit do
     end
 
     let(:vuln_0_id) { 1_004_708 } # was 39, 1004707
-    let(:vuln_1_id) { 1_004_774 } # was 48, 1004708
-    let(:vuln_2_id) { 1_004_036 } # was 1213
+    let(:vuln1_id) { 1_004_774 } # was 48, 1004708
+    let(:vuln2_id) { 1_004_036 } # was 1213
     let(:vuln_3_id) { 1_003_019 } # was 1500
     let(:vuln_4_id) { 1_002_847 } # was 1673
     let(:vuln_5_id) { 1_004_063 } # was 1523
@@ -176,7 +176,7 @@ describe Salus::Scanners::YarnAudit do
   end
 
   describe 'fix_direct_dependency' do
-    fit 'fixes vulnerable direct dependencies via the @packages object' do
+    it 'fixes vulnerable direct dependencies via the @packages object' do
       repo = Salus::Repo.new('spec/fixtures/yarn_audit/failure')
       scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
       vuln = {
@@ -188,17 +188,173 @@ describe Salus::Scanners::YarnAudit do
       scanner.run
       scanner.fix_direct_dependency(vuln)
       fixed_packages = scanner.instance_variable_get(:@packages)
-      pp initial_packages
-      pp fixed_packages
-      # make sure fixed_packages are different and greater version
+
+      expect(initial_packages['dependencies']['uglify-js']).to eq('1.2.3')
+      expect(fixed_packages['dependencies']['uglify-js']).to eq('^2.8.29')
     end
 
-    it 'fails when fixing indirect dependencies' do
+    it 'does not exceed the recommended major version' do
+      repo = Salus::Repo.new('spec/fixtures/yarn_audit/failure')
+      scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
+      vuln = {
+        "Package" => "uglify-js",
+        "Path" => "uglify-js",
+        "Patched in" => ">1.2.3"
+      }
+      initial_packages = JSON.parse(repo.package_json)
+      scanner.run
+      scanner.fix_direct_dependency(vuln)
+      fixed_packages = scanner.instance_variable_get(:@packages)
+
+      expect(initial_packages['dependencies']['uglify-js']).to eq('1.2.3')
+      expect(fixed_packages['dependencies']['uglify-js']).to eq('^1.3.5')
     end
   end
 
   describe 'select_upgrade_version' do
-    it '' do
+    it 'does not exceed the recommended major version' do
+      repo = Salus::Repo.new('spec/fixtures/yarn_audit/failure')
+      scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
+
+      patched_version_range = '>5.0.0'
+      available_versions = [
+        '1.0.0',
+        '5.0.0',
+        '5.1.0',
+        '9.0.0'
+      ]
+
+      expect(
+        scanner.select_upgrade_version(patched_version_range, available_versions)
+      ).to eq('5.1.0')
+    end
+
+    it 'returns nil if no provided versions satisfy the patch range' do
+      repo = Salus::Repo.new('spec/fixtures/yarn_audit/failure')
+      scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
+
+      patched_version_range = '>5.0.0'
+      available_versions = [
+        '1.0.0',
+        '3.9.0',
+        '4.9.9'
+      ]
+
+      expect(
+        scanner.select_upgrade_version(patched_version_range, available_versions)
+      ).to eq(nil)
+    end
+
+    it 'correctly handles ">" ranges' do
+      repo = Salus::Repo.new('spec/fixtures/yarn_audit/failure')
+      scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
+
+      patched_version_range = '>5.0.0'
+      available_versions = [
+        '1.0.0',
+        '3.9.0',
+        '4.9.9',
+        '5.4.0',
+        '5.9.9'
+      ]
+
+      expect(
+        scanner.select_upgrade_version(patched_version_range, available_versions)
+      ).to eq('5.9.9')
+    end
+
+    it 'correctly handles "<" ranges' do
+      repo = Salus::Repo.new('spec/fixtures/yarn_audit/failure')
+      scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
+
+      patched_version_range = '<5.9.9'
+      available_versions = [
+        '1.0.0',
+        '3.9.0',
+        '4.9.9',
+        '5.4.0',
+        '5.9.9'
+      ]
+
+      expect(
+        scanner.select_upgrade_version(patched_version_range, available_versions)
+      ).to eq('5.4.0')
+    end
+
+    it 'correctly handles ">=" ranges' do
+      repo = Salus::Repo.new('spec/fixtures/yarn_audit/failure')
+      scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
+
+      patched_version_range = '>=5.0.0'
+      available_versions1 = [
+        '1.0.0',
+        '3.9.0',
+        '4.9.9',
+        '5.0.0'
+      ]
+
+      available_versions2 = [
+        '1.0.0',
+        '3.9.0',
+        '4.9.9',
+        '5.0.0',
+        '5.9.9'
+      ]
+
+      expect(
+        scanner.select_upgrade_version(patched_version_range, available_versions1)
+      ).to eq('5.0.0')
+      expect(
+        scanner.select_upgrade_version(patched_version_range, available_versions2)
+      ).to eq('5.9.9')
+    end
+
+    it 'correctly handles ">=" ranges' do
+      repo = Salus::Repo.new('spec/fixtures/yarn_audit/failure')
+      scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
+
+      patched_version_range = '<=5.9.9'
+      available_versions1 = [
+        '1.0.0',
+        '3.9.0',
+        '4.9.9',
+        '5.0.0'
+      ]
+      available_versions2 = [
+        '1.0.0',
+        '3.9.0',
+        '4.9.9',
+        '5.0.0',
+        '5.9.9'
+      ]
+
+      expect(
+        scanner.select_upgrade_version(patched_version_range, available_versions1)
+      ).to eq('5.0.0')
+      expect(
+        scanner.select_upgrade_version(patched_version_range, available_versions2)
+      ).to eq('5.9.9')
+    end
+
+    it 'correctly handles exact versions' do
+      repo = Salus::Repo.new('spec/fixtures/yarn_audit/failure')
+      scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
+
+      patched_version_range1 = '=5.0.0'
+      patched_version_range2 = '5.0.0'
+
+      available_versions = [
+        '5.0.0',
+        '5.4.7',
+        '5.9.9'
+      ]
+
+      expect(
+        scanner.select_upgrade_version(patched_version_range1, available_versions)
+      ).to eq('5.0.0')
+      expect(
+        scanner.select_upgrade_version(patched_version_range2, available_versions)
+      ).to eq('5.0.0')
     end
   end
 

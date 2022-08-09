@@ -195,23 +195,25 @@ module Salus::Scanners
         potential_minor = semver_categories[1].to_i
         potential_patch = semver_categories[2].to_i
 
+        # NOTE: We want to avoid major version bumps
+        #       that exceed the minimum non-vulnerable version.
+        #       So if the patched range is >=2.2.0, we want to
+        #       avoid using 3.0.0 as our upgrade version
         case range_operator
         when '>'
-          return true if potential_minor > minor
-        when '>='
-          return true if potential_minor >= minor
-        when '^'
-          return true if potential_major == major && potential_minor >= minor
+          potential_major == major && potential_minor > minor
+        when '<'
+          potential_major == major && potential_minor < minor
+        when '>=', '^'
+          potential_major == major && potential_minor >= minor
+        when '<='
+          potential_major == major && potential_minor <= minor
         when '~'
-          if potential_major == major && potential_minor == minor && potential_patch >= patch
-            return true
-          end
-        when '=', '=='
-          if potential_major == major && potential_minor == minor && potential_patch == patch
-            return true
-          end
+          potential_major == major && potential_minor == minor && potential_patch >= patch
+        when '=', ''
+          potential_major == major && potential_minor == minor && potential_patch == patch
         else
-          return false
+          false
         end
       end
     end
