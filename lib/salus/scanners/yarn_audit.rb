@@ -90,66 +90,6 @@ module Salus::Scanners
       report_failure
     end
 
-    # def stub_vuln
-    #   v = [{
-    #     "type": "auditAdvisory",
-    #       "data": {
-    #         "resolution": {
-    #           "id": "1070458",
-    #           "path": "nanoid",
-    #           "dev": false,
-    #           "optional": false,
-    #           "bundled": false
-    #         },
-    #         "advisory": {
-    #           "findings": [
-    #             {
-    #               "version": "3.1.3",
-    #               "paths": [
-    #                 "mocha>nanoid"
-    #               ]
-    #             }
-    #           ],
-    #           "metadata": "null",
-    #           "vulnerable_versions": "<3.1.4",
-    #           "module_name": "nanoid",
-    #           "patched_versions": ">=3.1.31",
-    #           "updated": "2022-06-03T22:26:34.000Z",
-    #           "recommendation": "Upgrade to version 3.1.4 or later"
-    #         }
-    #       }
-    #   },
-    #        {
-    #          "type": "auditAdvisory",
-    #            "data": {
-    #              "resolution": {
-    #                "id": "1070458",
-    #                "path": "follow-redirects",
-    #                "dev": false,
-    #                "optional": false,
-    #                "bundled": false
-    #              },
-    #              "advisory": {
-    #                "findings": [
-    #                  {
-    #                    "version": "3.1.3",
-    #                    "paths": [
-    #                      "http-proxy>follow-redirects"
-    #                    ]
-    #                  }
-    #                ],
-    #                "metadata": "null",
-    #                "vulnerable_versions": "<3.1.4",
-    #                "module_name": "follow-redirects",
-    #                "patched_versions": ">=1.14.8",
-    #                "updated": "2022-06-03T22:26:34.000Z",
-    #                "recommendation": "Upgrade to version 3.1.4 or later"
-    #              }
-    #            }
-    #        }]
-    #   v
-    # end
-
     def handle_legacy_yarn_audit
       command = "#{LEGACY_YARN_AUDIT_COMMAND} #{scan_deps}"
       shell_return = run_shell(command)
@@ -311,15 +251,28 @@ module Salus::Scanners
 
     def run_auto_fix
       # TODO: Preprocessing to combine vulns by path / max version
-      @vulns_w_paths.each do |vuln|
-        path = vuln["Path"]
-        package = vuln["Package"]
+      fix_feed = []
+      grouped_vulns = @vulns_w_paths.group_by { |h| h["Path"] }
+
+      grouped_vulns.each do |key, array|
+        fix_feed.append({
+                          Path: key,
+          Package: array.first["Package"],
+          Patch: array.map { |x| x["Patched in"] }.sort.reverse.first
+                        })
+      end
+
+      fix_feed.each do |vuln|
+        path = vuln[:Path]
+        package = vuln[:Package]
         if path == package
           fix_direct_dependency(vuln)
         else
+          puts "Fixing Indirect Deps for #{vuln[:Package]}"
           fix_indirect_dependency(vuln)
         end
       end
+      puts @repository.yarn_lock
     end
 
     def fix_direct_dependency(vuln)
@@ -346,52 +299,72 @@ module Salus::Scanners
     end
 
     def fix_indirect_dependency(vuln)
-      # TODO
-      # 1. better parsing of dependency block - handle quotes / no quotes / avoid substring match
-      # 2. Update parent block to use caret if fixed dependency
-      # 3. Handle private registries
-      # 4. In vulns sometimes there are multiple advisories and when one is saying go to 1.1.1
-      # and other is saying go to 1.1.2
-      # select the higher version to go.
-      # 5. Error handling and when to fail updates
-      path = vuln["Path"]
-      patched_version = vuln["Patched in"]
+      path = vuln[:Path]
+      patched_version = vuln[:Patch]
+      packages = path.split(" > ")
 
-      packages = path.split(">")
-      vulnerable_package = packages.last
-      parent_package = packages[packages.length - 2]
+      # Find correct subsection to update
+      sub_package_section = find_sub_section(packages)
 
-      # find subparent block to understand heirarchy
-      parent_package_regex = /^(#{parent_package}@.*?)\n\n/m
-      parent_section = @repository.yarn_lock.match(parent_package_regex)
-      dependency = parent_section.to_s.match(/(#{vulnerable_package} .*)/)
+      # Fetch current vulnerable version
+      vulnerable_package_name = packages.last
+      vulnerable_package_dependency = sub_package_section.to_s.match(
+        /(#{vulnerable_package_name} .*)/
+      )
+      splits = vulnerable_package_dependency.to_s.split(" ", 2)
+      current_vulnerable_package_version = splits[1].tr('"', '')
+      puts "Updating #{vulnerable_package_dependency}"
 
-      # get current package info
-      vulnerable_package_info = get_package_info(vulnerable_package)
+      # if patched_version is major compared to current_vulnerable_package_version then abort
+
+      # Fetch current vulnerable package metadata
+      vulnerable_package_info = get_package_info(vulnerable_package_name)
       list_of_versions_available = vulnerable_package_info["data"]["versions"]
-      # we have the version we know to update to, new package info and where to replace
-      # handle allow major or not
-      # log why certain package was not updated
+
+      # Fetch patched package metadata
       version_to_update_to = select_upgrade_version(patched_version, list_of_versions_available)
+      fixed_package_info = get_package_info(vulnerable_package_name, version_to_update_to)
 
-      if dependency && version_to_update_to
-        updated_package_info = get_package_info(vulnerable_package, version_to_update_to)
-        splits = dependency.to_s.split(" ", 2)
-        name = splits[0]
-        current_version = splits[1].tr('"', '')
+      # Override package definition to allow upgrades
+      replace_patch_versions(
+        vulnerable_package_dependency, version_to_update_to, vulnerable_package_name
+      )
 
-        # Override package definition to allow upgrades
-        allow_patch_versions(dependency, current_version, version_to_update_to)
-
-        # Search for the block to replace
-        @repository.yarn_lock.scan(/^("|)(#{name}.*?)\n\n/m).each do |subsection|
-          # Validate its the correct block
-          if subsection.join.include? "#{name}@#{current_version}"
-            block = subsection.join
-            update_block(version_to_update_to, updated_package_info, subsection, block)
-          end
+      # Update vulnerable package section
+      @repository.yarn_lock.scan(/^("|)(#{vulnerable_package_name}.*?)\n\n/m).each do |section|
+        # Validate its the correct block
+        if section.join.include? "#{vulnerable_package_name}@#{current_vulnerable_package_version}"
+          block = section.join
+          update_block(
+            version_to_update_to, fixed_package_info, section, block, vulnerable_package_dependency,
+            vulnerable_package_name
+          )
         end
       end
+    end
+
+    def find_sub_section(paths)
+      blob = name = version = ""
+      paths.each_with_index do |path, index|
+        # section = @repository.yarn_lock.match(/^("|)(#{path}@.*?)\n\n/m)
+        break if index == paths.length - 1
+
+        @repository.yarn_lock.scan(/^("|)(#{path}@.*?)\n\n/m).each do |section|
+          if index.zero?
+            sub_section = section.join.match(/(#{paths[index + 1]}.*)/)
+            splits = sub_section.to_s.split(" ", 2)
+            name = splits.first
+            version = splits.last.delete_prefix('"').delete_suffix('"')
+          elsif index.positive? && section.to_s.include?("#{name}@#{version}")
+            sub_section = section.join.match(/(#{paths[index + 1]}.*)/)
+            splits = sub_section.to_s.split(" ", 2)
+            name = splits.first
+            version = splits.last.delete_prefix('"').delete_suffix('"')
+          end
+          blob = section.join
+        end
+      end
+      blob
     end
 
     def get_package_info(package, version = nil)
@@ -403,25 +376,27 @@ module Salus::Scanners
       JSON.parse(info.stdout)
     end
 
-    def allow_patch_versions(dependency, current_version, version_to_update_to)
-      # ~version	Approximately equivalent to version, i.e., only accept new patch versions
-      # ^version	Compatible with version, i.e., accept new minor and patch versions
-      if current_version.exclude?("^") || current_version.include?("~")
-        @repository.yarn_lock.sub!(/#{dependency}/, name + ' "^' + version_to_update_to + '"')
-      end
+    def replace_patch_versions(dependency, version_to_update_to, package_name)
+      puts "Stuff to replace #{dependency}"
+      s = package_name + ' "^' + version_to_update_to + '"'
+      @repository.yarn_lock.gsub!(dependency.to_s, s)
     end
 
-    def update_block(version, package_info, section, block)
-      updates = {
-        version: "version " + '"' + version + '"',
-        resolved: "resolved " + '"' + package_info["data"]["dist"]["tarball"] + "#" \
-          + package_info["data"]["dist"]["shasum"] + '"',
-        integrity: "integrity " + package_info['data']['dist']['integrity']
-      }
-      if updates
-        block.sub!(/(version.*)/, updates[:version])
-        block.sub!(/(resolved.*)/, updates[:resolved])
-        block.sub!(/(integrity.*)/, updates[:integrity])
+    def update_block(version, package_info, section, block, dependency, package_name)
+      updated_version = "version " + '"' + version + '"'
+      updated_resolved = "resolved " + '"' + package_info["data"]["dist"]["tarball"] + "#" \
+          + package_info["data"]["dist"]["shasum"] + '"'
+      updated_integrity = "integrity " + package_info['data']['dist']['integrity']
+      header = package_name + '@^' + version
+
+      splits = dependency.to_s.split(" ", 2)
+      v = splits[1].tr('"', '')
+      s = "#{package_name}@#{v}"
+      if block.exclude? header
+        block.sub!(s, header)
+        block.sub!(/(version.*)/, updated_version)
+        block.sub!(/(resolved.*)/, updated_resolved)
+        block.sub!(/(integrity.*)/, updated_integrity)
         @repository.yarn_lock.sub!(section.join, block)
       end
     end
