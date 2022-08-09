@@ -35,7 +35,6 @@ module Salus::Scanners
         @packages = JSON.parse(@repository.package_json)
         # TODO: Serialize @packages to JSON and export the
         #       updated contents to some package-autofixed.json file
-        pp @packages
         auto_fix_vulns
       end
     end
@@ -153,17 +152,25 @@ module Salus::Scanners
       package = vuln["Package"]
       patched_version_range = vuln["Patched in"]
 
-      vulnerable_package_info = run_shell("yarn info #{package} --json")
-      vulnerable_package_info = JSON.parse(vulnerable_package_info.stdout)
+      vulnerable_package_info = run_shell("yarn info #{package} --json").stdout
+      begin
+        vulnerable_package_info = JSON.parse(vulnerable_package_info)
+      rescue StandardError
+        return
+      end
       list_of_versions = vulnerable_package_info["data"]["versions"]
       patched_version = select_upgrade_version(patched_version_range, list_of_versions)
 
       if !patched_version.nil?
-        if @packages.dig("dependencies", package) != nil
+        if !@packages.dig("dependencies", package).nil?
           @packages["dependencies"][package] = "^#{patched_version}"
         end
 
-        if @packages.dig("devDependencies", package) != nil
+        if !@packages.dig("resolutions", package).nil?
+          @packages["resolutions"][package] = "^#{patched_version}"
+        end
+
+        if !@packages.dig("devDependencies", package).nil?
           @packages["devDependencies"][package] = "^#{patched_version}"
         end
       end
