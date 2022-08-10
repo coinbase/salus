@@ -1,6 +1,6 @@
 require_relative '../../../spec_helper.rb'
 
-describe Salus::Scanners::YarnAudit, :focus do
+describe Salus::Scanners::YarnAudit do
   describe '#should_run?' do
     it 'should return false in the absence of package.json and friends' do
       repo = Salus::Repo.new('spec/fixtures/blank_repository')
