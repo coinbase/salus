@@ -15,6 +15,8 @@ module Salus::Scanners
                   ' production --json'.freeze
     YARN_VERSION_COMMAND = 'yarn --version'.freeze
     BREAKING_VERSION = "2.0.0".freeze
+    SEMVER_RANGE_REGEX =
+      /(?<operator>(<|>)?(=|~|\^)?)?(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)/.freeze
 
     def should_run?
       @repository.yarn_lock_present?
@@ -31,7 +33,7 @@ module Salus::Scanners
       else
         handle_legacy_yarn_audit
       end
-      if @repository.package_json_present?
+      if !@report.passed? && @repository.package_json_present?
         @packages = JSON.parse(@repository.package_json)
         # TODO: Serialize @packages to JSON and export the
         #       updated contents to some package-autofixed.json file
@@ -138,7 +140,7 @@ module Salus::Scanners
         path = vuln["Path"]
         package = vuln["Package"]
         # vuln["Path"] for some indirect dependency "foo"
-        # looks like "foo > bar > baz".
+        # looks like "bar > baz > foo".
         # vuln["Path"] for some direct dependency "foo"
         # looks like "foo"
         is_direct_dep = path == package
@@ -146,33 +148,42 @@ module Salus::Scanners
         # TODO: Fix indirect dependencies as well
         fix_direct_dependency(vuln) if is_direct_dep
       end
+    rescue StandardError
+      report_error("An error occurred while auto-fixing vulnerabilities")
     end
 
     def fix_direct_dependency(vuln)
       package = vuln["Package"]
       patched_version_range = vuln["Patched in"]
 
-      vulnerable_package_info = run_shell("yarn info #{package} --json").stdout
+      puts patched_version_range.match(SEMVER_RANGE_REGEX)
+      return if patched_version_range.match(SEMVER_RANGE_REGEX).nil?
+
+      yarn_info_command = "yarn info #{package} --json"
+
+      vulnerable_package_info = run_shell(yarn_info_command).stdout
       begin
         vulnerable_package_info = JSON.parse(vulnerable_package_info)
       rescue StandardError
-        report_error("yarn info #{package} --json did not return JSON")
+        report_error("#{yarn_info_command} did not return JSON")
         return
       end
-      list_of_versions = vulnerable_package_info["data"]["versions"]
+      list_of_versions = vulnerable_package_info.dig("data", "versions")
+
+      if list_of_versions.nil?
+        report_error(
+          "#{yarn_info_command} did not provide a list of available package versions"
+        )
+        return
+      end
+
       patched_version = select_upgrade_version(patched_version_range, list_of_versions)
 
       if !patched_version.nil?
-        if !@packages.dig("dependencies", package).nil?
-          @packages["dependencies"][package] = "^#{patched_version}"
-        end
-
-        if !@packages.dig("resolutions", package).nil?
-          @packages["resolutions"][package] = "^#{patched_version}"
-        end
-
-        if !@packages.dig("devDependencies", package).nil?
-          @packages["devDependencies"][package] = "^#{patched_version}"
+        %w[dependencies resolutions devDependencies].each do |package_section|
+          if !@packages.dig(package_section, package).nil?
+            @packages[package_section][package] = "^#{patched_version}"
+          end
         end
       end
     end
@@ -180,7 +191,7 @@ module Salus::Scanners
     def select_upgrade_version(patched_version_range, versions_list)
       version_range_details =
         patched_version_range
-          .match(/(?<operator>(<|>)?(=|~)?)?(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)/)
+          .match(SEMVER_RANGE_REGEX)
       major = version_range_details['major'].to_i
       minor = version_range_details['minor'].to_i
       patch = version_range_details['patch'].to_i

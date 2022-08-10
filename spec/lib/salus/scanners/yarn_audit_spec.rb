@@ -1,6 +1,6 @@
 require_relative '../../../spec_helper.rb'
 
-describe Salus::Scanners::YarnAudit do
+describe Salus::Scanners::YarnAudit, :focus do
   describe '#should_run?' do
     it 'should return false in the absence of package.json and friends' do
       repo = Salus::Repo.new('spec/fixtures/blank_repository')
@@ -40,8 +40,8 @@ describe Salus::Scanners::YarnAudit do
     end
 
     let(:vuln_0_id) { 1_004_708 } # was 39, 1004707
-    let(:vuln1_id) { 1_004_774 } # was 48, 1004708
-    let(:vuln2_id) { 1_004_036 } # was 1213
+    let(:vuln_1_id) { 1_004_774 } # was 48, 1004708
+    let(:vuln_2_id) { 1_004_036 } # was 1213
     let(:vuln_3_id) { 1_003_019 } # was 1500
     let(:vuln_4_id) { 1_002_847 } # was 1673
     let(:vuln_5_id) { 1_004_063 } # was 1523
