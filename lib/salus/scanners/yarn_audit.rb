@@ -156,8 +156,10 @@ module Salus::Scanners
       package = vuln["Package"]
       patched_version_range = vuln["Patched in"]
 
-      puts patched_version_range.match(SEMVER_RANGE_REGEX)
-      return if patched_version_range.match(SEMVER_RANGE_REGEX).nil?
+      if patched_version_range.match(SEMVER_RANGE_REGEX).nil?
+        report_error("Found unexpected: atched version range: #{patched_version_range}")
+        return
+      end
 
       yarn_info_command = "yarn info #{package} --json"
 
