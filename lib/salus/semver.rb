@@ -4,7 +4,10 @@ module Salus
   class SemanticVersion < Version
     SEMVER_REGEX = /\d+\.\d+\.\d+/.freeze
     SEMVER_RANGE_REGEX =
-      /(?<operator>(<|>)?(=|~|\^)?)?(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)/.freeze
+      %r{
+        (?<operator>(<|>)?(=|~|\^|\*)?)?
+        (?<version>(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+))?
+      }x.freeze
 
     def self.select_upgrade_version(patched_version_range, versions_list)
       version_range_details =
@@ -29,6 +32,8 @@ module Salus
         #       So if the patched range is >=2.2.0, we want to
         #       avoid using 3.0.0 as our upgrade version
         case range_operator
+        when '*'
+          potential_major == major
         when '>'
           potential_major == major && potential_minor > minor
         when '<'
