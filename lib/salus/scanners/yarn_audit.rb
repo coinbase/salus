@@ -1,6 +1,6 @@
 require 'json'
 require 'salus/scanners/node_audit'
-require 'salus/versions'
+require 'salus/semver'
 
 # Yarn Audit scanner integration. Flags known malicious or vulnerable
 # dependencies in javascript projects that are packaged with yarn.
@@ -34,6 +34,12 @@ module Salus::Scanners
         handle_latest_yarn_audit
       else
         handle_legacy_yarn_audit
+      end
+      if !@report.passed? && @repository.package_json_present?
+        @packages = JSON.parse(@repository.package_json)
+        # TODO: Serialize @packages to JSON and export the
+        #       updated contents to some package-autofixed.json file
+        auto_fix_vulns
       end
     end
 
@@ -132,6 +138,64 @@ module Salus::Scanners
       log(format_vulns(vulns))
       report_stdout(vulns.to_json)
       report_failure
+    end
+
+    def auto_fix_vulns
+      @vulns_w_paths.each do |vuln|
+        path = vuln["Path"]
+        package = vuln["Package"]
+        # vuln["Path"] for some indirect dependency "foo"
+        # looks like "bar > baz > foo".
+        # vuln["Path"] for some direct dependency "foo"
+        # looks like "foo"
+        is_direct_dep = path == package
+
+        # TODO: Fix indirect dependencies as well
+        fix_direct_dependency(vuln) if is_direct_dep
+      end
+    rescue StandardError
+      report_error("An error occurred while auto-fixing vulnerabilities")
+    end
+
+    def fix_direct_dependency(vuln)
+      package = vuln["Package"]
+      patched_version_range = vuln["Patched in"]
+
+      if patched_version_range.match(Salus::SemanticVersion::SEMVER_RANGE_REGEX).nil?
+        report_error("Found unexpected: patched version range: #{patched_version_range}")
+        return
+      end
+
+      yarn_info_command = "yarn info #{package} --json"
+
+      vulnerable_package_info = run_shell(yarn_info_command).stdout
+      begin
+        vulnerable_package_info = JSON.parse(vulnerable_package_info)
+      rescue StandardError
+        report_error("#{yarn_info_command} did not return JSON")
+        return
+      end
+      list_of_versions = vulnerable_package_info.dig("data", "versions")
+
+      if list_of_versions.nil?
+        report_error(
+          "#{yarn_info_command} did not provide a list of available package versions"
+        )
+        return
+      end
+
+      patched_version = Salus::SemanticVersion.select_upgrade_version(
+        patched_version_range,
+        list_of_versions
+      )
+
+      if !patched_version.nil?
+        %w[dependencies resolutions devDependencies].each do |package_section|
+          if !@packages.dig(package_section, package).nil?
+            @packages[package_section][package] = "^#{patched_version}"
+          end
+        end
+      end
     end
 
     def version
