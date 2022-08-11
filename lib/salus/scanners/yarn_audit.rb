@@ -1,5 +1,6 @@
 require 'json'
 require 'salus/scanners/node_audit'
+require 'salus/semver'
 
 # Yarn Audit scanner integration. Flags known malicious or vulnerable
 # dependencies in javascript projects that are packaged with yarn.
@@ -15,8 +16,6 @@ module Salus::Scanners
                   ' production --json'.freeze
     YARN_VERSION_COMMAND = 'yarn --version'.freeze
     BREAKING_VERSION = "2.0.0".freeze
-    SEMVER_RANGE_REGEX =
-      /(?<operator>(<|>)?(=|~|\^)?)?(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)/.freeze
 
     def should_run?
       @repository.yarn_lock_present?
@@ -156,8 +155,8 @@ module Salus::Scanners
       package = vuln["Package"]
       patched_version_range = vuln["Patched in"]
 
-      if patched_version_range.match(SEMVER_RANGE_REGEX).nil?
-        report_error("Found unexpected: atched version range: #{patched_version_range}")
+      if patched_version_range.match(Salus::SemanticVersion::SEMVER_RANGE_REGEX).nil?
+        report_error("Found unexpected: patched version range: #{patched_version_range}")
         return
       end
 
@@ -179,54 +178,16 @@ module Salus::Scanners
         return
       end
 
-      patched_version = select_upgrade_version(patched_version_range, list_of_versions)
+      patched_version = Salus::SemanticVersion.select_upgrade_version(
+        patched_version_range,
+        list_of_versions
+      )
 
       if !patched_version.nil?
         %w[dependencies resolutions devDependencies].each do |package_section|
           if !@packages.dig(package_section, package).nil?
             @packages[package_section][package] = "^#{patched_version}"
           end
-        end
-      end
-    end
-
-    def select_upgrade_version(patched_version_range, versions_list)
-      version_range_details =
-        patched_version_range
-          .match(SEMVER_RANGE_REGEX)
-      major = version_range_details['major'].to_i
-      minor = version_range_details['minor'].to_i
-      patch = version_range_details['patch'].to_i
-
-      range_operator = version_range_details['operator']
-
-      # We reverse the list to search from the
-      # latest versions first to the oldest versions last
-      versions_list.reverse.find do |potential_upgrade_version|
-        semver_categories = potential_upgrade_version.split('.')
-        potential_major = semver_categories[0].to_i
-        potential_minor = semver_categories[1].to_i
-        potential_patch = semver_categories[2].to_i
-
-        # NOTE: We want to avoid major version bumps
-        #       that exceed the minimum non-vulnerable version.
-        #       So if the patched range is >=2.2.0, we want to
-        #       avoid using 3.0.0 as our upgrade version
-        case range_operator
-        when '>'
-          potential_major == major && potential_minor > minor
-        when '<'
-          potential_major == major && potential_minor < minor
-        when '>=', '^'
-          potential_major == major && potential_minor >= minor
-        when '<='
-          potential_major == major && potential_minor <= minor
-        when '~'
-          potential_major == major && potential_minor == minor && potential_patch >= patch
-        when '=', ''
-          potential_major == major && potential_minor == minor && potential_patch == patch
-        else
-          false
         end
       end
     end
