@@ -4,10 +4,10 @@ module Salus
   class SemanticVersion < Version
     SEMVER_REGEX = /\d+\.\d+\.\d+/.freeze
     SEMVER_RANGE_REGEX =
-      %r{
+      /
         (?<operator>(<|>)?(=|~|\^|\*)?)?
         (?<version>(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+))?
-      }x.freeze
+      /x.freeze
 
     def self.select_upgrade_version(patched_version_range, versions_list)
       version_range_details =
