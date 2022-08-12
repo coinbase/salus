@@ -164,8 +164,6 @@ module Salus::Scanners
     def run_auto_fix(feed)
       fix_indirect_dependency(feed)
       fix_direct_dependency(feed)
-    rescue StandardError
-      report_error("An error occurred while auto-fixing vulnerabilities")
     end
 
     def fix_direct_dependency(feed)
@@ -504,7 +502,9 @@ module Salus::Scanners
     end
 
     def is_major_bump(current, updated)
-      current_v = current.tr("^", "").tr("~", "").split('.').map(&:to_i)
+      current.gsub(/[^0-9.]/, "")
+      current_v = current.split('.').map(&:to_i)
+      updated.sub(/[^0-9.]/, "")
       updated_v = updated.split('.').map(&:to_i)
       return true if updated_v.first > current_v.first
 
