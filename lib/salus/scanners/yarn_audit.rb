@@ -165,6 +165,8 @@ module Salus::Scanners
     def run_auto_fix(feed)
       fix_indirect_dependency(feed)
       fix_direct_dependency(feed)
+    rescue StandardError => e
+      report_error("An error occurred while auto-fixing vulnerabilities: #{e}, #{e.backtrace}")
     end
 
     def fix_direct_dependency(feed)
