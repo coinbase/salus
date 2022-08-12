@@ -164,9 +164,10 @@ module Salus::Scanners
     def run_auto_fix(feed)
       fix_indirect_dependency(feed)
       fix_direct_dependency(feed)
-    rescue StandardError
-      report_error("An error occurred while auto-fixing vulnerabilities")
+    # rescue StandardError
     end
+    #   report_error("An error occurred while auto-fixing vulnerabilities")
+    # end
 
     def fix_direct_dependency(feed)
       @packages = JSON.parse(@repository.package_json)
@@ -214,7 +215,6 @@ module Salus::Scanners
       group_updates.each do |updates, versions|
         vulnerable_package_info = get_package_info(updates)
         list_of_versions_available = vulnerable_package_info["data"]["versions"]
-        # TODO: Select Max Version
         version_to_update_to = Salus::SemanticVersion.select_upgrade_version(
           versions.first[:patch], list_of_versions_available
         )
@@ -223,21 +223,26 @@ module Salus::Scanners
                        else
                          updates.split("@").first
                        end
+        if !version_to_update_to.nil?
+          fixed_package_info = get_package_info(package_name, version_to_update_to)
+          unless fixed_package_info.nil?
+            updated_version = "version " + '"' + version_to_update_to + '"'
+            updated_resolved = "resolved " + '"' + fixed_package_info["data"]["dist"]["tarball"] \
+              + "#" + fixed_package_info["data"]["dist"]["shasum"] + '"'
+            updated_integrity = "integrity " + fixed_package_info['data']['dist']['integrity']
+            updated_name = package_name + "@^" + version_to_update_to
 
-        fixed_package_info = get_package_info(package_name, version_to_update_to)
-        unless fixed_package_info.nil?
-          updated_version = "version " + '"' + version_to_update_to + '"'
-          updated_resolved = "resolved " + '"' + fixed_package_info["data"]["dist"]["tarball"] \
-            + "#" + fixed_package_info["data"]["dist"]["shasum"] + '"'
-          updated_integrity = "integrity " + fixed_package_info['data']['dist']['integrity']
-          updated_name = package_name + "@^" + version_to_update_to
-          # TODO: Check if is major
-          parts.each_with_index do |part, index|
-            if part.include? updates
-              parts[index].sub!(updates, updated_name)
-              parts[index].sub!(/(version .*)/, updated_version)
-              parts[index].sub!(/(resolved .*)/, updated_resolved)
-              parts[index].sub!(/(integrity .*)/, updated_integrity)
+            parts.each_with_index do |part, index|
+              current_v = parts[index].match(/(version .*)/)
+              version_string = current_v.to_s.tr('"', "").tr("version ", "")
+              if part.include?(updates) && !is_major_bump(
+                version_string, version_to_update_to
+              )
+                parts[index].sub!(updates, updated_name)
+                parts[index].sub!(/(version .*)/, updated_version)
+                parts[index].sub!(/(resolved .*)/, updated_resolved)
+                parts[index].sub!(/(integrity .*)/, updated_integrity)
+              end
             end
           end
         end
@@ -258,24 +263,25 @@ module Salus::Scanners
 
         vulnerable_package_info = get_package_info(target)
         list_of_versions_available = vulnerable_package_info["data"]["versions"]
-        # TODO: Select Max Version
         version_to_update_to = Salus::SemanticVersion.select_upgrade_version(
           patch.first[:patch], list_of_versions_available
         )
-        update_version_string = "^" + version_to_update_to
-
-        parts.each_with_index do |part, index|
-          if part.include?(source) && part.include?(target)
+        if !version_to_update_to.nil?
+          update_version_string = "^" + version_to_update_to
+          parts.each_with_index do |part, index|
             match = part.match(/(#{target} .*)/)
-            replace = match.to_s.split(" ").first + ' "^' + version_to_update_to + '"'
-            part.sub!(/(#{target} .*)/, replace)
-            parts[index] = part
+            if part.include?(source) && part.include?(target) &&
+                !is_major_bump(match.to_s, version_to_update_to)
+              match = part.match(/(#{target} .*)/)
+              replace = match.to_s.split(" ").first + ' "^' + version_to_update_to + '"'
+              part.sub!(/(#{target} .*)/, replace)
+              parts[index] = part
+            end
           end
+          section = @parsed_yarn_lock[source]
+          section["dependencies"][target] = update_version_string
+          @parsed_yarn_lock[source] = section
         end
-
-        section = @parsed_yarn_lock[source]
-        section["dependencies"][target] = update_version_string
-        @parsed_yarn_lock[source] = section
       end
       parts
     end
@@ -286,15 +292,7 @@ module Salus::Scanners
         return
       end
 
-      yarn_info_command = "yarn info #{package} --json"
-
-      vulnerable_package_info = run_shell(yarn_info_command).stdout
-      begin
-        vulnerable_package_info = JSON.parse(vulnerable_package_info)
-      rescue StandardError
-        report_error("#{yarn_info_command} did not return JSON")
-        return
-      end
+      vulnerable_package_info = get_package_info(package)
       list_of_versions = vulnerable_package_info.dig("data", "versions")
 
       if list_of_versions.nil?
@@ -483,6 +481,9 @@ module Salus::Scanners
                run_shell("yarn info #{package}@#{version} --json")
              end
       JSON.parse(info.stdout)
+    rescue StandardError
+      report_error("#{yarn_info_command} did not return JSON")
+      nil
     end
 
     def write_auto_fix_files(file, content)
