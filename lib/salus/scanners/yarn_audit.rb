@@ -182,9 +182,7 @@ module Salus::Scanners
           end
         end
       end
-
-      # TODO: Write to file
-      puts @packages.to_json
+      write_auto_fix_files('package-autofixed.json', @packages.to_json)
     end
 
     def fix_indirect_dependency(fix_feed)
@@ -208,9 +206,7 @@ module Salus::Scanners
       parts = @repository.yarn_lock.split(/^\n/)
       parts = update_package_definition(subparent_to_package_mapping, parts)
       parts = update_sub_parent_resolution(subparent_to_package_mapping, parts)
-
-      # TODO: Write to file
-      puts parts.join("\n")
+      write_auto_fix_files('yarn-autofixed.lock', parts.join("\n"))
     end
 
     def update_package_definition(blocks, parts)
@@ -488,6 +484,14 @@ module Salus::Scanners
                run_shell("yarn info #{package}@#{version} --json")
              end
       JSON.parse(info.stdout)
+    end
+
+    def write_auto_fix_files(file, content)
+      Dir.chdir(@repository.path_to_repo) do
+        File.open(file, 'w') { |f| f.write(content) }
+        err_msg = "\n***** WARNING: autofix:true but cannot find #{file}"
+        report_error(err_msg) if !File.exist?(file)
+      end
     end
 
     def deep_copy_wo_paths(vulns)
