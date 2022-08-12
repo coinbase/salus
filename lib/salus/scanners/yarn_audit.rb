@@ -164,10 +164,9 @@ module Salus::Scanners
     def run_auto_fix(feed)
       fix_indirect_dependency(feed)
       fix_direct_dependency(feed)
+    rescue StandardError
+      report_error("An error occurred while auto-fixing vulnerabilities")
     end
-    # rescue StandardError
-    #   report_error("An error occurred while auto-fixing vulnerabilities")
-    # end
 
     def fix_direct_dependency(feed)
       @packages = JSON.parse(@repository.package_json)
@@ -205,6 +204,7 @@ module Salus::Scanners
       parts = @repository.yarn_lock.split(/^\n/)
       parts = update_package_definition(subparent_to_package_mapping, parts)
       parts = update_sub_parent_resolution(subparent_to_package_mapping, parts)
+      # TODO: Run clean up task
       write_auto_fix_files('yarn-autofixed.lock', parts.join("\n"))
     end
 
