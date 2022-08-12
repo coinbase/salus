@@ -164,10 +164,9 @@ module Salus::Scanners
     def run_auto_fix(feed)
       fix_indirect_dependency(feed)
       fix_direct_dependency(feed)
-    # rescue StandardError
+    rescue StandardError
+      report_error("An error occurred while auto-fixing vulnerabilities")
     end
-    #   report_error("An error occurred while auto-fixing vulnerabilities")
-    # end
 
     def fix_direct_dependency(feed)
       @packages = JSON.parse(@repository.package_json)
