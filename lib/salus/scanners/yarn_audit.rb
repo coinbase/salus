@@ -1,5 +1,6 @@
 require 'json'
 require 'salus/scanners/node_audit'
+require 'salus/yarn_formatter'
 require 'salus/semver'
 
 # Yarn Audit scanner integration. Flags known malicious or vulnerable
@@ -34,12 +35,6 @@ module Salus::Scanners
         handle_latest_yarn_audit
       else
         handle_legacy_yarn_audit
-      end
-      if !@report.passed? && @repository.package_json_present?
-        @packages = JSON.parse(@repository.package_json)
-        # TODO: Serialize @packages to JSON and export the
-        #       updated contents to some package-autofixed.json file
-        auto_fix_vulns
       end
     end
 
@@ -140,27 +135,157 @@ module Salus::Scanners
       report_failure
     end
 
-    def auto_fix_vulns
-      @vulns_w_paths.each do |vuln|
-        path = vuln["Path"]
-        package = vuln["Package"]
-        # vuln["Path"] for some indirect dependency "foo"
-        # looks like "bar > baz > foo".
-        # vuln["Path"] for some direct dependency "foo"
-        # looks like "foo"
-        is_direct_dep = path == package
-
-        # TODO: Fix indirect dependencies as well
-        fix_direct_dependency(vuln) if is_direct_dep
+    def generate_fix_feed
+      actions = []
+      grouped_vulns = @vulns_w_paths.group_by { |h| [h["Package"], h["Patched in"]] }
+      grouped_vulns.each do |key, values|
+        name = key.first
+        patch = key.last
+        resolves = []
+        values.each do |value|
+          resolves.append({
+                            "id": value["ID"],
+                  "path": value["Path"],
+                  "dev": false,
+                    "optional": false,
+                    "bundled": false
+                          })
+        end
+        actions.append({
+                         "action": "update",
+          "module": name,
+          "target": patch,
+          "resolves": resolves
+                       })
       end
-    rescue StandardError
-      report_error("An error occurred while auto-fixing vulnerabilities")
+      actions
     end
 
-    def fix_direct_dependency(vuln)
-      package = vuln["Package"]
-      patched_version_range = vuln["Patched in"]
+    def run_auto_fix
+      fix_feed = generate_fix_feed
+      fix_indirect_dependency(fix_feed)
+      fix_direct_dependency(fix_feed)
+    end
+    # rescue StandardError
+    #   report_error("An error occurred while auto-fixing vulnerabilities")
+    # end
 
+    def fix_direct_dependency(fix_feed)
+      @packages = JSON.parse(@repository.package_json)
+      fix_feed.each do |vuln|
+        patch = vuln[:target]
+        resolves = vuln[:resolves]
+        package = vuln[:module]
+        resolves.each do |resolve|
+          if patch != "No patch available" && package == resolve[:path]
+            update_direct_dependency(package, patch)
+          end
+        end
+      end
+
+      # TODO: Write to file
+      puts @packages.to_json
+    end
+
+    def fix_indirect_dependency(fix_feed)
+      @parsed_yarn_lock = Salus::YarnLockfileFormatter.new(@repository.yarn_lock).format
+      subparent_to_package_mapping = []
+
+      fix_feed.each do |vuln|
+        patch = vuln[:target]
+        resolves = vuln[:resolves]
+        package = vuln[:module]
+        resolves.each do |resolve|
+          if patch != "No patch available" && package != resolve[:path]
+            block = create_subparent_to_package_mapping(resolve[:path])
+            if block.key?(:key)
+              block[:patch] = patch
+              subparent_to_package_mapping.append(block)
+            end
+          end
+        end
+      end
+      parts = @repository.yarn_lock.split(/^\n/)
+      parts = update_package_definition(subparent_to_package_mapping, parts)
+      parts = update_sub_parent_resolution(subparent_to_package_mapping, parts)
+
+      # TODO: Write to file
+      puts parts.join("\n")
+    end
+
+    def update_package_definition(blocks, parts)
+      blocks.uniq { |hash| hash.values_at(:prev, :key, :patch) }
+      group_updates = blocks.group_by { |h| h[:key] }
+      group_updates.each do |updates, versions|
+        vulnerable_package_info = get_package_info(updates)
+        list_of_versions_available = vulnerable_package_info["data"]["versions"]
+        # TODO: Select Max Version
+        version_to_update_to = Salus::SemanticVersion.select_upgrade_version(
+          versions.first[:patch], list_of_versions_available
+        )
+        package_name = if updates.starts_with? "@"
+                         updates.split("@", 2).first
+                       else
+                         updates.split("@").first
+                       end
+
+        fixed_package_info = get_package_info(package_name, version_to_update_to)
+        unless fixed_package_info.nil?
+          updated_version = "version " + '"' + version_to_update_to + '"'
+          updated_resolved = "resolved " + '"' + fixed_package_info["data"]["dist"]["tarball"] \
+            + "#" + fixed_package_info["data"]["dist"]["shasum"] + '"'
+          updated_integrity = "integrity " + fixed_package_info['data']['dist']['integrity']
+          updated_name = package_name + "@^" + version_to_update_to
+          # TODO: Check if is major
+          parts.each_with_index do |part, index|
+            if part.include? updates
+              parts[index].sub!(updates, updated_name)
+              parts[index].sub!(/(version .*)/, updated_version)
+              parts[index].sub!(/(resolved .*)/, updated_resolved)
+              parts[index].sub!(/(integrity .*)/, updated_integrity)
+            end
+          end
+        end
+      end
+      parts
+    end
+
+    def update_sub_parent_resolution(blocks, parts)
+      blocks.uniq { |hash| hash.values_at(:prev, :key, :patch) }
+      group_appends = blocks.group_by { |h| [h[:prev], h[:key]] }
+      group_appends.each do |pair, patch|
+        source = pair.first
+        target = if pair.last.starts_with? "@"
+                   pair.last.split("@", 2).first
+                 else
+                   pair.last.split("@").first
+                 end
+
+        vulnerable_package_info = get_package_info(target)
+        list_of_versions_available = vulnerable_package_info["data"]["versions"]
+        # TODO: Select Max Version
+        version_to_update_to = Salus::SemanticVersion.select_upgrade_version(
+          patch.first[:patch], list_of_versions_available
+        )
+        update_version_string = "^" + version_to_update_to
+
+        parts.each_with_index do |part, index|
+          if part.include?(source) && part.include?(target)
+            match = part.match(/(#{target} .*)/)
+            replace = match.to_s.split(" ").first + ' "^' + version_to_update_to + '"'
+            part.sub!(/(#{target} .*)/, replace)
+            parts[index] = part
+          end
+        end
+
+        section = @parsed_yarn_lock[source]
+        section["dependencies"][target] = update_version_string
+        @parsed_yarn_lock[source] = section
+      end
+      parts
+    end
+
+    def update_direct_dependency(package, patched_version_range)
       if patched_version_range.match(Salus::SemanticVersion::SEMVER_RANGE_REGEX).nil?
         report_error("Found unexpected: patched version range: #{patched_version_range}")
         return
@@ -313,122 +438,47 @@ module Salus::Scanners
       vulns
     end
 
-    def run_auto_fix
-      # TODO: Preprocessing to combine vulns by path / max version
-      fix_feed = []
-      grouped_vulns = @vulns_w_paths.group_by { |h| h["Path"] }
-
-      grouped_vulns.each do |key, array|
-        fix_feed.append({
-                          Path: key,
-          Package: array.first["Package"],
-          Patch: array.map { |x| x["Patched in"] }.sort.reverse.first
-                        })
-      end
-
-      fix_feed.each do |vuln|
-        path = vuln[:Path]
-        package = vuln[:Package]
-        if path == package
-          fix_direct_dependency(vuln)
-        else
-          puts "Fixing Indirect Deps for #{vuln[:Package]}"
-          fix_indirect_dependency(vuln)
-        end
-      end
-      puts @repository.yarn_lock
-    end
-
-    def fix_direct_dependency(vuln)
-      # update dependencies, devdependencies, resolution
-      package = vuln["Package"]
-      patched_version = vuln["Patched in"]
-
-      vulnerable_package_info = run_shell("yarn info #{package} --json")
-      vulnerable_package_info = JSON.parse(vulnerable_package_info.stdout)
-      list_of_versions = vulnerable_package_info["data"]["versions"]
-      version_to_update_to = select_upgrade_version(patched_version, list_of_versions)
-
-      if @repository.package_json["dependencies"].key?(package)
-        @repository.package_json["dependencies"][package] = "^#{version_to_update_to}"
-      end
-
-      if @repository.package_json["resolutions"].key?(package)
-        @repository.package_json["resolutions"][package] = "^#{version_to_update_to}"
-      end
-
-      if @repository.package_json["devDependencies"].key?(package)
-        @repository.package_json["devDependencies"][package] = "^#{version_to_update_to}"
-      end
-    end
-
-    def fix_indirect_dependency(vuln)
-      path = vuln[:Path]
-      patched_version = vuln[:Patch]
+    def create_subparent_to_package_mapping(path)
+      section = {}
       packages = path.split(" > ")
+      packages.each_with_index do |package, index|
+        break if index == packages.length - 1
 
-      # Find correct subsection to update
-      sub_package_section = find_sub_section(packages)
-
-      # Fetch current vulnerable version
-      vulnerable_package_name = packages.last
-      vulnerable_package_dependency = sub_package_section.to_s.match(
-        /(#{vulnerable_package_name} .*)/
-      )
-      splits = vulnerable_package_dependency.to_s.split(" ", 2)
-      current_vulnerable_package_version = splits[1].tr('"', '')
-      puts "Updating #{vulnerable_package_dependency}"
-
-      # if patched_version is major compared to current_vulnerable_package_version then abort
-
-      # Fetch current vulnerable package metadata
-      vulnerable_package_info = get_package_info(vulnerable_package_name)
-      list_of_versions_available = vulnerable_package_info["data"]["versions"]
-
-      # Fetch patched package metadata
-      version_to_update_to = select_upgrade_version(patched_version, list_of_versions_available)
-      fixed_package_info = get_package_info(vulnerable_package_name, version_to_update_to)
-
-      # Override package definition to allow upgrades
-      replace_patch_versions(
-        vulnerable_package_dependency, version_to_update_to, vulnerable_package_name
-      )
-
-      # Update vulnerable package section
-      @repository.yarn_lock.scan(/^("|)(#{vulnerable_package_name}.*?)\n\n/m).each do |section|
-        # Validate its the correct block
-        if section.join.include? "#{vulnerable_package_name}@#{current_vulnerable_package_version}"
-          block = section.join
-          update_block(
-            version_to_update_to, fixed_package_info, section, block, vulnerable_package_dependency,
-            vulnerable_package_name
-          )
-        end
+        section = if index.zero?
+                    find_section_by_name(package, packages[index + 1])
+                  else
+                    find_section_by_name_and_version(section[:key], packages[index + 1])
+                  end
       end
+      section
     end
 
-    def find_sub_section(paths)
-      blob = name = version = ""
-      paths.each_with_index do |path, index|
-        # section = @repository.yarn_lock.match(/^("|)(#{path}@.*?)\n\n/m)
-        break if index == paths.length - 1
-
-        @repository.yarn_lock.scan(/^("|)(#{path}@.*?)\n\n/m).each do |section|
-          if index.zero?
-            sub_section = section.join.match(/(#{paths[index + 1]}.*)/)
-            splits = sub_section.to_s.split(" ", 2)
-            name = splits.first
-            version = splits.last.delete_prefix('"').delete_suffix('"')
-          elsif index.positive? && section.to_s.include?("#{name}@#{version}")
-            sub_section = section.join.match(/(#{paths[index + 1]}.*)/)
-            splits = sub_section.to_s.split(" ", 2)
-            name = splits.first
-            version = splits.last.delete_prefix('"').delete_suffix('"')
+    def find_section_by_name(name, next_package)
+      @parsed_yarn_lock.each do |key, array|
+        if key.starts_with? "#{name}@"
+          %w[dependencies optionalDependencies].each do |section|
+            if array[section]&.[](next_package)
+              value = array.dig(section, next_package)
+              return { "prev": key, "key": "#{next_package}@#{value}" }
+            end
           end
-          blob = section.join
         end
       end
-      blob
+      {}
+    end
+
+    def find_section_by_name_and_version(name, next_package)
+      @parsed_yarn_lock.each do |key, array|
+        if key == name
+          %w[dependencies optionalDependencies].each do |section|
+            if array[section]&.[](next_package)
+              value = array.dig(section, next_package)
+              return { "prev": key, "key": "#{next_package}@#{value}" }
+            end
+          end
+        end
+      end
+      {}
     end
 
     def get_package_info(package, version = nil)
@@ -438,41 +488,6 @@ module Salus::Scanners
                run_shell("yarn info #{package}@#{version} --json")
              end
       JSON.parse(info.stdout)
-    end
-
-    def replace_patch_versions(dependency, version_to_update_to, package_name)
-      puts "Stuff to replace #{dependency}"
-      s = package_name + ' "^' + version_to_update_to + '"'
-      @repository.yarn_lock.gsub!(dependency.to_s, s)
-    end
-
-    def update_block(version, package_info, section, block, dependency, package_name)
-      updated_version = "version " + '"' + version + '"'
-      updated_resolved = "resolved " + '"' + package_info["data"]["dist"]["tarball"] + "#" \
-          + package_info["data"]["dist"]["shasum"] + '"'
-      updated_integrity = "integrity " + package_info['data']['dist']['integrity']
-      header = package_name + '@^' + version
-
-      splits = dependency.to_s.split(" ", 2)
-      v = splits[1].tr('"', '')
-      s = "#{package_name}@#{v}"
-      if block.exclude? header
-        block.sub!(s, header)
-        block.sub!(/(version.*)/, updated_version)
-        block.sub!(/(resolved.*)/, updated_resolved)
-        block.sub!(/(integrity.*)/, updated_integrity)
-        @repository.yarn_lock.sub!(section.join, block)
-      end
-    end
-
-    def select_upgrade_version(patched_version, list_of_versions)
-      list_of_versions.each do |version|
-        if patched_version.include? ">="
-          parsed_patched_version = patched_version.tr(">=", "").tr(">= ", "")
-          return version if SemVersion.new(version) >= SemVersion.new(parsed_patched_version)
-        end
-      end
-      nil
     end
 
     def deep_copy_wo_paths(vulns)
