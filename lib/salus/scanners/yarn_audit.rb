@@ -127,7 +127,7 @@ module Salus::Scanners
 
       Salus::YarnLock.new(File.join(chdir, 'yarn.lock')).add_line_number(vulns)
 
-      run_auto_fix
+      run_auto_fix(generate_fix_feed)
 
       vulns = combine_vulns(vulns)
       log(format_vulns(vulns))
@@ -161,18 +161,17 @@ module Salus::Scanners
       actions
     end
 
-    def run_auto_fix
-      fix_feed = generate_fix_feed
-      fix_indirect_dependency(fix_feed)
-      fix_direct_dependency(fix_feed)
+    def run_auto_fix(feed)
+      fix_indirect_dependency(feed)
+      fix_direct_dependency(feed)
     end
     # rescue StandardError
     #   report_error("An error occurred while auto-fixing vulnerabilities")
     # end
 
-    def fix_direct_dependency(fix_feed)
+    def fix_direct_dependency(feed)
       @packages = JSON.parse(@repository.package_json)
-      fix_feed.each do |vuln|
+      feed.each do |vuln|
         patch = vuln[:target]
         resolves = vuln[:resolves]
         package = vuln[:module]
@@ -185,11 +184,11 @@ module Salus::Scanners
       write_auto_fix_files('package-autofixed.json', @packages.to_json)
     end
 
-    def fix_indirect_dependency(fix_feed)
+    def fix_indirect_dependency(feed)
       @parsed_yarn_lock = Salus::YarnLockfileFormatter.new(@repository.yarn_lock).format
       subparent_to_package_mapping = []
 
-      fix_feed.each do |vuln|
+      feed.each do |vuln|
         patch = vuln[:target]
         resolves = vuln[:resolves]
         package = vuln[:module]
@@ -502,6 +501,14 @@ module Salus::Scanners
         vuln_list.push vt
       end
       vuln_list
+    end
+
+    def is_major_bump(current, updated)
+      current_v = current.tr("^", "").tr("~", "").split('.').map(&:to_i)
+      updated_v = updated.split('.').map(&:to_i)
+      return true if updated_v.first > current_v.first
+
+      false
     end
 
     def format_vulns(vulns)
