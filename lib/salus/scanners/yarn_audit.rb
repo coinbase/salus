@@ -147,8 +147,8 @@ module Salus::Scanners
         # TODO: Fix indirect dependencies as well
         fix_direct_dependency(vuln) if is_direct_dep
       end
-    rescue StandardError
-      report_error("An error occurred while auto-fixing vulnerabilities")
+    rescue StandardError => e
+      report_error("An error occurred while auto-fixing vulnerabilities: #{e}, #{e.backtrace}")
     end
 
     def fix_direct_dependency(vuln)
