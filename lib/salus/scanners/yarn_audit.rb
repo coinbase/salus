@@ -1,5 +1,6 @@
 require 'json'
 require 'salus/scanners/node_audit'
+require 'salus/semver'
 
 # Yarn Audit scanner integration. Flags known malicious or vulnerable
 # dependencies in javascript projects that are packaged with yarn.
@@ -10,7 +11,7 @@ module Salus::Scanners
     # the command was previously 'yarn audit --json', which had memory allocation issues
     # see https://github.com/yarnpkg/yarn/issues/7404
     LEGACY_YARN_AUDIT_COMMAND = 'yarn audit --no-color'.freeze
-    LATEST_YARN_AUDIT_ALL_COMMAND = 'yarn npm audit --all --json'.freeze
+    LATEST_YARN_AUDIT_ALL_COMMAND = 'yarn npm audit --json'.freeze
     LATEST_YARN_AUDIT_PROD_COMMAND = 'yarn npm audit --environment'\
                   ' production --json'.freeze
     YARN_VERSION_COMMAND = 'yarn --version'.freeze
@@ -25,10 +26,17 @@ module Salus::Scanners
     end
 
     def run
+      @vulns_w_paths = []
       if Gem::Version.new(version) >= Gem::Version.new(BREAKING_VERSION)
         handle_latest_yarn_audit
       else
         handle_legacy_yarn_audit
+      end
+      if !@report.passed? && @repository.package_json_present?
+        @packages = JSON.parse(@repository.package_json)
+        # TODO: Serialize @packages to JSON and export the
+        #       updated contents to some package-autofixed.json file
+        auto_fix_vulns
       end
     end
 
@@ -108,6 +116,8 @@ module Salus::Scanners
       # lines contain 1 or more vuln tables
 
       vulns = parse_output(table_lines)
+      @vulns_w_paths = deep_copy_wo_paths(vulns)
+      vulns.each { |vul| vul.delete('Path') }
       vuln_ids = vulns.map { |v| v['ID'] }
       report_info(:vulnerabilities, vuln_ids.uniq)
 
@@ -122,6 +132,64 @@ module Salus::Scanners
       log(format_vulns(vulns))
       report_stdout(vulns.to_json)
       report_failure
+    end
+
+    def auto_fix_vulns
+      @vulns_w_paths.each do |vuln|
+        path = vuln["Path"]
+        package = vuln["Package"]
+        # vuln["Path"] for some indirect dependency "foo"
+        # looks like "bar > baz > foo".
+        # vuln["Path"] for some direct dependency "foo"
+        # looks like "foo"
+        is_direct_dep = path == package
+
+        # TODO: Fix indirect dependencies as well
+        fix_direct_dependency(vuln) if is_direct_dep
+      end
+    rescue StandardError => e
+      report_error("An error occurred while auto-fixing vulnerabilities: #{e}, #{e.backtrace}")
+    end
+
+    def fix_direct_dependency(vuln)
+      package = vuln["Package"]
+      patched_version_range = vuln["Patched in"]
+
+      if patched_version_range.match(Salus::SemanticVersion::SEMVER_RANGE_REGEX).nil?
+        report_error("Found unexpected: patched version range: #{patched_version_range}")
+        return
+      end
+
+      yarn_info_command = "yarn info #{package} --json"
+
+      vulnerable_package_info = run_shell(yarn_info_command).stdout
+      begin
+        vulnerable_package_info = JSON.parse(vulnerable_package_info)
+      rescue StandardError
+        report_error("#{yarn_info_command} did not return JSON")
+        return
+      end
+      list_of_versions = vulnerable_package_info.dig("data", "versions")
+
+      if list_of_versions.nil?
+        report_error(
+          "#{yarn_info_command} did not provide a list of available package versions"
+        )
+        return
+      end
+
+      patched_version = Salus::SemanticVersion.select_upgrade_version(
+        patched_version_range,
+        list_of_versions
+      )
+
+      if !patched_version.nil?
+        %w[dependencies resolutions devDependencies].each do |package_section|
+          if !@packages.dig(package_section, package).nil?
+            @packages[package_section][package] = "^#{patched_version}"
+          end
+        end
+      end
     end
 
     def version
@@ -147,13 +215,10 @@ module Salus::Scanners
           line_split = lines[i].split("│")
           curr_key = line_split[1].strip
           val = line_split[2].strip
-
-          if curr_key != "" && curr_key != 'Path'
+          if curr_key != ""
             vuln[curr_key] = val
             prev_key = curr_key
-          elsif curr_key == 'Path'
-            prev_key = curr_key
-          elsif prev_key != 'Path'
+          else
             vuln[prev_key] += ' ' + val
           end
         elsif lines[i].start_with?("└─") && lines[i].end_with?("─┘")
@@ -230,6 +295,16 @@ module Salus::Scanners
         vul['Dependency of'] = vul['Dependency of'].sort.join(', ')
       end
       vulns
+    end
+
+    def deep_copy_wo_paths(vulns)
+      vuln_list = []
+      vulns.each do |vuln|
+        vt = {}
+        vuln.each { |k, v| vt[k] = v }
+        vuln_list.push vt
+      end
+      vuln_list
     end
 
     def format_vulns(vulns)
