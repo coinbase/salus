@@ -28,7 +28,9 @@ module Salus
     def parse_yaml_obj(yaml)
       YAML.safe_load(yaml)
     rescue StandardError
-      {}
+      report_error(
+        "An error occurred while formatting yarn.lock for auto-fixing: #{e}, #{e.backtrace}"
+      )
     end
 
     def split_lockfile(lockfile_content)
