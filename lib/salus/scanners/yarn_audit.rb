@@ -231,7 +231,6 @@ module Salus::Scanners
               + "#" + fixed_package_info["data"]["dist"]["shasum"] + '"'
             updated_integrity = "integrity " + fixed_package_info['data']['dist']['integrity']
             updated_name = package_name + "@^" + version_to_update_to
-
             parts.each_with_index do |part, index|
               current_v = parts[index].match(/(version .*)/)
               version_string = current_v.to_s.tr('"', "").tr("version ", "")
@@ -267,6 +266,7 @@ module Salus::Scanners
           patch.first[:patch], list_of_versions_available
         )
         if !version_to_update_to.nil?
+
           update_version_string = "^" + version_to_update_to
           parts.each_with_index do |part, index|
             match = part.match(/(#{target} .*)/)
@@ -297,7 +297,7 @@ module Salus::Scanners
 
       if list_of_versions.nil?
         report_error(
-          "#{yarn_info_command} did not provide a list of available package versions"
+          "#yarn info command did not provide a list of available package versions"
         )
         return
       end
