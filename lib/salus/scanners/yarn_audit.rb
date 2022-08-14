@@ -176,7 +176,7 @@ module Salus::Scanners
         resolves = vuln[:resolves]
         package = vuln[:module]
         resolves.each do |resolve|
-          if patch != "No patch available" && package == resolve[:path]
+          if !patch.nil? && patch != "No patch available" && package == resolve[:path]
             update_direct_dependency(package, patch)
           end
         end
@@ -193,7 +193,7 @@ module Salus::Scanners
         resolves = vuln[:resolves]
         package = vuln[:module]
         resolves.each do |resolve|
-          if patch != "No patch available" && package != resolve[:path]
+          if !patch.nil? && patch != "No patch available" && package != resolve[:path]
             block = create_subparent_to_package_mapping(resolve[:path])
             if block.key?(:key)
               block[:patch] = patch

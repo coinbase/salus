@@ -206,7 +206,7 @@ describe Salus::Scanners::YarnAudit do
       feed = [{
         "action": "update",
         "module": "uglify-js",
-        "target": ">1.2.3"
+        "target": ">1.2.3",
         "resolves": [{
           "id": "ABC",
           "path": "uglify-js",
