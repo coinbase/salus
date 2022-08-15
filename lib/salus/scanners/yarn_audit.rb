@@ -162,6 +162,10 @@ module Salus::Scanners
       actions
     end
 
+    # Auto Fix will try to attempt direct and indirect dependencies
+    # Direct dependencies are found in package.json
+    # Indirect dependencies are found in yarn.lock
+    # By default, it will skip major version bumps
     def run_auto_fix(feed)
       fix_indirect_dependency(feed)
       fix_direct_dependency(feed)
@@ -209,6 +213,7 @@ module Salus::Scanners
       write_auto_fix_files('yarn-autofixed.lock', parts.join("\n"))
     end
 
+    # In yarn.lock, we attempt to update yarn.lock entries for the package
     def update_package_definition(blocks, parts)
       blocks.uniq { |hash| hash.values_at(:prev, :key, :patch) }
       group_updates = blocks.group_by { |h| h[:key] }
@@ -249,6 +254,8 @@ module Salus::Scanners
       parts
     end
 
+    # In yarn.lock, we attempt to resolve sub parent of the affected package to
+    # new updated package definition.
     def update_sub_parent_resolution(blocks, parts)
       blocks.uniq { |hash| hash.values_at(:prev, :key, :patch) }
       group_appends = blocks.group_by { |h| [h[:prev], h[:key]] }
