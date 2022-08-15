@@ -185,7 +185,7 @@ module Salus::Scanners
           end
         end
       end
-      write_auto_fix_files('package-autofixed.json',JSON.dump(@packages))
+      write_auto_fix_files('package-autofixed.json', JSON.dump(@packages))
     end
 
     def fix_indirect_dependency(feed)
