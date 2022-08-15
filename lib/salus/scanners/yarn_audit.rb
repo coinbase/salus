@@ -1,7 +1,7 @@
 require 'json'
 require 'salus/scanners/node_audit'
-require 'salus/yarn_formatter'
 require 'salus/semver'
+require 'salus/autofixers/yarn_audit_v1'
 
 # Yarn Audit scanner integration. Flags known malicious or vulnerable
 # dependencies in javascript projects that are packaged with yarn.
@@ -128,7 +128,15 @@ module Salus::Scanners
       Salus::YarnLock.new(File.join(chdir, 'yarn.lock')).add_line_number(vulns)
 
       auto_fix = @config.fetch("auto_fix", false)
-      run_auto_fix(generate_fix_feed) if auto_fix
+      if auto_fix
+        v1_autofixer = Salus::Autofixers::YarnAuditV1.new
+        v1_autofixer.run_auto_fix(
+          generate_fix_feed,
+          @repository.path_to_repo,
+          @repository.package_json,
+          @repository.yarn_lock
+        )
+      end
 
       vulns = combine_vulns(vulns)
       log(format_vulns(vulns))
@@ -160,171 +168,6 @@ module Salus::Scanners
                        })
       end
       actions
-    end
-
-    # Auto Fix will try to attempt direct and indirect dependencies
-    # Direct dependencies are found in package.json
-    # Indirect dependencies are found in yarn.lock
-    # By default, it will skip major version bumps
-    def run_auto_fix(feed)
-      fix_indirect_dependency(feed)
-      fix_direct_dependency(feed)
-    rescue StandardError => e
-      report_error("An error occurred while auto-fixing vulnerabilities: #{e}, #{e.backtrace}")
-    end
-
-    def fix_direct_dependency(feed)
-      @packages = JSON.parse(@repository.package_json)
-      feed.each do |vuln|
-        patch = vuln[:target]
-        resolves = vuln[:resolves]
-        package = vuln[:module]
-        resolves.each do |resolve|
-          if !patch.nil? && patch != "No patch available" && package == resolve[:path]
-            update_direct_dependency(package, patch)
-          end
-        end
-      end
-      write_auto_fix_files('package-autofixed.json', JSON.dump(@packages))
-    end
-
-    def fix_indirect_dependency(feed)
-      @parsed_yarn_lock = Salus::YarnLockfileFormatter.new(@repository.yarn_lock).format
-      subparent_to_package_mapping = []
-
-      feed.each do |vuln|
-        patch = vuln[:target]
-        resolves = vuln[:resolves]
-        package = vuln[:module]
-        resolves.each do |resolve|
-          if !patch.nil? && patch != "No patch available" && package != resolve[:path]
-            block = create_subparent_to_package_mapping(resolve[:path])
-            if block.key?(:key)
-              block[:patch] = patch
-              subparent_to_package_mapping.append(block)
-            end
-          end
-        end
-      end
-      parts = @repository.yarn_lock.split(/^\n/)
-      parts = update_package_definition(subparent_to_package_mapping, parts)
-      parts = update_sub_parent_resolution(subparent_to_package_mapping, parts)
-      # TODO: Run clean up task
-      write_auto_fix_files('yarn-autofixed.lock', parts.join("\n"))
-    end
-
-    # In yarn.lock, we attempt to update yarn.lock entries for the package
-    def update_package_definition(blocks, parts)
-      blocks.uniq { |hash| hash.values_at(:prev, :key, :patch) }
-      group_updates = blocks.group_by { |h| [h[:prev], h[:key]] }
-      group_updates.each do |updates, versions|
-        updates = updates.last
-        vulnerable_package_info = get_package_info(updates)
-        list_of_versions_available = vulnerable_package_info["data"]["versions"]
-        version_to_update_to = Salus::SemanticVersion.select_upgrade_version(
-          versions.first[:patch], list_of_versions_available
-        )
-        package_name = if updates.starts_with? "@"
-                         updates.split("@", 2).first
-                       else
-                         updates.split("@").first
-                       end
-        if !version_to_update_to.nil?
-          fixed_package_info = get_package_info(package_name, version_to_update_to)
-          unless fixed_package_info.nil?
-            updated_version = "version " + '"' + version_to_update_to + '"'
-            updated_resolved = "resolved " + '"' + fixed_package_info["data"]["dist"]["tarball"] \
-              + "#" + fixed_package_info["data"]["dist"]["shasum"] + '"'
-            updated_integrity = "integrity " + fixed_package_info['data']['dist']['integrity']
-            updated_name = package_name + "@^" + version_to_update_to
-            parts.each_with_index do |part, index|
-              current_v = parts[index].match(/(version .*)/)
-              version_string = current_v.to_s.tr('"', "").tr("version ", "")
-              if part.include?(updates) && !is_major_bump(
-                version_string, version_to_update_to
-              )
-                parts[index].sub!(updates, updated_name)
-                parts[index].sub!(/(version .*)/, updated_version)
-                parts[index].sub!(/(resolved .*)/, updated_resolved)
-                parts[index].sub!(/(integrity .*)/, updated_integrity)
-              end
-            end
-          end
-        end
-      end
-      parts
-    end
-
-    # In yarn.lock, we attempt to resolve sub parent of the affected package to
-    # new updated package definition.
-    def update_sub_parent_resolution(blocks, parts)
-      blocks.uniq { |hash| hash.values_at(:prev, :key, :patch) }
-      group_appends = blocks.group_by { |h| [h[:prev], h[:key]] }
-      group_appends.each do |pair, patch|
-        source = pair.first
-        target = if pair.last.starts_with? "@"
-                   pair.last.split("@", 2).first
-                 else
-                   pair.last.split("@").first
-                 end
-
-        vulnerable_package_info = get_package_info(target)
-        list_of_versions_available = vulnerable_package_info["data"]["versions"]
-        version_to_update_to = Salus::SemanticVersion.select_upgrade_version(
-          patch.first[:patch], list_of_versions_available
-        )
-        if !version_to_update_to.nil?
-
-          update_version_string = "^" + version_to_update_to
-          parts.each_with_index do |part, index|
-            match = part.match(/(#{target} .*)/)
-            if part.include?(source) && part.include?(target) &&
-                !is_major_bump(match.to_s, version_to_update_to)
-              match = part.match(/(#{target} .*)/)
-              replace = match.to_s.split(" ").first + ' "^' + version_to_update_to + '"'
-              part.sub!(/(#{target} .*)/, replace)
-              parts[index] = part
-            end
-          end
-          section = @parsed_yarn_lock[source]
-          section["dependencies"][target] = update_version_string
-          @parsed_yarn_lock[source] = section
-        end
-      end
-      parts
-    end
-
-    def update_direct_dependency(package, patched_version_range)
-      if patched_version_range.match(Salus::SemanticVersion::SEMVER_RANGE_REGEX).nil?
-        report_error("Found unexpected: patched version range: #{patched_version_range}")
-        return
-      end
-
-      vulnerable_package_info = get_package_info(package)
-      list_of_versions = vulnerable_package_info.dig("data", "versions")
-
-      if list_of_versions.nil?
-        report_error(
-          "#yarn info command did not provide a list of available package versions"
-        )
-        return
-      end
-
-      patched_version = Salus::SemanticVersion.select_upgrade_version(
-        patched_version_range,
-        list_of_versions
-      )
-
-      if !patched_version.nil?
-        %w[dependencies resolutions devDependencies].each do |package_section|
-          if !@packages.dig(package_section, package).nil?
-            current_version = @packages[package_section][package]
-            if !is_major_bump(current_version, patched_version)
-              @packages[package_section][package] = "^#{patched_version}"
-            end
-          end
-        end
-      end
     end
 
     def version
@@ -440,69 +283,6 @@ module Salus::Scanners
         vul['Dependency of'] = vul['Dependency of'].sort.join(', ')
       end
       vulns
-    end
-
-    def create_subparent_to_package_mapping(path)
-      section = {}
-      packages = path.split(" > ")
-      packages.each_with_index do |package, index|
-        break if index == packages.length - 1
-
-        section = if index.zero?
-                    find_section_by_name(package, packages[index + 1])
-                  else
-                    find_section_by_name_and_version(section[:key], packages[index + 1])
-                  end
-      end
-      section
-    end
-
-    def find_section_by_name(name, next_package)
-      @parsed_yarn_lock.each do |key, array|
-        if key.starts_with? "#{name}@"
-          %w[dependencies optionalDependencies].each do |section|
-            if array[section]&.[](next_package)
-              value = array.dig(section, next_package)
-              return { "prev": key, "key": "#{next_package}@#{value}" }
-            end
-          end
-        end
-      end
-      {}
-    end
-
-    def find_section_by_name_and_version(name, next_package)
-      @parsed_yarn_lock.each do |key, array|
-        if key == name
-          %w[dependencies optionalDependencies].each do |section|
-            if array[section]&.[](next_package)
-              value = array.dig(section, next_package)
-              return { "prev": key, "key": "#{next_package}@#{value}" }
-            end
-          end
-        end
-      end
-      {}
-    end
-
-    def get_package_info(package, version = nil)
-      info = if version.nil?
-               run_shell("yarn info #{package} --json")
-             else
-               run_shell("yarn info #{package}@#{version} --json")
-             end
-      JSON.parse(info.stdout)
-    rescue StandardError
-      report_error("#{info} did not return JSON")
-      nil
-    end
-
-    def write_auto_fix_files(file, content)
-      Dir.chdir(@repository.path_to_repo) do
-        File.open(file, 'w') { |f| f.write(content) }
-        err_msg = "\n***** WARNING: autofix:true but cannot find #{file}"
-        report_error(err_msg) if !File.exist?(file)
-      end
     end
 
     def deep_copy_wo_paths(vulns)
