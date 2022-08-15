@@ -129,7 +129,7 @@ module Salus::Scanners
 
       auto_fix = @config.fetch("auto_fix", false)
       if auto_fix
-        v1_autofixer = Salus::Autofixers::YarnAuditV1.new
+        v1_autofixer = Salus::Autofixers::YarnAuditV1.new(@repository.path_to_repo)
         v1_autofixer.run_auto_fix(
           generate_fix_feed,
           @repository.path_to_repo,
@@ -293,16 +293,6 @@ module Salus::Scanners
         vuln_list.push vt
       end
       vuln_list
-    end
-
-    def is_major_bump(current, updated)
-      current.gsub(/[^0-9.]/, "")
-      current_v = current.split('.').map(&:to_i)
-      updated.sub(/[^0-9.]/, "")
-      updated_v = updated.split('.').map(&:to_i)
-      return true if updated_v.first > current_v.first
-
-      false
     end
 
     def format_vulns(vulns)

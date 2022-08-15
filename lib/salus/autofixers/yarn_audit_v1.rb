@@ -3,6 +3,9 @@ require 'salus/autofixers/base'
 
 module Salus::Autofixers
   class YarnAuditV1 < Base
+    def initialize(path_to_repo)
+      @path_to_repo = path_to_repo
+    end
 
     # Auto Fix will try to attempt direct and indirect dependencies
     # Direct dependencies are found in package.json
@@ -11,7 +14,7 @@ module Salus::Autofixers
     def run_auto_fix(feed, path_to_repo, package_json, yarn_lock)
       fix_indirect_dependency(feed, yarn_lock, path_to_repo)
       fix_direct_dependency(feed, package_json, path_to_repo)
-    # rescue StandardError => e
+    rescue StandardError => e
       error_msg = "An error occurred while auto-fixing vulnerabilities: #{e}, #{e.backtrace}"
       raise AutofixError, error_msg
     end
@@ -100,13 +103,26 @@ module Salus::Autofixers
 
     def get_package_info(package, version = nil)
       info = if version.nil?
-               run_shell("yarn info #{package} --json")
+               run_shell("yarn info #{package} --json", chdir: File.expand_path(@path_to_repo))
              else
-               run_shell("yarn info #{package}@#{version} --json")
+               run_shell(
+                 "yarn info #{package}@#{version} --json",
+                 chdir: File.expand_path(@path_to_repo)
+               )
              end
       JSON.parse(info.stdout)
     rescue StandardError
       nil
+    end
+
+    def is_major_bump(current, updated)
+      current.gsub(/[^0-9.]/, "")
+      current_v = current.split('.').map(&:to_i)
+      updated.sub(/[^0-9.]/, "")
+      updated_v = updated.split('.').map(&:to_i)
+      return true if updated_v.first > current_v.first
+
+      false
     end
 
     # In yarn.lock, we attempt to resolve sub parent of the affected package to
@@ -131,7 +147,7 @@ module Salus::Autofixers
           update_version_string = "^" + version_to_update_to
           parts.each_with_index do |part, index|
             match = part.match(/(#{target} .*)/)
-            if part.include?(source) && part.include?(target) &&
+            if part.include?(source) && !match.nil? &&
                 !is_major_bump(match.to_s, version_to_update_to)
               match = part.match(/(#{target} .*)/)
               replace = match.to_s.split(" ").first + ' "^' + version_to_update_to + '"'
@@ -156,7 +172,11 @@ module Salus::Autofixers
         section = if index.zero?
                     find_section_by_name(parsed_yarn_lock, package, packages[index + 1])
                   else
-                    find_section_by_name_and_version(parsed_yarn_lock, section[:key], packages[index + 1])
+                    find_section_by_name_and_version(
+                      parsed_yarn_lock,
+                      section[:key],
+                      packages[index + 1]
+                    )
                   end
       end
       section

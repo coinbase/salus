@@ -6,8 +6,7 @@ module Salus::Autofixers
   class Base
     class AutofixError < StandardError; end
 
-    def initialize
-    end
+    def initialize; end
 
     def write_auto_fix_files(path_to_repo, file, content)
       Dir.chdir(path_to_repo) do
@@ -18,7 +17,7 @@ module Salus::Autofixers
 
     # Runs a command on the terminal.
     def run_shell(command, env: {}, stdin_data: '',
-                       chdir: File.expand_path(@repository&.path_to_repo))
+                  chdir: '')
       # If we're passed a string, convert it to an array before passing to capture3
       command = command.split unless command.is_a?(Array)
       Salus::PluginManager.send_event(:run_shell, command, chdir: chdir)
