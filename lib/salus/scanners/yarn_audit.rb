@@ -127,7 +127,7 @@ module Salus::Scanners
 
       Salus::YarnLock.new(File.join(chdir, 'yarn.lock')).add_line_number(vulns)
 
-      auto_fix = @config.fetch('auto_fix', false)
+      auto_fix = @config.fetch("auto_fix", false)
       run_auto_fix(generate_fix_feed) if auto_fix
 
       vulns = combine_vulns(vulns)
@@ -310,7 +310,10 @@ module Salus::Scanners
       if !patched_version.nil?
         %w[dependencies resolutions devDependencies].each do |package_section|
           if !@packages.dig(package_section, package).nil?
-            @packages[package_section][package] = "^#{patched_version}"
+            current_version = @packages[package_section][package]
+            if !is_major_bump(current_version, patched_version)
+              @packages[package_section][package] = "^#{patched_version}"
+            end
           end
         end
       end
