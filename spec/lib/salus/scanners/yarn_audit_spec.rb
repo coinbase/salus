@@ -182,7 +182,7 @@ describe Salus::Scanners::YarnAudit do
       feed = [{
         "action": "update",
         "module": "uglify-js",
-        "target": ">=2.6.0",
+        "target": ">=1.3.5",
         "resolves": [{
           "id": "ABC",
           "path": "uglify-js",
@@ -197,7 +197,7 @@ describe Salus::Scanners::YarnAudit do
       fixed_packages = scanner.instance_variable_get(:@packages)
 
       expect(initial_packages['dependencies']['uglify-js']).to eq('1.2.3')
-      expect(fixed_packages['dependencies']['uglify-js']).to eq('^2.8.29')
+      expect(fixed_packages['dependencies']['uglify-js']).to eq('^1.3.5')
     end
 
     it 'does not exceed the recommended major version' do
