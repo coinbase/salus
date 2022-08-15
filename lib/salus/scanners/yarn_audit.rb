@@ -185,7 +185,7 @@ module Salus::Scanners
           end
         end
       end
-      write_auto_fix_files('package-autofixed.json', @packages.to_json)
+      write_auto_fix_files('package-autofixed.json',JSON.dump(@packages))
     end
 
     def fix_indirect_dependency(feed)
@@ -216,8 +216,9 @@ module Salus::Scanners
     # In yarn.lock, we attempt to update yarn.lock entries for the package
     def update_package_definition(blocks, parts)
       blocks.uniq { |hash| hash.values_at(:prev, :key, :patch) }
-      group_updates = blocks.group_by { |h| h[:key] }
+      group_updates = blocks.group_by { |h| [h[:prev], h[:key]] }
       group_updates.each do |updates, versions|
+        updates = updates.last
         vulnerable_package_info = get_package_info(updates)
         list_of_versions_available = vulnerable_package_info["data"]["versions"]
         version_to_update_to = Salus::SemanticVersion.select_upgrade_version(
@@ -492,7 +493,7 @@ module Salus::Scanners
              end
       JSON.parse(info.stdout)
     rescue StandardError
-      report_error("#{yarn_info_command} did not return JSON")
+      report_error("#{info} did not return JSON")
       nil
     end
 
