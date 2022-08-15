@@ -1,6 +1,7 @@
 require 'json'
 require 'salus/scanners/node_audit'
 require 'salus/semver'
+require 'salus/autofixers/yarn_audit_v1'
 
 # Yarn Audit scanner integration. Flags known malicious or vulnerable
 # dependencies in javascript projects that are packaged with yarn.
@@ -8,6 +9,8 @@ require 'salus/semver'
 
 module Salus::Scanners
   class YarnAudit < NodeAudit
+    class SemVersion < Gem::Version; end
+    class ExportReportError < StandardError; end
     # the command was previously 'yarn audit --json', which had memory allocation issues
     # see https://github.com/yarnpkg/yarn/issues/7404
     LEGACY_YARN_AUDIT_COMMAND = 'yarn audit --no-color'.freeze
@@ -16,6 +19,7 @@ module Salus::Scanners
                   ' production --json'.freeze
     YARN_VERSION_COMMAND = 'yarn --version'.freeze
     BREAKING_VERSION = "2.0.0".freeze
+    YARN_COMMAND = 'yarn'.freeze
 
     def should_run?
       @repository.yarn_lock_present?
@@ -31,12 +35,6 @@ module Salus::Scanners
         handle_latest_yarn_audit
       else
         handle_legacy_yarn_audit
-      end
-      if !@report.passed? && @repository.package_json_present?
-        @packages = JSON.parse(@repository.package_json)
-        # TODO: Serialize @packages to JSON and export the
-        #       updated contents to some package-autofixed.json file
-        auto_fix_vulns
       end
     end
 
@@ -128,68 +126,48 @@ module Salus::Scanners
       chdir = File.expand_path(@repository&.path_to_repo)
 
       Salus::YarnLock.new(File.join(chdir, 'yarn.lock')).add_line_number(vulns)
+
+      auto_fix = @config.fetch("auto_fix", false)
+      if auto_fix
+        v1_autofixer = Salus::Autofixers::YarnAuditV1.new(@repository.path_to_repo)
+        v1_autofixer.run_auto_fix(
+          generate_fix_feed,
+          @repository.path_to_repo,
+          @repository.package_json,
+          @repository.yarn_lock
+        )
+      end
+
       vulns = combine_vulns(vulns)
       log(format_vulns(vulns))
       report_stdout(vulns.to_json)
       report_failure
     end
 
-    def auto_fix_vulns
-      @vulns_w_paths.each do |vuln|
-        path = vuln["Path"]
-        package = vuln["Package"]
-        # vuln["Path"] for some indirect dependency "foo"
-        # looks like "bar > baz > foo".
-        # vuln["Path"] for some direct dependency "foo"
-        # looks like "foo"
-        is_direct_dep = path == package
-
-        # TODO: Fix indirect dependencies as well
-        fix_direct_dependency(vuln) if is_direct_dep
-      end
-    rescue StandardError => e
-      report_error("An error occurred while auto-fixing vulnerabilities: #{e}, #{e.backtrace}")
-    end
-
-    def fix_direct_dependency(vuln)
-      package = vuln["Package"]
-      patched_version_range = vuln["Patched in"]
-
-      if patched_version_range.match(Salus::SemanticVersion::SEMVER_RANGE_REGEX).nil?
-        report_error("Found unexpected: patched version range: #{patched_version_range}")
-        return
-      end
-
-      yarn_info_command = "yarn info #{package} --json"
-
-      vulnerable_package_info = run_shell(yarn_info_command).stdout
-      begin
-        vulnerable_package_info = JSON.parse(vulnerable_package_info)
-      rescue StandardError
-        report_error("#{yarn_info_command} did not return JSON")
-        return
-      end
-      list_of_versions = vulnerable_package_info.dig("data", "versions")
-
-      if list_of_versions.nil?
-        report_error(
-          "#{yarn_info_command} did not provide a list of available package versions"
-        )
-        return
-      end
-
-      patched_version = Salus::SemanticVersion.select_upgrade_version(
-        patched_version_range,
-        list_of_versions
-      )
-
-      if !patched_version.nil?
-        %w[dependencies resolutions devDependencies].each do |package_section|
-          if !@packages.dig(package_section, package).nil?
-            @packages[package_section][package] = "^#{patched_version}"
-          end
+    def generate_fix_feed
+      actions = []
+      grouped_vulns = @vulns_w_paths.group_by { |h| [h["Package"], h["Patched in"]] }
+      grouped_vulns.each do |key, values|
+        name = key.first
+        patch = key.last
+        resolves = []
+        values.each do |value|
+          resolves.append({
+                            "id": value["ID"],
+                  "path": value["Path"],
+                  "dev": false,
+                    "optional": false,
+                    "bundled": false
+                          })
         end
+        actions.append({
+                         "action": "update",
+          "module": name,
+          "target": patch,
+          "resolves": resolves
+                       })
       end
+      actions
     end
 
     def version
@@ -249,6 +227,16 @@ module Salus::Scanners
       command << 'dependencies ' unless dep_types.include?('dependencies')
       command << 'devDependencies ' unless dep_types.include?('devDependencies')
       command << 'optionalDependencies ' unless dep_types.include?('optionalDependencies')
+    end
+
+    def find_nested_hash_value(obj, key)
+      if obj.respond_to?(:key?) && obj.key?(key)
+        obj[key]
+      elsif obj.respond_to?(:each)
+        r = nil
+        obj.find { |*a| r = find_nested_hash_value(a.last, key) }
+        r
+      end
     end
 
     # severity and vuln title in the yarn output looks like
