@@ -36,20 +36,6 @@ module Salus::Scanners
       else
         handle_legacy_yarn_audit
       end
-
-      autofix = @config['auto_fix']
-      if autofix == true
-        Dir.chdir(@repository.path_to_repo) do
-          # TODO: replace the file write line below with calling autofix
-          fixed_package_json = 'package-autofixed.json'
-          fixed_yarn_lock = 'yarn-autofixed.lock'
-          [fixed_package_json, fixed_yarn_lock].each do |fixed_file|
-            File.open(fixed_file, 'w') { |file| file.write('Hello World!') }
-            err_msg = "\n***** WARNING: autofix:true but cannot find #{fixed_file}"
-            report_error(err_msg) if !File.exist?(fixed_file)
-          end
-        end
-      end
     end
 
     def handle_latest_yarn_audit
