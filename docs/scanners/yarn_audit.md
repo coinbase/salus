@@ -12,8 +12,7 @@ See <https://yarnpkg.com/lang/en/docs/dependency-types/> for more info on depend
 
 ```yaml
 scanner_configs:
-  YarnAudit:
-    
+  YarnAudit:   
     exclude_groups:
       # Including all 3 effectively disables yarn as yarn audit is a CVE scanner on dependencies
     - dependencies            # project dependencies
