@@ -24,11 +24,16 @@ scanner_configs:
       changed_by: Appsec team
       notes: Temporary exception generated automatically
       expiration: "2021-04-27"
-    auto_fix: true
 ```
 
 If you want salus to autofix the yarn dependency files, then set `auto_fix: true`.
 > NOTE: Only availabe for yarn > 2.0.0.
+
+```yaml
+scanner_configs:
+  YarnAudit:
+    auto_fix: true
+```
 
 If you only want to scan production-related dependencies, then you want the following:
 
