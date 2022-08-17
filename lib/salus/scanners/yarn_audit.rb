@@ -2,6 +2,7 @@ require 'json'
 require 'salus/scanners/node_audit'
 require 'salus/semver'
 require 'salus/autofixers/yarn_audit_v1'
+require 'salus/autofixers/yarn_audit_v2'
 
 # Yarn Audit scanner integration. Flags known malicious or vulnerable
 # dependencies in javascript projects that are packaged with yarn.
@@ -83,6 +84,15 @@ module Salus::Scanners
                        })
         end
       end
+
+      v2_autofixer = Salus::Autofixers::YarnAuditV2.new(@repository.path_to_repo)
+      v2_autofixer.run_auto_fix(
+        data["actions"],
+        @repository.path_to_repo,
+        @repository.package_json,
+        @repository.yarn_lock
+      )
+
       return report_success if vulns.empty?
 
       vulns = combine_vulns(vulns)
