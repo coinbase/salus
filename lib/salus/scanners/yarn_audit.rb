@@ -129,7 +129,7 @@ module Salus::Scanners
 
       auto_fix = @config.fetch("auto_fix", false)
       if auto_fix
-        v1_autofixer = Salus::Autofixers::YarnAuditV1.new(@repository.path_to_repo)
+        v1_autofixer = Salus::Autofix::YarnAuditV1.new(@repository.path_to_repo)
         v1_autofixer.run_auto_fix(
           generate_fix_feed,
           @repository.path_to_repo,

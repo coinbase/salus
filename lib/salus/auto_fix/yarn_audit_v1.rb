@@ -1,7 +1,7 @@
 require 'salus/yarn_formatter'
 require 'salus/auto_fix/base'
 
-module Salus::Autofixers
+module Salus::Autofix
   class YarnAuditV1 < Base
     def initialize(path_to_repo)
       @path_to_repo = path_to_repo
