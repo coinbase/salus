@@ -31,7 +31,7 @@ module Salus::Autofixers
           end
         end
       end
-      write_auto_fix_files(path_to_repo, 'package-autofixed.json', JSON.dump(packages))
+      write_auto_fix_files(path_to_repo, 'package-autofixed.json', JSON.pretty_generate(packages))
     end
 
     def fix_indirect_dependency(feed, yarn_lock, path_to_repo)
