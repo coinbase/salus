@@ -341,44 +341,6 @@ describe Salus::Scanners::YarnAudit do
       expected_vuln_packages = [["node-sass", ">=7.0.0"]]
       expect(vuln_packages).to eq(expected_vuln_packages)
     end
-
-    describe 'fix_direct_dependency' do
-=begin
-       it 'fixes vulnerable direct dependencies via the @packages object' do
-        repo = Salus::Repo.new('spec/fixtures/yarn_audit/failure')
-        scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
-        vuln = {
-          "Package" => "uglify-js",
-          "Path" => "uglify-js",
-          "Patched in" => ">=2.6.0"
-        }
-        initial_packages = JSON.parse(repo.package_json)
-        scanner.run
-        scanner.fix_direct_dependency(vuln)
-        fixed_packages = scanner.instance_variable_get(:@packages)
-
-        expect(initial_packages['dependencies']['uglify-js']).to eq('1.2.3')
-        expect(fixed_packages['dependencies']['uglify-js']).to eq('^2.8.29')
-      end
-
-    it 'does not exceed the recommended major version' do
-      repo = Salus::Repo.new('spec/fixtures/yarn_audit/failure')
-      scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
-      vuln = {
-        "Package" => "uglify-js",
-        "Path" => "uglify-js",
-        "Patched in" => ">1.2.3"
-      }
-      initial_packages = JSON.parse(repo.package_json)
-      scanner.run
-      scanner.fix_direct_dependency(vuln)
-      fixed_packages = scanner.instance_variable_get(:@packages)
-
-      expect(initial_packages['dependencies']['uglify-js']).to eq('1.2.3')
-      expect(fixed_packages['dependencies']['uglify-js']).to eq('^1.3.5')
-    end
-=end
-    end
   end
 
   describe '#version_valid?' do
