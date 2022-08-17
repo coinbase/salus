@@ -1,0 +1,23 @@
+{
+    "name": "www",
+    "version": "1.0.0",
+    "description": "Test package.json file.",
+    "main": "index.js",
+    "engines": {
+      "npm": ">= 4.0.0",
+      "node": ">= 6.9"
+    },
+    "scripts": {
+      "test": "test"
+    },
+    "repository": {
+      "type": "git",
+      "url": "test"
+    },
+    "author": "",
+    "license": "MIT",
+    "dependencies": {
+        "node-sass": "6.0.1"
+    }
+  }
+  

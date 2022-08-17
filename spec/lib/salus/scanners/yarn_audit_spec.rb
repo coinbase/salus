@@ -176,7 +176,7 @@ describe Salus::Scanners::YarnAudit do
   end
 
   describe '#autofix' do
-    it 'should not update files if patched in major versions' do
+    it 'should not update if patched in major versions (direct deps only)' do
       repo_path = 'spec/fixtures/yarn_audit/failure'
       yarn_lock = File.join(repo_path, 'yarn.lock')
       package_json = File.join(repo_path, 'package.json')
@@ -199,7 +199,7 @@ describe Salus::Scanners::YarnAudit do
       expect(package_json_content).to eq(package_json_fixed_content)
     end
 
-    it 'should update dependency correctly if patched in both major/major versions' do
+    it 'should update correctly if patched in both major/minor versions (direct deps only)' do
       repo_path = 'spec/fixtures/yarn_audit/failure-2'
       yarn_lock = File.join(repo_path, 'yarn.lock')
       package_json = File.join(repo_path, 'package.json')
@@ -244,7 +244,7 @@ describe Salus::Scanners::YarnAudit do
       expect(vuln_packages).to eq(expected_vuln_packages)
     end
 
-    it 'Should update multiple dependencies correctly' do
+    it 'should update multiple dependencies correctly with direct dependencies' do
       repo_path = 'spec/fixtures/yarn_audit/failure-4'
       yarn_lock = File.join(repo_path, 'yarn.lock')
       package_json = File.join(repo_path, 'package.json')
@@ -295,6 +295,50 @@ describe Salus::Scanners::YarnAudit do
       vuln_packages = vulns.map { |v| [v['Package'], v['Patched in']] }.sort.uniq
       expected_vuln_packages = [["uglify-js", ">=2.4.24"], ["uglify-js", ">=2.6.0"],
                                 ["yargs-parser", ">=13.1.2"]]
+      expect(vuln_packages).to eq(expected_vuln_packages)
+    end
+
+    it 'should update indirect dependencies correct' do
+      repo_path = 'spec/fixtures/yarn_audit/failure-5'
+      yarn_lock = File.join(repo_path, 'yarn.lock')
+      package_json = File.join(repo_path, 'package.json')
+      yarn_lock_fixed = File.join(repo_path, 'yarn-autofixed.lock')
+      package_json_fixed = File.join(repo_path, 'package-autofixed.json')
+      [yarn_lock_fixed, package_json_fixed].each do |f|
+        File.delete(f) if File.exist?(f)
+      end
+
+      repo = Salus::Repo.new(repo_path)
+      scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: { 'auto_fix' => true })
+      scanner.run
+      expect(scanner.report.to_h.fetch(:passed)).to eq(false)
+      vulns = JSON.parse(scanner.report.to_h[:info][:stdout])
+      vuln_packages = vulns.map { |v| [v['Package'], v['Patched in']] }.sort.uniq
+      expected_vuln_packages = [["node-sass", ">=7.0.0"], ["scss-tokenizer", ">=0.4.3"]]
+      expect(vuln_packages).to eq(expected_vuln_packages)
+
+      # package.json has only 1 dependency "node-sass": "6.0.1"
+      # yarn audit says node-sass patched >= 7.0.0
+      #                 scss-tokenizer patched >= 0.4.3
+      expect(File.exist?(yarn_lock_fixed)).to eq(true)
+      expect(File.exist?(package_json_fixed)).to eq(true)
+      # new yarn.lock has scss-tokenizer patched updated to ^0.4.3
+      expected_yarn_lock_fixed = File.join(repo_path, 'expected-yarn-autofixed.lock')
+      expect(FileUtils.compare_file(yarn_lock_fixed, expected_yarn_lock_fixed)).to eq(true)
+
+      package_json_content = JSON.parse(File.read(package_json))
+      package_json_fixed_content = JSON.parse(File.read(package_json_fixed))
+      expect(package_json_content).to eq(package_json_fixed_content)
+
+      # update yarn.lock and run salus again, scss-tokenizer will disappear from vuls
+      FileUtils.cp(yarn_lock_fixed, yarn_lock)
+      repo = Salus::Repo.new(repo_path)
+      scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
+      scanner.run
+      expect(scanner.report.to_h.fetch(:passed)).to eq(false)
+      vulns = JSON.parse(scanner.report.to_h[:info][:stdout])
+      vuln_packages = vulns.map { |v| [v['Package'], v['Patched in']] }.sort.uniq
+      expected_vuln_packages = [["node-sass", ">=7.0.0"]]
       expect(vuln_packages).to eq(expected_vuln_packages)
     end
 
