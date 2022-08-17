@@ -1,5 +1,5 @@
 require 'salus/yarn_formatter'
-require 'salus/autofixers/base'
+require 'salus/auto_fix/base'
 
 module Salus::Autofixers
   class YarnAuditV1 < Base

@@ -1,7 +1,7 @@
 require 'json'
 require 'salus/scanners/node_audit'
 require 'salus/semver'
-require 'salus/autofixers/yarn_audit_v1'
+require 'salus/auto_fix/yarn_audit_v1'
 
 # Yarn Audit scanner integration. Flags known malicious or vulnerable
 # dependencies in javascript projects that are packaged with yarn.
