@@ -132,12 +132,7 @@ module Salus::Autofix
       group_appends = blocks.group_by { |h| [h[:prev], h[:key]] }
       group_appends.each do |pair, patch|
         source = pair.first
-        target = if pair.last.starts_with? "@"
-                   pair.last.split("@", 2).first
-                 else
-                   pair.last.split("@").first
-                 end
-
+        target = pair.last.reverse.split('@', 2).collect(&:reverse).reverse.first
         vulnerable_package_info = get_package_info(target)
         list_of_versions_available = vulnerable_package_info["data"]["versions"]
         version_to_update_to = Salus::SemanticVersion.select_upgrade_version(
@@ -156,8 +151,14 @@ module Salus::Autofix
             end
           end
           section = parsed_yarn_lock[source]
-          section["dependencies"][target] = update_version_string
-          parsed_yarn_lock[source] = section
+          if section.dig("dependencies", target)
+            section["dependencies"][target] = update_version_string
+            parsed_yarn_lock[source] = section
+          end
+          if section.dig("optionalDependencies", target)
+            section["optionalDependencies"][target] = update_version_string
+            parsed_yarn_lock[source] = section
+          end
         end
       end
       parts
