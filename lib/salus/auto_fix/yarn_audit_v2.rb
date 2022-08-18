@@ -14,10 +14,11 @@ module Salus::Autofix
     def run_auto_fix(feed, path_to_repo, package_json, yarn_lock)
       fix_indirect_dependency(feed, yarn_lock, path_to_repo)
       fix_direct_dependency(feed, package_json, path_to_repo)
-    rescue StandardError => e
-      error_msg = "An error occurred while auto-fixing vulnerabilities: #{e}, #{e.backtrace}"
-      raise AutofixError, error_msg
     end
+    # rescue StandardError => e
+    #   error_msg = "An error occurred while auto-fixing vulnerabilities: #{e}, #{e.backtrace}"
+    #   raise AutofixError, error_msg
+    # end
 
     def fix_direct_dependency(feed, package_json, path_to_repo)
       packages = JSON.parse(package_json)
@@ -45,6 +46,7 @@ module Salus::Autofix
         resolves.each do |resolve|
           if !patch.nil? && patch != "No patch available" && package != resolve["path"]
             block = create_subparent_to_package_mapping(parsed_yarn_lock, resolve["path"])
+            puts block
             if block.key?(:key)
               block[:patch] = patch
               subparent_to_package_mapping.append(block)
@@ -52,11 +54,11 @@ module Salus::Autofix
           end
         end
       end
-    #   parts = yarn_lock.split(/^\n/)
-    #   parts = update_package_definition(subparent_to_package_mapping, parts)
-    #   parts = update_sub_parent_resolution(subparent_to_package_mapping, parts, parsed_yarn_lock)
+      parts = yarn_lock.split(/^\n/)
+      parts = update_package_definition(subparent_to_package_mapping, parts)
+      parts = update_sub_parent_resolution(subparent_to_package_mapping, parts, parsed_yarn_lock)
       # TODO: Run clean up task
-    #   write_auto_fix_files(path_to_repo, 'yarn-autofixed.lock', parts.join("\n"))
+      write_auto_fix_files(path_to_repo, 'yarn-autofixed.lock', parts.join("\n"))
     end
 
     # In yarn.lock, we attempt to update yarn.lock entries for the package
@@ -170,7 +172,6 @@ module Salus::Autofix
         break if index == packages.length - 1
 
         section = if index.zero?
-                    puts find_section_by_name(parsed_yarn_lock, package, packages[index + 1])
                     find_section_by_name(parsed_yarn_lock, package, packages[index + 1])
                   else
                     find_section_by_name_and_version(
@@ -187,7 +188,7 @@ module Salus::Autofix
     def find_section_by_name(parsed_yarn_lock, name, next_package)
       parsed_yarn_lock.each do |key, array|
         if key.starts_with? "#{name}@"
-          %w[dependencies optionalDependencies].each do |section|
+          %w[dependencies peerDependencies].each do |section|
             if array[section]&.[](next_package)
               value = array.dig(section, next_package)
               return { "prev": key, "key": "#{next_package}@npm:#{value}" }

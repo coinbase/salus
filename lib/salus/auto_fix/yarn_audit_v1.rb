@@ -53,14 +53,14 @@ module Salus::Autofix
         end
       end
       parts = yarn_lock.split(/^\n/)
-      parts = update_package_definition(subparent_to_package_mapping, parts)
+      parts = update_package_definition(subparent_to_package_mapping, parts, parsed_yarn_lock)
       parts = update_sub_parent_resolution(subparent_to_package_mapping, parts, parsed_yarn_lock)
       # TODO: Run clean up task
       write_auto_fix_files(path_to_repo, 'yarn-autofixed.lock', parts.join("\n"))
     end
 
     # In yarn.lock, we attempt to update yarn.lock entries for the package
-    def update_package_definition(blocks, parts)
+    def update_package_definition(blocks, parts, parsed_yarn_lock)
       blocks.uniq { |hash| hash.values_at(:prev, :key, :patch) }
       group_updates = blocks.group_by { |h| [h[:prev], h[:key]] }
       group_updates.each do |updates, versions|
@@ -75,17 +75,20 @@ module Salus::Autofix
                        else
                          updates.split("@").first
                        end
-        if !version_to_update_to.nil?
+        # TODO: Check if updated_name is not already present in parsed yarn block
+        updated_name = package_name + "@^" + version_to_update_to
+        if !version_to_update_to.nil? && parsed_yarn_lock.key?(updated_name)
           fixed_package_info = get_package_info(package_name, version_to_update_to)
           unless fixed_package_info.nil?
             updated_version = "version " + '"' + version_to_update_to + '"'
             updated_resolved = "resolved " + '"' + fixed_package_info["data"]["dist"]["tarball"] \
               + "#" + fixed_package_info["data"]["dist"]["shasum"] + '"'
             updated_integrity = "integrity " + fixed_package_info['data']['dist']['integrity']
-            updated_name = package_name + "@^" + version_to_update_to
+
             parts.each_with_index do |part, index|
               current_v = parts[index].match(/(version .*)/)
               version_string = current_v.to_s.tr('"', "").tr("version ", "")
+
               if part.include?(updates) && !is_major_bump(
                 version_string, version_to_update_to
               )
