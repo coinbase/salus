@@ -83,6 +83,7 @@ module Salus::Scanners
                        })
         end
       end
+
       return report_success if vulns.empty?
 
       vulns = combine_vulns(vulns)
