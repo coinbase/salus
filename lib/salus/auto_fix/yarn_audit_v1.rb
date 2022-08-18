@@ -31,7 +31,7 @@ module Salus::Autofix
           end
         end
       end
-      write_auto_fix_files(path_to_repo, 'package-autofixed.json', JSON.dump(packages))
+      write_auto_fix_files(path_to_repo, 'package-autofixed.json', JSON.pretty_generate(packages))
     end
 
     def fix_indirect_dependency(feed, yarn_lock, path_to_repo)
@@ -138,7 +138,8 @@ module Salus::Autofix
         version_to_update_to = Salus::SemanticVersion.select_upgrade_version(
           patch.first[:patch], list_of_versions_available
         )
-        if !version_to_update_to.nil? 
+
+        if !version_to_update_to.nil?
           update_version_string = "^" + version_to_update_to
           parts.each_with_index do |part, index|
             match = part.match(/(#{target} .*)/)
