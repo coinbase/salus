@@ -2,7 +2,7 @@ require 'open3'
 require 'salus/plugin_manager'
 require 'salus/shell_result'
 
-module Salus::Autofixers
+module Salus::Autofix
   class Base
     class AutofixError < StandardError; end
 
