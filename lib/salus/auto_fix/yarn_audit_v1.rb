@@ -87,9 +87,9 @@ module Salus::Autofix
             parts.each_with_index do |part, index|
               current_v = parts[index].match(/(version .*)/)
               version_string = current_v.to_s.tr('"', "").tr("version ", "")
-              if part.include?(updates) && !is_major_bump(
+              if part.include?(updates) && !seen.include?(updated_name) && !is_major_bump(
                 version_string, version_to_update_to
-              ) && !seen.include?(updated_name)
+              )
                 parts[index].sub!(updates, updated_name)
                 parts[index].sub!(/(version .*)/, updated_version)
                 parts[index].sub!(/(resolved .*)/, updated_resolved)
