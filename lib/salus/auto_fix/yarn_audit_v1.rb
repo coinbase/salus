@@ -117,11 +117,25 @@ module Salus::Autofix
       nil
     end
 
-    def is_major_bump(current, updated)
-      current.gsub(/[^0-9.]/, "")
-      updated.sub(/[^0-9.]/, "")
-      unless current.empty? && updated.empty?
-        return true if updated.chr.to_i > current.chr.to_i
+    def is_major_bump(current_version, new_version)
+      current_version.gsub(/[^0-9.]/, "")
+      new_version.gsub(/[^0-9.]/, "")
+      unless current_version.empty? && new_version.empty?
+        current_v = if current_version.include? "."
+                      current_version.split('.').map(&:to_i)
+                    elsif current_version.match(/^(\d)+$/)
+                      [current_version.to_i]
+                    else
+                      [0]
+                    end
+        new_v = if new_version.include? "."
+                  new_version.split('.').map(&:to_i)
+                elsif new_version.match(/^(\d)+$/)
+                  [new_version.to_i]
+                else
+                  [0]
+                end
+        return true if current_v.first > new_v.first
       end
 
       false
