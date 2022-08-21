@@ -123,7 +123,7 @@ module Salus::Autofix
       unless current.empty? && updated.empty?
         return true if updated.chr.to_i > current.chr.to_i
       end
-      
+
       false
     end
 
@@ -144,8 +144,9 @@ module Salus::Autofix
           update_version_string = "^" + version_to_update_to
           parts.each_with_index do |part, index|
             match = part.match(/(#{target} .*)/)
-            if part.include?(source) && !match.nil? 
-                !is_major_bump(match.to_s.split(" ").last, version_to_update_to)
+            if part.include?(source) && !match.nil? && !is_major_bump(
+              match.to_s.split(" ").last, version_to_update_to
+            )
               replace = target + ' "^' + version_to_update_to + '"'
               part.sub!(/(#{target} .*)/, replace)
               parts[index] = part
