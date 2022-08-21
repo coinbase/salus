@@ -119,24 +119,11 @@ module Salus::Autofix
 
     def is_major_bump(current, updated)
       current.gsub(/[^0-9.]/, "")
-      curent_v = []
-      if current.include?"."
-        current_v = current.split('.').map(&:to_i)
-      elsif current.length == 1
-        curent_v.append(updated)
-      end
-      updated_v = []
       updated.sub(/[^0-9.]/, "")
-      if current.include?"."
-        updated_v = updated.split('.').map(&:to_i)
-      elsif current.length == 1
-        updated_v.append(updated)
+      unless current.empty? && updated.empty?
+        return true if updated.chr > current.chr
       end
-
-      if !updated_v.empty? && !current_v.empty?
-        return true if updated_v.first > current_v.first
-      end
-
+      
       false
     end
 
