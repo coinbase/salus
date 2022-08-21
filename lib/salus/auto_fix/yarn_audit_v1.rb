@@ -123,19 +123,16 @@ module Salus::Autofix
       unless current_version.empty? && new_version.empty?
         current_v = if current_version.include? "."
                       current_version.split('.').map(&:to_i)
-                    elsif current_version.match(/^(\d)+$/)
-                      [current_version.to_i]
                     else
-                      [0]
+                      [current_version.to_i]
                     end
+
         new_v = if new_version.include? "."
                   new_version.split('.').map(&:to_i)
-                elsif new_version.match(/^(\d)+$/)
-                  [new_version.to_i]
                 else
-                  [0]
+                  [new_version.to_i]
                 end
-        return true if current_v.first > new_v.first
+        return true if new_v.first > current_v.first
       end
 
       false
