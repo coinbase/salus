@@ -121,7 +121,7 @@ module Salus::Autofix
       current.gsub(/[^0-9.]/, "")
       updated.sub(/[^0-9.]/, "")
       unless current.empty? && updated.empty?
-        return true if updated.chr > current.chr
+        return true if updated.chr.to_i > current.chr.to_i
       end
       
       false
