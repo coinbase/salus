@@ -84,6 +84,7 @@ module Salus::Scanners
                        })
         end
       end
+
       return report_success if vulns.empty?
 
       v2_autofixer = Salus::Autofix::YarnAuditV2.new(@repository.path_to_repo)
