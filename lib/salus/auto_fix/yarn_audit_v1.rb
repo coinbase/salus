@@ -61,7 +61,6 @@ module Salus::Autofix
 
     # In yarn.lock, we attempt to update yarn.lock entries for the package
     def update_package_definition(blocks, parts)
-      seen = []
       blocks.uniq { |hash| hash.values_at(:prev, :key, :patch) }
       group_updates = blocks.group_by { |h| [h[:prev], h[:key]] }
       group_updates.each do |updates, versions|
@@ -87,14 +86,13 @@ module Salus::Autofix
             parts.each_with_index do |part, index|
               current_v = parts[index].match(/(version .*)/)
               version_string = current_v.to_s.tr('"', "").tr("version ", "")
-              if part.include?(updates) && !seen.include?(updated_name) && !is_major_bump(
+              if part.include?(updates) && !is_major_bump(
                 version_string, version_to_update_to
               )
                 parts[index].sub!(updates, updated_name)
                 parts[index].sub!(/(version .*)/, updated_version)
                 parts[index].sub!(/(resolved .*)/, updated_resolved)
                 parts[index].sub!(/(integrity .*)/, updated_integrity)
-                seen.append(updated_name)
               end
             end
           end
