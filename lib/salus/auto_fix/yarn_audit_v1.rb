@@ -35,7 +35,7 @@ module Salus::Autofix
     end
 
     def fix_indirect_dependency(feed, yarn_lock, path_to_repo)
-      parsed_yarn_lock = Salus::YarnLockfileFormatter.new(yarn_lock).format
+      @parsed_yarn_lock = Salus::YarnLockfileFormatter.new(yarn_lock).format
       subparent_to_package_mapping = []
 
       feed.each do |vuln|
@@ -44,7 +44,7 @@ module Salus::Autofix
         package = vuln[:module]
         resolves.each do |resolve|
           if !patch.nil? && patch != "No patch available" && package != resolve[:path]
-            block = create_subparent_to_package_mapping(parsed_yarn_lock, resolve[:path])
+            block = create_subparent_to_package_mapping(resolve[:path])
             if block.key?(:key)
               block[:patch] = patch
               subparent_to_package_mapping.append(block)
@@ -54,7 +54,7 @@ module Salus::Autofix
       end
       parts = yarn_lock.split(/^\n/)
       parts = update_package_definition(subparent_to_package_mapping, parts)
-      parts = update_sub_parent_resolution(subparent_to_package_mapping, parts, parsed_yarn_lock)
+      parts = update_sub_parent_resolution(subparent_to_package_mapping, parts)
       # TODO: Run clean up task
       write_auto_fix_files(path_to_repo, 'yarn-autofixed.lock', parts.join("\n"))
     end
@@ -115,19 +115,30 @@ module Salus::Autofix
       nil
     end
 
-    def is_major_bump(current, updated)
-      current.gsub(/[^0-9.]/, "")
-      current_v = current.split('.').map(&:to_i)
-      updated.sub(/[^0-9.]/, "")
-      updated_v = updated.split('.').map(&:to_i)
-      return true if updated_v.first > current_v.first
+    def is_major_bump(current_version, new_version)
+      current_version.gsub(/[^0-9.]/, "")
+      new_version.gsub(/[^0-9.]/, "")
+      unless current_version.empty? && new_version.empty?
+        current_v = if current_version.include? "."
+                      current_version.split('.').map(&:to_i)
+                    else
+                      [current_version.to_i]
+                    end
+
+        new_v = if new_version.include? "."
+                  new_version.split('.').map(&:to_i)
+                else
+                  [new_version.to_i]
+                end
+        return true if new_v.first > current_v.first
+      end
 
       false
     end
 
     # In yarn.lock, we attempt to resolve sub parent of the affected package to
     # new updated package definition.
-    def update_sub_parent_resolution(blocks, parts, parsed_yarn_lock)
+    def update_sub_parent_resolution(blocks, parts)
       blocks.uniq { |hash| hash.values_at(:prev, :key, :patch) }
       group_appends = blocks.group_by { |h| [h[:prev], h[:key]] }
       group_appends.each do |pair, patch|
@@ -142,39 +153,37 @@ module Salus::Autofix
           update_version_string = "^" + version_to_update_to
           parts.each_with_index do |part, index|
             match = part.match(/(#{target} .*)/)
-            if part.include?(source) && !match.nil? &&
-                !is_major_bump(match.to_s, version_to_update_to)
-              match = part.match(/(#{target} .*)/)
-              replace = match.to_s.split(" ").first + ' "^' + version_to_update_to + '"'
+            if part.include?(source) && !match.nil? && !is_major_bump(
+              match.to_s.split(" ").last, version_to_update_to
+            )
+              replace = target + ' "^' + version_to_update_to + '"'
               part.sub!(/(#{target} .*)/, replace)
               parts[index] = part
+              section = @parsed_yarn_lock[source]
+              if section.dig("dependencies", target)
+                section["dependencies"][target] = update_version_string
+              end
+              if section.dig("optionalDependencies", target)
+                section["optionalDependencies"][target] = update_version_string
+              end
+              @parsed_yarn_lock[source] = section
             end
-          end
-          section = parsed_yarn_lock[source]
-          if section.dig("dependencies", target)
-            section["dependencies"][target] = update_version_string
-            parsed_yarn_lock[source] = section
-          end
-          if section.dig("optionalDependencies", target)
-            section["optionalDependencies"][target] = update_version_string
-            parsed_yarn_lock[source] = section
           end
         end
       end
       parts
     end
 
-    def create_subparent_to_package_mapping(parsed_yarn_lock, path)
+    def create_subparent_to_package_mapping(path)
       section = {}
       packages = path.split(" > ")
       packages.each_with_index do |package, index|
         break if index == packages.length - 1
 
         section = if index.zero?
-                    find_section_by_name(parsed_yarn_lock, package, packages[index + 1])
+                    find_section_by_name(package, packages[index + 1])
                   else
                     find_section_by_name_and_version(
-                      parsed_yarn_lock,
                       section[:key],
                       packages[index + 1]
                     )
@@ -183,8 +192,8 @@ module Salus::Autofix
       section
     end
 
-    def find_section_by_name(parsed_yarn_lock, name, next_package)
-      parsed_yarn_lock.each do |key, array|
+    def find_section_by_name(name, next_package)
+      @parsed_yarn_lock.each do |key, array|
         if key.starts_with? "#{name}@"
           %w[dependencies optionalDependencies].each do |section|
             if array[section]&.[](next_package)
@@ -197,8 +206,8 @@ module Salus::Autofix
       {}
     end
 
-    def find_section_by_name_and_version(parsed_yarn_lock, name, next_package)
-      parsed_yarn_lock.each do |key, array|
+    def find_section_by_name_and_version(name, next_package)
+      @parsed_yarn_lock.each do |key, array|
         if key == name
           %w[dependencies optionalDependencies].each do |section|
             if array[section]&.[](next_package)
