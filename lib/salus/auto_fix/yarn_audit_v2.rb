@@ -14,11 +14,10 @@ module Salus::Autofix
     def run_auto_fix(feed, path_to_repo, package_json, yarn_lock)
       fix_indirect_dependency(feed, yarn_lock, path_to_repo)
       fix_direct_dependency(feed, package_json, path_to_repo)
+    rescue StandardError => e
+      error_msg = "An error occurred while auto-fixing vulnerabilities: #{e}, #{e.backtrace}"
+      raise AutofixError, error_msg
     end
-    # rescue StandardError => e
-    #   error_msg = "An error occurred while auto-fixing vulnerabilities: #{e}, #{e.backtrace}"
-    #   raise AutofixError, error_msg
-    # end
 
     def fix_direct_dependency(feed, package_json, path_to_repo)
       packages = JSON.parse(package_json)
@@ -46,7 +45,6 @@ module Salus::Autofix
         resolves.each do |resolve|
           if !patch.nil? && patch != "No patch available" && package != resolve["path"]
             block = create_subparent_to_package_mapping(parsed_yarn_lock, resolve["path"])
-            puts block
             if block.key?(:key)
               block[:patch] = patch
               subparent_to_package_mapping.append(block)
@@ -55,52 +53,9 @@ module Salus::Autofix
         end
       end
       parts = yarn_lock.split(/^\n/)
-      parts = update_package_definition(subparent_to_package_mapping, parts)
       parts = update_sub_parent_resolution(subparent_to_package_mapping, parts, parsed_yarn_lock)
-      # TODO: Run clean up task
+      # # TODO: Run clean up task
       write_auto_fix_files(path_to_repo, 'yarn-autofixed.lock', parts.join("\n"))
-    end
-
-    # In yarn.lock, we attempt to update yarn.lock entries for the package
-    def update_package_definition(blocks, parts)
-      blocks.uniq { |hash| hash.values_at(:prev, :key, :patch) }
-      group_updates = blocks.group_by { |h| [h[:prev], h[:key]] }
-      group_updates.each do |updates, versions|
-        updates = updates.last
-        vulnerable_package_info = get_package_info(updates)
-        list_of_versions_available = vulnerable_package_info["versions"]
-        version_to_update_to = Salus::SemanticVersion.select_upgrade_version(
-          versions.first[:patch], list_of_versions_available
-        )
-        package_name = if updates.starts_with? "@"
-                         updates.split("@", 2).first
-                       else
-                         updates.split("@").first
-                       end
-        if !version_to_update_to.nil?
-          fixed_package_info = get_package_info(package_name, version_to_update_to)
-          unless fixed_package_info.nil?
-            updated_version = "version " + '"' + version_to_update_to + '"'
-            updated_resolved = "resolved " + '"' + fixed_package_info["dist"]["tarball"] \
-              + "#" + fixed_package_info["dist"]["shasum"] + '"'
-            updated_integrity = "integrity " + fixed_package_info['dist']['integrity']
-            updated_name = package_name + "@^" + version_to_update_to
-            parts.each_with_index do |part, index|
-              current_v = parts[index].match(/(version .*)/)
-              version_string = current_v.to_s.tr('"', "").tr("version ", "")
-              if part.include?(updates) && !is_major_bump(
-                version_string, version_to_update_to
-              )
-                parts[index].sub!(updates, updated_name)
-                parts[index].sub!(/(version .*)/, updated_version)
-                parts[index].sub!(/(resolved .*)/, updated_resolved)
-                parts[index].sub!(/(integrity .*)/, updated_integrity)
-              end
-            end
-          end
-        end
-      end
-      parts
     end
 
     def get_package_info(package, version = nil)
@@ -134,33 +89,26 @@ module Salus::Autofix
       group_appends = blocks.group_by { |h| [h[:prev], h[:key]] }
       group_appends.each do |pair, patch|
         source = pair.first
-        target = if pair.last.starts_with? "@"
-                   pair.last.split("@", 2).first
-                 else
-                   pair.last.split("@").first
-                 end
+        target = pair.last.reverse.split('@', 2).collect(&:reverse).reverse.first
 
         vulnerable_package_info = get_package_info(target)
-        list_of_versions_available = vulnerable_package_info["data"]["versions"]
+        list_of_versions_available = vulnerable_package_info["versions"]
         version_to_update_to = Salus::SemanticVersion.select_upgrade_version(
           patch.first[:patch], list_of_versions_available
         )
-        if !version_to_update_to.nil?
-          update_version_string = "^" + version_to_update_to
-          parts.each_with_index do |part, index|
-            match = part.match(/(#{target} .*)/)
-            if part.include?(source) && !match.nil? &&
-                !is_major_bump(match.to_s, version_to_update_to)
-              match = part.match(/(#{target} .*)/)
-              replace = match.to_s.split(" ").first + ' "^' + version_to_update_to + '"'
-              part.sub!(/(#{target} .*)/, replace)
-              parts[index] = part
-            end
+
+        update_version_string = "^" + version_to_update_to
+        parts.each_with_index do |part, index|
+          if part.include?(source) && part.include?(target) && !version_to_update_to.nil?
+            match = part.match(/(#{target}: .*)/)
+            replace = match.to_s.split(":").first + ': ^' + version_to_update_to
+            part.sub!(/(#{target}: .*)/, replace)
+            parts[index] = part
           end
-          section = parsed_yarn_lock[source]
-          section["dependencies"][target] = update_version_string
-          parsed_yarn_lock[source] = section
         end
+        section = parsed_yarn_lock[source]
+        section["dependencies"][target] = update_version_string
+        parsed_yarn_lock[source] = section
       end
       parts
     end
@@ -181,7 +129,6 @@ module Salus::Autofix
                     )
                   end
       end
-      puts section
       section
     end
 

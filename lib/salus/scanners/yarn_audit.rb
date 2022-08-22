@@ -79,7 +79,7 @@ module Salus::Scanners
                          "Dependency of" => if dependency_of.nil?
                                               advisory.dig("module_name")
                                             else
-                                              dependency_of.join("")
+                                              dependency_of.join(", ")
                                             end
                        })
         end
