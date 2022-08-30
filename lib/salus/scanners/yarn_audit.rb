@@ -281,7 +281,7 @@ module Salus::Scanners
 
       vulns = uniq_vulns.values
       vulns.each do |vul|
-        vul['Dependency of'] = vul['Dependency of'].sort.join(', ')
+        vul['Dependency of'] = vul['Dependency of'].uniq.sort.join(', ')
       end
       vulns
     end
