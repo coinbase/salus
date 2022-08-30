@@ -38,6 +38,10 @@ describe Salus::Config do
         config = Salus::Config.new
         expect(config.valid_name?("abcd def")).to be_falsey
         expect(config.valid_name?("hello;world")).to be_falsey
+        expect(config.valid_name?("foo{bar")).to be_falsey
+        expect(config.valid_name?("hello[world")).to be_falsey
+        expect(config.valid_name?("helloworld}")).to be_falsey
+        expect(config.valid_name?("helloworld]")).to be_falsey
       end
 
       it 'should accept project names with valid chars' do

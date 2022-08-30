@@ -114,7 +114,7 @@ module Salus
     def valid_name?(name)
       return true if name.nil?
 
-      name.count("[\s;]").zero?
+      name.count("[\s;]{}").zero?
     end
 
     def scanner_active?(scanner_class)
