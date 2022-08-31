@@ -70,11 +70,7 @@ module Salus::Autofix
         version_to_update_to = Salus::SemanticVersion.select_upgrade_version(
           versions.first[:patch], list_of_versions_available
         )
-        package_name = if updates.starts_with? "@"
-                         updates.split("@", 2).first
-                       else
-                         updates.split("@").first
-                       end
+        package_name = updates.reverse.split('@', 2).collect(&:reverse).reverse.first
         if !version_to_update_to.nil?
           fixed_package_info = get_package_info(package_name, version_to_update_to)
           unless fixed_package_info.nil?
@@ -117,8 +113,8 @@ module Salus::Autofix
     end
 
     def is_major_bump(current_version, new_version)
-      current_version.gsub(/[^0-9.]/, "")
-      new_version.gsub(/[^0-9.]/, "")
+      current_version.gsub!(/[^0-9.]/, "")
+      new_version.gsub!(/[^0-9.]/, "")
       unless current_version.empty? && new_version.empty?
         current_v = if current_version.include? "."
                       current_version.split('.').map(&:to_i)
@@ -151,15 +147,16 @@ module Salus::Autofix
           patch.first[:patch], list_of_versions_available
         )
         if !version_to_update_to.nil?
-          update_version_string = "^" + version_to_update_to
           parts.each_with_index do |part, index|
-            match = part.match(/("|)(!@\s:|#{target})("|).*/)
-            if part.include?(source) && !match.nil? && !is_major_bump(
-              match.to_s.strip.split(" ").last, version_to_update_to
-            ) 
-              replace = target + ' "^' + version_to_update_to + '"'
-              part.sub!(/("|)(!@\s:|#{target})("|).*/, replace)
-              parts[index] = part
+            match = part.match(/("|)(!:|#{target})("| ).*/)
+            if part.include?(source) 
+              unless match.nil? && is_major_bump(
+                match.to_s.split(" ").last, version_to_update_to
+              ) 
+                replace = target + ' "^' + version_to_update_to + '"'
+                part.sub!(/("|)(!:|#{target})("|).*/, replace)
+                parts[index] = part
+              end
             end
           end
         end
