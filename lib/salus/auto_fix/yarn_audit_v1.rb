@@ -90,7 +90,6 @@ module Salus::Autofix
                 parts[index].sub!(/(("|)resolved("|).*)/, updated_resolved)
                 parts[index].sub!(/(("|)integrity("|).*)/, updated_integrity)
               end
-              
             end
           end
         end
@@ -149,10 +148,10 @@ module Salus::Autofix
         if !version_to_update_to.nil?
           parts.each_with_index do |part, index|
             match = part.match(/("|)(!:|#{target})("| ).*/)
-            if part.include?(source) 
+            if part.include?(source)
               unless match.nil? && is_major_bump(
                 match.to_s.split(" ").last, version_to_update_to
-              ) 
+              )
                 replace = target + ' "^' + version_to_update_to + '"'
                 part.sub!(/("|)(!:|#{target})("|).*/, replace)
                 parts[index] = part
