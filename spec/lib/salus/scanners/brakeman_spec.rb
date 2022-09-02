@@ -84,7 +84,7 @@ describe Salus::Scanners::Brakeman do
         expect(scanner.report.passed?).to eq(false)
         logs = scanner.report.to_h.fetch(:logs)
         parsed_logs = JSON.parse(logs)
-        expect(parsed_logs['warnings'].size).to eq(2)
+        expect(parsed_logs['warnings'].size).to eq(4)
       end
 
       it 'should support exceptions' do
@@ -96,7 +96,11 @@ describe Salus::Scanners::Brakeman do
                       { 'advisory_id' => 'c8adc1c0caf2c9251d1d8de588fb949070212d0eed5e1580aee88bab2287b772',
                        'notes' => 'Good reason to skip' },
                       { 'advisory_id' => 'e0636b950dd005468b5f9a0426ed50936e136f18477ca983cfc51b79e29f6463',
-                       'notes' => 'Good reason to skip' }]
+                       'notes' => 'Good reason to skip' },
+                      { 'advisory_id' => 'b2b8818e646bf1c277a27eae9a0e98766968d4d38e3b2e1e59b0fe1fa37218dc',
+                      'notes' => 'Good reason to skip' },
+                      { 'advisory_id' => 'd84924377155b41e094acae7404ec2e521629d86f97b0ff628e3d1b263f8101c',
+                      'notes' => 'Good reason to skip' }]
         scanner = Salus::Scanners::Brakeman.new(repository: repo, config: {
                                                   'exceptions' => exceptions
                                                 })
@@ -146,7 +150,7 @@ describe Salus::Scanners::Brakeman do
         expect(scanner.report.passed?).to eq(false)
         logs = scanner.report.to_h.fetch(:logs)
         parsed_logs = JSON.parse(logs)
-        expect(parsed_logs['warnings'].size).to eq(2)
+        expect(parsed_logs['warnings'].size).to eq(4)
       end
 
       it 'should support merging exceptions with brakeman.ignore files' do
