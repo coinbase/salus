@@ -15,6 +15,14 @@
     {
       "fingerprint": "e0636b950dd005468b5f9a0426ed50936e136f18477ca983cfc51b79e29f6463",
       "note": "Cross-Site Scripting"
+    },
+    {
+      "fingerprint": "d84924377155b41e094acae7404ec2e521629d86f97b0ff628e3d1b263f8101c",
+      "note": "Dangerous Eval"
+    },
+    {
+      "fingerprint": "b2b8818e646bf1c277a27eae9a0e98766968d4d38e3b2e1e59b0fe1fa37218dc",
+      "note": "Unmaintained Dependency"
     }
   ]
 }
