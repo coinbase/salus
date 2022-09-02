@@ -17,7 +17,7 @@ require 'salus/path_validator'
 require 'salus/scanner_types'
 
 module Salus
-  VERSION = '2.20.3'.freeze
+  VERSION = '2.21.0'.freeze
   DEFAULT_REPO_PATH = './repo'.freeze # This is inside the docker container at /home/repo.
   DEFAULT_REPORT_FILTER = 'all'.freeze
   NONE_REPORT_FILTER = 'none'.freeze
