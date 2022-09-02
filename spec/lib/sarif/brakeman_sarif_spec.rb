@@ -176,7 +176,7 @@ describe Sarif::BrakemanSarif do
         result = sarif["runs"][0]["results"].last
         rules = sarif["runs"][0]["tool"]["driver"]["rules"][1]
         # Check rule info
-        expect(rules['id']).to eq('13')
+        expect(rules['id']).to eq('172')
         expect(rules['name']).to eq('Evaluation/Dangerous Eval')
         expect(rules['fullDescription']['text']).to eq("User input in eval")
         expect(rules['helpUri']).to eq('https://brakemanscanner.org/docs/warning_types'\
