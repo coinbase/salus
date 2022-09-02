@@ -16,4 +16,4 @@ RUN bundle install --with test
 
 COPY spec /home/spec
 
-ENTRYPOINT ["bundle", "exec", "rspec", "--format", "documentation", "spec/lib/sarif/brakeman_sarif_spec.rb"]
+ENTRYPOINT ["bundle", "exec", "rspec", "--format", "documentation", "spec/"]
