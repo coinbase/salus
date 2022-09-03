@@ -53,8 +53,8 @@ module Salus::Autofix
         end
       end
       parts = yarn_lock.split(/^\n/)
-      parts = update_package_definition(subparent_to_package_mapping, parts)
       parts = update_sub_parent_resolution(subparent_to_package_mapping, parts)
+      parts = update_package_definition(subparent_to_package_mapping, parts)
       # TODO: Run clean up task
       write_auto_fix_files(path_to_repo, 'yarn-autofixed.lock', parts.join("\n"))
     end
@@ -70,11 +70,7 @@ module Salus::Autofix
         version_to_update_to = Salus::SemanticVersion.select_upgrade_version(
           versions.first[:patch], list_of_versions_available
         )
-        package_name = if updates.starts_with? "@"
-                         updates.split("@", 2).first
-                       else
-                         updates.split("@").first
-                       end
+        package_name = updates.reverse.split('@', 2).collect(&:reverse).reverse.first
         if !version_to_update_to.nil?
           fixed_package_info = get_package_info(package_name, version_to_update_to)
           unless fixed_package_info.nil?
@@ -84,15 +80,15 @@ module Salus::Autofix
             updated_integrity = "integrity " + fixed_package_info['data']['dist']['integrity']
             updated_name = package_name + "@^" + version_to_update_to
             parts.each_with_index do |part, index|
-              current_v = parts[index].match(/(version .*)/)
+              current_v = parts[index].match(/(("|)version("|).*)/)
               version_string = current_v.to_s.tr('"', "").tr("version ", "")
               if part.include?(updates) && !is_major_bump(
                 version_string, version_to_update_to
               )
                 parts[index].sub!(updates, updated_name)
-                parts[index].sub!(/(version .*)/, updated_version)
-                parts[index].sub!(/(resolved .*)/, updated_resolved)
-                parts[index].sub!(/(integrity .*)/, updated_integrity)
+                parts[index].sub!(/(("|)version("|).*)/, updated_version)
+                parts[index].sub!(/(("|)resolved("|).*)/, updated_resolved)
+                parts[index].sub!(/(("|)integrity("|).*)/, updated_integrity)
               end
             end
           end
@@ -116,8 +112,8 @@ module Salus::Autofix
     end
 
     def is_major_bump(current_version, new_version)
-      current_version.gsub(/[^0-9.]/, "")
-      new_version.gsub(/[^0-9.]/, "")
+      current_version.gsub!(/[^0-9.]/, "")
+      new_version.gsub!(/[^0-9.]/, "")
       unless current_version.empty? && new_version.empty?
         current_v = if current_version.include? "."
                       current_version.split('.').map(&:to_i)
@@ -150,23 +146,14 @@ module Salus::Autofix
           patch.first[:patch], list_of_versions_available
         )
         if !version_to_update_to.nil?
-          update_version_string = "^" + version_to_update_to
           parts.each_with_index do |part, index|
-            match = part.match(/(#{target} .*)/)
+            match = part.match(/("|)(!:|#{target})("| ).*/)
             if part.include?(source) && !match.nil? && !is_major_bump(
               match.to_s.split(" ").last, version_to_update_to
             )
               replace = target + ' "^' + version_to_update_to + '"'
-              part.sub!(/(#{target} .*)/, replace)
+              part.sub!(/("|)(!:|#{target})("|).*/, replace)
               parts[index] = part
-              section = @parsed_yarn_lock[source]
-              if section.dig("dependencies", target)
-                section["dependencies"][target] = update_version_string
-              end
-              if section.dig("optionalDependencies", target)
-                section["optionalDependencies"][target] = update_version_string
-              end
-              @parsed_yarn_lock[source] = section
             end
           end
         end
