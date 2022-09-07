@@ -93,7 +93,8 @@ module Salus
       @builds            = final_config['builds'] || {}
 
       if !valid_name?(@project_name)
-        bad_name_msg = "project name #{@project_name} cannot contain spaces or ;"
+        bad_name_msg = "project name #{@project_name} cannot contain spaces, "\
+          "square brackets ([]), curly braces ({}) or semicolons (;)"
         raise StandardError, bad_name_msg
       end
 
@@ -114,7 +115,7 @@ module Salus
     def valid_name?(name)
       return true if name.nil?
 
-      name.count("[\s;]").zero?
+      name.count("[\s;]{}").zero?
     end
 
     def scanner_active?(scanner_class)

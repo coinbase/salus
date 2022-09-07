@@ -31,7 +31,7 @@ docker run --rm -t -v $(pwd):/home/repo coinbase/salus
 ## Supported Scanners
 
 - [Bandit](docs/scanners/bandit.md) - Execution of [Bandit](https://pypi.org/project/bandit/) 1.6.2, looks for common security issues in Python code.
-- [Brakeman](docs/scanners/brakeman.md) - Execution of [Brakeman](https://brakemanscanner.org/) 4.10.0, looks for vulnerable code in Rails projects.
+- [Brakeman](docs/scanners/brakeman.md) - Execution of [Brakeman](https://brakemanscanner.org/) 5.3.0, looks for vulnerable code in Rails projects.
 - [semgrep](docs/scanners/semgrep.md) - Execution of [`semgrep`](https://semgrep.dev) 0.62.0 which looks for semantic and syntactical patterns in code at the AST level.
 - [BundleAudit](docs/scanners/bundle_audit.md) - Execution of [bundle-audit](https://github.com/rubysec/bundler-audit) 0.8.0, looks for CVEs in ruby gem dependencies.
 - [Gosec](docs/scanners/gosec.md) - Execution of [gosec](https://github.com/securego/gosec) 2.11.0, looks for security problems in go code.
