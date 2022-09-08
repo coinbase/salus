@@ -86,7 +86,7 @@ module Salus::Autofix
               version_string = current_v.to_s.tr('"', "").tr("version ", "")
               if part.include?(updates) && !is_major_bump(
                 version_string, version_to_update_to
-              )
+              ) && part.start_with?(updates.split("@")[0])
                 current_source = parts[index].match(/(("|)resolved("|).*)/)
                 source = current_source.to_s.split(" ")[1].tr('"', '')
                 current_hostname = URI.parse(source)
@@ -161,7 +161,7 @@ module Salus::Autofix
               match.to_s.split(" ").last, version_to_update_to
             )
               replace = target + ' "^' + version_to_update_to + '"'
-              part.sub!(/("|)(!:|#{target})("|).*/, replace)
+              part.sub!(/("|)(!:|#{target})("| ).*/, replace)
               parts[index] = part
             end
           end
