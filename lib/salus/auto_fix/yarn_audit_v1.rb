@@ -1,3 +1,4 @@
+require 'uri'
 require 'salus/yarn_formatter'
 require 'salus/auto_fix/base'
 
@@ -79,12 +80,20 @@ module Salus::Autofix
               + "#" + fixed_package_info["data"]["dist"]["shasum"] + '"'
             updated_integrity = "integrity " + fixed_package_info['data']['dist']['integrity']
             updated_name = package_name + "@^" + version_to_update_to
+
             parts.each_with_index do |part, index|
               current_v = parts[index].match(/(("|)version("|).*)/)
               version_string = current_v.to_s.tr('"', "").tr("version ", "")
               if part.include?(updates) && !is_major_bump(
                 version_string, version_to_update_to
-              )
+              ) && part.start_with?(updates.split("@")[0])
+                current_source = parts[index].match(/(("|)resolved("|).*)/)
+                source = current_source.to_s.split(" ")[1].tr('"', '')
+                current_hostname = URI.parse(source)
+                resolved_source = updated_resolved.split(" ")[1].tr('"', '')
+                resolved_hostname = URI.parse(resolved_source)
+                updated_resolved.sub!(resolved_hostname.host, current_hostname.host)
+
                 parts[index].sub!(updates, updated_name)
                 parts[index].sub!(/(("|)version("|).*)/, updated_version)
                 parts[index].sub!(/(("|)resolved("|).*)/, updated_resolved)
@@ -152,7 +161,7 @@ module Salus::Autofix
               match.to_s.split(" ").last, version_to_update_to
             )
               replace = target + ' "^' + version_to_update_to + '"'
-              part.sub!(/("|)(!:|#{target})("|).*/, replace)
+              part.sub!(/("|)(!:|#{target})("| ).*/, replace)
               parts[index] = part
             end
           end
