@@ -10,15 +10,7 @@
 
 [![CircleCI](https://circleci.com/gh/coinbase/salus/tree/master.svg?style=svg)](https://circleci.com/gh/coinbase/salus/tree/master)
 
-## 🔍 Overview
 
-Salus (Security Automation as a Lightweight Universal Scanner), named after the [Roman goddess of protection](https://en.wikipedia.org/wiki/Salus), is a tool for coordinating the execution of security scanners. You can run Salus on a repository via the Docker daemon and it will determine which scanners are relevant, run them and provide the output. Most scanners are other mature open source projects which we include directly in the container.
-
-Salus is particularly useful for CI/CD pipelines because it becomes a centralized place to coordinate scanning across a large fleet of repositories. Typically, scanners are configured at the repository level for each project. This means that when making org wide changes to how the scanners are run, each repository must be updated. Instead, you can update Salus and all builds will instantly inherit the change.
-
-Salus supports powerful configuration that allows for global defaults and local tweaks. Finally, Salus can report metrics on each repository, such as what packages are included or what concerns exist. These reports can be centrally evaluated in your infrastructure to allow for scalable security tracking.
-
-## Using Salus
 
 ```sh
 # Navigate to the root directory of the project you want to run Salus on
