@@ -37,3 +37,7 @@ group :test do
 end
 
 gem "json-schema", "~> 2.8"
+
+gem 'milestone'
+
+gem 'update'
