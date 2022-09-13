@@ -1,0 +1,9 @@
+rules:
+  - id: unverified-db-query
+    patterns:
+      - pattern: db_query(...)
+      - pattern-not: db_query(..., verify=True, ...)
+    message: Found unverified db query
+    severity: ERROR
+    languages:
+      - python

@@ -43,16 +43,16 @@
                   "uriBaseId": "%SRCROOT%"
                 },
                 "region": {
-                  "startColumn": 12,
+                  "startColumn": 1,
                   "startLine": 3
                 }
               }
             }
           ],
           "message": {
-            "text": "Could not parse unparsable_py.py as python"
+            "text": "Syntax error at line /home/spec/fixtures/semgrep/invalid/unparsable_py.py:3:\n `print(\"foo\"` was unexpected"
           },
-          "ruleId": "SourceParseError",
+          "ruleId": "Syntax error",
           "ruleIndex": 0
         }
       ],
@@ -66,20 +66,6 @@
           "rules": [
             {
               "fullDescription": {
-                "text": "Could not parse unparsable_py.py as python"
-              },
-              "help": {
-                "markdown": "[More info](https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md).",
-                "text": "More info: https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md"
-              },
-              "helpUri": "https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md",
-              "id": "SourceParseError",
-              "messageStrings": {
-              },
-              "name": "SourceParseError"
-            },
-            {
-              "fullDescription": {
                 "text": "Required Pattern Not Found"
               },
               "help": {
@@ -91,9 +77,23 @@
               "messageStrings": {
               },
               "name": "Required Pattern Not Found"
+            },
+            {
+              "fullDescription": {
+                "text": "Syntax error at line /home/spec/fixtures/semgrep/invalid/unparsable_py.py:3:\n `print(\"foo\"` was unexpected"
+              },
+              "help": {
+                "markdown": "[More info](https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md).",
+                "text": "More info: https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md"
+              },
+              "helpUri": "https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md",
+              "id": "Syntax error",
+              "messageStrings": {
+              },
+              "name": "Syntax error"
             }
           ],
-          "version": "0.62.0"
+          "version": "0.112.1"
         }
       }
     },
