@@ -53,15 +53,15 @@
           }
         ]
       },
-      "logs": "Could not parse unparsable_py.py as python (warn)\n\t/home/spec/fixtures/semgrep/invalid/unparsable_py.py:3-3\n\nRequired pattern \"1 == $X\" was not found - Useless equality test.",
+      "logs": "Syntax error at line /home/spec/fixtures/semgrep/invalid/unparsable_py.py:3:\n `print(\"foo\"` was unexpected (warn)\n\t/home/spec/fixtures/semgrep/invalid/unparsable_py.py:3-3\n\nRequired pattern \"1 == $X\" was not found - Useless equality test.",
       "passed": false,
       "scanner_name": "Semgrep",
-      "version": "0.62.0",
+      "version": "0.112.1",
       "warn": {
         "semgrep_non_fatal": [
           {
             "level": "warn",
-            "message": "Could not parse unparsable_py.py as python",
+            "message": "Syntax error at line /home/spec/fixtures/semgrep/invalid/unparsable_py.py:3:\n `print(\"foo\"` was unexpected",
             "spans": [
               {
                 "end": {
@@ -70,12 +70,12 @@
                 },
                 "file": "/home/spec/fixtures/semgrep/invalid/unparsable_py.py",
                 "start": {
-                  "col": 12,
+                  "col": 1,
                   "line": 3
                 }
               }
             ],
-            "type": "SourceParseError"
+            "type": "Syntax error"
           }
         ]
       }

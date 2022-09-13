@@ -1,63 +1,4 @@
 {
-  "version": "2.21.2",
-  "passed": true,
-  "running_time": 0.0,
-  "scans": {
-    "PatternSearch": {
-      "scanner_name": "PatternSearch",
-      "version": "0.9.0",
-      "passed": true,
-      "running_time": 0.0,
-      "warn": {
-      },
-      "info": {
-        "hits": [
-
-        ],
-        "misses": [
-
-        ]
-      },
-      "errors": [
-
-      ]
-    },
-    "RepoNotEmpty": {
-      "scanner_name": "RepoNotEmpty",
-      "version": "",
-      "passed": true,
-      "running_time": 0.0,
-      "warn": {
-      },
-      "info": {
-      },
-      "errors": [
-
-      ]
-    },
-    "Semgrep": {
-      "scanner_name": "Semgrep",
-      "version": "0.62.0",
-      "passed": true,
-      "running_time": 0.0,
-      "warn": {
-      },
-      "info": {
-        "hits": [
-
-        ],
-        "misses": [
-
-        ]
-      },
-      "errors": [
-
-      ]
-    }
-  },
-  "errors": [
-
-  ],
   "config": {
     "active_scanners": [
       "Bandit",
@@ -89,6 +30,10 @@
       "Semgrep",
       "YarnAudit"
     ],
+    "builds": {
+      "service_name": "buildkite",
+      "url": "http://example.com/builds/123"
+    },
     "enforced_scanners": [
       "Brakeman",
       "BundleAudit",
@@ -99,6 +44,12 @@
       "RepoNotEmpty",
       "Semgrep",
       "YarnAudit"
+    ],
+    "report_uris": [
+      {
+        "format": "json",
+        "uri": "file:///home/spec/fixtures/processor/local_uri/salus_reports_folder/salus-report.json"
+      }
     ],
     "scanner_configs": {
       "Bandit": {
@@ -125,6 +76,10 @@
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
+      "GoVersionScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
       "Gosec": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
@@ -142,6 +97,10 @@
         "scanner_timeout_s": 0
       },
       "NPMPackageScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "NodeAudit": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
@@ -193,18 +152,6 @@
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
-      "Semgrep": {
-        "pass_on_raise": false,
-        "scanner_timeout_s": 0
-      },
-      "YarnAudit": {
-        "pass_on_raise": false,
-        "scanner_timeout_s": 0
-      },
-      "GoVersionScanner": {
-        "pass_on_raise": false,
-        "scanner_timeout_s": 0
-      },
       "RubyPackageScanner": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
@@ -213,20 +160,14 @@
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
-      "NodeAudit": {
+      "Semgrep": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "YarnAudit": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       }
-    },
-    "report_uris": [
-      {
-        "uri": "file://spec/fixtures/processor/local_uri/salus_reports_folder/salus-report.json",
-        "format": "json"
-      }
-    ],
-    "builds": {
-      "url": "http://example.com/builds/123",
-      "service_name": "buildkite"
     },
     "sources": {
       "configured": [
@@ -236,5 +177,64 @@
         "file:///salus.yaml"
       ]
     }
-  }
+  },
+  "errors": [
+
+  ],
+  "passed": true,
+  "running_time": 0.52,
+  "scans": {
+    "PatternSearch": {
+      "errors": [
+
+      ],
+      "info": {
+        "hits": [
+
+        ],
+        "misses": [
+
+        ]
+      },
+      "passed": true,
+      "running_time": 0.0,
+      "scanner_name": "PatternSearch",
+      "version": "0.9.0",
+      "warn": {
+      }
+    },
+    "RepoNotEmpty": {
+      "errors": [
+
+      ],
+      "info": {
+      },
+      "passed": true,
+      "running_time": 0.0,
+      "scanner_name": "RepoNotEmpty",
+      "version": "",
+      "warn": {
+      }
+    },
+    "Semgrep": {
+      "errors": [
+
+      ],
+      "info": {
+        "hits": [
+
+        ],
+        "misses": [
+
+        ]
+      },
+      "passed": true,
+      "running_time": 0.0,
+      "scanner_name": "Semgrep",
+      "version": "0.112.1",
+      "warn": {
+      }
+    }
+  },
+  "version": "2.21.2"
 }
