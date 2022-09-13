@@ -244,6 +244,35 @@ describe Salus::Scanners::Semgrep do
             msg: ""
           )
         end
+
+        it "should report matches with pattern-not" do
+          repo = Salus::Repo.new("spec/fixtures/semgrep")
+          config = {
+            "matches" => [
+              {
+                "config" => "semgrep-config-pattern-not.yml",
+                "forbidden" => false
+              }
+            ]
+          }
+          scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
+          scanner.run
+
+          expect(scanner.report.passed?).to eq(true)
+
+          info = scanner.report.to_h.fetch(:info)
+
+          expect(info[:hits]).to include(
+            config: "semgrep-config-pattern-not.yml",
+            pattern: nil,
+            forbidden: false,
+            required: false,
+            msg: "Found unverified db query\n\trule_id: unverified-db-query",
+            hit: "pattern-not/test.py:2:db_query(\"SELECT * FROM ...\")"
+          )
+
+          expect(info[:misses]).to be_empty
+        end
       end
 
       it "should report matches with a message" do
