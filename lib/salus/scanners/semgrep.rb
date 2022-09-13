@@ -74,6 +74,9 @@ module Salus::Scanners
           base_path,
           pattern_exclude_flags || global_exclude_flags
         )
+
+        enforce_explicit_ignoring
+
         # run semgrep
         shell_return = run_shell(command)
 
@@ -180,6 +183,13 @@ module Salus::Scanners
       end
     end
 
+    def enforce_explicit_ignoring
+      # Create an empty .semgrepignore to prevent
+      # the scanner from implicitly ignoring files or folders
+      semgrepignore_path = "#{@repository.path_to_repo}/.semgrepignore"
+      File.open(semgrepignore_path, "w") {} if !File.exist?(semgrepignore_path)
+    end
+
     # rubocop:enable Metrics/AbcSize
 
     def should_run?
@@ -258,7 +268,7 @@ module Salus::Scanners
 
     def error_to_object(err)
       type = err.fetch('type', '')
-      message = err.fetch('long_msg', '')
+      message = err.fetch('message', '')
       level = err.fetch('level', '')
       spans = err.fetch('spans', {}).map do |s|
         start = s.fetch('start', {})
