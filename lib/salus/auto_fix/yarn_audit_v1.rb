@@ -160,7 +160,7 @@ module Salus::Autofix
             if part.include?(source) && !match.nil? && !is_major_bump(
               match.to_s.split(" ").last, version_to_update_to
             )
-              replace = target + ' "^' + version_to_update_to + '"'
+              replace = target + ' "^' + patch.first[:patch].tr(">=", "").tr(">", "") + '"'
               part.sub!(/("|)(!:|#{target})("| ).*/, replace)
               parts[index] = part
             end
