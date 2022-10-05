@@ -65,8 +65,10 @@ ENV BANDIT_VERSION 1.6.2
 RUN pip install wheel \
   && pip3 install wheel \
   && pip install --user bandit==${BANDIT_VERSION} \
+  && pip install --user importlib_metadata==4.7.1 \  
   && mv .local/bin/bandit .local/bin/bandit2 \
-  && pip3 install --user bandit==${BANDIT_VERSION}
+  && pip3 install --user bandit==${BANDIT_VERSION} \
+  && pip3 install --user importlib_metadata==4.7.1
 
 ### Ruby
 # ruby gems
