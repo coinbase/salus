@@ -62,6 +62,9 @@ RUN curl -fsSL "$RUST_DOWNLOAD_URL" -o rust.tar.gz \
 # Install bandit, python static code scanner
 ENV BANDIT_VERSION 1.6.2
 
+# added pip3 install --user importlib_metadata==4.7.1
+# because the newer version causes a bandit error that is only reproducible with circle ci
+# "No such file or directory: '/root/.cache/python-entrypoints/"
 RUN pip install wheel \
   && pip3 install wheel \
   && pip install --user bandit==${BANDIT_VERSION} \
