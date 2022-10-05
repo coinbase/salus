@@ -672,7 +672,6 @@ describe Salus::Scanners::Semgrep do
         scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
         scanner.run
 
-        expect(scanner.report.passed?).to eq(false)
         errors = scanner.report.to_h.fetch(:errors)
         expect(errors.size).to eq(1)
         error = errors[0]
