@@ -664,7 +664,7 @@ describe Salus::Scanners::Semgrep do
         config = {
           "matches" => [
             {
-              "config" => "semgrep-misconfig.yml",
+              "config" => "semgrep-misconfig.yml", # 1 rule missing id
               "forbidden" => true
             }
           ]
