@@ -66,7 +66,8 @@ RUN pip install wheel \
   && pip3 install wheel \
   && pip install --user bandit==${BANDIT_VERSION} \
   && mv .local/bin/bandit .local/bin/bandit2 \
-  && pip3 install --user bandit==${BANDIT_VERSION}
+  && pip3 install --user bandit==${BANDIT_VERSION} \
+  && pip3 install --user importlib_metadata==4.7.1
 
 ### Ruby
 # ruby gems
