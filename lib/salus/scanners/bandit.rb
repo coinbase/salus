@@ -10,6 +10,11 @@ module Salus::Scanners
     end
 
     def run
+
+      x = `bandit`
+      puts "X BANDIT RESULT = #{x.inspect}"
+      puts "____________________"
+      
       # bandit compiled with python3
       copts = config_options
 
