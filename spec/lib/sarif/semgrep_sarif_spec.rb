@@ -67,7 +67,7 @@ describe Sarif::SemgrepSarif do
         report.add_scan_report(scanner.report, required: true)
         sarif_report = JSON.parse(report.to_sarif)
         result = sarif_report["runs"][0]["results"]
-        # semgrep-eqeq-test an user-specified id in the semgrep config
+        # semgrep-eqeq-test is the user-specified id in the semgrep config
         matches = result.select { |r| r["ruleId"] == "semgrep-eqeq-test" }
         expect(matches.size).to eq(3)
       end
