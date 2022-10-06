@@ -76,7 +76,7 @@ module Sarif
       location = hit[:hit].split(":") # [file_name, line, code_preview]
 
       {
-        id: "Forbidden Pattern Found",
+        id: hit[:id],
         name: "#{hit[:pattern]} / #{hit[:msg]} Forbidden Pattern Found",
         level: "HIGH",
         details: message(hit, false),
