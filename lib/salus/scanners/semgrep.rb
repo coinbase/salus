@@ -99,7 +99,6 @@ module Salus::Scanners
             if match["required"]
               failure_messages << "\nRequired #{user_message} was not found " \
               "- #{match['message']}"
-
               all_misses << {
                 pattern: match['pattern'],
                 config: match['config'],
