@@ -4,6 +4,7 @@ require_relative '../spec_helper.rb'
 describe Salus::CLI do
   # prevent actual system exits because they kill tests
   before do
+    Salus.hard_error_encountered = false
     allow(Salus).to receive(:system_exit) do |arg|
       arg # just return the input
     end

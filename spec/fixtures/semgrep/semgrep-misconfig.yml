@@ -1,0 +1,12 @@
+rules:
+    - patterns:
+        - pattern: $X == $X
+      message: $X == $X is always true
+      languages: [python]
+      severity: WARNING
+    - id: semgrep-eqeq-test
+      patterns:
+        - pattern: $X == $X
+      message: $X == $X is always true
+      languages: [python]
+      severity: WARNING

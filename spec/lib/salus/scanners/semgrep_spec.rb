@@ -658,6 +658,30 @@ describe Salus::Scanners::Semgrep do
       end
     end
 
+    context "rule misconfigured" do
+      it "should output misconfig reason" do
+        repo = Salus::Repo.new("spec/fixtures/semgrep")
+        config = {
+          "matches" => [
+            {
+              "config" => "semgrep-misconfig.yml", # 1 rule missing id
+              "forbidden" => true
+            }
+          ]
+        }
+        scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
+        scanner.run
+
+        errors = scanner.report.to_h.fetch(:errors)
+        expect(errors.size).to eq(1)
+        error = errors[0]
+        expect(error[:message]).to eq("Call to semgrep failed")
+        expect(error[:stderr]).to include("semgrep-misconfig.yml:2-7 Invalid rule schema "\
+                                          "One of these properties is missing: 'id'")
+        expect(error[:stderr]).to include("invalid configuration file found")
+      end
+    end
+
     context "invalid pattern or settings which causes error" do
       it "should record the STDERR of semgrep" do
         repo = Salus::Repo.new("spec/fixtures/semgrep")
