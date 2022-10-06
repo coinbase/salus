@@ -120,6 +120,28 @@ describe Sarif::SemgrepSarif do
           }
         )
       end
+
+      it 'sarif contains correct code snippet' do
+        config = {
+          "matches" => [
+            {
+              "pattern" => "foo(...)",
+              "language" => "ruby",
+              "message" => "My msg",
+              "forbidden" => true
+            }
+          ]
+        }
+        repo = Salus::Repo.new("spec/fixtures/semgrep")
+        scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
+        scanner.run
+        report = Salus::Report.new(project_name: "Neon Genesis")
+        report.add_scan_report(scanner.report, required: true)
+        sarif_report = JSON.parse(report.to_sarif)
+        result_loc = sarif_report["runs"][0]["results"][0]["locations"][0]
+        code_snippet = result_loc["physicalLocation"]["region"]["snippet"]["text"]
+        expect(code_snippet).to eq("foo('a:b', 'a:b:c:d')")
+      end
     end
   end
 end

@@ -74,7 +74,12 @@ module Sarif
       return nil if !hit[:forbidden]
 
       location = hit[:hit].split(":") # [file_name, line, code_preview]
-
+      # location looks like "file.js:123:my_function()"
+      code = if location.size > 3 # code itself has :, like "abc: [xyz]"
+               location[2...].join(':')
+             else
+               location[2]
+             end
       {
         id: hit[:id],
         name: "#{hit[:pattern]} / #{hit[:msg]} Forbidden Pattern Found",
@@ -84,7 +89,7 @@ module Sarif
         start_column: 1,
         uri: location[0],
         help_url: SEMGREP_URI,
-        code: location[2],
+        code: code,
         rule: "Pattern: #{hit[:pattern]}\nMessage: #{hit[:msg]}",
         properties: { 'severity': "HIGH" }
       }
