@@ -117,7 +117,7 @@ module Salus::Scanners
               end
               hit_id = if hit['check_id'] == '-' # id not specified by user
                          Digest::SHA1.hexdigest(match['pattern'])
-                       else
+                       else # id specified by user
                          hit['check_id']
                        end
               all_hits << {
