@@ -1,5 +1,6 @@
 require "salus/scanners/base"
 require "json"
+require 'digest/sha1'
 
 # Report any matches to a list of semantic grep patterns provided by the config file.
 # semgrep is a grep like tool for doing AST pattern matching.
@@ -114,7 +115,13 @@ module Salus::Scanners
                 "- #{msg}\n" \
                 "\t#{hit_to_string(hit, base_path)}"
               end
+              hit_id = if hit['check_id'] == '-' # id not specified by user
+                         Digest::SHA1.hexdigest(match['pattern'])
+                       else # id specified by user
+                         hit['check_id']
+                       end
               all_hits << {
+                id: hit_id,
                 pattern: match['pattern'],
                 config: match['config'],
                 forbidden: match["forbidden"],

@@ -24,7 +24,7 @@ describe Sarif::SemgrepSarif do
         result = sarif_report["runs"][0]["results"]
 
         expect(result).to include({
-          "ruleId": "Forbidden Pattern Found",
+          "ruleId": "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
           "ruleIndex": 0,
           "level": "error",
           "message": {
@@ -49,6 +49,27 @@ describe Sarif::SemgrepSarif do
           ],
           "properties": { "severity": "HIGH" }
         }.deep_stringify_keys)
+      end
+
+      it 'vulnerabilities found in report have user specified id' do
+        repo = Salus::Repo.new("spec/fixtures/semgrep")
+        config = {
+          "matches" => [
+            {
+              "config" => "semgrep-config.yml",
+              "forbidden" => true
+            }
+          ]
+        }
+        scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
+        scanner.run
+        report = Salus::Report.new(project_name: "Neon Genesis")
+        report.add_scan_report(scanner.report, required: true)
+        sarif_report = JSON.parse(report.to_sarif)
+        result = sarif_report["runs"][0]["results"]
+        # semgrep-eqeq-test is the user-specified id in the semgrep config
+        matches = result.select { |r| r["ruleId"] == "semgrep-eqeq-test" }
+        expect(matches.size).to eq(3)
       end
 
       it 'contains info about missing required vulnerabilities' do

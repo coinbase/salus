@@ -22,6 +22,7 @@ describe Salus::Scanners::Semgrep do
         info = scanner.report.to_h.fetch(:info)
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
           config: nil,
           pattern: "$X == $X",
           forbidden: false,
@@ -31,6 +32,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
           config: nil,
           pattern: "$X == $X",
           forbidden: false,
@@ -40,6 +42,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
           config: nil,
           pattern: "$X == $X",
           forbidden: false,
@@ -90,6 +93,7 @@ describe Salus::Scanners::Semgrep do
           info = scanner.report.to_h.fetch(:info)
 
           expect(info[:hits]).to include(
+            id: "semgrep-eqeq-test",
             config: "semgrep-config.yml",
             pattern: nil,
             forbidden: false,
@@ -99,6 +103,7 @@ describe Salus::Scanners::Semgrep do
           )
 
           expect(info[:hits]).to include(
+            id: "semgrep-eqeq-test",
             config: "semgrep-config.yml",
             pattern: nil,
             forbidden: false,
@@ -108,6 +113,7 @@ describe Salus::Scanners::Semgrep do
           )
 
           expect(info[:hits]).to include(
+            id: "semgrep-eqeq-test",
             config: "semgrep-config.yml",
             pattern: nil,
             forbidden: false,
@@ -137,6 +143,7 @@ describe Salus::Scanners::Semgrep do
           info = scanner.report.to_h.fetch(:info)
 
           expect(info[:hits]).to include(
+            id: "semgrep-eqeq-test",
             config: "semgrep-config.yml",
             pattern: nil,
             forbidden: true,
@@ -146,6 +153,7 @@ describe Salus::Scanners::Semgrep do
           )
 
           expect(info[:hits]).to include(
+            id: "semgrep-eqeq-test",
             config: "semgrep-config.yml",
             pattern: nil,
             forbidden: true,
@@ -155,6 +163,7 @@ describe Salus::Scanners::Semgrep do
           )
 
           expect(info[:hits]).to include(
+            id: "semgrep-eqeq-test",
             config: "semgrep-config.yml",
             pattern: nil,
             forbidden: true,
@@ -184,6 +193,7 @@ describe Salus::Scanners::Semgrep do
           info = scanner.report.to_h.fetch(:info)
 
           expect(info[:hits]).to include(
+            id: "semgrep-eqeq-test",
             config: "semgrep-config.yml",
             pattern: nil,
             forbidden: false,
@@ -193,6 +203,7 @@ describe Salus::Scanners::Semgrep do
           )
 
           expect(info[:hits]).to include(
+            id: "semgrep-eqeq-test",
             config: "semgrep-config.yml",
             pattern: nil,
             forbidden: false,
@@ -202,6 +213,7 @@ describe Salus::Scanners::Semgrep do
           )
 
           expect(info[:hits]).to include(
+            id: "semgrep-eqeq-test",
             config: "semgrep-config.yml",
             pattern: nil,
             forbidden: false,
@@ -263,6 +275,7 @@ describe Salus::Scanners::Semgrep do
           info = scanner.report.to_h.fetch(:info)
 
           expect(info[:hits]).to include(
+            id: "unverified-db-query",
             config: "semgrep-config-pattern-not.yml",
             pattern: nil,
             forbidden: false,
@@ -296,6 +309,7 @@ describe Salus::Scanners::Semgrep do
         info = scanner.report.to_h.fetch(:info)
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
           config: nil,
           pattern: "$X == $X",
           forbidden: false,
@@ -305,6 +319,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
           config: nil,
           pattern: "$X == $X",
           forbidden: false,
@@ -314,6 +329,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
           config: nil,
           pattern: "$X == $X",
           forbidden: false,
@@ -346,6 +362,7 @@ describe Salus::Scanners::Semgrep do
         info = scanner.report.to_h.fetch(:info)
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
           config: nil,
           pattern: "$X == $X",
           forbidden: true,
@@ -355,6 +372,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
           config: nil,
           pattern: "$X == $X",
           forbidden: true,
@@ -364,6 +382,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
           config: nil,
           pattern: "$X == $X",
           forbidden: true,
@@ -398,6 +417,7 @@ describe Salus::Scanners::Semgrep do
         info = scanner.report.to_h.fetch(:info)
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
           config: nil,
           pattern: "$X == $X",
           forbidden: false,
@@ -407,6 +427,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
           config: nil,
           pattern: "$X == $X",
           forbidden: false,
@@ -416,6 +437,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
           config: nil,
           pattern: "$X == $X",
           forbidden: false,
@@ -486,6 +508,7 @@ describe Salus::Scanners::Semgrep do
         info = scanner.report.to_h.fetch(:info)
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
           config: nil,
           pattern: "$X == $X",
           forbidden: true,
@@ -495,6 +518,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
           config: nil,
           pattern: "$X == $X",
           forbidden: true,
@@ -504,6 +528,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).not_to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
           config: nil,
           pattern: "$X == $X",
           forbidden: true,
@@ -537,6 +562,7 @@ describe Salus::Scanners::Semgrep do
         info = scanner.report.to_h.fetch(:info)
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
           config: nil,
           pattern: "$X == $X",
           forbidden: true,
@@ -546,6 +572,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).not_to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
           config: nil,
           pattern: "$X == $X",
           forbidden: true,
@@ -555,6 +582,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).not_to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
           config: nil,
           pattern: "$X == $X",
           forbidden: true,
@@ -588,6 +616,7 @@ describe Salus::Scanners::Semgrep do
         info = scanner.report.to_h.fetch(:info)
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
           config: nil,
           pattern: "$X == $X",
           forbidden: true,
@@ -597,6 +626,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
           config: nil,
           pattern: "$X == $X",
           forbidden: true,
@@ -606,6 +636,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).not_to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
           config: nil,
           pattern: "$X == $X",
           forbidden: true,
@@ -639,6 +670,7 @@ describe Salus::Scanners::Semgrep do
         info = scanner.report.to_h.fetch(:info)
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
           config: nil,
           pattern: "$X == $X",
           forbidden: true,
@@ -648,6 +680,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).not_to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
           config: nil,
           pattern: "$X == $X",
           forbidden: true,
