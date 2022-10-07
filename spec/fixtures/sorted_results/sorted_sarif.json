@@ -80,7 +80,7 @@
             },
             {
               "fullDescription": {
-                "text": "errors reported by scanner",
+                "text": "errors reported by scanner"
               },
               "help": {
                 "markdown": "[More info](https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md).",
