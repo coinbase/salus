@@ -52,7 +52,7 @@
           "message": {
             "text": "Syntax error at line /home/spec/fixtures/semgrep/invalid/unparsable_py.py:3:\n `print(\"foo\"` was unexpected"
           },
-          "ruleId": "Syntax error",
+          "ruleId": "SAL002",
           "ruleIndex": 0
         }
       ],
