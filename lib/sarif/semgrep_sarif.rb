@@ -102,7 +102,7 @@ module Sarif
 
       @issues.add(warning[:message])
       {
-        id: warning[:type],
+        id: SCANNER_ERROR,
         name: warning[:type],
         level: "HIGH",
         details: warning[:message],

@@ -52,7 +52,7 @@
           "message": {
             "text": "Syntax error at line /home/spec/fixtures/semgrep/invalid/unparsable_py.py:3:\n `print(\"foo\"` was unexpected"
           },
-          "ruleId": "Syntax error",
+          "ruleId": "SAL002",
           "ruleIndex": 0
         }
       ],
@@ -80,14 +80,14 @@
             },
             {
               "fullDescription": {
-                "text": "Syntax error at line /home/spec/fixtures/semgrep/invalid/unparsable_py.py:3:\n `print(\"foo\"` was unexpected"
+                "text": "errors reported by scanner"
               },
               "help": {
                 "markdown": "[More info](https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md).",
                 "text": "More info: https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md"
               },
               "helpUri": "https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md",
-              "id": "Syntax error",
+              "id": "SAL002",
               "messageStrings": {
               },
               "name": "Syntax error"

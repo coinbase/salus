@@ -49,6 +49,23 @@ describe Sarif::SemgrepSarif do
           ],
           "properties": { "severity": "HIGH" }
         }.deep_stringify_keys)
+
+        expect(result).to include({
+                                    "level" => "error",
+          "locations" => [
+            { "physicalLocation" => { "artifactLocation" =>
+              { "uri" =>
+               "/home/spec/fixtures/semgrep/invalid/unparsable_py.py",
+               "uriBaseId" => "%SRCROOT%" }, "region" => {
+                 "startColumn" => 1, "startLine" => 3
+               } } }
+          ],
+          "message" => { "text" =>
+                         "Syntax error at line "\
+                         "/home/spec/fixtures/semgrep/invalid/unparsable_py.py:3:"\
+                         "\n `print(\"foo\"` was unexpected" },
+          "ruleId" => "SAL002", "ruleIndex" => 1
+                                  })
       end
 
       it 'vulnerabilities found in report have user specified id' do
