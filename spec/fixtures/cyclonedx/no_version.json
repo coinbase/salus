@@ -6,11 +6,11 @@
   "metadata": {
     "timestamp": "2021-07-12T22:06:59Z",
     "component": {
-      "bom-ref": "pkg:golang/github.com/coinbase/memcachedbetween@v0.0.0-20210303220134-385e30277ac5",
+      "bom-ref": "pkg:golang/github.com/coinbase/memcachedbetween@v0.0.0-2.22.003220134-385e30277ac5",
       "type": "application",
       "name": "github.com/coinbase/memcachedbetween",
-      "version": "v0.0.0-20210303220134-385e30277ac5",
-      "purl": "pkg:golang/github.com/coinbase/memcachedbetween@v0.0.0-20210303220134-385e30277ac5"
+      "version": "v0.0.0-2.22.003220134-385e30277ac5",
+      "purl": "pkg:golang/github.com/coinbase/memcachedbetween@v0.0.0-2.22.003220134-385e30277ac5"
     }
   },
   "components": [
