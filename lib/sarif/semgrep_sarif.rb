@@ -91,7 +91,7 @@ module Sarif
         help_url: SEMGREP_URI,
         code: code,
         rule: "Pattern: #{hit[:pattern]}\nMessage: #{hit[:msg]}",
-        properties: { 'severity': "HIGH" }
+        properties: { 'severity': hit[:severity] }
       }
     rescue StandardError => e
       bugsnag_notify(e.message)

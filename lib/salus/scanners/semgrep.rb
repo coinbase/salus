@@ -127,7 +127,8 @@ module Salus::Scanners
                 forbidden: match["forbidden"],
                 required: match["required"],
                 msg: msg,
-                hit: hit_to_string(hit, base_path)
+                hit: hit_to_string(hit, base_path),
+                severity: hit['extra']['severity']
               }
             end
           end
