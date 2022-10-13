@@ -124,5 +124,10 @@ module Sarif
         help_url: SEMGREP_URI
       }
     end
+
+    def self.snippet_possibly_in_git_diff?(snippet, lines_added)
+      lines = snippet.split("\n")
+      lines.all? { |line| lines_added.keys.include?(line) }
+    end
   end
 end

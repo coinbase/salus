@@ -161,4 +161,35 @@ describe Sarif::SemgrepSarif do
       end
     end
   end
+
+  describe 'sarif diff' do
+    context 'git diff support' do
+      it 'should find code in git diff if snippet' do
+        git_diff_file = 'spec/fixtures/sarifs/diff/git_diff_9.txt'
+        snippet = "      bar()"
+        git_diff = File.read(git_diff_file)
+        new_lines_in_git_diff = Sarif::BaseSarif.new_lines_in_git_diff(git_diff)
+        r = Sarif::SemgrepSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
+        expect(r).to be true
+      end
+
+      it 'should find code in git diff if snippet has multiple lines' do
+        git_diff_file = 'spec/fixtures/sarifs/diff/git_diff_9.txt'
+        snippet = "      if x ==\n         x"
+        git_diff = File.read(git_diff_file)
+        new_lines_in_git_diff = Sarif::BaseSarif.new_lines_in_git_diff(git_diff)
+        r = Sarif::SemgrepSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
+        expect(r).to be true
+      end
+
+      it 'should not find code in git diff if snippet not in git diff' do
+        git_diff_file = 'spec/fixtures/sarifs/diff/git_diff_9.txt'
+        snippet = "hello_world()"
+        git_diff = File.read(git_diff_file)
+        new_lines_in_git_diff = Sarif::BaseSarif.new_lines_in_git_diff(git_diff)
+        r = Sarif::SemgrepSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
+        expect(r).to be false
+      end
+    end
+  end
 end
