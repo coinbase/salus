@@ -80,7 +80,7 @@ module Salus::Scanners
         enforce_explicit_ignoring
 
         # run semgrep
-        shell_return = run_shell(command)
+        shell_return = run_shell(command, chdir: base_path))
 
         # check to make sure it's successful
         if shell_return.success?
