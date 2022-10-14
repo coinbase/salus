@@ -107,7 +107,9 @@ scanner_configs:
 
 ## Whitelisting Findings
 
-Please see [semgrep's ignoring findings documentation](https://github.com/returntocorp/semgrep/blob/develop/docs/configuration-files.md#ignoring-findings).
+Please see [semgrep's documentation on how to use an inline comment to allowlist findings](https://semgrep.dev/docs/ignoring-files-folders-code/#reference-summary).
+
+We do not currently support allowling semgrep findings in the salus config.
 
 ## Limitations of Semgrep
 
