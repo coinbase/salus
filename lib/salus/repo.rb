@@ -26,6 +26,8 @@ module Salus
       { handle: :dep_lock, filename: 'Gopkg.lock' },
       { handle: :go_mod, filename: 'go.mod' },
       { handle: :go_sum, filename: 'go.sum' },
+      # Protobufs
+      { handle: :proto_files, filename: '*.proto', wildcard: true },
       # Python
       { handle: :requirements_txt, filename: 'requirements.txt' },
       { handle: :setup_cfg, filename: 'setup.cfg' },
