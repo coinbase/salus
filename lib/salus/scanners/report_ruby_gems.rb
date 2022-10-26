@@ -17,7 +17,7 @@ module Salus::Scanners
     SPDX_SCHEMA_FILE = 'lib/cyclonedx/schema/spdx.schema.json'.freeze
     MAX_RETRIES_FOR_RUBY_GEMS_API = 2
 
-    def is_reporting_scanner
+    def is_reporting_scanner?
       true
     end
 

@@ -55,7 +55,7 @@ module Salus::Scanners
 
     # Must be overriden by report scanners and should return true.
     # This will be used to unblock other scanners which are dependent on Reporting Scanners output
-    def is_reporting_scanner
+    def is_reporting_scanner?
       false
     end
 

@@ -127,7 +127,7 @@ module Salus
         end
         threads << thread
         scanner_instance = scanner_class.new(repository: repo, config: config)
-        reporting_threads << thread if scanner_instance.is_reporting_scanner
+        reporting_threads << thread if scanner_instance.is_reporting_scanner?
       end
       files_copied.concat(copied) unless copied.empty?
       [threads, files_copied, reporting_threads]

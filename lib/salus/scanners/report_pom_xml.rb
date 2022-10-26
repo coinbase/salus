@@ -34,7 +34,7 @@ module Salus::Scanners
       end
     end
 
-    def is_reporting_scanner
+    def is_reporting_scanner?
       true
     end
 
