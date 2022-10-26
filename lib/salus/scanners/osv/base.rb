@@ -21,6 +21,12 @@ module Salus::Scanners::OSV
       Salus::ScannerTypes::DEPENDENCY
     end
 
+    # Must be overriden by report scanners and should return true.
+    # This will be used to unblock other scanners which are dependent on Reporting Scanners output
+    def is_reporting_scanner
+      false
+    end
+
     def run
       raise NoMethodError, 'implement in subclass'
     end

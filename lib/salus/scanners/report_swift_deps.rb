@@ -43,6 +43,10 @@ module Salus::Scanners
       end
     end
 
+    def is_reporting_scanner
+      true
+    end
+
     def should_run?
       @repository.package_resolved_present?
     end

@@ -39,6 +39,10 @@ module Salus::Scanners
       end
     end
 
+    def is_reporting_scanner
+      true
+    end
+
     def should_run?
       @repository.podfile_lock_present?
     end

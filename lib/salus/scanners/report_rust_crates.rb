@@ -31,6 +31,10 @@ module Salus::Scanners
       end
     end
 
+    def is_reporting_scanner
+      true
+    end
+
     def self.supported_languages
       ['rust']
     end

@@ -45,6 +45,12 @@ module Salus::Scanners
       Salus::ScannerTypes::DEPENDENCY
     end
 
+    $reporting_scanners_running = true
+    def self.reporting_scanners_ran(event_name, data)
+      # For now call to this fundtion means all reporting scanners are done
+      $reporting_scanners_running = false
+    end
+
     def run
       # return
       # Ensure the DB is up to date
@@ -52,6 +58,13 @@ module Salus::Scanners
         report_error("Error updating the bundler-audit DB!")
         return
       end
+
+      while $reporting_scanners_running do
+        puts "Swaraj bundleaudit in while loop"
+        sleep(1)
+      end
+
+      puts "Swaraj BundleAudit after the while loop has finished"
 
       ignore = ignore_list
       scanner = Bundler::Audit::Scanner.new(@repository.path_to_repo)
@@ -149,3 +162,4 @@ module Salus::Scanners
     end
   end
 end
+Salus::PluginManager.register_listener(Salus::Scanners::BundleAudit)

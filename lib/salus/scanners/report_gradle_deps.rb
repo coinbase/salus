@@ -25,6 +25,10 @@ module Salus::Scanners
       end
     end
 
+    def is_reporting_scanner
+      true
+    end
+
     def should_run?
       @repository.build_gradle_present?
     end

@@ -53,6 +53,12 @@ module Salus::Scanners
       []
     end
 
+    # Must be overriden by report scanners and should return true.
+    # This will be used to unblock other scanners which are dependent on Reporting Scanners output
+    def is_reporting_scanner
+      false
+    end
+
     def self.scanner_type
       raise NoMethodError, 'implement in subclass'
     end

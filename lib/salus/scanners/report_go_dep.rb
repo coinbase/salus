@@ -24,6 +24,10 @@ module Salus::Scanners
       end
     end
 
+    def is_reporting_scanner
+      true
+    end
+
     def record_dep_from_go_sum
       begin
         parser = Salus::GoDependencyParser.new(@repository.go_sum_path)
