@@ -103,7 +103,6 @@ module Salus
       # We won't auto cleanup - we'll manually delete any copied fields after
       # the various threads have finished
       copied = RepoSearcher.new(@repo_path, config, false).matching_repos do |repo|
-
         thread = Thread.new do
           scanner = scanner_class.new(repository: repo, config: config)
 
@@ -128,9 +127,7 @@ module Salus
         end
         threads << thread
         scanner_instance = scanner_class.new(repository: repo, config: config)
-        if scanner_instance.is_reporting_scanner
-          reporting_threads << thread
-        end
+        reporting_threads << thread if scanner_instance.is_reporting_scanner
       end
       files_copied.concat(copied) unless copied.empty?
       [threads, files_copied, reporting_threads]
@@ -156,7 +153,8 @@ module Salus
             next
           end
 
-          scanner_threads, copied, scanner_reporting_threads = run_scanner(config, scanner_class, scanner_name)
+          scanner_threads, copied, scanner_reporting_threads =
+            run_scanner(config, scanner_class, scanner_name)
           threads.concat(scanner_threads)
           reporting_threads.concat(scanner_reporting_threads)
           files_copied.concat(copied)
