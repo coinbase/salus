@@ -8,10 +8,6 @@ require 'salus/report'
 
 module Salus::Scanners
   class ReportGoDep < ReportBase
-    def self.scanner_type
-      Salus::ScannerTypes::SBOM_REPORT
-    end
-
     def run
       unless should_run?
       end

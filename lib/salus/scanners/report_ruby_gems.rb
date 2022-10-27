@@ -6,10 +6,6 @@ require 'net/http'
 # Report the use of any Ruby gems.
 module Salus::Scanners
   class ReportRubyGems < ReportBase
-    def self.scanner_type
-      Salus::ScannerTypes::SBOM_REPORT
-    end
-
     class RubyGemsApiError < StandardError; end
 
     class ApiTooManyRequestsError < StandardError; end

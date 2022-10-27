@@ -95,15 +95,14 @@ module Salus
     end
 
     def run_scanner(config, scanner_class, scanner_name)
-      scanning_threads = []
-      reporting_threads = []
+      threads = []
       files_copied = []
       reraise_exceptions = ENV.key?('RUNNING_SALUS_TESTS')
 
       # We won't auto cleanup - we'll manually delete any copied fields after
       # the various threads have finished
       copied = RepoSearcher.new(@repo_path, config, false).matching_repos do |repo|
-        thread = Thread.new do
+        threads << Thread.new do
           scanner = scanner_class.new(repository: repo, config: config)
 
           unless scanner.should_run?
@@ -125,22 +124,15 @@ module Salus
           )
           puts "#{scanner_name} has finished"
         end
-        scanning_threads << thread
-        scanner_instance = scanner_class.new(repository: repo, config: config)
-        if scanner_instance.is_reporting_scanner?
-          reporting_threads << thread
-        else
-          scanning_threads << thread
-        end
       end
       files_copied.concat(copied) unless copied.empty?
-      [scanning_threads, files_copied, reporting_threads]
+      [threads, files_copied]
     end
 
     def scan_project
       # Record overall running time of the scan
-      scanner_threads = []
       reporting_threads = []
+      scanning_threads = []
       files_copied = []
       @scanners_ran = []
       @mutex = Mutex.new
@@ -157,16 +149,21 @@ module Salus
             next
           end
 
-          scanner_thrds, copied, reporting_thrds =
-            run_scanner(config, scanner_class, scanner_name)
-          scanner_threads.concat(scanner_thrds)
-          reporting_threads.concat(reporting_thrds)
+          scanner_threads, copied = run_scanner(config, scanner_class, scanner_name)
+          if scanner_class.scanner_type == Salus::ScannerTypes::SBOM_REPORT
+            puts "#{scanner_name} is reporting thread"
+            reporting_threads.concat(scanner_threads)
+          else
+            puts "#{scanner_name} is scanning thread"
+            scanning_threads.concat(scanner_threads)
+          end
           files_copied.concat(copied)
         end
 
         reporting_threads.each(&:join)
         Salus::PluginManager.send_event(:reporting_scanners_ran, @scanners_ran, @report)
-        scanner_threads.each(&:join)
+
+        scanning_threads.each(&:join)
         cleanup(files_copied.uniq)
 
         Salus::PluginManager.send_event(:scanners_ran, @scanners_ran, @report)

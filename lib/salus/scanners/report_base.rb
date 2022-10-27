@@ -1,8 +1,8 @@
 module Salus::Scanners
   # Super class for all scanner objects.
   class ReportBase < Base
-    def is_reporting_scanner?
-      true
+    def self.scanner_type
+      Salus::ScannerTypes::SBOM_REPORT
     end
   end
 end

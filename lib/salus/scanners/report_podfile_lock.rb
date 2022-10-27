@@ -4,10 +4,6 @@ require 'salus/scanners/base'
 
 module Salus::Scanners
   class ReportPodfileLock < ReportBase
-    def self.scanner_type
-      Salus::ScannerTypes::SBOM_REPORT
-    end
-
     class ReportPodfileLockError < StandardError; end
 
     def run
