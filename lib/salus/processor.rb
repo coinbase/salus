@@ -95,7 +95,7 @@ module Salus
     end
 
     def run_scanner(config, scanner_class, scanner_name)
-      threads = []
+      scanning_threads = []
       reporting_threads = []
       files_copied = []
       reraise_exceptions = ENV.key?('RUNNING_SALUS_TESTS')
@@ -125,17 +125,21 @@ module Salus
           )
           puts "#{scanner_name} has finished"
         end
-        threads << thread
+        scanning_threads << thread
         scanner_instance = scanner_class.new(repository: repo, config: config)
-        reporting_threads << thread if scanner_instance.is_reporting_scanner?
+        if scanner_instance.is_reporting_scanner?
+          reporting_threads << thread
+        else
+          scanning_threads << thread
+        end
       end
       files_copied.concat(copied) unless copied.empty?
-      [threads, files_copied, reporting_threads]
+      [scanning_threads, files_copied, reporting_threads]
     end
 
     def scan_project
       # Record overall running time of the scan
-      threads = []
+      scanner_threads = []
       reporting_threads = []
       files_copied = []
       @scanners_ran = []
@@ -153,16 +157,16 @@ module Salus
             next
           end
 
-          scanner_threads, copied, scanner_reporting_threads =
+          scanner_thrds, copied, reporting_thrds =
             run_scanner(config, scanner_class, scanner_name)
-          threads.concat(scanner_threads)
-          reporting_threads.concat(scanner_reporting_threads)
+          scanner_threads.concat(scanner_thrds)
+          reporting_threads.concat(reporting_thrds)
           files_copied.concat(copied)
         end
 
         reporting_threads.each(&:join)
         Salus::PluginManager.send_event(:reporting_scanners_ran, @scanners_ran, @report)
-        threads.each(&:join)
+        scanner_threads.each(&:join)
         cleanup(files_copied.uniq)
 
         Salus::PluginManager.send_event(:scanners_ran, @scanners_ran, @report)
