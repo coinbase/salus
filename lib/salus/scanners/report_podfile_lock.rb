@@ -3,7 +3,7 @@ require 'salus/scanners/base'
 # Report Cocoapod usage
 
 module Salus::Scanners
-  class ReportPodfileLock < Base
+  class ReportPodfileLock < ReportBase
     def self.scanner_type
       Salus::ScannerTypes::SBOM_REPORT
     end
@@ -37,10 +37,6 @@ module Salus::Scanners
         report_stderr(err_msg)
         report_error(err_msg)
       end
-    end
-
-    def is_reporting_scanner?
-      true
     end
 
     def should_run?

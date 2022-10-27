@@ -7,7 +7,7 @@ require 'salus/report'
 # https://github.com/golang/dep
 
 module Salus::Scanners
-  class ReportGoDep < Base
+  class ReportGoDep < ReportBase
     def self.scanner_type
       Salus::ScannerTypes::SBOM_REPORT
     end
@@ -22,10 +22,6 @@ module Salus::Scanners
       elsif @repository.go_mod_present?
         record_dep_from_go_mod
       end
-    end
-
-    def is_reporting_scanner?
-      true
     end
 
     def record_dep_from_go_sum

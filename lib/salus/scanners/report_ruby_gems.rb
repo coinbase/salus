@@ -5,7 +5,7 @@ require 'net/http'
 
 # Report the use of any Ruby gems.
 module Salus::Scanners
-  class ReportRubyGems < Base
+  class ReportRubyGems < ReportBase
     def self.scanner_type
       Salus::ScannerTypes::SBOM_REPORT
     end
@@ -17,11 +17,7 @@ module Salus::Scanners
     SPDX_SCHEMA_FILE = 'lib/cyclonedx/schema/spdx.schema.json'.freeze
     MAX_RETRIES_FOR_RUBY_GEMS_API = 2
 
-    def is_reporting_scanner?
-      true
-    end
-
-    def run
+       def run
       # A lockfile is the most definitive source of truth for what will run
       # in production. It also lists the dependencies of dependencies.
       # We preference parsing the Gemfile.lock over the Gemfile.

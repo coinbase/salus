@@ -3,7 +3,7 @@ require 'salus/scanners/base'
 # Report python library usage
 
 module Salus::Scanners
-  class ReportPythonModules < Base
+  class ReportPythonModules < ReportBase
     def self.scanner_type
       Salus::ScannerTypes::SBOM_REPORT
     end
@@ -27,10 +27,6 @@ module Salus::Scanners
           version: version
         )
       end
-    end
-
-    def is_reporting_scanner?
-      true
     end
 
     def should_run?

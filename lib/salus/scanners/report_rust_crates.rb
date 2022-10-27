@@ -10,7 +10,7 @@ require 'salus/scanners/base'
 # dependencies.  Cargo added tree support in version 1.44
 
 module Salus::Scanners
-  class ReportRustCrates < Base
+  class ReportRustCrates < ReportBase
     def self.scanner_type
       Salus::ScannerTypes::SBOM_REPORT
     end
@@ -29,10 +29,6 @@ module Salus::Scanners
         raise InvalidScannerInvocationError,
               'Cannot report on crates without a manifest or lock file'
       end
-    end
-
-    def is_reporting_scanner?
-      true
     end
 
     def self.supported_languages

@@ -3,7 +3,7 @@ require 'salus/scanners/base'
 # Report Swift usage
 
 module Salus::Scanners
-  class ReportSwiftDeps < Base
+  class ReportSwiftDeps < ReportBase
     class ReportSwiftDepsError < StandardError; end
 
     def self.scanner_type
@@ -41,10 +41,6 @@ module Salus::Scanners
         report_stderr(err_msg)
         report_error(err_msg)
       end
-    end
-
-    def is_reporting_scanner?
-      true
     end
 
     def should_run?

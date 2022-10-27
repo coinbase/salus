@@ -22,7 +22,7 @@ module Salus
 
     attr_accessor :active_scanners
 
-    ABSTRACT_SCANNERS = %i[Base NodeAudit LanguageVersion PackageVersion OSV].freeze
+    ABSTRACT_SCANNERS = %i[Base NodeAudit LanguageVersion PackageVersion OSV ReportBase].freeze
 
     PACKAGE_VERSION_SCANNERS = Salus::Scanners::PackageVersion.constants
       .reject { |klass| ABSTRACT_SCANNERS.include?(klass) }

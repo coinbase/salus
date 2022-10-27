@@ -3,7 +3,7 @@ require 'salus/scanners/base'
 # Report Java library usage
 
 module Salus::Scanners
-  class ReportPomXml < Base
+  class ReportPomXml < ReportBase
     def self.scanner_type
       Salus::ScannerTypes::SBOM_REPORT
     end
@@ -32,10 +32,6 @@ module Salus::Scanners
           version: dependency['version'].nil? ? UNKNOWN_VERSION : dependency['version']
         )
       end
-    end
-
-    def is_reporting_scanner?
-      true
     end
 
     def should_run?
