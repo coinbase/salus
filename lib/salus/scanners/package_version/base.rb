@@ -16,12 +16,6 @@ module Salus::Scanners::PackageVersion
       Salus::ScannerTypes::DEPENDENCY
     end
 
-    # Must be overriden by report scanners and should return true.
-    # This will be used to unblock other scanners which are dependent on Reporting Scanners output
-    def is_reporting_scanner?
-      false
-    end
-
     def run
       # gather all package versions specified in scanner_config
       package_versions = @config['package_versions'] || []
