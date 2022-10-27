@@ -324,6 +324,26 @@ describe Salus::Processor do
       end
     end
 
+    context 'Registering to reporting Scanners finished event' do
+      let(:remote_uri_one) { 'https://nerv.tk3/foo-salus-report' }
+      let(:remote_uri_two) { 'https://nerv.tk3/salus-report' }
+      let(:listener) { Object.new }
+      before(:each) do
+        def listener.reporting_scanners_ran(event_name, data)
+          data
+        end
+      end
+
+      it 'should Recieve reporting_scanners_ran event' do
+        Salus::PluginManager.register_listener(listener)
+
+        expect(listener).to receive(:reporting_scanners_ran)
+
+        processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/multiple_endpoints')
+        processor.scan_project
+      end
+    end
+
     context 'remote URI headers verbs' do
       prefix = 'spec/fixtures/processor/remote_uri_headers_verbs'
       let(:expected_report) do
