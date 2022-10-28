@@ -1,13 +1,9 @@
-require 'salus/scanners/base'
+require 'salus/scanners/report_base'
 
 # Report Cocoapod usage
 
 module Salus::Scanners
-  class ReportPodfileLock < Base
-    def self.scanner_type
-      Salus::ScannerTypes::SBOM_REPORT
-    end
-
+  class ReportPodfileLock < ReportBase
     class ReportPodfileLockError < StandardError; end
 
     def run

@@ -1,13 +1,9 @@
-require 'salus/scanners/base'
+require 'salus/scanners/report_base'
 
 # Report Java library usage
 
 module Salus::Scanners
-  class ReportPomXml < Base
-    def self.scanner_type
-      Salus::ScannerTypes::SBOM_REPORT
-    end
-
+  class ReportPomXml < ReportBase
     UNKNOWN_VERSION = ''.freeze
 
     def run
