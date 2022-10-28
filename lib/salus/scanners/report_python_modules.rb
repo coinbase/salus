@@ -1,4 +1,4 @@
-require 'salus/scanners/base'
+require 'salus/scanners/report_base'
 
 # Report python library usage
 

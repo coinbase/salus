@@ -1,4 +1,4 @@
-require 'salus/scanners/base'
+require 'salus/scanners/report_base'
 require 'salus/dice_coefficient'
 require 'uri'
 require 'net/http'

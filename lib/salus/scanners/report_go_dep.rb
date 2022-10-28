@@ -1,5 +1,5 @@
 require 'toml'
-require 'salus/scanners/base'
+require 'salus/scanners/report_base'
 require 'salus/plugin_manager'
 require 'salus/report'
 

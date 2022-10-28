@@ -1,5 +1,5 @@
 require 'toml'
-require 'salus/scanners/base'
+require 'salus/scanners/report_base'
 
 # Report the use of any Rust Crates.  Reports the
 # create name, version and repository URL.
