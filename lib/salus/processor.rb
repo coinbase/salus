@@ -151,10 +151,8 @@ module Salus
 
           scanner_threads, copied = run_scanner(config, scanner_class, scanner_name)
           if scanner_class.scanner_type == Salus::ScannerTypes::SBOM_REPORT
-            puts "#{scanner_name} is reporting thread"
             reporting_threads.concat(scanner_threads)
           else
-            puts "#{scanner_name} is scanning thread"
             scanning_threads.concat(scanner_threads)
           end
           files_copied.concat(copied)
