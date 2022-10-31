@@ -1,5 +1,5 @@
 require 'toml'
-require 'salus/scanners/base'
+require 'salus/scanners/report_base'
 require 'salus/plugin_manager'
 require 'salus/report'
 
@@ -7,11 +7,7 @@ require 'salus/report'
 # https://github.com/golang/dep
 
 module Salus::Scanners
-  class ReportGoDep < Base
-    def self.scanner_type
-      Salus::ScannerTypes::SBOM_REPORT
-    end
-
+  class ReportGoDep < ReportBase
     def run
       unless should_run?
       end

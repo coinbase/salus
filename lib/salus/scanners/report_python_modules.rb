@@ -1,13 +1,9 @@
-require 'salus/scanners/base'
+require 'salus/scanners/report_base'
 
 # Report python library usage
 
 module Salus::Scanners
-  class ReportPythonModules < Base
-    def self.scanner_type
-      Salus::ScannerTypes::SBOM_REPORT
-    end
-
+  class ReportPythonModules < ReportBase
     def run
       shell_return = run_shell(['bin/report_python_modules',
                                 @repository.path_to_repo], chdir: nil)

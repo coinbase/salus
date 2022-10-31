@@ -1,13 +1,9 @@
-require 'salus/scanners/base'
+require 'salus/scanners/report_base'
 
 # Report Java library usage
 
 module Salus::Scanners
-  class ReportGradleDeps < Base
-    def self.scanner_type
-      Salus::ScannerTypes::SBOM_REPORT
-    end
-
+  class ReportGradleDeps < ReportBase
     include Gradle
 
     def run
