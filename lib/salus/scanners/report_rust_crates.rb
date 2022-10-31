@@ -1,5 +1,5 @@
 require 'toml'
-require 'salus/scanners/base'
+require 'salus/scanners/report_base'
 
 # Report the use of any Rust Crates.  Reports the
 # create name, version and repository URL.
@@ -10,11 +10,7 @@ require 'salus/scanners/base'
 # dependencies.  Cargo added tree support in version 1.44
 
 module Salus::Scanners
-  class ReportRustCrates < Base
-    def self.scanner_type
-      Salus::ScannerTypes::SBOM_REPORT
-    end
-
+  class ReportRustCrates < ReportBase
     LOCK_FILE = 'Cargo.lock'.freeze
     MANIFEST_FILE = 'Cargo.toml'.freeze
 

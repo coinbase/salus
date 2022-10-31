@@ -131,7 +131,8 @@ module Salus
 
     def scan_project
       # Record overall running time of the scan
-      threads = []
+      reporting_threads = []
+      scanning_threads = []
       files_copied = []
       @scanners_ran = []
       @mutex = Mutex.new
@@ -149,12 +150,18 @@ module Salus
           end
 
           scanner_threads, copied = run_scanner(config, scanner_class, scanner_name)
-
-          threads.concat(scanner_threads)
+          if scanner_class.scanner_type == Salus::ScannerTypes::SBOM_REPORT
+            reporting_threads.concat(scanner_threads)
+          else
+            scanning_threads.concat(scanner_threads)
+          end
           files_copied.concat(copied)
         end
 
-        threads.each(&:join)
+        reporting_threads.each(&:join)
+        Salus::PluginManager.send_event(:reporting_scanners_ran, @scanners_ran, @report)
+
+        scanning_threads.each(&:join)
         cleanup(files_copied.uniq)
 
         Salus::PluginManager.send_event(:scanners_ran, @scanners_ran, @report)

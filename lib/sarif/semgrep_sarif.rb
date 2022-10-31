@@ -74,9 +74,14 @@ module Sarif
       return nil if !hit[:forbidden]
 
       location = hit[:hit].split(":") # [file_name, line, code_preview]
-
+      # location looks like "file.js:123:my_function()"
+      code = if location.size > 3 # code itself has :, like "abc: [xyz]"
+               location[2...].join(':')
+             else
+               location[2]
+             end
       {
-        id: "Forbidden Pattern Found",
+        id: hit[:id],
         name: "#{hit[:pattern]} / #{hit[:msg]} Forbidden Pattern Found",
         level: "HIGH",
         details: message(hit, false),
@@ -84,9 +89,9 @@ module Sarif
         start_column: 1,
         uri: location[0],
         help_url: SEMGREP_URI,
-        code: location[2],
+        code: code,
         rule: "Pattern: #{hit[:pattern]}\nMessage: #{hit[:msg]}",
-        properties: { 'severity': "HIGH" }
+        properties: { 'severity': hit[:severity] }
       }
     rescue StandardError => e
       bugsnag_notify(e.message)
@@ -97,7 +102,7 @@ module Sarif
 
       @issues.add(warning[:message])
       {
-        id: warning[:type],
+        id: SCANNER_ERROR,
         name: warning[:type],
         level: "HIGH",
         details: warning[:message],
@@ -118,6 +123,11 @@ module Sarif
         details: message(miss, true),
         help_url: SEMGREP_URI
       }
+    end
+
+    def self.snippet_possibly_in_git_diff?(snippet, lines_added)
+      lines = snippet.split("\n")
+      lines.all? { |line| lines_added.keys.include?(line) }
     end
   end
 end

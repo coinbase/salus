@@ -1,5 +1,6 @@
 require "salus/scanners/base"
 require "json"
+require 'digest/sha1'
 
 # Report any matches to a list of semantic grep patterns provided by the config file.
 # semgrep is a grep like tool for doing AST pattern matching.
@@ -30,6 +31,7 @@ module Salus::Scanners
       Salus::ScannerTypes::SAST
     end
 
+    # rubocop:disable Metrics/PerceivedComplexity
     def run
       global_exclude_flags = flag_list('--exclude', @config['exclude'])
 
@@ -53,7 +55,7 @@ module Salus::Scanners
         if !match['config'].nil? && override_keys.intersection(match.keys) != []
           err_msg = "[#{override_keys.join(', ')}] cannot be specified in salus.yaml
                      if -config semgrep_rule_file is provided for the same rule"
-          report_error(err_msg)
+          report_error(err_msg, { hard_error: true })
           report_stderr(err_msg)
           return report_failure
         end
@@ -113,13 +115,20 @@ module Salus::Scanners
                 "- #{msg}\n" \
                 "\t#{hit_to_string(hit, base_path)}"
               end
+              hit_id = if hit['check_id'] == '-' # id not specified by user
+                         Digest::SHA1.hexdigest(match['pattern'])
+                       else # id specified by user
+                         hit['check_id']
+                       end
               all_hits << {
+                id: hit_id,
                 pattern: match['pattern'],
                 config: match['config'],
                 forbidden: match["forbidden"],
                 required: match["required"],
                 msg: msg,
-                hit: hit_to_string(hit, base_path)
+                hit: hit_to_string(hit, base_path),
+                severity: hit['extra']['severity']
               }
             end
           end
@@ -143,12 +152,15 @@ module Salus::Scanners
             # only take the first line of stderror because the other lines
             # are verbose debugging info generated based on a temp file
             # so the filename is random and fails the test.
-
-            errors << {
+            err = {
               status: shell_return.status,
               stderr: (shell_return.stderr.split("\n").first || "") \
               + "\n\n" + error_str
             }
+            # status 7 means something wrong with config like missing id
+            # hard_error=true means scanner will fail even if pass_on_raise=true
+            err[:hard_error] = true if shell_return.status == 7
+            errors << err
           rescue JSON::ParserError
             # only take the first line of stderror because the other lines
             # are verbose debugging info generated based on a temp file
@@ -182,6 +194,7 @@ module Salus::Scanners
         failure_messages.each { |message| log(message) }
       end
     end
+    # rubocop:enable Metrics/PerceivedComplexity
 
     def enforce_explicit_ignoring
       # Create an empty .semgrepignore to prevent
@@ -294,7 +307,13 @@ module Salus::Scanners
       spans = err_obj[:spans].map do |s|
         "#{s[:file]}:#{s[:start].fetch('line', '')}-#{s[:end].fetch('line', '')}"
       end.join(', ')
-      "#{err_obj[:message]} (#{err_obj[:level]})\n\t#{spans}"
+
+      short_msg = err['short_msg']
+      long_msg = err['long_msg']
+      str = "#{err_obj[:message]} (#{err_obj[:level]})\n\t#{spans}"
+      str += " #{short_msg}" if short_msg
+      str += " #{long_msg}" if long_msg
+      str
     end
 
     def messages_str_from_errors(list_of_errors)

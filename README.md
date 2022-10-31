@@ -32,7 +32,7 @@ docker run --rm -t -v $(pwd):/home/repo coinbase/salus
 
 - [Bandit](docs/scanners/bandit.md) - Execution of [Bandit](https://pypi.org/project/bandit/) 1.6.2, looks for common security issues in Python code.
 - [Brakeman](docs/scanners/brakeman.md) - Execution of [Brakeman](https://brakemanscanner.org/) 5.3.1, looks for vulnerable code in Rails projects.
-- [semgrep](docs/scanners/semgrep.md) - Execution of [`semgrep`](https://semgrep.dev) 0.62.0 which looks for semantic and syntactical patterns in code at the AST level.
+- [semgrep](docs/scanners/semgrep.md) - Execution of [`semgrep`](https://semgrep.dev) 0.112.1, which looks for semantic and syntactical patterns in code at the AST level.
 - [BundleAudit](docs/scanners/bundle_audit.md) - Execution of [bundle-audit](https://github.com/rubysec/bundler-audit) 0.8.0, looks for CVEs in ruby gem dependencies.
 - [Gosec](docs/scanners/gosec.md) - Execution of [gosec](https://github.com/securego/gosec) 2.11.0, looks for security problems in go code.
 - [npm audit](docs/scanners/npm_audit.md) - Execution of [`npm audit`](https://docs.npmjs.com/getting-started/running-a-security-audit) 6.14.8 which looks for CVEs in node module dependencies.

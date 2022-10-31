@@ -1,15 +1,11 @@
-require 'salus/scanners/base'
+require 'salus/scanners/report_base'
 require 'salus/dice_coefficient'
 require 'uri'
 require 'net/http'
 
 # Report the use of any Ruby gems.
 module Salus::Scanners
-  class ReportRubyGems < Base
-    def self.scanner_type
-      Salus::ScannerTypes::SBOM_REPORT
-    end
-
+  class ReportRubyGems < ReportBase
     class RubyGemsApiError < StandardError; end
 
     class ApiTooManyRequestsError < StandardError; end

@@ -26,7 +26,7 @@ scanner_configs:
 ```
 
 If you want salus to autofix the yarn dependency files, then set `auto_fix: true`.
-> NOTE: Only availabe for yarn > 2.0.0.
+> NOTE: Only availabe for yarn < 2.0.0.
 
 ```yaml
 scanner_configs:
