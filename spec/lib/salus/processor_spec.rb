@@ -112,7 +112,7 @@ describe Salus::Processor do
             'ReportNodeModules',
             'ReportRubyGems'
           )
-          expect(reported_config[:enforced_scanners]).not_to be_empty
+          expect(reported_config[:enforced_scanners]).to be_empty
         end
       end
     end
@@ -143,14 +143,14 @@ describe Salus::Processor do
     it 'should scan the project given by a particular path' do
       processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/explicit_path')
       processor.scan_project
-      expect(processor.passed?).to eq(false)
+      expect(processor.passed?).to eq(true)
 
       report_hsh = processor.report.to_h
 
       expect(report_hsh[:project_name]).to eq('EVA-01')
       expect(report_hsh[:custom_info]).to eq('Purple unit')
       expect(report_hsh[:version]).to eq(Salus::VERSION)
-      expect(report_hsh[:passed]).to eq(false)
+      expect(report_hsh[:passed]).to eq(true)
       expect(report_hsh[:errors]).to eq([])
 
       expect(report_hsh[:scans]['BundleAudit'][:passed]).to eq(false)
@@ -178,7 +178,7 @@ describe Salus::Processor do
         cli_scanners_to_run: %w[Brakeman NPMAudit])
       processor.scan_project
 
-      expect(processor.passed?).to eq(false)
+      expect(processor.passed?).to eq(true)
 
       report_hsh = processor.report.to_h
 
@@ -189,7 +189,7 @@ describe Salus::Processor do
       expect(report_hsh[:project_name]).to eq('EVA-01')
       expect(report_hsh[:custom_info]).to eq('Purple unit')
       expect(report_hsh[:version]).to eq(Salus::VERSION)
-      expect(report_hsh[:passed]).to eq(false)
+      expect(report_hsh[:passed]).to eq(true)
       expect(report_hsh[:errors]).to eq([])
 
       expect(report_hsh[:scans]['Brakeman'][:passed]).to eq(false)

@@ -28,7 +28,7 @@ describe Salus::Config do
         expect(config.project_name).to be_nil
         expect(config.custom_info).to be_nil
         expect(config.active_scanners).to eq(Set.new(Salus::Config::SCANNERS.keys))
-        expect(config.enforced_scanners).not_to be_empty
+        expect(config.enforced_scanners).to be_empty
         expect(config.scanner_configs['BundleAudit']).to include('pass_on_raise' => false)
       end
     end

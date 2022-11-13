@@ -34,17 +34,7 @@
       "service_name": "buildkite",
       "url": "http://example.com/builds/123"
     },
-    "enforced_scanners": [
-      "Brakeman",
-      "BundleAudit",
-      "CargoAudit",
-      "Gosec",
-      "NPMAudit",
-      "PatternSearch",
-      "RepoNotEmpty",
-      "Semgrep",
-      "YarnAudit"
-    ],
+    "enforced_scanners": [],
     "report_uris": [
       {
         "format": "json",
