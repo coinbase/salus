@@ -34,7 +34,8 @@
             }
           ],
           "properties": {
-            "salusEnforced": true
+            "salusEnforced": true,
+            "salusWarn": false
           }
         }
       },
@@ -1577,7 +1578,8 @@
             }
           ],
           "properties": {
-            "salusEnforced": true
+            "salusEnforced": true,
+            "salusWarn": false
           }
         }
       },
@@ -2426,7 +2428,8 @@
 
           ],
           "properties": {
-            "salusEnforced": true
+            "salusEnforced": true,
+            "salusWarn": false
           }
         }
       },
@@ -2457,7 +2460,8 @@
 
           ],
           "properties": {
-            "salusEnforced": true
+            "salusEnforced": true,
+            "salusWarn": false
           }
         }
       },
@@ -2488,7 +2492,8 @@
 
           ],
           "properties": {
-            "salusEnforced": false
+            "salusEnforced": false,
+            "salusWarn": false
           }
         }
       },
@@ -2529,7 +2534,8 @@
 
           ],
           "properties": {
-            "salusEnforced": true
+            "salusEnforced": true,
+            "salusWarn": false
           }
         }
       },

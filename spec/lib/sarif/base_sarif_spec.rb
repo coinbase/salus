@@ -31,7 +31,8 @@ describe Sarif::BaseSarif do
           "rules" => [],
           "informationUri" => "https://github.com/coinbase/salus",
           "properties" => {
-            "salusEnforced": false
+            "salusEnforced": false,
+            "salusWarn": false
           }
         } })
     end
