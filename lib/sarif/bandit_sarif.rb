@@ -4,7 +4,7 @@ module Sarif
 
     BANDIT_URI = 'https://github.com/PyCQA/bandit'.freeze
 
-    def initialize(scan_report, repo_path = nil, scanner_config={})
+    def initialize(scan_report, repo_path = nil, scanner_config = {})
       super(scan_report, {}, repo_path)
       @uri = BANDIT_URI
       @logs = parse_scan_report!

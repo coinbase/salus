@@ -20,7 +20,7 @@ module Sarif
     SARIF_SCHEMA = "https://docs.oasis-open.org/sarif/sarif/v#{SARIF_VERSION}/csprd01/schemas/"\
     "sarif-schema-#{SARIF_VERSION}".freeze
 
-    def initialize(scan_reports, config = {}, repo_path = nil, scanner_config)
+    def initialize(scan_reports, config = {}, repo_path = nil, scanner_config = {})
       @scan_reports = scan_reports
       @config = config
       @repo_path = repo_path

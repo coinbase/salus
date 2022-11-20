@@ -42,7 +42,8 @@ module Sarif
           "rules" => rules,
           "properties" => {
             "salusEnforced": @required || false,
-            "salusWarn": @scanner_config[:scanner_configs][@scan_report.scanner_name]["warn"] || false
+            "salusWarn": @scanner_config[:scanner_configs][
+              @scan_report.scanner_name]["warn"] || false
           }
         }
       }

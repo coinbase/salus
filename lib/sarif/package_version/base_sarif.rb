@@ -10,7 +10,7 @@ module Sarif::PacakgeVersion
     PACKAGE_VERSION_MISMATCH = "PV0001".freeze
     SEVERITY = "HIGH".freeze
 
-    def initialize(scan_report, repo_path = nil, scanner_config={})
+    def initialize(scan_report, repo_path = nil, scanner_config = {})
       super(scan_report, {}, repo_path)
       @uri = PACKAGE_VERSION_DOC_URI
       @logs = parse_scan_report!

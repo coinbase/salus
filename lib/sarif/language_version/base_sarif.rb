@@ -10,7 +10,7 @@ module Sarif::LanguageVersion
     LANGUAGE_VERSION_MISMATCH = "LV0001".freeze
     SEVERITY = "HIGH".freeze
 
-    def initialize(scan_report, repo_path = nil, scanner_config={})
+    def initialize(scan_report, repo_path = nil, scanner_config = {})
       super(scan_report, {}, repo_path)
       @uri = LANGUAGE_VERSION_DOC_URI
       @logs = parse_scan_report!
