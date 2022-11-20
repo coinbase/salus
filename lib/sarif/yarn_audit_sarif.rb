@@ -4,10 +4,11 @@ module Sarif
     include Salus::SalusBugsnag
     YARN_URI = 'https://classic.yarnpkg.com/en/docs/cli/audit/'.freeze
 
-    def initialize(scan_report, repo_path = nil)
+    def initialize(scan_report, repo_path = nil, scanner_config={})
       super(scan_report, {}, repo_path)
       @uri = YARN_URI
       parse_scan_report!
+      @scanner_config = scanner_config
     end
 
     def parse_scan_report!

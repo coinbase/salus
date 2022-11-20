@@ -7,10 +7,11 @@ module Sarif
     REPO_NOT_EMPTY_URI = "https://github.com/coinbase/salus/blob/master/docs/scanners/"\
     "repository_not_blank.md".freeze
 
-    def initialize(scan_report, repo_path = nil)
+    def initialize(scan_report, repo_path = nil, scanner_config={})
       super(scan_report, {}, repo_path)
       @uri = REPO_NOT_EMPTY_URI
       @logs = parse_scan_report!
+      @scanner_config = scanner_config
     end
 
     def parse_scan_report!

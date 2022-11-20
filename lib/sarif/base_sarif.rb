@@ -16,7 +16,7 @@ module Sarif
 
     attr_accessor :config, :required # sarif_options
 
-    def initialize(scan_report, config = {}, repo_path = nil)
+    def initialize(scan_report, config = {}, repo_path = nil, scanner_config = {})
       @scan_report = scan_report
       @mapped_rules = {} # map each rule to an index
       @rule_index = 0
@@ -25,6 +25,7 @@ module Sarif
       @issues = Set.new
       @config = config
       @repo_path = repo_path || Dir.getwd # Fallback, we should make repo_path required
+      @scanner_config = scanner_config
     end
 
     def base_path
@@ -40,7 +41,8 @@ module Sarif
           "informationUri" => @uri,
           "rules" => rules,
           "properties" => {
-            "salusEnforced": @required || false
+            "salusEnforced": @required || false,
+            "salusWarn": @scanner_config[:scanner_configs][@scan_report.scanner_name]["warn"] || false
           }
         }
       }

@@ -20,10 +20,11 @@ module Sarif
     SARIF_SCHEMA = "https://docs.oasis-open.org/sarif/sarif/v#{SARIF_VERSION}/csprd01/schemas/"\
     "sarif-schema-#{SARIF_VERSION}".freeze
 
-    def initialize(scan_reports, config = {}, repo_path = nil)
+    def initialize(scan_reports, config = {}, repo_path = nil, scanner_config)
       @scan_reports = scan_reports
       @config = config
       @repo_path = repo_path
+      @scanner_config = scanner_config
     end
 
     # Builds Sarif Report. Raises an SarifInvalidFormatError if generated SARIF report is invalid
@@ -62,12 +63,12 @@ module Sarif
     def converter(scan_report, required)
       adapter = "Sarif::#{scan_report.scanner_name}Sarif"
       begin
-        converter = Object.const_get(adapter).new(scan_report, @repo_path)
+        converter = Object.const_get(adapter).new(scan_report, @repo_path, @scanner_config)
         converter.config = @config
         converter.required = required
         converter.build_runs_object(true)
       rescue NameError # this is greedy and will catch NoMethodError's too
-        converter = BaseSarif.new(scan_report, @config, @repo_path)
+        converter = BaseSarif.new(scan_report, @config, @scanner_config, @repo_path)
         converter.required = required
         converter.build_runs_object(false)
       end
