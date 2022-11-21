@@ -68,7 +68,7 @@ module Sarif
         converter.required = required
         converter.build_runs_object(true)
       rescue NameError # this is greedy and will catch NoMethodError's too
-        converter = BaseSarif.new(scan_report, @config, @scanner_config, @repo_path)
+        converter = BaseSarif.new(scan_report, @config, @repo_path, @scanner_config)
         converter.required = required
         converter.build_runs_object(false)
       end

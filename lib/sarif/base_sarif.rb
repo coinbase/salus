@@ -32,6 +32,13 @@ module Sarif
       @base_path ||= @repo_path.nil? ? nil : File.expand_path(@repo_path)
     end
 
+    def check_warn
+      unless @scanner_config.nil? 
+        return @scanner_config.dig(:scanner_configs, @scan_report.scanner_name, "warn") || false
+      end
+      return false
+    end
+
     # Retrieve tool section for sarif report
     def build_tool(rules: [])
       {
@@ -42,8 +49,7 @@ module Sarif
           "rules" => rules,
           "properties" => {
             "salusEnforced": @required || false,
-            "salusWarn": @scanner_config[:scanner_configs][
-              @scan_report.scanner_name]["warn"] || false
+            "salusWarn": check_warn
           }
         }
       }
