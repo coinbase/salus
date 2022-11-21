@@ -33,10 +33,9 @@ module Sarif
     end
 
     def check_warn
-      unless @scanner_config.nil? 
-        return @scanner_config.dig(:scanner_configs, @scan_report.scanner_name, "warn") || false
+      unless @scanner_config.nil?
+        @scanner_config.dig(:scanner_configs, @scan_report.scanner_name, "warn") || false
       end
-      return false
     end
 
     # Retrieve tool section for sarif report
