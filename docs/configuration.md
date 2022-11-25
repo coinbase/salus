@@ -174,7 +174,7 @@ scanner_configs:
       # copied to sub directories for proper scanning.
         - Gemfile
         - Gemfile.lock
-      warn: true # Used to update salusWarnMessage field in SARIF report. This attribute allows for more customization further downstream in the CI pipelines.
+      warn_message: true # Used to update salusWarnMessage field in SARIF report. This attribute allows for more customization further downstream in the CI pipelines.
 ```
 
 Special configuration that exist for particular scanners is defined in the [scanners directory](/docs/scanners).
