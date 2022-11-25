@@ -734,7 +734,7 @@
           ],
           "properties": {
             "salusEnforced": true,
-            "salusWarn": false
+            "salusWarnMessage": false
           }
         }
       },
@@ -1186,7 +1186,7 @@
           ],
           "properties": {
             "salusEnforced": true,
-            "salusWarn": false
+            "salusWarnMessage": false
           }
         }
       },
@@ -1245,7 +1245,7 @@
           ],
           "properties": {
             "salusEnforced": true,
-            "salusWarn": false
+            "salusWarnMessage": false
           }
         }
       },
@@ -1277,7 +1277,7 @@
           ],
           "properties": {
             "salusEnforced": true,
-            "salusWarn": false
+            "salusWarnMessage": false
           }
         }
       },
@@ -1309,7 +1309,7 @@
           ],
           "properties": {
             "salusEnforced": false,
-            "salusWarn": false
+            "salusWarnMessage": false
           }
         }
       },
@@ -1351,7 +1351,7 @@
           ],
           "properties": {
             "salusEnforced": true,
-            "salusWarn": false
+            "salusWarnMessage": false
           }
         }
       },

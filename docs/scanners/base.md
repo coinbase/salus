@@ -47,14 +47,14 @@ scanner_configs:
     scanner_timeout_s: 60
 ```
 
-## Override salusWarn flag
+## Override salusWarnMessage flag
 
-Currently, we support two types of scanners - Active / Enforced. We want allow for more customization where we want the scanner to be Active but still warn end users about the risks, so to handle that case we are adding a new field in SARIF called ```salusWarn```. By default it will be set to False and can be changed using the scanner_configs.
+Currently, we support two types of scanners - Active / Enforced. We want allow for more customization where we want the scanner to be Active but still warn end users about the risks, so to handle that case we are adding a new field in SARIF called ```salusWarnMessage```. By default it will be set to False and can be changed using the scanner_configs.
 
 ```yaml
 scanner_configs:
   YarnAudit:
-    warn: true
+    warnMessage: true
 
 This will limit YarnAudit scans to 1 minute (60 seconds) in execution time.
 

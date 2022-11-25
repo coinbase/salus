@@ -34,7 +34,7 @@ module Sarif
 
     def check_warn
       unless @scanner_config.nil?
-        @scanner_config.dig(:scanner_configs, @scan_report.scanner_name, "warn") || false
+        @scanner_config.dig(:scanner_configs, @scan_report.scanner_name, "warn_message") || false
       end
 
       false
@@ -50,7 +50,7 @@ module Sarif
           "rules" => rules,
           "properties" => {
             "salusEnforced": @required || false,
-            "salusWarn": check_warn
+            "salusWarnMessage": check_warn
           }
         }
       }

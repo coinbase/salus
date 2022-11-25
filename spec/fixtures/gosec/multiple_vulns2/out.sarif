@@ -144,7 +144,7 @@
           "name": "Gosec",
           "properties": {
             "salusEnforced": true,
-            "salusWarn": false
+            "salusWarnMessage": false
           },
           "rules": [
             {

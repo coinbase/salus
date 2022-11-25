@@ -62,7 +62,7 @@
           "name": "Semgrep",
           "properties": {
             "salusEnforced": true,
-            "salusWarn": false
+            "salusWarnMessage": false
           },
           "rules": [
             {
@@ -127,7 +127,7 @@
           "name": "BundleAudit",
           "properties": {
             "salusEnforced": false,
-            "salusWarn": false
+            "salusWarnMessage": false
           },
           "rules": [
 
@@ -165,7 +165,7 @@
           "name": "Bandit",
           "properties": {
             "salusEnforced": false,
-            "salusWarn": false
+            "salusWarnMessage": false
           },
           "rules": [
 
