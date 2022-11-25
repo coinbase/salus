@@ -36,8 +36,6 @@ module Sarif
       unless @scanner_config.nil?
         @scanner_config.dig(:scanner_configs, @scan_report.scanner_name, "warn_message") || false
       end
-
-      false
     end
 
     # Retrieve tool section for sarif report
