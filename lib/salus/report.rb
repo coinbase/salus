@@ -195,7 +195,7 @@ module Salus
     end
 
     def to_sarif(config = {})
-      sarif_json = Sarif::SarifReport.new(@scan_reports, config, @repo_path, @config).to_sarif
+      sarif_json = Sarif::SarifReport.new(@scan_reports, config, @repo_path, config).to_sarif
       begin
         sorted_sarif = JSON.parse(sarif_json).deep_sort
       rescue StandardError => e

@@ -32,9 +32,9 @@ module Sarif
       @base_path ||= @repo_path.nil? ? nil : File.expand_path(@repo_path)
     end
 
-    def check_warn
+    def handle_warn_flag
       unless @scanner_config.nil?
-        @scanner_config.dig(:scanner_configs, @scan_report.scanner_name, "warn_message") || false
+        return @scanner_config.dig(:scanner_configs, @scan_report.scanner_name, "warn_message") || false
       end
     end
 
@@ -48,7 +48,7 @@ module Sarif
           "rules" => rules,
           "properties" => {
             "salusEnforced": @required || false,
-            "salusWarnMessage": check_warn
+            "salusWarnMessage": handle_warn_flag
           }
         }
       }

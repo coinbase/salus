@@ -61,8 +61,7 @@
           "informationUri": "https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md",
           "name": "Semgrep",
           "properties": {
-            "salusEnforced": true,
-            "salusWarnMessage": false
+            "salusEnforced": true
           },
           "rules": [
             {
@@ -126,8 +125,7 @@
           "informationUri": "https://github.com/rubysec/bundler-audit/",
           "name": "BundleAudit",
           "properties": {
-            "salusEnforced": false,
-            "salusWarnMessage": false
+            "salusEnforced": false
           },
           "rules": [
 
@@ -164,8 +162,7 @@
           "informationUri": "https://github.com/PyCQA/bandit",
           "name": "Bandit",
           "properties": {
-            "salusEnforced": false,
-            "salusWarnMessage": false
+            "salusEnforced": false
           },
           "rules": [
 

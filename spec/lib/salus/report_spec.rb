@@ -749,6 +749,7 @@ describe Salus::Report do
 
       it 'should deepsort sarif output' do
         expected_result = File.read("#{results_dir}/sorted_sarif.json")
+        puts "Fount report #{report.to_sarif}"
         sorted_sarif = JSON.parse(report.to_sarif)
         sorted_sarif['runs'].each do |result|
           # PROJECTROOT was taken out because it has the users local directory in the result json
