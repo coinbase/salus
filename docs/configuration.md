@@ -148,6 +148,7 @@ enforced_scanners:
 # Defines configuration relevant to specific scanners.
 scanner_configs:
   BundleAudit:
+    warn_message: true # Used to update salusWarnMessage field in SARIF report. This attribute allows for more customization further downstream in the CI pipelines.
     ignore:
       - CVE-XXXX-YYYY # irrelevant CVE which does not have a patch yet
     recursion: # optional recusion settings.  
@@ -174,7 +175,6 @@ scanner_configs:
       # copied to sub directories for proper scanning.
         - Gemfile
         - Gemfile.lock
-      warn_message: true # Used to update salusWarnMessage field in SARIF report. This attribute allows for more customization further downstream in the CI pipelines.
 ```
 
 Special configuration that exist for particular scanners is defined in the [scanners directory](/docs/scanners).
