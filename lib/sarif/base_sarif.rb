@@ -33,8 +33,10 @@ module Sarif
     end
 
     def handle_warn_flag
-      unless @config.nil?
-        return @config.dig(:scanner_configs, @scan_report.scanner_name, "warn_message") || false
+      if @scanner_config.nil?
+        false
+      else
+        @scanner_config.dig(:scanner_configs, @scan_report.scanner_name, "warn_message") || false
       end
     end
 
