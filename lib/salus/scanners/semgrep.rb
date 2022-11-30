@@ -80,7 +80,6 @@ module Salus::Scanners
         enforce_explicit_ignoring
 
         # run semgrep
-        puts "Swaraj, ", command
         shell_return = run_shell(command)
 
         # check to make sure it's successful
