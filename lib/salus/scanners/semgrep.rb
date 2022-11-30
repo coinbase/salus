@@ -249,7 +249,7 @@ module Salus::Scanners
           "--lang",
           match['language'],
           *exclude_flags,
-          base_path
+          base_path + "#{match['sub-dir']}"
         ].compact
         user_message = "pattern \"#{pattern}\""
       end
