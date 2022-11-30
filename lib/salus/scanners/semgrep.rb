@@ -80,6 +80,7 @@ module Salus::Scanners
         enforce_explicit_ignoring
 
         # run semgrep
+        puts "Swaraj, ", command
         shell_return = run_shell(command)
 
         # check to make sure it's successful
@@ -249,7 +250,7 @@ module Salus::Scanners
           "--lang",
           match['language'],
           *exclude_flags,
-          base_path + "#{match['sub-dir']}"
+          base_path + match['sub-dir'].to_s
         ].compact
         user_message = "pattern \"#{pattern}\""
       end
