@@ -7,10 +7,11 @@ module Sarif::OSV
     OSV_URI = "https://osv.dev/list".freeze
     SCANNER_NAME = "OSV Scanner".freeze
 
-    def initialize(scan_report, repo_path = nil)
+    def initialize(scan_report, repo_path = nil, scanner_config = {})
       super(scan_report, {}, repo_path)
       @uri = OSV_URI
       @logs = parse_scan_report!
+      @scanner_config = scanner_config
     end
 
     def parse_scan_report!
