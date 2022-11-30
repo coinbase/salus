@@ -63,12 +63,12 @@ module Sarif
     def converter(scan_report, required)
       adapter = "Sarif::#{scan_report.scanner_name}Sarif"
       begin
-        converter = Object.const_get(adapter).new(scan_report, @repo_path, @scanner_config)
+        converter = Object.const_get(adapter).new(scan_report, @repo_path)
         converter.config = @config
         converter.required = required
         converter.build_runs_object(true)
       rescue NameError # this is greedy and will catch NoMethodError's too
-        converter = BaseSarif.new(scan_report, @config, @repo_path, @scanner_config)
+        converter = BaseSarif.new(scan_report, @config, @repo_path)
         converter.required = required
         converter.build_runs_object(false)
       end
