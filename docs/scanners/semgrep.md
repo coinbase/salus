@@ -73,6 +73,7 @@ Each simple rule in salus.yaml **must** include
 * `pattern` - the single pattern
 * `forbidden: true` or `required: true
 * `language`- Any of: c, go, java, javascript, or python
+* `sub-dir` - this pattern will apply only to the sub-dir listed. This should be a valid sub-directory under the directory defined by "directories" under "recursion" config
 
 The user can **optionally** provide
 * `exclude` - Skip any file or directory that matches this pattern
