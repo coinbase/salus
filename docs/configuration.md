@@ -148,6 +148,7 @@ enforced_scanners:
 # Defines configuration relevant to specific scanners.
 scanner_configs:
   BundleAudit:
+    warn_message: true # Used to update salusWarnMessage field in SARIF report. This attribute allows for more customization further downstream in the CI pipelines.
     ignore:
       - CVE-XXXX-YYYY # irrelevant CVE which does not have a patch yet
     recursion: # optional recusion settings.  

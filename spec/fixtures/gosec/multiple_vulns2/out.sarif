@@ -143,7 +143,8 @@
           "informationUri": "https://github.com/securego/gosec",
           "name": "Gosec",
           "properties": {
-            "salusEnforced": true
+            "salusEnforced": true,
+            "salusWarnMessage": false
           },
           "rules": [
             {

@@ -16,7 +16,7 @@ module Sarif
 
     attr_accessor :config, :required # sarif_options
 
-    def initialize(scan_report, config = {}, repo_path = nil)
+    def initialize(scan_report, config = {}, repo_path = nil, scanner_config = {})
       @scan_report = scan_report
       @mapped_rules = {} # map each rule to an index
       @rule_index = 0
@@ -25,10 +25,19 @@ module Sarif
       @issues = Set.new
       @config = config
       @repo_path = repo_path || Dir.getwd # Fallback, we should make repo_path required
+      @scanner_config = scanner_config
     end
 
     def base_path
       @base_path ||= @repo_path.nil? ? nil : File.expand_path(@repo_path)
+    end
+
+    def handle_warn_flag
+      if @scanner_config.nil?
+        false
+      else
+        @scanner_config.dig(:scanner_configs, @scan_report.scanner_name, "warn_message") || false
+      end
     end
 
     # Retrieve tool section for sarif report
@@ -40,7 +49,8 @@ module Sarif
           "informationUri" => @uri,
           "rules" => rules,
           "properties" => {
-            "salusEnforced": @required || false
+            "salusEnforced": @required || false,
+            "salusWarnMessage": handle_warn_flag
           }
         }
       }
