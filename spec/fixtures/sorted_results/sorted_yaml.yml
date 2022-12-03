@@ -33,7 +33,7 @@
       pattern \"1 == $X\" was not found - Useless equality test."
     :passed: false
     :scanner_name: Semgrep
-    :version: 0.112.1
+    :version: 1.0.0
     :warn:
       :semgrep_non_fatal:
       - :level: warn
