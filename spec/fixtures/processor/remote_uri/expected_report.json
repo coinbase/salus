@@ -231,7 +231,7 @@
       "passed": true,
       "running_time": 0.0,
       "scanner_name": "Semgrep",
-      "version": "0.112.1",
+      "version": "1.0.0",
       "warn": {
       }
     }
