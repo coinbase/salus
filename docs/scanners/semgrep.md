@@ -110,7 +110,7 @@ scanner_configs:
 
 Please see [semgrep's documentation on how to use an inline comment to allowlist findings](https://semgrep.dev/docs/ignoring-files-folders-code/#reference-summary).
 
-You can also whitelist all findings for specific ids, like
+You can also whitelist all findings for specific ids in the salus config, like
 ```yaml
 scanner_configs:
   Semgrep:
