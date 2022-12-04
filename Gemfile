@@ -36,4 +36,4 @@ group :test do
   gem 'webmock', '~> 3.12'
 end
 
-gem "json-schema", "~> 2.8"
+gem "json-schema", "~> 3.0"
