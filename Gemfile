@@ -24,7 +24,7 @@ group :scanners do
 end
 
 group :test, :development do
-  gem 'pry', '~> 0.10'
+  gem 'pry', '~> 0.14'
   gem 'pry-byebug', '~> 3.10'
 end
 
