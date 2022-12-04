@@ -325,7 +325,7 @@ module Salus::Scanners
 
     def add_exclude_rules(advisory_ids)
       exclude_rules = []
-      advisory_ids.map do |id|
+      advisory_ids.each do |id|
         exclude_rules.push("--exclude-rule")
         exclude_rules.push(id)
       end
