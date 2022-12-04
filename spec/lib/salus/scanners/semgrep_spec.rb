@@ -154,7 +154,8 @@ describe Salus::Scanners::Semgrep do
           expect(scanner.report.passed?).to eq(true)
 
           info = scanner.report.to_h.fetch(:info)
-          expect(info).to be_empty
+          expect(info[:hits]).to be_empty
+          expect(info[:misses]).to be_empty
         end
 
         it "should report forbidden matches" do
