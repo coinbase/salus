@@ -62,7 +62,7 @@
           "name": "Semgrep",
           "properties": {
             "salusEnforced": true,
-            "salusWarnMessage": false
+            "salusWarnMessage": true
           },
           "rules": [
             {
