@@ -224,6 +224,8 @@ module Salus::Scanners
         config = match['config']
         config_val = if config.start_with?('https:')
                        config
+                     elsif config.start_with?('/') && config.include?('semgrep')
+                       config
                      else
                        File.join(base_path, config)
                      end
