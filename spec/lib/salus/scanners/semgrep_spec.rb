@@ -131,6 +131,32 @@ describe Salus::Scanners::Semgrep do
           expect(info[:misses]).to be_empty
         end
 
+        it "should report not report findings that have been allowlisted" do
+          repo = Salus::Repo.new("spec/fixtures/semgrep")
+          config = {
+            "matches" => [
+              {
+                "config" => "semgrep-config.yml",
+                "forbidden" => false
+              }
+            ],
+            "exceptions" => [
+              {
+                "advisory_id" => "semgrep-eqeq-test",
+                "changed_by" => "me",
+                "notes" => "..."
+              }
+            ]
+          }
+          scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
+          scanner.run
+
+          expect(scanner.report.passed?).to eq(true)
+
+          info = scanner.report.to_h.fetch(:info)
+          expect(info).to be_empty
+        end
+
         it "should report forbidden matches" do
           repo = Salus::Repo.new("spec/fixtures/semgrep")
           config = {
