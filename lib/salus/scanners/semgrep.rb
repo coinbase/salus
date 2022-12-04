@@ -78,6 +78,7 @@ module Salus::Scanners
         )
 
         enforce_explicit_ignoring
+        command += add_exclude_rules(fetch_exception_ids)
 
         # run semgrep
         shell_return = run_shell(command)
@@ -320,6 +321,15 @@ module Salus::Scanners
       list_of_errors&.map do |err|
         error_to_string(err)
       end&.join("\n")
+    end
+
+    def add_exclude_rules(advisory_ids)
+      exclude_rules = []
+      advisory_ids.each do |id|
+        exclude_rules.push("--exclude-rule")
+        exclude_rules.push(id)
+      end
+      exclude_rules
     end
 
     def self.supported_languages
