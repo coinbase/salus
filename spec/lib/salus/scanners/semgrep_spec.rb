@@ -917,6 +917,37 @@ describe Salus::Scanners::Semgrep do
     end
   end
 
+  describe '#build_command_and_message' do
+    let(:scanner) { Salus::Scanners::Semgrep.new(repository: Salus::Repo.new(''), config: {}) }
+
+    it 'config for relative path' do
+      match = { "config" => "myrules.yaml", "forbidden" => true, "required" => false,
+                "strict" => false, "message" => "" }
+      cmd = scanner.build_command_and_message(match, false, '/home/repo', nil)[0]
+      expected_cmd = ["semgrep", "--json", "--disable-version-check",
+                      "--config", "/home/repo/myrules.yaml", "/home/repo"]
+      expect(cmd).to eq(expected_cmd)
+    end
+
+    it 'config for url' do
+      match = { "config" => "https://localhost/rules", "forbidden" => true, "required" => false,
+                "strict" => false, "message" => "" }
+      cmd = scanner.build_command_and_message(match, false, '/home/repo', nil)[0]
+      expected_cmd = ["semgrep", "--json", "--disable-version-check",
+                      "--config", "https://localhost/rules", "/home/repo"]
+      expect(cmd).to eq(expected_cmd)
+    end
+
+    it 'config for absolute path' do
+      match = { "config" => "/home/semgrep_rules", "forbidden" => true, "required" => false,
+                "strict" => false, "message" => "" }
+      cmd = scanner.build_command_and_message(match, false, '/home/repo', nil)[0]
+      expected_cmd = ["semgrep", "--json", "--disable-version-check",
+                      "--config", "/home/semgrep_rules", "/home/repo"]
+      expect(cmd).to eq(expected_cmd)
+    end
+  end
+
   describe '#version_valid?' do
     context 'scanner version is valid' do
       it 'should return true' do
