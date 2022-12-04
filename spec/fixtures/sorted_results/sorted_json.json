@@ -56,7 +56,7 @@
       "logs": "Syntax error at line /home/spec/fixtures/semgrep/invalid/unparsable_py.py:3:\n `print(\"foo\"` was unexpected (warn)\n\t/home/spec/fixtures/semgrep/invalid/unparsable_py.py:3-3\n\nRequired pattern \"1 == $X\" was not found - Useless equality test.",
       "passed": false,
       "scanner_name": "Semgrep",
-      "version": "0.112.1",
+      "version": "1.0.0",
       "warn": {
         "semgrep_non_fatal": [
           {
