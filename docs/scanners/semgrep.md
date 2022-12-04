@@ -110,7 +110,18 @@ scanner_configs:
 
 Please see [semgrep's documentation on how to use an inline comment to allowlist findings](https://semgrep.dev/docs/ignoring-files-folders-code/#reference-summary).
 
-We do not currently support allowling semgrep findings in the salus config.
+You can also whitelist all findings for specific ids in the salus config, like
+```yaml
+scanner_configs:
+  Semgrep:
+    exceptions:
+      - advisory_id: myid1
+        changed_by: engineer1
+        notes: false positive because ...
+      - advisory_id: myid2
+        changed_by: engineer2
+        notes: false positive because ...
+```
 
 ## Limitations of Semgrep
 
