@@ -50,7 +50,7 @@ module Sarif
           "rules" => rules,
           "properties" => {
             "salusEnforced": @required || false,
-            "salusWarnMessage": handle_warn_flag
+            "salusWarnMessage": handle_warn_flag || @required
           }
         }
       }
