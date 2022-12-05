@@ -16,7 +16,7 @@ gem 'rgl', '~> 0.5.9'
 gem 'rubyzip', '~> 2.3.2'
 gem 'safe_yaml', '~> 1.0'
 gem 'thor', '~> 1.1.0'
-gem 'toml', '~> 0.2.0'
+gem 'toml', '~> 0.3.0'
 
 group :scanners do
   gem 'brakeman', '5.3.1'
