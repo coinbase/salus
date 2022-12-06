@@ -112,6 +112,11 @@ ENV SIFT_VERSION v0.9.0
 
 RUN go install github.com/svent/sift@${SIFT_VERSION}
 
+### truffle hog
+
+RUN git clone https://github.com/trufflesecurity/trufflehog
+RUN cd trufflehog; git checkout v3.18.0;
+RUN cd trufflehog; go intall
 
 ### semgrep
 # https://semgrep.dev
