@@ -90,7 +90,7 @@ module Salus::Scanners
           data = JSON.parse(shell_return.stdout)
           hits = data["results"]
           semgrep_non_fatal_errors = data["errors"]
-          if @config['show_syntax_errors'].to_s == 'false'
+          if @config['show_syntax_errors'] == 'false'
             semgrep_non_fatal_errors.reject! do |e|
               e["type"] == 'Syntax error'
             end
