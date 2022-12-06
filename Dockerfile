@@ -117,6 +117,7 @@ RUN go install github.com/svent/sift@${SIFT_VERSION}
 RUN git clone https://github.com/trufflesecurity/trufflehog
 RUN cd trufflehog; git checkout v3.18.0;
 RUN cd trufflehog; go install
+RUN /root/trufflehog
 
 ### semgrep
 # https://semgrep.dev
