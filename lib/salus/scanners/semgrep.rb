@@ -32,6 +32,7 @@ module Salus::Scanners
     end
 
     # rubocop:disable Metrics/PerceivedComplexity
+    # rubocop:disable Metrics/CyclomaticComplexity
     def run
       global_exclude_flags = flag_list('--exclude', @config['exclude'])
 
@@ -89,6 +90,11 @@ module Salus::Scanners
           data = JSON.parse(shell_return.stdout)
           hits = data["results"]
           semgrep_non_fatal_errors = data["errors"]
+          if @config['show_syntax_errors'].to_s == 'false'
+            semgrep_non_fatal_errors.reject! do |e|
+              e["type"] == 'Syntax error'
+            end
+          end
           semgrep_non_fatal_errors&.map do |nfe|
             nfe_str = error_to_string(nfe)
             warning_messages << nfe_str
@@ -196,6 +202,7 @@ module Salus::Scanners
       end
     end
     # rubocop:enable Metrics/PerceivedComplexity
+    # rubocop:enable Metrics/CyclomaticComplexity
 
     def enforce_explicit_ignoring
       # Create an empty .semgrepignore to prevent
