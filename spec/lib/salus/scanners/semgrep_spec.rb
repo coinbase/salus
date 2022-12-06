@@ -876,6 +876,25 @@ describe Salus::Scanners::Semgrep do
           ]
         )
       end
+
+      it "should not record syntax error if show_syntax_errors=false" do
+        base = "spec/fixtures/semgrep/invalid"
+        repo = Salus::Repo.new(base)
+        config = {
+          "show_syntax_errors" => false,
+          "matches" => [
+            {
+              "pattern" => "$X",
+              "language" => "js"
+            }
+          ]
+        }
+        scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
+        scanner.run
+
+        warnings = scanner.report.to_h.fetch(:warn)
+        expect(warnings).to be_empty
+      end
     end
 
     context "unparsable javascript code causes error with strict" do
