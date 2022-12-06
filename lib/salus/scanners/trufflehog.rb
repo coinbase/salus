@@ -4,11 +4,9 @@ require 'salus/scanners/base'
 # Trufflehog scanner integration. Flags secrect present in the repo.
 # https://github.com/trufflesecurity/trufflehog
 
-
 # TOOD Create a SARIF adapter in lib/sarif
 module Salus::Scanners
   class Trufflehog < Base
-
     def should_run?
       true
     end
@@ -18,7 +16,7 @@ module Salus::Scanners
     end
 
     def version
-       shell_return = run_shell('docker run --platform linux/arm64 -v trufflesecurity/trufflehog:latest --version')                                            
+      shell_return = run_shell('docker run --platform linux/arm64 -v trufflesecurity/trufflehog:latest --version')
       shell_return.stdout&.split&.dig(1)
       # stdout looks like "trufflehog 3.18.0\n"
     end
@@ -29,9 +27,9 @@ module Salus::Scanners
 
     def command
       # Usage: TruffleHog [<flags>] <command> [<args> ...]
-      # 
+      #
       # TruffleHog is a tool for finding credentials.
-      # 
+      #
       # Flags:
       #     --help                     Show context-sensitive help (also try --help-long and --help-man).
       #      --debug                    Run in debug mode.
