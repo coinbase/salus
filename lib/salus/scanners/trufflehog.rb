@@ -67,13 +67,11 @@ module Salus::Scanners
       #  syslog [<flags>]
       #    Scan syslog
 
-      "docker run --platform linux/arm64 -v #{File.expand_path(@repository.path_to_repo)}:/pwd trufflesecurity/trufflehog:latest filesystem --json --directory=./ --no-verification"
+      "trufflehog filesystem --directory=. --only-verified --json"
     end
 
     def run
       shell_return = run_shell(command, chdir: @repository.path_to_repo)
-
-      binding.pry
 
       return report_success if shell_return.success? && !has_vulnerabilities?(shell_return.stdout)
 
