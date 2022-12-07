@@ -3,15 +3,12 @@ module Gradle
   GRADLE6 = "/opt/gradle/gradle-6.9.2/bin/gradle".freeze
   GET_GRADLE_PROJECTS = "./gradlew projects --info".freeze
 
-
   def is_multi_project
     projects = []
     command = "./gradlew "
     projects_shell_result = run_shell(GET_GRADLE_PROJECTS)
     projects_shell_result.stdout.each_line do |line|
-      if line.include? '--- Project '
-        projects.append(line.split.last.strip.tr(":", "").tr("'", ""))
-      end
+      projects.append(line.split.last.strip.tr(":", "").tr("'", "")) if line.include? '--- Project '
     end
 
     projects.each do |proj|
@@ -26,16 +23,13 @@ module Gradle
     run_shell("#{GRADLE6} dependencies") if !shell_result.success?
   end
 
-
-
   def gradle_dependencies
     dependency_metadata_regex = /-\s(?<group_id>.+):(?<artifact_id>.+):(?<version>.+)/
-    if @config['multi'].to_s == 'true'
-      result = is_multi_project
-    else
-      result = is_single_project
-    end
-
+    result = if @config['multi']
+               is_multi_project
+             else
+               is_single_project
+             end
     # 'gradle dependencies' command needs to be run in the folder where buid.gradle is present.
     if !result.success?
       report_error("Gradle Version Not supported. Please Upgrade to gradle version 6 and above")
