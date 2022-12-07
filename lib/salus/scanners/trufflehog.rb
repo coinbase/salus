@@ -30,7 +30,11 @@ module Salus::Scanners
     end
 
     def run
-      shell_return = run_shell(command, chdir: @repository.path_to_repo)
+      //      shell_return = run_shell(command, chdir: @repository.path_to_repo)
+
+      shell_return = run_shell(command, chdir: '/home/repo')
+      puts "SHELLRETURNTEST #{shell_return.inspect}"
+      exit
 
       return report_success if shell_return.success? && !has_vulnerabilities?(shell_return.stdout)
 
