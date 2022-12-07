@@ -15,12 +15,14 @@ module Gradle
       command += proj + ":dependencies "
     end
 
-    run_shell(command)
+    shell_result = run_shell(command)
+    shell_result
   end
 
   def is_single_project
     shell_result = run_shell("#{GRADLE7} dependencies")
-    run_shell("#{GRADLE6} dependencies") if !shell_result.success?
+    shell_result = run_shell("#{GRADLE6} dependencies") if !shell_result.success?
+    shell_result
   end
 
   def gradle_dependencies
