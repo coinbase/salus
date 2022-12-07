@@ -16,7 +16,7 @@ module Salus::Scanners
     end
 
     def version
-      shell_return = run_shell('docker run --platform linux/arm64 -v trufflesecurity/trufflehog:latest --version')
+      shell_return = run_shell('trufflehog --version')
       shell_return.stdout&.split&.dig(1)
       # stdout looks like "trufflehog 3.18.0\n"
     end
@@ -26,47 +26,6 @@ module Salus::Scanners
     end
 
     def command
-      # Usage: TruffleHog [<flags>] <command> [<args> ...]
-      #
-      # TruffleHog is a tool for finding credentials.
-      #
-      # Flags:
-      #     --help                     Show context-sensitive help (also try --help-long and --help-man).
-      #      --debug                    Run in debug mode.
-      #      --trace                    Run in trace mode.
-      #  -j, --json                     Output in JSON format.
-      #      --json-legacy              Use the pre-v3.0 JSON format. Only works with git, gitlab, and github sources.
-      #      --concurrency=4            Number of concurrent workers.
-      #      --no-verification          Don't verify the results.
-      #      --only-verified            Only output verified results.
-      #      --filter-unverified        Only output first unverified result per chunk per detector if there are more than one results.
-      #      --print-avg-detector-time  Print the average time spent on each detector.
-      #      --no-update                Don't check for updates.
-      #      --fail                     Exit with code 183 if results are found.
-      #     --version                  Show application version.
-      #
-      # Commands:
-      # help [<command>...]
-      #    Show help.
-      #
-      #  git [<flags>] <uri>
-      #    Find credentials in git repositories.
-      #
-      #  github [<flags>]
-      #    Find credentials in GitHub repositories.
-      #
-      #  gitlab --token=TOKEN [<flags>]
-      #    Find credentials in GitLab repositories.
-
-      #  filesystem --directory=DIRECTORY
-      #    Find credentials in a filesystem.
-
-      #  s3 [<flags>]
-      #    Find credentials in S3 buckets.
-
-      #  syslog [<flags>]
-      #    Scan syslog
-
       "trufflehog filesystem --directory=. --only-verified --json"
     end
 
