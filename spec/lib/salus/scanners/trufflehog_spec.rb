@@ -1,5 +1,5 @@
 require_relative '../../../spec_helper.rb'
-
+=begin
 describe Salus::Scanners::Trufflehog do
   describe '#should_run?' do
     it 'should return true with empty directory' do
@@ -116,3 +116,4 @@ describe '#run' do
     end
   end
 end
+=end
