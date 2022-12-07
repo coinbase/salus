@@ -1,9 +1,0 @@
-#!/bin/bash
-
-alias gradle-all-deps='./gradlew dependencies $(./gradlew -q projects \
-    | grep -Fe ---\ Project \
-    | sed -Ee "s/^.+--- Project '"'([^']+)'/\1:dependencies/"'")'
-
-gradle-all-deps
-
-exit
