@@ -1,0 +1,5 @@
+scanner_configs:
+  GradleOSV:
+   multi: true
+  ReportGradleDeps:
+   multi: true
