@@ -54,12 +54,18 @@ module Salus::Scanners
         parsed_vulns = []
         err = ''
         vulns.each do |v|
-          parsed_v = begin
-                       JSON.parse(v)
-                     rescue JSON::ParserError
-                       err += "Unable to JSON.parse #{v}\n"
-                     end
-          parsed_vulns.push parsed_v
+          begin
+            parsed_v = JSON.parse(v)
+            filtered_v = {}
+            filtered_v['Leaked Credential'] = parsed_v['Raw']
+            filtered_v['File'] = parsed_v.dig('SourceMetadata', 'Data', 'Filesystem', 'file')
+            filtered_v['Detector Name'] = parsed_v['DetectorName']
+            filtered_v['Decoder Name'] = parsed_v['DecoderName']
+            filtered_v['Verified'] = parsed_v['Verified']
+            parsed_vulns.push filtered_v                       
+          rescue StandardError => e
+            err += "Unable to parse #{v}, error = #{e.inspect}\n"
+          end
         end
         err += "No vulnerabilities found in stdout" if parsed_vulns.empty?
         if !err.empty?
