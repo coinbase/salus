@@ -82,9 +82,12 @@ describe Salus::Scanners::OSV::GradleOSV do
 
       it 'should fail when vulnerable dependencies are found in multi build project' do
         repo = Salus::Repo.new(File.join(fixture_path, 'multi_build_project'))
-        config_data = YAML.load_file(File.join(fixture_path,
-          'multi_build_project/salus.yaml'))
-        scanner = Salus::Scanners::OSV::GradleOSV.new(repository: repo, config: config_data["scanner_configs"]["GradleOSV"])
+        config_data = YAML.load_file(
+          File.join(fixture_path, 'multi_build_project/salus.yaml')
+        )
+        scanner = Salus::Scanners::OSV::GradleOSV.new(
+          repository: repo, config: config_data["scanner_configs"]["GradleOSV"]
+        )
         stub_req_with_valid_response
         scanner.run
 
@@ -98,8 +101,9 @@ describe Salus::Scanners::OSV::GradleOSV do
         config_data = YAML.load_file(File.join(fixture_path,
                                                'success_vulnerability_present_exception_added/'\
                                                'salus.yaml'))
-        scanner = Salus::Scanners::OSV::GradleOSV.new(repository: repo,
-            config: config_data["scanner_configs"]["GradleOSV"])
+        scanner = Salus::Scanners::OSV::GradleOSV.new(
+          repository: repo, config: config_data["scanner_configs"]["GradleOSV"]
+        )
         stub_req_with_valid_response
         scanner.run
 
