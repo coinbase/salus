@@ -113,7 +113,7 @@ describe Salus::Scanners::Trufflehog do
 
       report_h = scanner.report.to_h
       expect(report_h[:passed]).to eq(true)
-      expect(report_h[:logs]).to be_empty
+      expect(report_h[:logs]).to be_nil
       expect(report_h[:warn]).to eq({})
       expect(report_h[:info]).to eq({})
       expect(report_h[:errors]).to eq([])
