@@ -9,6 +9,7 @@ When a CVE is present in a dependency, the best course of action is to upgrade t
 ```yaml
 scanner_configs:
   GradleOSV:
+    multi: true # If you run a multi project build setup, you can multi as true. Default is false
     exceptions:
       - advisory_id: CVE-2020-26945
         changed_by: security-team
