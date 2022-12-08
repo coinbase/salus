@@ -190,6 +190,7 @@ RUN curl -fsSL "$NODE_DOWNLOAD_URL" -o node.tar.gz \
 ENV PIP_VERSION 18.1
 COPY --from=builder /root/go/bin/sift /usr/local/bin
 COPY --from=builder /root/gosec/gosec /usr/local/bin
+COPY --from=builder /root/trufflehog_files/trufflehog /usr/local/bin
 COPY --from=builder /usr/local/bin/cargo /usr/local/bin
 COPY --from=builder /root/vendor /home/vendor
 COPY --from=builder /root/.local /root/.local

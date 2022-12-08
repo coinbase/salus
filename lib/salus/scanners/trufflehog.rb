@@ -17,8 +17,9 @@ module Salus::Scanners
 
     def version
       shell_return = run_shell('trufflehog --version')
-      shell_return.stdout&.split&.dig(1)
       # stdout looks like "trufflehog 3.18.0\n"
+      # for some reason, truffle hog writes version to stderr, not stdout
+      shell_return.stderr&.split&.dig(1).to_s
     end
 
     def self.supported_languages
@@ -26,30 +27,48 @@ module Salus::Scanners
     end
 
     def command
-      "trufflehog filesystem --directory=. --only-verified --json"
+      #      "trufflehog filesystem --directory=. --only-verified --json"
+      "trufflehog filesystem --directory=. --json"
     end
 
     def run
-      #    shell_return = run_shell(command, chdir: @repository.path_to_repo)
+      shell_return = run_shell(command, chdir: @repository.path_to_repo)
 
-      shell_return = run_shell(command, chdir: '/home/repo')
-      puts "SHELLRETURNTEST #{shell_return.inspect}"
-      exit
-
-      return report_success if shell_return.success? && !has_vulnerabilities?(shell_return.stdout)
+      # truffle hog returns success status even if vulnerabilities are dectecd
+      # it writes vulnerabilities to stdout
+      
+      return report_success if shell_return.success? && shell_return.stderr.empty? && shell_return.stdout.empty?
 
       report_failure
 
-      if shell_return.stderr.empty?
-        # shell_return.stdout will be JSON of the discovered vulnerabilities
-        report_stdout(shell_return.stdout)
-        log(prettify_json_string(shell_return.stdout))
-      else
+      if !shell_return.success? || shell_return.stdout.empty?
+        err = "TruffleHog exited unexpectedly. Stderr = #{shell_return.stderr}. Stdout = #{shell_return.stdout}"
         report_error(
-          "cargo exited with an unexpected exit status",
-          status: shell_return.status
+          status: shell_return.status,
+          error: err
         )
-        report_stderr(shell_return.stderr)
+        report_stderr(err)
+      else
+        # each line in stdout is a separate vulnerability json
+        vulns = shell_return.stdout.split("\n")
+        parsed_vulns = []
+        err = ''
+        vulns.each do |v|
+          parsed_v = begin
+                       JSON.parse(v)
+                     rescue JSON::ParserError
+                       err += "Unable to JSON.parse #{v}\n"
+                     end
+          parsed_vulns.push parsed_v
+        end
+        err += "No vulnerabilities found in stdout" if parsed_vulns.empty?
+        if !err.empty?
+          report_error(error: err)
+          report_stderr(err)
+          return
+        end
+        
+        log("Truffle hog detected these leaked secrets: \n" + JSON.pretty_generate(parsed_vulns))
       end
     end
   end
