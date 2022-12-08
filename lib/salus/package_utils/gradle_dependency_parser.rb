@@ -15,8 +15,7 @@ module Gradle
       command += proj + ":dependencies "
     end
 
-    shell_result = run_shell(command)
-    shell_result
+    run_shell(command)
   end
 
   def is_single_project
@@ -27,7 +26,7 @@ module Gradle
 
   def gradle_dependencies
     dependency_metadata_regex = /-\s(?<group_id>.+):(?<artifact_id>.+):(?<version>.+)/
-    result = if @config['multi']
+    result = if @config['multi_project_build']
                is_multi_project
              else
                is_single_project
