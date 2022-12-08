@@ -14,88 +14,110 @@ describe Salus::Scanners::Trufflehog do
     scanner = Salus::Scanners::Trufflehog.new(repository: repo, config: {})
     expect(scanner.should_run?).to eq(true)
   end
-end
 
-=begin
-describe '#run' do
-  it 'should pass when there are no secrets' do
-    repo = Salus::Repo.new('spec/fixtures/secrets/benign')
-    scanner = Salus::Scanners::Trufflehog.new(repository: repo, config: {})
-    expect(scanner).not_to receive(:report_failure)
-    scanner.run
-    expect(scanner.report.to_h.fetch(:passed)).to eq(true)
-  end
+  describe '#run' do
+    it 'should pass when there are no secrets' do
+      repo = Salus::Repo.new('spec/fixtures/secrets/benign')
+      scanner = Salus::Scanners::Trufflehog.new(repository: repo, config: {})
+      expect(scanner).not_to receive(:report_failure)
+      scanner.run
+      expect(scanner.report.to_h.fetch(:passed)).to eq(true)
+    end
 
-  it 'should fail when there are secrets' do
-    repo = Salus::Repo.new('spec/fixtures/secrets')
-    scanner = Salus::Scanners::Trufflehog.new(repository: repo, config: {})
-    expect(scanner).to receive(:report_failure).and_call_original
-    scanner.run
-    expect(scanner.report.to_h.fetch(:passed)).to eq(false)
-  end
+    it 'should pass when there are secrets and --only-verified is true' do
+      # --only-verified is true by default
+      repo = Salus::Repo.new('spec/fixtures/secrets')
+      scanner = Salus::Scanners::Trufflehog.new(repository: repo, config: {})
+      expect(scanner).not_to receive(:report_failure)
+      scanner.run
+      expect(scanner.report.to_h.fetch(:passed)).to eq(true)
 
-  it 'should honor exceptions in the config' do
-    fixture_directory = 'spec/fixtures/cargo_audit/failure-vulnerability-present'
-    repo = Salus::Repo.new(fixture_directory)
+      # explicitly setting --only-verified=true should yield the same behavior
+      config = { "only-verified" => true }
+      scanner = Salus::Scanners::Trufflehog.new(repository: repo, config: config)
+      expect(scanner).not_to receive(:report_failure)
+      scanner.run
+      expect(scanner.report.to_h.fetch(:passed)).to eq(true)
+    end
 
-    config_path = File.join(fixture_directory, 'salus.yaml')
-    config = YAML.load_file(config_path)['scanner_configs']['Trufflehog']
+    it 'should fail when there are secrets and not --only-verified is false' do
+      repo = Salus::Repo.new('spec/fixtures/secrets')
+      config = { "only-verified" => false }
+      scanner = Salus::Scanners::Trufflehog.new(repository: repo, config: config)
+      expect(scanner).to receive(:report_failure).and_call_original
+      scanner.run
 
-    scanner = Salus::Scanners::Trufflehog.new(repository: repo, config: config)
-    scanner.run
+      report_h = scanner.report.to_h
+      expect(report_h[:passed]).to eq(false)
+      expected_log0 = { "Leaked Credential" => "216ce860c78081b83f255cad4d032361677"\
+                                               "e4aea87dacecd387e62505e1e4a50dd947b"\
+                                               "3ce9166b70d8b9aaa45215c1b512c518b53"\
+                                               "84e5067ee7d29011da0efb4",
 
-    expect(scanner.report.to_h.fetch(:passed)).to eq(true)
-  end
+                        "File" => "logins.txt",
+                        "ID" => "FlatIO-PLAIN",
+                        "Verified" => false }
+      expected_log1 = { "Leaked Credential" => "jdbc:postgresql://localhost:5432/test?user=test"\
+                                               "&password=ABCD&loggerLevel=DEBUG&&&"\
+                                               "loggerFile=./blah.jsp",
+                       "File" => "url.txt",
+                       "ID" => "JDBC-PLAIN",
+                       "Verified" => false }
+      logs = JSON.parse(report_h[:logs])
+      expect(logs.size).to eq(2)
+      expect(logs).to include(expected_log0)
+      expect(logs).to include(expected_log1)
+      expect(report_h[:warn]).to eq({})
+      expect(report_h[:info]).to eq({})
+      expect(report_h[:errors]).to eq([])
+    end
 
-  it 'should honor exception expirations' do
-    fixture_directory = 'spec/fixtures/cargo_audit/failure-vulnerability-present'
-    repo = Salus::Repo.new(fixture_directory)
+    it 'should honor exceptions in the config to eliminate one of the findings' do
+      repo = Salus::Repo.new('spec/fixtures/secrets')
+      config = { "only-verified" => false,
+                "exceptions" => [{ "advisory_id" => "JDBC-PLAIN",
+                                  "changed_by" => "me",
+                                  "notes" => "false positive because ..." }] }
+      scanner = Salus::Scanners::Trufflehog.new(repository: repo, config: config)
+      expect(scanner).to receive(:report_failure).and_call_original
+      scanner.run
 
-    config_path = File.join(fixture_directory, 'salus-expired.yaml')
-    config = YAML.load_file(config_path)['scanner_configs']['Trufflehog']
+      report_h = scanner.report.to_h
+      expect(report_h[:passed]).to eq(false)
+      expected_log0 = { "Leaked Credential" => "216ce860c78081b83f255cad4d032361677"\
+                                               "e4aea87dacecd387e62505e1e4a50dd947b"\
+                                               "3ce9166b70d8b9aaa45215c1b512c518b53"\
+                                               "84e5067ee7d29011da0efb4",
+                        "File" => "logins.txt",
+                        "ID" => "FlatIO-PLAIN",
+                        "Verified" => false }
+      logs = JSON.parse(report_h[:logs])
+      expect(logs.size).to eq(1)
+      expect(logs[0]).to eq(expected_log0)
+      expect(report_h[:warn]).to eq({})
+      expect(report_h[:info]).to eq({})
+      expect(report_h[:errors]).to eq([])
+    end
 
-    scanner = Salus::Scanners::Trufflehog.new(repository: repo, config: config)
-    scanner.run
+    it 'should honor exceptions in the config to eliminate all findings' do
+      repo = Salus::Repo.new('spec/fixtures/secrets')
+      config = { "only-verified" => false,
+                "exceptions" => [{ "advisory_id" => "JDBC-PLAIN",
+                                  "changed_by" => "me",
+                                  "notes" => "false positive because ..." },
+                                 { "advisory_id" => "FlatIO-PLAIN",
+                                   "changed_by" => "me",
+                                   "notes" => "false positive because ..." }] }
+      scanner = Salus::Scanners::Trufflehog.new(repository: repo, config: config)
+      scanner.run
 
-    expect(scanner.report.to_h.fetch(:passed)).to eq(false)
-  end
-
-  it 'should send the audit log as json' do
-    path = 'spec/fixtures/cargo_audit/failure-vulnerability-present'
-    repo = Salus::Repo.new(path)
-    audit_json = File.read(File.join(path, 'expected_audit.json'))
-    json_keys = JSON.parse(audit_json).keys
-    scanner = Salus::Scanners::Trufflehog.new(repository: repo, config: {})
-
-    expect(scanner).to receive(:log).with(json_with_keys(json_keys))
-    scanner.run
-    expect(scanner.report.to_h.fetch(:passed)).to eq(false)
-  end
-
-  it 'should log pretty json' do
-    path = 'spec/fixtures/cargo_audit/failure-vulnerability-present'
-    repo = Salus::Repo.new(path)
-    scanner = Salus::Scanners::Trufflehog.new(repository: repo, config: {})
-
-    expect(scanner).to receive(:log).with(pretty_json)
-    scanner.run
-    expect(scanner.report.to_h.fetch(:passed)).to eq(false)
-  end
-
-  it 'should report error if there were issues in running cargo audit' do
-    repo = Salus::Repo.new('spec/fixtures/cargo_audit/non_project_directory')
-    scanner = Salus::Scanners::Trufflehog.new(repository: repo, config: {})
-
-    expect(scanner).to receive(:report_failure).and_call_original
-    expect(scanner).not_to receive(:report_stdout)
-    expect(scanner).not_to receive(:log)
-    expect(scanner).to receive(:report_error).and_call_original
-    error = "error: Couldn't load Cargo.lock: I/O error: I/O operation failed: " \
-            "couldn't open Cargo.lock: No such file or directory (os error 2)\n"
-    expect(scanner).to receive(:report_stderr).with(error)
-
-    scanner.run
-    expect(scanner.report.to_h.fetch(:passed)).to eq(false)
+      report_h = scanner.report.to_h
+      expect(report_h[:passed]).to eq(true)
+      expect(report_h[:logs]).to be_empty
+      expect(report_h[:warn]).to eq({})
+      expect(report_h[:info]).to eq({})
+      expect(report_h[:errors]).to eq([])
+    end
   end
 
   describe '#version_valid?' do
@@ -117,4 +139,3 @@ describe '#run' do
     end
   end
 end
-=end

@@ -5,6 +5,7 @@ require 'salus/scanners/base'
 # https://github.com/trufflesecurity/trufflehog
 
 # TOOD Create a SARIF adapter in lib/sarif
+# TODO doc for allowlist
 module Salus::Scanners
   class Trufflehog < Base
     def should_run?
@@ -27,8 +28,12 @@ module Salus::Scanners
     end
 
     def command
-      #      "trufflehog filesystem --directory=. --only-verified --json"
-      "trufflehog filesystem --directory=. --json"
+      cmd = "trufflehog filesystem --directory=. --json"
+      # default to true
+      if @config['only-verified'].to_s == 'true' || @config['only-verified'].to_s == ''
+        cmd += ' --only-verified'
+      end
+      cmd
     end
 
     def run
@@ -53,28 +58,33 @@ module Salus::Scanners
         report_stderr(err)
       else
         # each line in stdout is a separate vulnerability json
+        exception_ids = Set.new(fetch_exception_ids)
         vulns = shell_return.stdout.split("\n")
         parsed_vulns = []
         err = ''
         vulns.each do |v|
           parsed_v = JSON.parse(v)
-          filtered_v = {}
-          filtered_v['Leaked Credential'] = parsed_v['Raw']
-          filtered_v['File'] = parsed_v.dig('SourceMetadata', 'Data', 'Filesystem', 'file')
-          filtered_v['ID'] = parsed_v['DetectorName'] + '-' + parsed_v['DecoderName']
-          filtered_v['Verified'] = parsed_v['Verified']
-          parsed_vulns.push filtered_v
+          id = parsed_v['DetectorName'] + '-' + parsed_v['DecoderName']
+          if !exception_ids.include?(id)
+            filtered_v = {}
+            filtered_v['Leaked Credential'] = parsed_v['Raw']
+            filtered_v['File'] = parsed_v.dig('SourceMetadata', 'Data', 'Filesystem', 'file')
+            filtered_v['ID'] = id
+            filtered_v['Verified'] = parsed_v['Verified']
+            parsed_vulns.push filtered_v
+          end
         rescue StandardError => e
           err += "Unable to parse #{v}, error = #{e.inspect}\n"
         end
-        err += "No vulnerabilities found in stdout" if parsed_vulns.empty?
+
         if !err.empty?
           report_error(error: err)
           report_stderr(err)
           return
         end
+        return report_success if parsed_vulns.empty?
 
-        log("Truffle hog detected these leaked secrets: \n" + JSON.pretty_generate(parsed_vulns))
+        log(JSON.pretty_generate(parsed_vulns))
       end
     end
   end
