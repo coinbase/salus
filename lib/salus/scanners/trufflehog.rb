@@ -37,12 +37,15 @@ module Salus::Scanners
       # truffle hog returns success status even if vulnerabilities are dectecd
       # it writes vulnerabilities to stdout
 
-      return report_success if shell_return.success? && shell_return.stderr.empty? && shell_return.stdout.empty?
+      if shell_return.success? && shell_return.stderr.empty? && shell_return.stdout.empty?
+        return report_success
+      end
 
       report_failure
 
       if !shell_return.success? || shell_return.stdout.empty? || !shell_return.stderr.empty?
-        err = "TruffleHog exited unexpectedly. Stderr = #{shell_return.stderr}. Stdout = #{shell_return.stdout}"
+        err = "TruffleHog exited unexpectedly. Stderr = #{shell_return.stderr}. " \
+              "Stdout = #{shell_return.stdout}"
         report_error(
           status: shell_return.status,
           error: err
@@ -54,17 +57,15 @@ module Salus::Scanners
         parsed_vulns = []
         err = ''
         vulns.each do |v|
-          begin
-            parsed_v = JSON.parse(v)
-            filtered_v = {}
-            filtered_v['Leaked Credential'] = parsed_v['Raw']
-            filtered_v['File'] = parsed_v.dig('SourceMetadata', 'Data', 'Filesystem', 'file')
-            filtered_v['ID'] = parsed_v['DetectorName'] + '-' + parsed_v['DecoderName']
-            filtered_v['Verified'] = parsed_v['Verified']
-            parsed_vulns.push filtered_v                       
-          rescue StandardError => e
-            err += "Unable to parse #{v}, error = #{e.inspect}\n"
-          end
+          parsed_v = JSON.parse(v)
+          filtered_v = {}
+          filtered_v['Leaked Credential'] = parsed_v['Raw']
+          filtered_v['File'] = parsed_v.dig('SourceMetadata', 'Data', 'Filesystem', 'file')
+          filtered_v['ID'] = parsed_v['DetectorName'] + '-' + parsed_v['DecoderName']
+          filtered_v['Verified'] = parsed_v['Verified']
+          parsed_vulns.push filtered_v
+        rescue StandardError => e
+          err += "Unable to parse #{v}, error = #{e.inspect}\n"
         end
         err += "No vulnerabilities found in stdout" if parsed_vulns.empty?
         if !err.empty?
@@ -72,7 +73,7 @@ module Salus::Scanners
           report_stderr(err)
           return
         end
-        
+
         log("Truffle hog detected these leaked secrets: \n" + JSON.pretty_generate(parsed_vulns))
       end
     end
