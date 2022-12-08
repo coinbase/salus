@@ -1,5 +1,5 @@
 require_relative '../../../spec_helper.rb'
-=begin
+
 describe Salus::Scanners::Trufflehog do
   describe '#should_run?' do
     it 'should return true with empty directory' do
@@ -16,6 +16,7 @@ describe Salus::Scanners::Trufflehog do
   end
 end
 
+=begin
 describe '#run' do
   it 'should pass when there are no secrets' do
     repo = Salus::Repo.new('spec/fixtures/secrets/benign')

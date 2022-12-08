@@ -36,12 +36,12 @@ module Salus::Scanners
 
       # truffle hog returns success status even if vulnerabilities are dectecd
       # it writes vulnerabilities to stdout
-      
+
       return report_success if shell_return.success? && shell_return.stderr.empty? && shell_return.stdout.empty?
 
       report_failure
 
-      if !shell_return.success? || shell_return.stdout.empty?
+      if !shell_return.success? || shell_return.stdout.empty? || !shell_return.stderr.empty?
         err = "TruffleHog exited unexpectedly. Stderr = #{shell_return.stderr}. Stdout = #{shell_return.stdout}"
         report_error(
           status: shell_return.status,
@@ -59,8 +59,7 @@ module Salus::Scanners
             filtered_v = {}
             filtered_v['Leaked Credential'] = parsed_v['Raw']
             filtered_v['File'] = parsed_v.dig('SourceMetadata', 'Data', 'Filesystem', 'file')
-            filtered_v['Detector Name'] = parsed_v['DetectorName']
-            filtered_v['Decoder Name'] = parsed_v['DecoderName']
+            filtered_v['ID'] = parsed_v['DetectorName'] + '-' + parsed_v['DecoderName']
             filtered_v['Verified'] = parsed_v['Verified']
             parsed_vulns.push filtered_v                       
           rescue StandardError => e
