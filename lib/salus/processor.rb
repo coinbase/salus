@@ -159,7 +159,7 @@ module Salus
           # the blocking_scanner? allows a scanner to opt of the blocking beahvior of their scan group
           # useful if you have a scanner that want's to wait on other scanners to finish from the
           # same group
-          scanner_group = scanner_class.blocking_scanner? ? scanner_class.scanner_type : defalut_group
+          scanner_group = scanner_class.block_scanner_group? ? scanner_class.scanner_type : defalut_group
           scanning_thread_groups[scanner_class.scanner_type] ||= []
           scanning_thread_groups[scanner_class.scanner_type].concat(scanner_threads)
 

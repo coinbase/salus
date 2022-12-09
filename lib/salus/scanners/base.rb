@@ -57,7 +57,7 @@ module Salus::Scanners
       raise NoMethodError, 'implement in subclass'
     end
 
-    def self.blocking?
+    def self.block_scanner_group?
       true
     end
 
