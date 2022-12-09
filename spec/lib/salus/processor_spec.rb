@@ -329,7 +329,7 @@ describe Salus::Processor do
       let(:remote_uri_two) { 'https://nerv.tk3/salus-report' }
       let(:listener) { Object.new }
       before(:each) do
-        def listener.reporting_scanners_ran(_event_name, data)
+        def listener.scanning_group_completed(_event_name, data)
           data
         end
       end
