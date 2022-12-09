@@ -131,6 +131,9 @@ module Salus
 
     def scan_project
       # Record overall running time of the scan
+      scanning_thread_groups = {}
+      defalut_group =  'default'
+
       reporting_threads = []
       scanning_threads = []
       files_copied = []
@@ -150,18 +153,28 @@ module Salus
           end
 
           scanner_threads, copied = run_scanner(config, scanner_class, scanner_name)
-          if scanner_class.scanner_type == Salus::ScannerTypes::SBOM_REPORT
-            reporting_threads.concat(scanner_threads)
-          else
-            scanning_threads.concat(scanner_threads)
-          end
+
+          # Let's group our threads.  This allows us to fire off events as various threads
+          # groups finish their scanning
+          # the blocking_scanner? allows a scanner to opt of the blocking beahvior of their scan group
+          # useful if you have a scanner that want's to wait on other scanners to finish from the
+          # same group
+          scanner_group = scanner_class.blocking_scanner? ? scanner_class.scanner_type : defalut_group
+          scanning_thread_groups[scanner_class.scanner_type] ||= []
+          scanning_thread_groups[scanner_class.scanner_type].concat(scanner_threads)
+
           files_copied.concat(copied)
         end
 
-        reporting_threads.each(&:join)
-        Salus::PluginManager.send_event(:reporting_scanners_ran, @scanners_ran, @report)
+        # Manually calling out each scanner type to ensure the order in which these
+        # are published is defined
+        [Salus::ScannerTypes::SBOM_REPORT, Salus::ScannerTypes::LICENSE,
+          Salus::ScannerTypes::DEPENDENCY, Salus::ScannerTypes::SAST,
+          Salus::ScannerTypes::DYNAMIC, default_group].each do |scanner_type|
+            scanning_threads[scanner_type]&.each(&:join)
+            Salus::PluginManager.send_event(:scanning_group_completed, scanner_type, @scanners_ran, @report)
+        end
 
-        scanning_threads.each(&:join)
         cleanup(files_copied.uniq)
 
         Salus::PluginManager.send_event(:scanners_ran, @scanners_ran, @report)

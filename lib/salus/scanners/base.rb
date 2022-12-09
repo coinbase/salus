@@ -57,6 +57,10 @@ module Salus::Scanners
       raise NoMethodError, 'implement in subclass'
     end
 
+    def self.blocking?
+      true
+    end
+
     def version_valid?(version)
       return false if !version.is_a?(String)
 
