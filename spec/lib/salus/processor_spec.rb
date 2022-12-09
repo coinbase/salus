@@ -336,8 +336,7 @@ describe Salus::Processor do
 
       it 'should Recieve reporting_scanners_ran event' do
         Salus::PluginManager.register_listener(listener)
-
-        expect(listener).to receive(:reporting_scanners_ran)
+        expect(listener).to receive(:scanning_group_completed)
 
         processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/multiple_endpoints')
         processor.scan_project

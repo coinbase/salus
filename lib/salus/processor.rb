@@ -132,7 +132,7 @@ module Salus
     def scan_project
       # Record overall running time of the scan
       scanning_thread_groups = {}
-      defalut_group =  'default'
+      default_group =  'default'
 
       reporting_threads = []
       scanning_threads = []
@@ -171,7 +171,7 @@ module Salus
         [Salus::ScannerTypes::SBOM_REPORT, Salus::ScannerTypes::LICENSE,
           Salus::ScannerTypes::DEPENDENCY, Salus::ScannerTypes::SAST,
           Salus::ScannerTypes::DYNAMIC, default_group].each do |scanner_type|
-            scanning_threads[scanner_type]&.each(&:join)
+            scanning_thread_groups[scanner_type]&.each(&:join)
             Salus::PluginManager.send_event(:scanning_group_completed, scanner_type, @scanners_ran, @report)
         end
 
