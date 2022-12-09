@@ -114,10 +114,10 @@ RUN go install github.com/svent/sift@${SIFT_VERSION}
 
 ### truffle hog
 
-ENV TRUFFLEHOG_VERSION 3.18.0
+ENV TRUFFLEHOG_VERSION 3.19.0
 ENV TRUFFLEHOG_TARBALL trufflehog_${TRUFFLEHOG_VERSION}_linux_amd64.tar.gz
 ENV TRUFFLEHOG_DOWNLOAD_URL https://github.com/trufflesecurity/trufflehog/releases/download/v${TRUFFLEHOG_VERSION}/${TRUFFLEHOG_TARBALL}
-ENV TRUFFLEHOG_DOWNLOAD_SHA 89471585ad52df601cda6e50607848defaad56b90ea142aaf7c4bd2837a7f505
+ENV TRUFFLEHOG_DOWNLOAD_SHA c481e856e90af1a19ee847838adaa15220c3b0cf147ba940f88c23fb067bdcf3
 
 RUN mkdir /root/trufflehog_files
 RUN curl -fsSL "$TRUFFLEHOG_DOWNLOAD_URL" -o trufflehog.tar.gz \
