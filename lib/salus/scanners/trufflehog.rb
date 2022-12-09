@@ -4,8 +4,9 @@ require 'salus/scanners/base'
 # Trufflehog scanner integration. Flags secrect present in the repo.
 # https://github.com/trufflesecurity/trufflehog
 
-# TOOD Create a SARIF adapter in lib/sarif
-# TODO doc for allowlist
+# TODO: doc for allowlist
+# line of code
+# git code in?
 module Salus::Scanners
   class Trufflehog < Base
     def should_run?
@@ -49,7 +50,7 @@ module Salus::Scanners
       report_failure
 
       if !shell_return.success? || shell_return.stdout.empty? || !shell_return.stderr.empty?
-        err = "TruffleHog exited unexpectedly. Stderr = #{shell_return.stderr}. " \
+        err = "Error running TruffleHog. Stderr = #{shell_return.stderr}. " \
               "Stdout = #{shell_return.stdout}"
         report_error(
           status: shell_return.status,
@@ -69,6 +70,7 @@ module Salus::Scanners
             filtered_v = {}
             filtered_v['Leaked Credential'] = parsed_v['Raw']
             filtered_v['File'] = parsed_v.dig('SourceMetadata', 'Data', 'Filesystem', 'file')
+            filtered_v['Line Num'] = line_num(filtered_v['File'], filtered_v['Leaked Credential'])
             filtered_v['ID'] = id
             filtered_v['Verified'] = parsed_v['Verified']
             parsed_vulns.push filtered_v
@@ -86,6 +88,14 @@ module Salus::Scanners
 
         log(JSON.pretty_generate(parsed_vulns))
       end
+    end
+
+    def line_num(file, secret)
+      file = File.join(@repository.path_to_repo, file)
+      File.readlines(file).each_with_index do |line, line_index|
+        return line_index + 1 if line.include?(secret)
+      end
+      1
     end
   end
 end

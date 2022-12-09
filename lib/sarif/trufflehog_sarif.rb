@@ -1,72 +1,79 @@
+require 'salus/bugsnag'
+
 module Sarif
   class TrufflehogSarif < BaseSarif
     include Salus::SalusBugsnag
 
-    SCANNER_URI = 'https://github.com/trufflesecurity/trufflehog/'.freeze
+    SCANNER_URI = 'https://github.com/trufflesecurity/trufflehog'.freeze
 
     def initialize(scan_report, repo_path = nil, scanner_config = {})
       super(scan_report, {}, repo_path)
       @uri = SCANNER_URI
-      @logs = parse_scan_report!
+      @logs = parse_scan_report!(scan_report)
       @scanner_config = scanner_config
     end
 
-    def parse_scan_report!
-      logs = @scan_report.log('')
-      return [] if logs.strip.empty?
+    def parse_scan_report!(scan_report)
+      data = begin
+               logs = scan_report.to_h[:logs] || '[]'
+               JSON.parse(logs)
+             rescue JSON::ParserError => e
+               bugsnag_notify("Trufflehog sarif JSON parse error: " + e.inspect)
+               []
+             end
 
-      x = JSON.parse(logs)
-      vulnerabilities = x['vulnerabilities']['list'] || []
-      unmaintained = x['warnings']['unmaintained'] || []
-      yanked = x['warnings']['yanked'] || []
-      vulnerabilities.concat(unmaintained, yanked)
-    rescue JSON::ParserError => e
-      bugsnag_notify(e.message)
-      []
+      err = scan_report.to_h.dig(:info, :stderr)
+      data.push({ scanner_err: err }) if !err.to_s.empty?
+      data
     end
 
-    def parse_yanked(issue)
-      package = issue['package']
-      return nil if issue.include?(package['name'] + '/ Yanked')
-
-      @issues.add(package['name'] + '/ Yanked')
+    def parse_error(error)
       {
-        id: package['name'] + '/ Yanked',
-        name: package['name'] + '/ Yanked',
-        level: "low",
-        details: "Package:#{package['name']}\nVersion:#{package['version']}\nSource:"\
-        "#{package['source']}\nKind: yanked",
-        uri: 'Cargo.lock',
-        help_url: package['source']
+        id: SCANNER_ERROR,
+        name: "Trufflehog Scanner Error",
+        level: "ERROR",
+        details: error[:scanner_err],
+        uri: "unknown",
+        help_url: @uri
       }
     end
 
     def parse_issue(issue)
-      return parse_yanked(issue) if issue['kind'] == 'yanked'
-      return nil if @issues.include?(issue.dig('advisory', 'id'))
+      return parse_error(issue) if issue[:scanner_err]
 
-      @issues.add(issue.dig('advisory', 'id'))
-      advisory = issue['advisory'] || {}
-      parsed_issue = {
-        id: advisory['id'],
-        name: advisory['title'],
-        level: "HIGH",
-        details: (advisory['description']).to_s,
-        messageStrings: { "package": { "text": (advisory['package']).to_s },
-                         "title": { "text": (advisory['title']).to_s },
-                         "severity": { "text": (advisory['cvss']).to_s },
-                         "patched_versions": { "text": issue.dig('versions', 'patched').to_s },
-                         "unaffected_versions": { "text": issue.dig('versions',
-                                                                    'unaffected').to_s } },
-        properties: { 'severity': (advisory['cvss']).to_s },
-        uri: 'Cargo.lock',
-        help_url: issue['advisory']['url']
+      {
+        id: issue['ID'],
+          name: "Leaked credential",
+          level: 'HIGH',
+          details: "Leaked credential detected",
+          messageStrings: { "severity": { "text": 'high' } },
+          properties: { 'severity': 'high' },
+          start_line: issue['Line Num'],
+          start_column: 1,
+          uri: issue['File'],
+          help_url: @uri,
+          code: issue['Leaked Credential']
       }
-      if issue['kind'] == 'unmaintained'
-        parsed_issue[:level] = 'LOW'
-        parsed_issue[:details] << "\nKind: unmaintained"
+    end
+
+    def self.snippet_possibly_in_git_diff?(snippet, lines_added)
+=begin
+      lines = snippet.split("\n")
+      # using any? because Gosec snippet contains surrounding code, which
+      # may not be in git diff
+      lines.any? do |line|
+        # split by ": " because Gosec snippet has the form
+        #    "$line_number: $code\n$line_number: $code\n$line_number: $code..."
+        line = line.split(': ', 2)[1]
+        if line.nil?
+          # maybe the line of code has some special pattern
+          # we'll just not deal with it and assume snippet may be in git diff
+          true
+        else
+          lines_added.keys.include?(line) && !line.strip.empty?
+        end
       end
-      parsed_issue
+=end
     end
   end
 end

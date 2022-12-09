@@ -53,20 +53,29 @@ describe Salus::Scanners::Trufflehog do
                                                "e4aea87dacecd387e62505e1e4a50dd947b"\
                                                "3ce9166b70d8b9aaa45215c1b512c518b53"\
                                                "84e5067ee7d29011da0efb4",
-
                         "File" => "logins.txt",
+                        "Line Num" => 2,
                         "ID" => "FlatIO-PLAIN",
                         "Verified" => false }
       expected_log1 = { "Leaked Credential" => "jdbc:postgresql://localhost:5432/test?user=test"\
                                                "&password=ABCD&loggerLevel=DEBUG&&&"\
                                                "loggerFile=./blah.jsp",
                        "File" => "url.txt",
+                        "Line Num" => 1,
+                       "ID" => "JDBC-PLAIN",
+                       "Verified" => false }
+      expected_log2 = { "Leaked Credential" => "jdbc:postgresql://localhost:2345/test?user=test"\
+                                               "&password=DCBA&loggerLevel=DEBUG&&&"\
+                                               "loggerFile=./blah.jsp",
+                       "File" => "url.txt",
+                        "Line Num" => 2,
                        "ID" => "JDBC-PLAIN",
                        "Verified" => false }
       logs = JSON.parse(report_h[:logs])
-      expect(logs.size).to eq(2)
+      expect(logs.size).to eq(3)
       expect(logs).to include(expected_log0)
       expect(logs).to include(expected_log1)
+      expect(logs).to include(expected_log2)
       expect(report_h[:warn]).to eq({})
       expect(report_h[:info]).to eq({})
       expect(report_h[:errors]).to eq([])
@@ -89,6 +98,7 @@ describe Salus::Scanners::Trufflehog do
                                                "3ce9166b70d8b9aaa45215c1b512c518b53"\
                                                "84e5067ee7d29011da0efb4",
                         "File" => "logins.txt",
+                        "Line Num" => 2,
                         "ID" => "FlatIO-PLAIN",
                         "Verified" => false }
       logs = JSON.parse(report_h[:logs])
