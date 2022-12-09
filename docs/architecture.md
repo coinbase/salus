@@ -77,6 +77,10 @@ Events are published, plugins can register listeners for events.
 
 - scanners_ran will be invoked after all scanners have ran.  The data playload will be an array of scanners ran and a second parameter for the SalusReport object
 
+`Event :scanning_group_completed`
+
+- TODO fill in details for this event
+
 `Event :run_shell`
 
 - run_shell is called when a scanner executes a shell command to run a native scanner.  The data payload will be the array of arguments.
@@ -84,3 +88,4 @@ Events are published, plugins can register listeners for events.
 `Event :report_warn`
 
 - report_warn will be invoked during scans if a scanner has determined a warning is necessary.  The data payload will be the type of warning and corresponding message.
+
