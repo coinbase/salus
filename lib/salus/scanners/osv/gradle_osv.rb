@@ -22,7 +22,6 @@ module Salus::Scanners::OSV
     def run
       # Find dependencies from the project
       dependencies = gradle_dependencies
-
       if dependencies.empty?
         err_msg = "GradleOSV: Failed to parse any dependencies from the project."
         report_stderr(err_msg)

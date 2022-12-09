@@ -32,14 +32,14 @@ RUN wget https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_
 RUN tar xvf /tmp/openjdk-11.0.2_linux-x64_bin.tar.gz -C /
 
 ### Gradle 7
-RUN wget https://services.gradle.org/distributions/gradle-7.3.3-bin.zip -P /tmp
+RUN wget https://services.gradle.org/distributions/gradle-7.5.1-bin.zip -P /tmp
 RUN unzip -d /opt/gradle /tmp/gradle-*.zip
 
 ### Gradle 6
 RUN wget https://services.gradle.org/distributions/gradle-6.9.2-bin.zip -P /tmp2
 RUN unzip -d /opt/gradle /tmp2/gradle-*.zip
 
-ENV GRADLE_HOME="/opt/gradle/gradle-7.3.3"
+ENV GRADLE_HOME="/opt/gradle/gradle-7.5.1"
 ENV PATH="${GRADLE_HOME}/bin:${PATH}"
 
 ### Rust
@@ -186,8 +186,8 @@ COPY --from=builder /usr/local/go /usr/local/go
 COPY --from=builder /usr/bin/rg /usr/bin/rg
 COPY --from=builder /jdk-11.0.2 /jdk-11.0.2
 ENV JAVA_HOME /jdk-11.0.2
-COPY --from=builder /opt/gradle/gradle-7.3.3 /opt/gradle/gradle-7.3.3
-ENV PATH="/opt/gradle/gradle-7.3.3/bin:${PATH}"
+COPY --from=builder /opt/gradle/gradle-7.5.1 /opt/gradle/gradle-7.5.1
+ENV PATH="/opt/gradle/gradle-7.5.1/bin:${PATH}"
 
 COPY --from=builder /opt/gradle/gradle-6.9.2 /opt/gradle/gradle-6.9.2
 
@@ -200,6 +200,8 @@ WORKDIR /home
 
 # make the folder for the repo (volumed in)
 RUN mkdir -p /home/repo
+
+
 
 # copy salus code
 COPY Gemfile Gemfile.lock ./
