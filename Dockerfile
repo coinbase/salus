@@ -112,6 +112,18 @@ ENV SIFT_VERSION v0.9.0
 
 RUN go install github.com/svent/sift@${SIFT_VERSION}
 
+### truffle hog
+
+ENV TRUFFLEHOG_VERSION 3.19.0
+ENV TRUFFLEHOG_TARBALL trufflehog_${TRUFFLEHOG_VERSION}_linux_amd64.tar.gz
+ENV TRUFFLEHOG_DOWNLOAD_URL https://github.com/trufflesecurity/trufflehog/releases/download/v${TRUFFLEHOG_VERSION}/${TRUFFLEHOG_TARBALL}
+ENV TRUFFLEHOG_DOWNLOAD_SHA c481e856e90af1a19ee847838adaa15220c3b0cf147ba940f88c23fb067bdcf3
+
+RUN mkdir /root/trufflehog_files
+RUN curl -fsSL "$TRUFFLEHOG_DOWNLOAD_URL" -o trufflehog.tar.gz \
+  && echo "$TRUFFLEHOG_DOWNLOAD_SHA trufflehog.tar.gz" | sha256sum -c - \
+  && tar -C /root/trufflehog_files -xzf trufflehog.tar.gz \
+  && ln -sf /root/trufflehog_files/trufflehog /usr/local/bin
 
 ### semgrep
 # https://semgrep.dev
@@ -178,6 +190,7 @@ RUN curl -fsSL "$NODE_DOWNLOAD_URL" -o node.tar.gz \
 ENV PIP_VERSION 18.1
 COPY --from=builder /root/go/bin/sift /usr/local/bin
 COPY --from=builder /root/gosec/gosec /usr/local/bin
+COPY --from=builder /root/trufflehog_files/trufflehog /usr/local/bin
 COPY --from=builder /usr/local/bin/cargo /usr/local/bin
 COPY --from=builder /root/vendor /home/vendor
 COPY --from=builder /root/.local /root/.local
@@ -200,8 +213,6 @@ WORKDIR /home
 
 # make the folder for the repo (volumed in)
 RUN mkdir -p /home/repo
-
-
 
 # copy salus code
 COPY Gemfile Gemfile.lock ./
