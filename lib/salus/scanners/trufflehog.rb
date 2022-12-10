@@ -4,9 +4,6 @@ require 'salus/scanners/base'
 # Trufflehog scanner integration. Flags secrect present in the repo.
 # https://github.com/trufflesecurity/trufflehog
 
-# TODO: doc for allowlist
-# line of code
-# git code in?
 module Salus::Scanners
   class Trufflehog < Base
     def should_run?
