@@ -37,7 +37,7 @@ module Salus::Scanners
     def run
       shell_return = run_shell(command, chdir: @repository.path_to_repo)
 
-      # truffle hog returns success status even if vulnerabilities are dectecd
+      # truffle hog returns success status even if vulnerabilities are detected
       # it writes vulnerabilities to stdout
 
       if shell_return.success? && shell_return.stderr.empty? && shell_return.stdout.empty?
