@@ -200,7 +200,7 @@ COPY --from=builder /usr/bin/rg /usr/bin/rg
 COPY --from=builder /jdk-11.0.2 /jdk-11.0.2
 ENV JAVA_HOME /jdk-11.0.2
 COPY --from=builder /opt/gradle/gradle-7.5.1 /opt/gradle/gradle-7.5.1
-ENV PATH="/opt/gradle/gradle-7.3.3/bin:${PATH}"
+ENV PATH="/opt/gradle/gradle-7.5.1/bin:${PATH}"
 
 COPY --from=builder /opt/gradle/gradle-6.9.2 /opt/gradle/gradle-6.9.2
 
