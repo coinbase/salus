@@ -83,6 +83,7 @@ module Salus::Scanners
         end
         return report_success if parsed_vulns.empty?
 
+        parsed_vulns.uniq!
         log(JSON.pretty_generate(parsed_vulns))
       end
     end
