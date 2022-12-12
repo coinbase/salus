@@ -418,10 +418,12 @@ module Salus
              when 'cyclonedx-json'
                to_cyclonedx(config['cyclonedx_options'] || {})
              when 'auto_fix'
-                to_auto_fix
+               to_auto_fix
              end
 
-      if %w[json sarif sarif_diff sarif_diff_full cyclonedx-json auto_fix].include?(config['format'])
+      if %w[json sarif sarif_diff sarif_diff_full cyclonedx-json auto_fix].include?(
+        config['format']
+      )
         body = JSON.parse(body)
         return JSON.pretty_generate(report_body_hash(config, body))
       end
