@@ -11,12 +11,12 @@ gem 'deepsort', '~> 0.4.5'
 gem 'faraday', '~> 1.3'
 gem 'github-linguist', '~> 7.13.0'
 gem 'nokogiri', '~> 1.13.6'
-gem 'parser', '~> 3.0.0'
-gem 'rgl', '~> 0.5.7'
+gem 'parser', '~> 3.1.3'
+gem 'rgl', '~> 0.5.9'
 gem 'rubyzip', '~> 2.3.2'
 gem 'safe_yaml', '~> 1.0'
 gem 'thor', '~> 1.1.0'
-gem 'toml', '~> 0.2.0'
+gem 'toml', '~> 0.3.0'
 
 group :scanners do
   gem 'brakeman', '5.3.1'
@@ -24,8 +24,8 @@ group :scanners do
 end
 
 group :test, :development do
-  gem 'pry', '~> 0.10'
-  gem 'pry-byebug', '~> 3.4'
+  gem 'pry', '~> 0.14'
+  gem 'pry-byebug', '~> 3.10'
 end
 
 group :test do
@@ -36,4 +36,4 @@ group :test do
   gem 'webmock', '~> 3.12'
 end
 
-gem "json-schema", "~> 2.8"
+gem "json-schema", "~> 3.0"

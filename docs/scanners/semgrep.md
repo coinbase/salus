@@ -20,7 +20,7 @@ In adddition, simple rules can be specified directly in salus.yaml.
 
 In salus.yaml, you can specify a set of semgrep rules with a path to a [Semgrep config file](https://github.com/returntocorp/semgrep/blob/develop/docs/configuration-files.md).  You **must** specify
 
-* `config` - a full Semgrep config file
+* `config` - a full Semgrep config file/directory. This config can either be nested inside the repo, or start with `/` if the path also contains `semgrep`.
 * Either `required: true` or `forbidden: true`
   - If a found pattern is forbidden or if a not found pattern is required, then the scanner will fail and the `message` will be show to the developer in the report.
 

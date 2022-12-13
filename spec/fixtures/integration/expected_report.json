@@ -1,5 +1,5 @@
 {
-  "version": "2.23.4",
+  "version": "2.25.0",
   "passed": true,
   "running_time": 0.0,
   "scans": {
@@ -156,6 +156,10 @@
         "scanner_timeout_s": 0
       },
       "Semgrep": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "Trufflehog": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },

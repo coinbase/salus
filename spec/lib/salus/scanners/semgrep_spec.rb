@@ -876,6 +876,25 @@ describe Salus::Scanners::Semgrep do
           ]
         )
       end
+
+      it "should not record syntax error if show_syntax_errors=false" do
+        base = "spec/fixtures/semgrep/invalid"
+        repo = Salus::Repo.new(base)
+        config = {
+          "show_syntax_errors" => false,
+          "matches" => [
+            {
+              "pattern" => "$X",
+              "language" => "js"
+            }
+          ]
+        }
+        scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
+        scanner.run
+
+        warnings = scanner.report.to_h.fetch(:warn)
+        expect(warnings).to be_empty
+      end
     end
 
     context "unparsable javascript code causes error with strict" do
@@ -914,6 +933,37 @@ describe Salus::Scanners::Semgrep do
       repo = Salus::Repo.new("spec/fixtures/blank_repository")
       scanner = Salus::Scanners::Semgrep.new(repository: repo, config: {})
       expect(scanner.should_run?).to eq(true)
+    end
+  end
+
+  describe '#build_command_and_message' do
+    let(:scanner) { Salus::Scanners::Semgrep.new(repository: Salus::Repo.new(''), config: {}) }
+
+    it 'config for relative path' do
+      match = { "config" => "myrules.yaml", "forbidden" => true, "required" => false,
+                "strict" => false, "message" => "" }
+      cmd = scanner.build_command_and_message(match, false, '/home/repo', nil)[0]
+      expected_cmd = ["semgrep", "--json", "--disable-version-check",
+                      "--config", "/home/repo/myrules.yaml", "/home/repo"]
+      expect(cmd).to eq(expected_cmd)
+    end
+
+    it 'config for url' do
+      match = { "config" => "https://localhost/rules", "forbidden" => true, "required" => false,
+                "strict" => false, "message" => "" }
+      cmd = scanner.build_command_and_message(match, false, '/home/repo', nil)[0]
+      expected_cmd = ["semgrep", "--json", "--disable-version-check",
+                      "--config", "https://localhost/rules", "/home/repo"]
+      expect(cmd).to eq(expected_cmd)
+    end
+
+    it 'config for absolute path' do
+      match = { "config" => "/home/semgrep_rules", "forbidden" => true, "required" => false,
+                "strict" => false, "message" => "" }
+      cmd = scanner.build_command_and_message(match, false, '/home/repo', nil)[0]
+      expected_cmd = ["semgrep", "--json", "--disable-version-check",
+                      "--config", "/home/semgrep_rules", "/home/repo"]
+      expect(cmd).to eq(expected_cmd)
     end
   end
 
