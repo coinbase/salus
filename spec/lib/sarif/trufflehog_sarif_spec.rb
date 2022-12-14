@@ -20,12 +20,9 @@ describe Sarif::TrufflehogSarif do
                             "artifactLocation" => { "uri" => "logins.txt",
                                                     "uriBaseId" => "%SRCROOT%" },
                                               "region" => { "snippet" => { "text" =>
-                                                            "216ce860c78081b83f255ca"\
-                                                            "d4d032361677e4aea87dace"\
-                                                            "cd387e62505e1e4a50dd947"\
-                                                            "b3ce9166b70d8b9aaa45215"\
-                                                            "c1b512c518b5384e5067ee7"\
-                                                            "d29011da0efb4" },
+                                                            "2d00fc02b2d554da2a58feb7bac"\
+                                                            "53673126f5c10f7c0a718e49e63"\
+                                                            "5c489bf505" },
                                                             "startColumn" => 1, "startLine" => 2 }
                           } }],
                           "message" => { "text" => "Leaked credential detected" },
@@ -36,10 +33,9 @@ describe Sarif::TrufflehogSarif do
                             "artifactLocation" => { "uri" => "url.txt",
                                                     "uriBaseId" => "%SRCROOT%" },
                             "region" => { "snippet" => { "text" =>
-                                                         "jdbc:postgresql://localhost:2345/"\
-                                                         "test?user=test&password=DCBA&"\
-                                                         "loggerLevel=DEBUG&&&"\
-                                                         "loggerFile=./blah.jsp" },
+                                                         "8f839fbea674797911361d91124"\
+                                                         "50478e280b982321c22363ca7a7"\
+                                                         "4f36a4bbd6" },
                                           "startColumn" => 1, "startLine" => 2 }
                           } }],
                           "message" => { "text" => "Leaked credential detected" },
@@ -50,10 +46,9 @@ describe Sarif::TrufflehogSarif do
                             "artifactLocation" => { "uri" => "url.txt",
                                                     "uriBaseId" => "%SRCROOT%" },
                             "region" => { "snippet" => { "text" =>
-                                                         "jdbc:postgresql://localhost:5432/"\
-                                                         "test?user=test&password=ABCD&"\
-                                                         "loggerLevel=DEBUG&&&"\
-                                                         "loggerFile=./blah.jsp" },
+                                                         "e364ca3424d2454bc630a574e16"\
+                                                         "9102b6d6be06189a2038badb969"\
+                                                         "cf47755abe" },
                                           "startColumn" => 1, "startLine" => 1 }
                           } }],
                           "message" => { "text" => "Leaked credential detected" },
@@ -71,30 +66,6 @@ describe Sarif::TrufflehogSarif do
         sarif_report = JSON.parse(report.to_sarif)
         result = sarif_report["runs"][0]["results"]
         expect(result).to be_empty
-      end
-    end
-  end
-
-  describe 'sarif diff' do
-    context 'git diff support' do
-      let(:new_lines_in_git_diff) do
-        git_diff_file = 'spec/fixtures/sarifs/diff/git_diff_10.txt'
-        git_diff = File.read(git_diff_file)
-        Sarif::BaseSarif.new_lines_in_git_diff(git_diff)
-      end
-
-      it 'should find code in git diff' do
-        snippet = 'jdbc:postgresql://localhost:2345/test?user=test&'\
-                  'password=DCBA&loggerLevel=DEBUG&&&loggerFile=./blah.jsp'
-        r = Sarif::TrufflehogSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
-        expect(r).to be true
-      end
-
-      it 'should not find code in git diff if snippet not in git diff' do
-        snippet = 'jdbc:postgresql://localhost:80/test?user=test&'\
-                  'password=abcd&loggerLevel=DEBUG&&&loggerFile=./blah.jsp'
-        r = Sarif::TrufflehogSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
-        expect(r).to be false
       end
     end
   end

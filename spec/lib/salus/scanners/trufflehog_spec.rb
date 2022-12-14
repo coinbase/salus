@@ -49,26 +49,25 @@ describe Salus::Scanners::Trufflehog do
 
       report_h = scanner.report.to_h
       expect(report_h[:passed]).to eq(false)
-      expected_log0 = { "Leaked Credential" => "216ce860c78081b83f255cad4d032361677"\
-                                               "e4aea87dacecd387e62505e1e4a50dd947b"\
-                                               "3ce9166b70d8b9aaa45215c1b512c518b53"\
-                                               "84e5067ee7d29011da0efb4",
+      expected_log0 = { "SHA256 of Leaked Credential" => "2d00fc02b2d554da2a58feb7bac"\
+                                                      "53673126f5c10f7c0a718e49e63"\
+                                                      "5c489bf505",
                         "File" => "logins.txt",
                         "Line Num" => 2,
                         "ID" => "FlatIO-PLAIN",
                         "Verified" => false }
-      expected_log1 = { "Leaked Credential" => "jdbc:postgresql://localhost:5432/test?user=test"\
-                                               "&password=ABCD&loggerLevel=DEBUG&&&"\
-                                               "loggerFile=./blah.jsp",
+      expected_log1 = { "SHA256 of Leaked Credential6" => "e364ca3424d2454bc630a574e16"\
+                                                      "9102b6d6be06189a2038badb969"\
+                                                      "cf47755abe",
                        "File" => "url.txt",
                         "Line Num" => 1,
                        "ID" => "JDBC-PLAIN",
                        "Verified" => false }
-      expected_log2 = { "Leaked Credential" => "jdbc:postgresql://localhost:2345/test?user=test"\
-                                               "&password=DCBA&loggerLevel=DEBUG&&&"\
-                                               "loggerFile=./blah.jsp",
+      expected_log2 = { "SHA256 of Leaked Credential" => "8f839fbea674797911361d91124"\
+                                                      "50478e280b982321c22363ca7a7"\
+                                                      "4f36a4bbd6",
                        "File" => "url.txt",
-                        "Line Num" => 2,
+                       "Line Num" => 2,
                        "ID" => "JDBC-PLAIN",
                        "Verified" => false }
       logs = JSON.parse(report_h[:logs])
@@ -93,10 +92,9 @@ describe Salus::Scanners::Trufflehog do
 
       report_h = scanner.report.to_h
       expect(report_h[:passed]).to eq(false)
-      expected_log0 = { "Leaked Credential" => "216ce860c78081b83f255cad4d032361677"\
-                                               "e4aea87dacecd387e62505e1e4a50dd947b"\
-                                               "3ce9166b70d8b9aaa45215c1b512c518b53"\
-                                               "84e5067ee7d29011da0efb4",
+      expected_log0 = { "SHA256 of Leaked Credential" => "2d00fc02b2d554da2a58feb7"\
+                                                      "bac53673126f5c10f7c0a718"\
+                                                      "e49e635c489bf505",
                         "File" => "logins.txt",
                         "Line Num" => 2,
                         "ID" => "FlatIO-PLAIN",
