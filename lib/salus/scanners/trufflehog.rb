@@ -1,3 +1,4 @@
+require 'digest'
 require 'json'
 require 'salus/scanners/base'
 
@@ -65,9 +66,10 @@ module Salus::Scanners
           id = parsed_v['DetectorName'] + '-' + parsed_v['DecoderName']
           if !exception_ids.include?(id)
             filtered_v = {}
-            filtered_v['Leaked Credential'] = parsed_v['Raw']
+            raw_credential = parsed_v['Raw']
+            filtered_v['SHA256 of Leaked Credential'] = Digest::SHA256.hexdigest(raw_credential)
             filtered_v['File'] = parsed_v.dig('SourceMetadata', 'Data', 'Filesystem', 'file')
-            filtered_v['Line Num'] = line_num(filtered_v['File'], filtered_v['Leaked Credential'])
+            filtered_v['Line Num'] = line_num(filtered_v['File'], raw_credential)
             filtered_v['ID'] = id
             filtered_v['Verified'] = parsed_v['Verified']
             parsed_vulns.push filtered_v

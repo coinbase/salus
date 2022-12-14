@@ -51,12 +51,8 @@ module Sarif
           start_column: 1,
           uri: issue['File'],
           help_url: @uri,
-          code: issue['Leaked Credential']
+          code: issue['SHA256 of Leaked Credential']
       }
-    end
-
-    def self.snippet_possibly_in_git_diff?(snippet, lines_added)
-      lines_added.keys.any? { |newline| newline.include?(snippet) }
     end
   end
 end
