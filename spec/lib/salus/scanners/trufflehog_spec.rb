@@ -56,7 +56,7 @@ describe Salus::Scanners::Trufflehog do
                         "Line Num" => 2,
                         "ID" => "FlatIO-PLAIN",
                         "Verified" => false }
-      expected_log1 = { "SHA256 of Leaked Credential6" => "e364ca3424d2454bc630a574e16"\
+      expected_log1 = { "SHA256 of Leaked Credential" => "e364ca3424d2454bc630a574e16"\
                                                       "9102b6d6be06189a2038badb969"\
                                                       "cf47755abe",
                        "File" => "url.txt",
