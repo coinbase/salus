@@ -1,6 +1,5 @@
 require 'salus/scanners/osv/base'
 
-
 module Salus::Scanners::OSV
   class GradleOSV < Base
     class SemVersion < Gem::Version; end

@@ -1,17 +1,29 @@
 module Salus
-    class RulesEvaluation
-      RULE_TYPES = {
-        'id' => 'id',
-        'severity' => 'severity',
-      }.freeze
-      
+  class RulesEvaluation
+    RULE_TYPE_ID = "id".freeze
+    RULE_TYPE_SEVERITY = "severity".freeze
+
+    def evaluate_default(results)
+      return true if results.empty?
+
+      false
+    end
+
+    def evaluate_by_type(config, _results)
+      case config.fetch("rule", "key")
+      when "id"
+        true
+      when "severity"
+        true
+      else
+        false
+      end
     end
 
     def evaluate(config, results)
-      if results.empty?
-        return true
-      end
-      return false
+      return evaluate_by_type(config, results) if config.key?('rule')
+
+      evaluate_default(results)
     end
   end
-  
+end
