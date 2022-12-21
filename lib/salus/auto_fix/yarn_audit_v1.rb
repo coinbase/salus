@@ -67,7 +67,8 @@ module Salus::Autofix
       group_updates.each do |updates, versions|
         updates = updates.last
         vulnerable_package_info = get_package_info(updates)
-        list_of_versions_available = vulnerable_package_info["data"]["versions"]
+        list_of_versions_available = vulnerable_package_info.dig("data", "version")
+        # list_of_versions_available = vulnerable_package_info["data"]["versions"]
         version_to_update_to = Salus::SemanticVersion.select_upgrade_version(
           versions.first[:patch], list_of_versions_available
         )
