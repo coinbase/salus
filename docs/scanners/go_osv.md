@@ -14,9 +14,4 @@ scanner_configs:
         changed_by: security-team
         notes: Currently no patch exists and determined that this vulnerability is not exploitable.
         expiration: "2022-12-31"
-    rule:
-      type: id
-      match:
-        - key: CVE-123
-        - key: CVE-XYZ
 ```
