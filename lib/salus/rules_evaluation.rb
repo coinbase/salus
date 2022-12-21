@@ -8,7 +8,10 @@ module Salus
     end
 
     def evaluate(config, results)
-      return true
+      if results.empty?
+        return true
+      end
+      return false
     end
   end
   

@@ -1,5 +1,6 @@
 require 'salus/scanners/osv/base'
 
+
 module Salus::Scanners::OSV
   class GradleOSV < Base
     class SemVersion < Gem::Version; end
@@ -41,9 +42,9 @@ module Salus::Scanners::OSV
       # Match and Report scanner status
       vulnerabilities_found = match_vulnerable_dependencies(dependencies)
       results = group_vulnerable_dependencies(vulnerabilities_found)
-      return report_success if results.empty?
+      return report_success if Salus::RulesEvaluation.evaluate(@config, results)
 
-      report_failure
+      # report_failure
       log(JSON.pretty_generate(results))
     end
 
