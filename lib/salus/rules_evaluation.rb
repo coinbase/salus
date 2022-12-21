@@ -22,8 +22,8 @@ module Salus
 
     def self.evaluate_by_id(config, results)
       matches = config["matches"]
-      keys = matches.map{ |x| x["key"] }
-      ids = results.map{ |x| x[:ID] }
+      keys = matches.map { |x| x["key"] }
+      ids = results.map { |x| x[:ID] }
       return true unless (keys & ids).length.positive?
 
       reutrn false
@@ -31,8 +31,8 @@ module Salus
 
     def self.evaluate_by_severity(config, results)
       matches = config["matches"]
-      keys = matches.map{ |x| x["key"] }
-      ids = results.map{ |x| x[:Severity] }
+      keys = matches.map { |x| x["key"] }
+      ids = results.map { |x| x[:Severity] }
       return true unless (keys & ids).length.positive?
 
       reutrn false
