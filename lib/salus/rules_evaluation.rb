@@ -11,9 +11,9 @@ module Salus
 
     def evaluate_by_type(config, _results)
       case config.fetch("rule", "key")
-      when "id"
+      when RULE_TYPE_ID
         true
-      when "severity"
+      when RULE_TYPE_SEVERITY
         true
       else
         false
