@@ -293,6 +293,8 @@ describe Salus::Processor do
         processor.scan_project
         processor.export_report
 
+        puts "Found #{expected_report}"
+        puts "versus for #{File.read(local_uri)}"
         expect(File.read(local_uri)).to match_report_json(expected_report, true)
 
         # remove report file that was generated from Salus execution

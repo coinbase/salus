@@ -1,0 +1,1148 @@
+
+Cyclonedx::ReportRubyGems
+  to_cyclonedx schema validation
+    succeeds if generated cyclonedx format is correct
+    succeeds if generated cyclonedx format is correct
+    succeeds if generated cyclonedx version is empty
+    succeeds if scan_reports contain duplicate reports
+    fails if generated cyclonedx report is not valid
+  to_cyclonedx spec version validation
+    cylonedx spec version 1.2 does not include properties field
+    cylonedx spec version 1.3 does include properties field
+    fails if provided cylonedx spec version is unsupported
+
+Cyclonedx::PackageUrl
+  purl format matches expected
+    purl format is correct with no special characters
+    purl format is correct with no version
+    purl format is correct with percent encoded strings
+    purl format removes leading and trailing / from namespace
+
+Cyclonedx::ReportGoDep
+  #run
+    should report all the deps using go.sum if available
+    should report all the deps in the Gopkg.lock if present
+    should report warning and send event if no Gopkg.lock/go.sumavailable and return empty build
+
+Cyclonedx::ReportGradleDeps
+  #run
+    should report all the deps in the build.gradle
+    should produce valid CycloneDX under normal conditions
+
+Cyclonedx::ReportNodeModules
+  #run
+    should report all the deps in the package.json if both\
+        package-lock.json and yarn.lock files do not exist
+    should report all the deps in the package-lock.json if present
+    should report all the deps in the yarn.lock if present
+    should report all the deps in the bower.json if present
+    should produce valid CycloneDX for bower.json
+    should produce valid CycloneDX for including dev deps package-lock.json
+    should produce valid CycloneDX for excluding dev deps package-lock.json
+
+Cyclonedx::ReportPodfileLock
+  #run
+    should report all the deps in the Podfile.lock
+    should produce valid CycloneDX under normal conditions
+    should produce valid CycloneDX when an unparseable file is found
+
+Cyclonedx::ReportPomXml
+  #run
+    should report all the deps in the pom.xml
+    should produce valid CycloneDX under normal conditions
+
+Cyclonedx::ReportPythonModules
+  #run
+    should report all the deps in the unpinned requirements.txt
+    should report all the deps in the pinned requirements.txt
+    should report all the deps in the semi-pinned requirements.txt
+
+Cyclonedx::ReportRubyGems
+  #run
+    should report all the deps in the Gemfile if Gemfile.lock is absent in cyclonedx
+    should report all deps in Gemfile.lock in cyclonedx
+    should report all deps from multiple sources in Gemfile.lock in cyclonedx
+
+Cyclonedx::ReportRustCrates
+  #run
+    should report all the deps in the Cargo.lock if manifest is absent in cyclonedx
+    should calculate and report all the dependencies in the manifest if Cargo.lock is absent
+    should prefer the Cargo.lock over the manifest when both available
+
+Cyclonedx::ReportSwiftDeps
+  #run
+    should report all the deps in the Package.resolved
+    should produce valid CycloneDX under normal conditions
+    should produce valid CycloneDX when an unparseable file is found
+
+MergeUtil
+  deep_merge
+    should overwite arrays by default
+    should overwrite arrays when combine is false
+    should concat arrays when combine is true
+
+Salus::CLI
+  returns non-zero exit when invalid params are passed
+
+Salus::ConfigException
+  #initialize
+    should support initializing from a hash
+    should create an invalid exception if no params are passed
+  validation
+    should require the expected fields
+  active?
+    should return true if no expiration was given
+    should return true if empty expiration was given
+    should return false for past dates
+    should return true for current date
+    should return true for future dates
+
+Salus::Config
+  #initialize
+    should accept custom_info hashes
+    should accept custom_info strings
+    should deep merge config files
+    should replace arrays by default
+    should replace arrays when configured
+    should combine arrays when configured
+    should apply default scanner config for each scanner
+    should merge all NodeAudit related configuration
+    should merge arrays in all NodeAudit related configuration
+    no initialization file given
+      should use the default config file
+    project names
+      should not accept project names with invalid chars
+      should accept project names with valid chars
+    files given as source
+      should use the YAML files as config with ordered priority
+    bad files given as source
+      should ignore bad files
+    files point to envars that need to be interpolated
+      should replace references to envars with the envar values
+  #scanner_active?
+    should correctly answer if a scanner is active
+  #scanner_enforced?
+    should correctly answer if the current configuration has enforced scanning
+
+Salus::DiceCoefficient
+  should return 1.0 if two strings are same
+  should return 0.0 if two strings are completely different
+  should return higher value if two strings are very similar
+  should return lower value if two strings are less similar
+
+Salus::FileCopier
+  copy_files
+    should ignore existing files
+    should gracefully handle empty file list
+    should copy files not present
+    should clean up after itself
+    should attempt to clean up when exceptions are thrown
+
+Salus::Formatting
+  prettify_json_string
+    returns pretty json from valid json string
+    returns input string if json parse fails
+
+Salus::PathValidator
+  local_to_base?
+    should return false for files outside parent directory
+    should return false for folders outside parent directory
+
+Salus::PluginManager
+  apply_filter
+    applies the filter
+    does not apply filter from a different context
+  send_event
+    sends the event
+
+Salus::Processor
+  #initialize
+    explicit sources of config given files given
+      should load the config from the given file and URI sources and add them to the report
+
+
+Failed to load file:///salus.yaml
+
+      should expand the repo path provided
+
+
+Failed to load file:///salus.yaml
+
+
+
+Failed to load file:///salus.yaml
+
+      fetch_config_file should return nil if file content is not hash
+
+
+Failed to load file:///namewithtypo.yaml
+
+      should not use config files when they do not exist
+    implicitly look for file
+      should load the default config from the salus.yaml and add to report
+  #scan_project
+Brakeman is scanning...
+BundleAudit is scanning...
+RepoNotEmpty is scanning...
+RepoNotEmpty has finished
+ReportRubyGems is scanning...
+ReportRubyGems has finished
+RubyPackageScanner is scanning...
+RubyPackageScanner has finished
+PatternSearch is scanning...
+PatternSearch has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+Brakeman has finished
+BundleAudit has finished
+Trufflehog has finished
+    should scan the project given by a particular path
+Brakeman is scanning...
+NPMAudit is scanning...
+Brakeman has finished
+NPMAudit has finished
+    should override the configured active scanners when they're provided via command line
+Brakeman is scanning...
+NPMAudit is scanning...
+Brakeman has finished
+NPMAudit has finished
+    should scan the project using only scanners provided from the command line
+Brakeman is scanning...
+Brakeman is scanning...
+NPMAudit is scanning...
+Brakeman has finished
+Brakeman has finished
+NPMAudit has finished
+    should recurse when configured
+  #passed?
+BundleAudit is scanning...
+RepoNotEmpty is scanning...
+RepoNotEmpty has finished
+ReportRubyGems is scanning...
+RubyPackageScanner is scanning...
+RubyPackageScanner has finished
+ReportRubyGems has finished
+PatternSearch is scanning...
+PatternSearch has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+BundleAudit has finished
+Trufflehog has finished
+    should return false if the overall scan did not pass
+BundleAudit is scanning...
+RepoNotEmpty is scanning...
+RubyPackageScanner is scanning...
+RubyPackageScanner has finished
+ReportRubyGems is scanning...
+PatternSearch is scanning...
+RepoNotEmpty has finished
+PatternSearch has finished
+ReportRubyGems has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+BundleAudit has finished
+Trufflehog has finished
+    should return true if the overall scan passed
+  #export_report
+    remote URI
+RepoNotEmpty is scanning...
+RepoNotEmpty has finished
+PatternSearch is scanning...
+PatternSearch has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+Trufflehog has finished
+      should send the report to the remote URI (FAILED - 1)
+      Expect 0 report_uris for report_filter set to none
+    local URI
+RepoNotEmpty is scanning...
+RepoNotEmpty has finished
+PatternSearch is scanning...
+PatternSearch has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+Trufflehog has finished
+Found {
+  "config": {
+    "active_scanners": [
+      "Bandit",
+      "Brakeman",
+      "BundleAudit",
+      "CargoAudit",
+      "GoOSV",
+      "GoPackageScanner",
+      "GoVersionScanner",
+      "Gosec",
+      "GradleOSV",
+      "MavenOSV",
+      "NPMAudit",
+      "NPMPackageScanner",
+      "PatternSearch",
+      "PythonOSV",
+      "RepoNotEmpty",
+      "ReportGoDep",
+      "ReportGradleDeps",
+      "ReportNodeModules",
+      "ReportPodfileLock",
+      "ReportPomXml",
+      "ReportPythonModules",
+      "ReportRubyGems",
+      "ReportRustCrates",
+      "ReportSwiftDeps",
+      "RubyPackageScanner",
+      "RubyVersionScanner",
+      "Semgrep",
+      "Trufflehog",
+      "YarnAudit"
+    ],
+    "builds": {
+      "service_name": "buildkite",
+      "url": "http://example.com/builds/123"
+    },
+    "enforced_scanners": [
+      "Brakeman",
+      "BundleAudit",
+      "CargoAudit",
+      "Gosec",
+      "NPMAudit",
+      "PatternSearch",
+      "RepoNotEmpty",
+      "Semgrep",
+      "YarnAudit"
+    ],
+    "report_uris": [
+      {
+        "format": "json",
+        "uri": "file:///home/spec/fixtures/processor/local_uri/salus_reports_folder/salus-report.json"
+      }
+    ],
+    "scanner_configs": {
+      "Bandit": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "Brakeman": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "BundleAudit": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "CargoAudit": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "GoOSV": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "GoPackageScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "GoVersionScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "Gosec": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "GradleOSV": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "MavenOSV": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "NPMAudit": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "NPMPackageScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "NodeAudit": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "PatternSearch": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "PythonOSV": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "RepoNotEmpty": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportGoDep": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportGradleDeps": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportNodeModules": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportPodfileLock": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportPomXml": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportPythonModules": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportRubyGems": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportRustCrates": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportSwiftDeps": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "RubyPackageScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "RubyVersionScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "Semgrep": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "Trufflehog": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "YarnAudit": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      }
+    },
+    "sources": {
+      "configured": [
+        "file:///salus.yaml"
+      ],
+      "valid": [
+        "file:///salus.yaml"
+      ]
+    }
+  },
+  "errors": [
+
+  ],
+  "passed": true,
+  "running_time": 0.52,
+  "scans": {
+    "PatternSearch": {
+      "errors": [
+
+      ],
+      "info": {
+        "hits": [
+
+        ],
+        "misses": [
+
+        ]
+      },
+      "passed": true,
+      "running_time": 0.0,
+      "scanner_name": "PatternSearch",
+      "version": "0.9.0",
+      "warn": {
+      }
+    },
+    "RepoNotEmpty": {
+      "errors": [
+
+      ],
+      "info": {
+      },
+      "passed": true,
+      "running_time": 0.0,
+      "scanner_name": "RepoNotEmpty",
+      "version": "",
+      "warn": {
+      }
+    },
+    "Semgrep": {
+      "errors": [
+
+      ],
+      "info": {
+        "hits": [
+
+        ],
+        "misses": [
+
+        ]
+      },
+      "passed": true,
+      "running_time": 0.0,
+      "scanner_name": "Semgrep",
+      "version": "1.0.0",
+      "warn": {
+      }
+    },
+    "Trufflehog": {
+      "errors": [
+
+      ],
+      "info": {
+      },
+      "passed": true,
+      "running_time": 1.45,
+      "scanner_name": "Trufflehog",
+      "version": "3.19.0",
+      "warn": {
+      }
+    }
+  },
+  "version": "2.26.0"
+}
+versus for {
+  "config": {
+    "active_scanners": [
+      "Bandit",
+      "Brakeman",
+      "BundleAudit",
+      "CargoAudit",
+      "GoOSV",
+      "GoPackageScanner",
+      "GoVersionScanner",
+      "Gosec",
+      "GradleOSV",
+      "MavenOSV",
+      "NPMAudit",
+      "NPMPackageScanner",
+      "PatternSearch",
+      "PythonOSV",
+      "RepoNotEmpty",
+      "ReportGoDep",
+      "ReportGradleDeps",
+      "ReportNodeModules",
+      "ReportPodfileLock",
+      "ReportPomXml",
+      "ReportPythonModules",
+      "ReportRubyGems",
+      "ReportRustCrates",
+      "ReportSwiftDeps",
+      "RubyPackageScanner",
+      "RubyVersionScanner",
+      "Semgrep",
+      "Trufflehog",
+      "YarnAudit"
+    ],
+    "builds": {
+      "service_name": "buildkite",
+      "url": "http://example.com/builds/123"
+    },
+    "enforced_scanners": [
+      "Brakeman",
+      "BundleAudit",
+      "CargoAudit",
+      "Gosec",
+      "NPMAudit",
+      "PatternSearch",
+      "RepoNotEmpty",
+      "Semgrep",
+      "YarnAudit"
+    ],
+    "report_uris": [
+      {
+        "format": "json",
+        "uri": "file:///home/spec/fixtures/processor/local_uri/salus_reports_folder/salus-report.json"
+      }
+    ],
+    "scanner_configs": {
+      "Bandit": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "Brakeman": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "BundleAudit": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "CargoAudit": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "GoOSV": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "GoPackageScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "GoVersionScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "Gosec": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "GradleOSV": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "MavenOSV": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "NPMAudit": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "NPMPackageScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "NodeAudit": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "PatternSearch": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "PythonOSV": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "RepoNotEmpty": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportGoDep": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportGradleDeps": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportNodeModules": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportPodfileLock": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportPomXml": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportPythonModules": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportRubyGems": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportRustCrates": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "ReportSwiftDeps": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "RubyPackageScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "RubyVersionScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "Semgrep": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "Trufflehog": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "YarnAudit": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      }
+    },
+    "sources": {
+      "configured": [
+        "file:///salus.yaml"
+      ],
+      "valid": [
+        "file:///salus.yaml"
+      ]
+    }
+  },
+  "errors": [
+
+  ],
+  "passed": true,
+  "running_time": 1.83,
+  "scans": {
+    "PatternSearch": {
+      "errors": [
+
+      ],
+      "info": {
+        "hits": [
+
+        ],
+        "misses": [
+
+        ]
+      },
+      "passed": true,
+      "running_time": 0.0,
+      "scanner_name": "PatternSearch",
+      "version": "0.9.0",
+      "warn": {
+      }
+    },
+    "RepoNotEmpty": {
+      "errors": [
+
+      ],
+      "info": {
+      },
+      "passed": true,
+      "running_time": 0.03,
+      "scanner_name": "RepoNotEmpty",
+      "version": "",
+      "warn": {
+      }
+    },
+    "Semgrep": {
+      "errors": [
+
+      ],
+      "info": {
+        "hits": [
+
+        ],
+        "misses": [
+
+        ]
+      },
+      "passed": true,
+      "running_time": 0.0,
+      "scanner_name": "Semgrep",
+      "version": "1.0.0",
+      "warn": {
+      }
+    },
+    "Trufflehog": {
+      "errors": [
+
+      ],
+      "info": {
+      },
+      "passed": true,
+      "running_time": 1.67,
+      "scanner_name": "Trufflehog",
+      "version": "3.21.0",
+      "warn": {
+      }
+    }
+  },
+  "version": "2.26.0"
+}
+      should write the report to the local file system based on a path in the given repo (FAILED - 2)
+    multiple URIs
+RepoNotEmpty is scanning...
+RepoNotEmpty has finished
+PatternSearch is scanning...
+PatternSearch has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+Trufflehog has finished
+      should still send the 2nd report to the remote URI
+    Registering to reporting Scanners finished event
+RepoNotEmpty is scanning...
+RepoNotEmpty has finished
+PatternSearch is scanning...
+PatternSearch has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+Trufflehog has finished
+      should Recieve reporting_scanners_ran event
+    remote URI headers verbs
+RepoNotEmpty is scanning...
+RepoNotEmpty has finished
+PatternSearch is scanning...
+PatternSearch has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+Trufflehog has finished
+      should send the report to the remote URI with correct headers and verb
+
+Salus::RepoSearcher
+  dependencies
+    should have access to ripgrep
+  matching_repos
+    should return project repo if not set to recurse
+    should not implicity include project repo when supplied with recursion settings
+    should support static directories
+    should fitler out unsafe directories
+    should allow relative references that resolve to repo path
+    should support dynamic directories via content and filename
+    should support dynamic directories via content only
+    should support dynamic directories via filename only
+    should  filter out exclusions
+    should support temporal static files
+
+Salus::Repo
+  IMPORTANT_FILES runtime defined functions
+    should create a getter and presence check method for special files
+    should create a getter and search for files marked with wildcard
+
+Salus::Report
+  #to_s
+    should merge runs from the same scanner
+  #to_h and miscellaneous reporting methods
+    emits the expected reporting data via the #to_h method
+    should apply filters for to_h
+    should apply filters for to_sarif
+    does not include project_name/custom_info/config if not given
+    should merge multilpe scans from a given scanner, failing if any failed
+  #passed?
+    returns true if and only if all required scans passed
+  #export_report
+    HTTP report URI given
+      should make a call to send the report for http URI
+      should raise if there is an error with sending the report to a HTTP endpoint
+    HTTP report URI given with request parameters
+      should make a call to send the json report for http URI
+      should make a call to send the yaml report for http URI
+      should make a call to send the txt report for http URI
+      should make a call to send the sarif report for http URI
+      should make a call to send the sarif_diff_full report for http URI
+    local file report URI given
+      should save to the given directory for a local file uri
+      should raise if it tries to write a file report to a non-existent directory
+    x-scanner type
+      should get the correct x-scanner based on format
+  merge_reports
+    should merge reports from the same scanner when configured
+    should not merge reports from the same scanner by default
+  #satisfies_filter
+    runs all reports when `all` filter is provided
+    doesnt run any reports when `none` filter is provided
+    runs only `good-name` reports when `name:good-name` filter is provided
+    runs only yaml-formatted reports when `format:yaml` filter is provided
+    runs only reports with `name` keys when `name:*` filter is provided
+  #deep_sort
+    for salus outputs
+      should deepsort json output format
+      should deepsort sarif output
+      should deepsort YAML output
+      should deepsort cyclonedx output
+
+Salus::ScanReport
+  merge!
+    should combine fields
+    should apply the custom fail message
+    will raise when combine reports from different scanners
+  #to_s
+    not verbose and passed
+      includes all relevant important in string form
+    not verbose and failed
+      includes all relevant important in string form
+    verbose and passed
+      includes all relevant important in string form
+    not verbose
+      includes all relevant important in string form
+
+Salus::Scanners::Bandit
+  #should_run?
+    no requirements.txt nor setup.cfg
+      should return false
+    requirements.txt present but no setup.cfg
+      should return true
+    setup.cfg present but no requirements.txt
+      should return true
+    py files present but not requirements.txt/setup.cfg
+      should return true
+  #run
+    non-bandit project
+      should record 0 line of code scanned if no code
+    python project with insecure code
+      should record failure and record the STDOUT from bandit
+    python project with insecure code in a nested folder
+      should record failure and record the STDOUT from bandit
+    python project with no known vulnerabilities
+      should report a passing scan
+    python project with unknown skip
+      should report a failing scan
+  #config_options
+    when using aggregate
+      and aggregate by filename
+      and aggregate by vuln
+    when using configfile
+      if no configfile baseline - results include test_id B301
+      and configfile says skip test_id B301
+    when listing exceptions
+      should allow exception entries
+      should support expirations
+    when using profile
+      if no profile baseline - results test names include multiple items
+      and profile says include only one test name
+    when using tests
+      and tests only B301
+      and test B105 and B301
+      and test B105, B301, B403
+    when using skip
+      and skip B301
+      and skip B301, B403
+    when using baseline file
+      if no baseline, then results include two files
+      and using main.py as baseline
+    when using ini file
+      ini file option should work
+    when using ignore nosec
+      if ignore nosec is false then report passes
+      and ignore nosec
+    when using exclude path
+      if not using exclude path baseline
+      and exclude main.py, then only main2.py will be scanned
+      and exclude both main.py and main2.py
+    when using confidence
+      and confidence level is MEDIUM
+      and confidence level is HIGH
+    using severity level
+      and severity level is LOW
+      and severity level is MEDIUM
+      and severity level is HIGH
+  #version_valid?
+    scanner version is valid
+      should return true
+  #supported_languages
+    should return supported languages
+      should return python
+
+Salus::Scanners::Base
+  run!
+    should catch exceptions from scanners and record the error
+    should catch exceptions and fail the build if pass_on_raise false
+    should catch exceptions and fail the build if pass_on_raise false
+    should time out when execution time exceeds configured timeout
+  #run
+    should raise an exception since this is an abstract function
+  #should_run?
+    should raise an exception since this is an abstract function
+  #run_shell
+    should execute a shell command and yield a ShellResult with appropriate values
+  #report_success
+    should log to the report that the scan passed
+  #report_failure
+    should log to the report that the scan failed
+  #report_info
+    should store some info indexed by scanner and info type
+  #report_stdout
+    should store the stdout of the scanner
+  #report_stderr
+    should store the stderr of the scanner
+  #build_options
+    should build the options correctly based on a hash
+
+Salus::Scanners::Brakeman
+  #run
+    runs cleanly against a project bundled with Bundler 2
+    non-rails project
+      should record the STDERR of brakeman
+    brakeman configs
+      should error if no top-level app dir and no user defined app path
+      should respect the config for user defined app path if no top-level app dir
+      should respect brakeman.ignore files
+      should respect expirations from brakeman.ignore files
+      should support exceptions
+      should report an error if unable to create temporary ignore
+      should support expirations in exceptions
+      should support merging exceptions with brakeman.ignore files
+      should respect the config for user defined app path
+      should respect the config for all checks
+      should respect the config for running only a subset of checks
+      should respect the config excluding some checks
+      should respect the config supressing warning levels
+      should respect the config for ignoring files
+      should respect the config for only scanning certain files
+    brakeman warnings or errors
+      should fail if a potential vulnerability is detected in the repo
+      should fail if brakeman encounters a parse error
+  #should_run?
+    no Gemfile nor Rails gem
+      should return false
+    Gemfile present but no rails gem
+      should return false
+    Gemfile present with rails gem
+      should return true
+    Gemfile present with rails gem but no rails app
+      should return false
+  #version_valid?
+    scanner version is valid
+      should return true
+  #supported_languages
+    should return supported languages
+      should return ruby
+
+Bugsnag
+  #run
+    blank directory
+      bugsnag should receiev error
+
+Salus::Scanners::BundleAudit
+  #run
+    should check for updates to the CVE DB
+    runs cleanly against a project bundled with Bundler 2
+    CVEs in Gemfile.lock
+      should record failure and record the STDOUT from bundle-audit
+    insecure sources in Gemfile
+      should record failure and report results
+    no CVEs in Gemfile.lock
+      should report success
+    no CVEs in Gemfile.lock when ignoring CVEs
+      should record success and report on the ignored CVEs
+    exceptions with expirations
+      should apply active exceptions
+      should not apply expired exceptions
+      should record success and report on the ignored CVEs
+    with local db
+      should report vulns from both local db and ruby advisory db
+  #should_run?
+    should return false if Gemfile.lock not present
+    should return true if Gemfile.lock is present
+  #version_valid?
+    scanner version is valid
+      should return true
+  #supported_languages
+    should return supported languages
+      should return ruby
+  #valid_local_db?
+    should detect valid/invalid local dbs
+
+Salus::Scanners::CargoAudit
+  #should_run?
+    should return false in the absence of Cargo.lock
+    should return true if Cargo.lock is present
+  #run
+    should pass when there are no vulnerabilities
+    should fail when there are missing dependencies
+    should fail when there are vulnerabilities
+    should elevate warnings as errors
+    should ignore warnings if disabled in the config
+    should honor exceptions in the config
+    should honor exception expirations
+    should send the audit log as json
+    should log pretty json
+    should report error if there were issues in running cargo audit
+  #version_valid?
+    scanner version is valid
+      should return true
+  #supported_languages
+    should return supported languages
+      should return rust
+
+Salus::Scanners::Gosec
+  #run
+    non-go project
+      should record the STDERR of gosec
+    go project with vulnerabilities
+      should record failure and record the STDOUT from gosec
+    go project with vulnerabilities in a nested folder
+      should record failure and record the STDOUT from gosec
+    go project with no known vulnerabilities
+      should report a passing scan
+    go project with malformed go
+      should report a failing scan
+  #run from multiple subdirs
+    go project with multiple sub-projects
+      should report failures in both sub-projects
+  #should_run?
+    behaves like when go file types are present
+      returns true
+    behaves like when go file types are present
+      returns true
+    behaves like when go file types are present
+      returns true
+    behaves like when go file types are present
+      returns true
+    when go file types are missing
+      returns false
+  #config_options
+    when using nosec
+      and nosec is set to true
+        disables nosec comments
+      and nosec is set to false
+        enables nosec comments
+      and nosec is not set to a boolean
+        warns when not provided a valid options
+    when using nosec-tag
+      and a valid tag
+        respects nosec-tag over nosec
+        and disabling nosec
+          respects nosec settings also
+      and an invalid tag
+        warns when not provided a valid option
+    when including rules
+      actually includes only the given rules
+      and when using nosec flag
+        only scans for included rules even if issue is whitelisted
+    when excluding rules
+      actually excludes only the given rules
+      and when using nosec flag
+        only scans for included rules even if issue is whitelisted
+    active exceptions
+      should honor active exceptions
+    expired exceptions
+      should ignore expired exceptions
+    when sorting by severity
+      is sorted in the report
+    when filtering by severity
+      is filtered by severity
+    when filtering by confidence
+      filtered by confidence
+    when the scan should be forced to pass
+      always passes
+    when scanning tests
+      scans for issues in test files
+    when excluding directories
+      and is a real directory
