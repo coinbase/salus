@@ -41,6 +41,8 @@ module Salus::Scanners
   class BundleAudit < Base
     class UnvalidGemVulnError < StandardError; end
 
+    CLASS_NAME = self.class.name.split("::").last.freeze
+
     def self.scanner_type
       Salus::ScannerTypes::DEPENDENCY
     end
@@ -75,7 +77,11 @@ module Salus::Scanners
       report_info(:ignored_cves, ignore)
       report_info(:vulnerabilities, @vulns)
 
-      @vulns.empty? ? report_success : report_failure
+      if Salus::RulesEvaluation.evaluate_rules(@config, @vulns, CLASS_NAME)
+        report_success
+      else
+        report_failure
+      end
     end
 
     def run_scanner(scanner, ignore)
