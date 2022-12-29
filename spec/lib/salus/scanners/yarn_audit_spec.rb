@@ -186,10 +186,10 @@ describe Salus::Scanners::YarnAudit do
       vulns = JSON.parse(scanner.report.to_h[:info][:stdout])
       expect(vulns.size).to eq(61)
 
-
-      auto_fix_scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: { 'auto_fix' => true })
+      auto_fix_scanner = Salus::Scanners::YarnAudit.new(repository: repo,
+        config: { 'auto_fix' => true })
       auto_fix_scanner.run
-      
+
       after_fix_scan = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
       after_fix_scan.run
       expect(after_fix_scan.report.to_h.fetch(:passed)).to eq(false)
