@@ -9,11 +9,10 @@ module Salus::Autofix
     end
 
     def run_auto_fix
-        shell_return = run_shell("npx yarn-audit-fix", chdir: @path_to_repo)
-        if shell_return.stdout.include? ("success Saved lockfile.")
-            return true
-        end
-        return false
+      shell_return = run_shell("npx yarn-audit-fix", chdir: @path_to_repo)
+      return true if shell_return.stdout.include?("success Saved lockfile.")
+
+      false
     end
   end
 end

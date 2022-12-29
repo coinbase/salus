@@ -132,9 +132,7 @@ module Salus::Scanners
       auto_fix = @config.fetch("auto_fix", false)
       if auto_fix
         auto_fix_v2 = Salus::Autofix::YarnAuditV2.new(@repository.path_to_repo)
-        auto_fix_status = auto_fix_v2.run_auto_fix
-        auto_fix_msg = if auto_fix_status then "Succesfully ran auto fix." else "Failed to run auto fix." end
-        report_stdout(auto_fix_msg.to_json)
+        auto_fix_v2.run_auto_fix
       end
 
       vulns = combine_vulns(vulns)
