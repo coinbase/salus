@@ -259,7 +259,7 @@ describe Salus::Scanners::Gosec do
       let(:repo) { Salus::Repo.new('spec/fixtures/gosec/gosec_rules') }
       let(:exceptions) do
         [{ 'advisory_id' => "G101",
-          'expiration' => '2022-12-31',
+          'expiration' => '2030-12-31',
           'changed_by' => 'appsec',
           'notes' => 'foo' }]
       end
