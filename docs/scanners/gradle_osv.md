@@ -18,7 +18,7 @@ scanner_configs:
         expiration: "2022-12-31"
 ```
 
-## Generate lockfile
+## How to generate lockfile
 
 To generate lockfile, use the following commands - 
 - Single Project
