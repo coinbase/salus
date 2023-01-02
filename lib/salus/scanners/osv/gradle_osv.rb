@@ -12,7 +12,8 @@ module Salus::Scanners::OSV
         "/Maven/all.zip".freeze
 
     def should_run?
-      @repository.build_gradle_present?
+      @repository.build_gradle_present? && 
+        @repository.build_gradle_lockfile_present?
     end
 
     def self.supported_languages
@@ -21,7 +22,7 @@ module Salus::Scanners::OSV
 
     def run
       # Find dependencies from the project
-      dependencies = gradle_dependencies
+      dependencies = gradle_dependencies(@repository.build_gradle_lockfile_path)
       if dependencies.empty?
         err_msg = "GradleOSV: Failed to parse any dependencies from the project."
         report_stderr(err_msg)

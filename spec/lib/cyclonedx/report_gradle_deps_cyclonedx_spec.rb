@@ -10,7 +10,7 @@ describe Cyclonedx::ReportGradleDeps do
 
       gradle_cyclonedx = Cyclonedx::ReportGradleDeps.new(scanner.report)
       components_object = gradle_cyclonedx.build_components_object
-      expect(components_object.size).to eq(61)
+      expect(components_object.size).to eq(14)
       expect(components_object).to include(
         {
           type: "library",

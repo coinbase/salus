@@ -11,3 +11,9 @@ dependencies {
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.5.1'
     testImplementation group: 'org.testng', name: 'testng', version: '7.4.0'
 }
+
+allprojects {
+    dependencyLocking {
+        lockAllConfigurations()
+    }
+}

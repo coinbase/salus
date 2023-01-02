@@ -41,7 +41,7 @@ describe Salus::Scanners::ReportGradleDeps do
     scanner.run
     dependencies = scanner.report.to_h.fetch(:info).fetch(:dependencies)
 
-    expect(dependencies.size).to eq(61)
+    expect(dependencies.size).to eq(14)
     expect(dependencies).to include(
       {
         dependency_file: "build.gradle",

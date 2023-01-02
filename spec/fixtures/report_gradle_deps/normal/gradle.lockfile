@@ -1,0 +1,18 @@
+# This is a Gradle generated file for dependency locking.
+# Manual edits can break the build and are not advised.
+# This file is expected to be part of source control.
+com.beust:jcommander:1.78=testCompileClasspath,testRuntimeClasspath
+com.fasterxml.jackson.core:jackson-annotations:2.10.5=compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
+com.fasterxml.jackson.core:jackson-core:2.10.5=compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
+com.fasterxml.jackson.core:jackson-databind:2.10.5.1=compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
+com.github.luben:zstd-jni:1.4.4-7=compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
+javax.ws.rs:javax.ws.rs-api:2.1.1=compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
+org.apache.kafka:connect-api:2.6.2=compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
+org.apache.kafka:connect-transforms:2.6.2=compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
+org.apache.kafka:kafka-clients:2.6.2=compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
+org.lz4:lz4-java:1.7.1=compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
+org.slf4j:slf4j-api:1.7.30=compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
+org.testng:testng:7.4.0=testCompileClasspath,testRuntimeClasspath
+org.webjars:jquery:3.5.1=testCompileClasspath,testRuntimeClasspath
+org.xerial.snappy:snappy-java:1.1.7.3=compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
+empty=annotationProcessor,testAnnotationProcessor

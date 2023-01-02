@@ -41,6 +41,7 @@ module Salus
       # Java
       { handle: :pom_xml, filename: 'pom.xml' },
       { handle: :build_gradle, filename: 'build.gradle' },
+      { handle: :build_gradle_lockfile, filename: 'gradle.lockfile' },
       # Swift
       { handle: :package_resolved, filename: 'Package.resolved' },
       # Apple Ecosystem (macOS, iOS, etc)

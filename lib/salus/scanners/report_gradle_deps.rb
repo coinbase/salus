@@ -7,7 +7,7 @@ module Salus::Scanners
     include Gradle
 
     def run
-      dependencies = gradle_dependencies
+      dependencies = gradle_dependencies(@repository.build_gradle_lockfile_path)
 
       dependencies.each do |dependency|
         group_id = dependency['group_id']
