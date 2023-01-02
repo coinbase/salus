@@ -12,7 +12,7 @@ module Salus::Scanners::OSV
         "/Maven/all.zip".freeze
 
     def should_run?
-      @repository.build_gradle_present? && 
+      @repository.build_gradle_present? &&
         @repository.build_gradle_lockfile_present?
     end
 
