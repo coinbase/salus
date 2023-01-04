@@ -9,7 +9,8 @@ describe Sarif::RubyVersionScannerSarif do
                       'ruby_version_scanner/invalid_version_1'
 
   error_msg = 'Repository language version (2.1.0) is less '\
-                 'than minimum configured version (2.6.0)'
+              'than minimum configured version (2.6.0). ' \
+              'Please upgrade the language version.'
 
   it_behaves_like "language version scanner sarif",
                   Salus::Scanners::LanguageVersion::RubyVersionScanner,

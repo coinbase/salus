@@ -9,7 +9,8 @@ describe Sarif::GoVersionScannerSarif do
                       'go_version_scanner/invalid_version_1'
 
   error_msg = 'Repository language version (1.14) is less '\
-                 'than minimum configured version (1.15.0)'
+              'than minimum configured version (1.15.0). '\
+              'Please upgrade the language version.'
 
   it_behaves_like "language version scanner sarif",
                   Salus::Scanners::LanguageVersion::GoVersionScanner,
