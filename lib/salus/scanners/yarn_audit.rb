@@ -133,6 +133,7 @@ module Salus::Scanners
       if auto_fix
         auto_fix_v2 = Salus::Autofix::YarnAuditV2.new(@repository.path_to_repo)
         auto_fix_v2.run_auto_fix
+        run_shell(YARN_COMMAND)
       end
 
       vulns = combine_vulns(vulns)
