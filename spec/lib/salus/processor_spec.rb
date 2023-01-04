@@ -7,6 +7,9 @@ RSpec::Matchers.define :match_report_json do |expected|
     json['scans'].each do |scanner, _|
       json['scans'][scanner].delete(key)
     end
+    # Trufflehog outputs the newest available version, even if
+    # it is not the installed version, so just don't compare Trufflehog version
+    json['scans']['Trufflehog']&.delete('version')
 
     return json if json.dig('config', 'report_uris').nil?
 
@@ -292,7 +295,6 @@ describe Salus::Processor do
         processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/local_uri')
         processor.scan_project
         processor.export_report
-
         expect(File.read(local_uri)).to match_report_json(expected_report, true)
 
         # remove report file that was generated from Salus execution
@@ -321,6 +323,26 @@ describe Salus::Processor do
         processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/multiple_endpoints')
         processor.scan_project
         processor.export_report
+      end
+    end
+
+    context 'Registering to reporting Scanners finished event' do
+      let(:remote_uri_one) { 'https://nerv.tk3/foo-salus-report' }
+      let(:remote_uri_two) { 'https://nerv.tk3/salus-report' }
+      let(:listener) { Object.new }
+      before(:each) do
+        def listener.reporting_scanners_ran(_event_name, data)
+          data
+        end
+      end
+
+      it 'should Recieve reporting_scanners_ran event' do
+        Salus::PluginManager.register_listener(listener)
+
+        expect(listener).to receive(:reporting_scanners_ran)
+
+        processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/multiple_endpoints')
+        processor.scan_project
       end
     end
 

@@ -1,63 +1,4 @@
 {
-  "version": "2.21.2",
-  "passed": true,
-  "running_time": 0.35,
-  "scans": {
-    "RepoNotEmpty": {
-      "scanner_name": "RepoNotEmpty",
-      "version": "",
-      "passed": true,
-      "running_time": 0.01,
-      "warn": {
-      },
-      "info": {
-      },
-      "errors": [
-
-      ]
-    },
-    "PatternSearch": {
-      "scanner_name": "PatternSearch",
-      "version": "0.9.0",
-      "passed": true,
-      "running_time": 0.0,
-      "warn": {
-      },
-      "info": {
-        "hits": [
-
-        ],
-        "misses": [
-
-        ]
-      },
-      "errors": [
-
-      ]
-    },
-    "Semgrep": {
-      "scanner_name": "Semgrep",
-      "version": "0.62.0",
-      "passed": true,
-      "running_time": 0.0,
-      "warn": {
-      },
-      "info": {
-        "hits": [
-
-        ],
-        "misses": [
-
-        ]
-      },
-      "errors": [
-
-      ]
-    }
-  },
-  "errors": [
-
-  ],
   "config": {
     "active_scanners": [
       "Bandit",
@@ -87,8 +28,13 @@
       "RubyPackageScanner",
       "RubyVersionScanner",
       "Semgrep",
+      "Trufflehog",
       "YarnAudit"
     ],
+    "builds": {
+      "service_name": "buildkite",
+      "url": "http://example.com/builds/123"
+    },
     "enforced_scanners": [
       "Brakeman",
       "BundleAudit",
@@ -99,6 +45,12 @@
       "RepoNotEmpty",
       "Semgrep",
       "YarnAudit"
+    ],
+    "report_uris": [
+      {
+        "format": "json",
+        "uri": "https://nerv.tk3/salus-report"
+      }
     ],
     "scanner_configs": {
       "Bandit": {
@@ -146,6 +98,10 @@
         "scanner_timeout_s": 0
       },
       "NPMPackageScanner": {
+        "pass_on_raise": false,
+        "scanner_timeout_s": 0
+      },
+      "NodeAudit": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
@@ -209,24 +165,14 @@
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
-      "YarnAudit": {
+      "Trufflehog": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       },
-      "NodeAudit": {
+      "YarnAudit": {
         "pass_on_raise": false,
         "scanner_timeout_s": 0
       }
-    },
-    "report_uris": [
-      {
-        "uri": "https://nerv.tk3/salus-report",
-        "format": "json"
-      }
-    ],
-    "builds": {
-      "url": "http://example.com/builds/123",
-      "service_name": "buildkite"
     },
     "sources": {
       "configured": [
@@ -236,5 +182,77 @@
         "file:///salus.yaml"
       ]
     }
-  }
+  },
+  "errors": [
+
+  ],
+  "passed": true,
+  "running_time": 1.22,
+  "scans": {
+    "PatternSearch": {
+      "errors": [
+
+      ],
+      "info": {
+        "hits": [
+
+        ],
+        "misses": [
+
+        ]
+      },
+      "passed": true,
+      "running_time": 0.0,
+      "scanner_name": "PatternSearch",
+      "version": "0.9.0",
+      "warn": {
+      }
+    },
+    "RepoNotEmpty": {
+      "errors": [
+
+      ],
+      "info": {
+      },
+      "passed": true,
+      "running_time": 0.0,
+      "scanner_name": "RepoNotEmpty",
+      "version": "",
+      "warn": {
+      }
+    },
+    "Semgrep": {
+      "errors": [
+
+      ],
+      "info": {
+        "hits": [
+
+        ],
+        "misses": [
+
+        ]
+      },
+      "passed": true,
+      "running_time": 0.0,
+      "scanner_name": "Semgrep",
+      "version": "1.0.0",
+      "warn": {
+      }
+    },
+    "Trufflehog": {
+      "errors": [
+
+      ],
+      "info": {
+      },
+      "passed": true,
+      "running_time": 1.45,
+      "scanner_name": "Trufflehog",
+      "version": "3.19.0",
+      "warn": {
+      }
+    }
+  },
+  "version": "2.26.0"
 }

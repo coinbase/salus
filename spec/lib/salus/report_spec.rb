@@ -1,4 +1,5 @@
 require_relative '../../spec_helper.rb'
+require 'yaml'
 
 describe Salus::Report do
   let(:report) { build_report }
@@ -762,6 +763,11 @@ describe Salus::Report do
         expected_yaml.slice!("---\n")
         result = report.to_yaml
         result.slice!("---\n")
+        # Prevent whitespace issues by
+        # formatting both values identically
+        result = YAML.safe_load(result).to_s
+        expected_yaml = YAML.safe_load(expected_yaml).to_s
+
         expect(expected_yaml).to eq(result)
       end
 

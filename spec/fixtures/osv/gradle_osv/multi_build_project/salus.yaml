@@ -1,0 +1,5 @@
+scanner_configs:
+  GradleOSV:
+   multi_project_build: true
+  ReportGradleDeps:
+   multi_project_build: true

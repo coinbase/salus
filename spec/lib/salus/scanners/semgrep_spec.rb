@@ -22,6 +22,8 @@ describe Salus::Scanners::Semgrep do
         info = scanner.report.to_h.fetch(:info)
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
+          severity: "ERROR",
           config: nil,
           pattern: "$X == $X",
           forbidden: false,
@@ -31,6 +33,8 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
+          severity: "ERROR",
           config: nil,
           pattern: "$X == $X",
           forbidden: false,
@@ -40,6 +44,8 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
+          severity: "ERROR",
           config: nil,
           pattern: "$X == $X",
           forbidden: false,
@@ -90,6 +96,8 @@ describe Salus::Scanners::Semgrep do
           info = scanner.report.to_h.fetch(:info)
 
           expect(info[:hits]).to include(
+            id: "semgrep-eqeq-test",
+            severity: "WARNING",
             config: "semgrep-config.yml",
             pattern: nil,
             forbidden: false,
@@ -99,6 +107,8 @@ describe Salus::Scanners::Semgrep do
           )
 
           expect(info[:hits]).to include(
+            id: "semgrep-eqeq-test",
+            severity: "WARNING",
             config: "semgrep-config.yml",
             pattern: nil,
             forbidden: false,
@@ -108,6 +118,8 @@ describe Salus::Scanners::Semgrep do
           )
 
           expect(info[:hits]).to include(
+            id: "semgrep-eqeq-test",
+            severity: "WARNING",
             config: "semgrep-config.yml",
             pattern: nil,
             forbidden: false,
@@ -116,6 +128,33 @@ describe Salus::Scanners::Semgrep do
             hit: "vendor/trivial2.py:10:    if user.id == user.id:"
           )
 
+          expect(info[:misses]).to be_empty
+        end
+
+        it "should report not report findings that have been allowlisted" do
+          repo = Salus::Repo.new("spec/fixtures/semgrep")
+          config = {
+            "matches" => [
+              {
+                "config" => "semgrep-config.yml",
+                "forbidden" => false
+              }
+            ],
+            "exceptions" => [
+              {
+                "advisory_id" => "semgrep-eqeq-test",
+                "changed_by" => "me",
+                "notes" => "..."
+              }
+            ]
+          }
+          scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
+          scanner.run
+
+          expect(scanner.report.passed?).to eq(true)
+
+          info = scanner.report.to_h.fetch(:info)
+          expect(info[:hits]).to be_empty
           expect(info[:misses]).to be_empty
         end
 
@@ -137,6 +176,8 @@ describe Salus::Scanners::Semgrep do
           info = scanner.report.to_h.fetch(:info)
 
           expect(info[:hits]).to include(
+            id: "semgrep-eqeq-test",
+            severity: "WARNING",
             config: "semgrep-config.yml",
             pattern: nil,
             forbidden: true,
@@ -146,6 +187,8 @@ describe Salus::Scanners::Semgrep do
           )
 
           expect(info[:hits]).to include(
+            id: "semgrep-eqeq-test",
+            severity: "WARNING",
             config: "semgrep-config.yml",
             pattern: nil,
             forbidden: true,
@@ -155,6 +198,8 @@ describe Salus::Scanners::Semgrep do
           )
 
           expect(info[:hits]).to include(
+            id: "semgrep-eqeq-test",
+            severity: "WARNING",
             config: "semgrep-config.yml",
             pattern: nil,
             forbidden: true,
@@ -184,6 +229,8 @@ describe Salus::Scanners::Semgrep do
           info = scanner.report.to_h.fetch(:info)
 
           expect(info[:hits]).to include(
+            id: "semgrep-eqeq-test",
+            severity: "WARNING",
             config: "semgrep-config.yml",
             pattern: nil,
             forbidden: false,
@@ -193,6 +240,8 @@ describe Salus::Scanners::Semgrep do
           )
 
           expect(info[:hits]).to include(
+            id: "semgrep-eqeq-test",
+            severity: "WARNING",
             config: "semgrep-config.yml",
             pattern: nil,
             forbidden: false,
@@ -202,6 +251,8 @@ describe Salus::Scanners::Semgrep do
           )
 
           expect(info[:hits]).to include(
+            id: "semgrep-eqeq-test",
+            severity: "WARNING",
             config: "semgrep-config.yml",
             pattern: nil,
             forbidden: false,
@@ -244,6 +295,37 @@ describe Salus::Scanners::Semgrep do
             msg: ""
           )
         end
+
+        it "should report matches with pattern-not" do
+          repo = Salus::Repo.new("spec/fixtures/semgrep")
+          config = {
+            "matches" => [
+              {
+                "config" => "semgrep-config-pattern-not.yml",
+                "forbidden" => false
+              }
+            ]
+          }
+          scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
+          scanner.run
+
+          expect(scanner.report.passed?).to eq(true)
+
+          info = scanner.report.to_h.fetch(:info)
+
+          expect(info[:hits]).to include(
+            id: "unverified-db-query",
+            severity: "ERROR",
+            config: "semgrep-config-pattern-not.yml",
+            pattern: nil,
+            forbidden: false,
+            required: false,
+            msg: "Found unverified db query\n\trule_id: unverified-db-query",
+            hit: "pattern-not/test.py:2:db_query(\"SELECT * FROM ...\")"
+          )
+
+          expect(info[:misses]).to be_empty
+        end
       end
 
       it "should report matches with a message" do
@@ -267,6 +349,8 @@ describe Salus::Scanners::Semgrep do
         info = scanner.report.to_h.fetch(:info)
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
+          severity: "ERROR",
           config: nil,
           pattern: "$X == $X",
           forbidden: false,
@@ -276,6 +360,8 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
+          severity: "ERROR",
           config: nil,
           pattern: "$X == $X",
           forbidden: false,
@@ -285,6 +371,8 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
+          severity: "ERROR",
           config: nil,
           pattern: "$X == $X",
           forbidden: false,
@@ -317,6 +405,8 @@ describe Salus::Scanners::Semgrep do
         info = scanner.report.to_h.fetch(:info)
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
+          severity: "ERROR",
           config: nil,
           pattern: "$X == $X",
           forbidden: true,
@@ -326,6 +416,8 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
+          severity: "ERROR",
           config: nil,
           pattern: "$X == $X",
           forbidden: true,
@@ -335,6 +427,8 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
+          severity: "ERROR",
           config: nil,
           pattern: "$X == $X",
           forbidden: true,
@@ -369,6 +463,8 @@ describe Salus::Scanners::Semgrep do
         info = scanner.report.to_h.fetch(:info)
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
+          severity: "ERROR",
           config: nil,
           pattern: "$X == $X",
           forbidden: false,
@@ -378,6 +474,8 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
+          severity: "ERROR",
           config: nil,
           pattern: "$X == $X",
           forbidden: false,
@@ -387,6 +485,8 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
+          severity: "ERROR",
           config: nil,
           pattern: "$X == $X",
           forbidden: false,
@@ -457,6 +557,8 @@ describe Salus::Scanners::Semgrep do
         info = scanner.report.to_h.fetch(:info)
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
+          severity: "ERROR",
           config: nil,
           pattern: "$X == $X",
           forbidden: true,
@@ -466,6 +568,8 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
+          severity: "ERROR",
           config: nil,
           pattern: "$X == $X",
           forbidden: true,
@@ -475,6 +579,8 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).not_to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
+          severity: "ERROR",
           config: nil,
           pattern: "$X == $X",
           forbidden: true,
@@ -508,6 +614,8 @@ describe Salus::Scanners::Semgrep do
         info = scanner.report.to_h.fetch(:info)
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
+          severity: "ERROR",
           config: nil,
           pattern: "$X == $X",
           forbidden: true,
@@ -517,6 +625,8 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).not_to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
+          severity: "ERROR",
           config: nil,
           pattern: "$X == $X",
           forbidden: true,
@@ -526,6 +636,8 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).not_to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
+          severity: "ERROR",
           config: nil,
           pattern: "$X == $X",
           forbidden: true,
@@ -559,6 +671,8 @@ describe Salus::Scanners::Semgrep do
         info = scanner.report.to_h.fetch(:info)
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
+          severity: "ERROR",
           config: nil,
           pattern: "$X == $X",
           forbidden: true,
@@ -568,6 +682,8 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
+          severity: "ERROR",
           config: nil,
           pattern: "$X == $X",
           forbidden: true,
@@ -577,6 +693,8 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).not_to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
+          severity: "ERROR",
           config: nil,
           pattern: "$X == $X",
           forbidden: true,
@@ -610,6 +728,8 @@ describe Salus::Scanners::Semgrep do
         info = scanner.report.to_h.fetch(:info)
 
         expect(info[:hits]).to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
+          severity: "ERROR",
           config: nil,
           pattern: "$X == $X",
           forbidden: true,
@@ -619,15 +739,7 @@ describe Salus::Scanners::Semgrep do
         )
 
         expect(info[:hits]).not_to include(
-          config: nil,
-          pattern: "$X == $X",
-          forbidden: true,
-          required: false,
-          msg: "Useless equality test.",
-          hit: "vendor/trivial2.py:10:    if user.id == user.id:"
-        )
-
-        expect(info[:hits]).not_to include(
+          id: "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
           config: nil,
           pattern: "$X == $X",
           forbidden: true,
@@ -635,6 +747,30 @@ describe Salus::Scanners::Semgrep do
           msg: "Useless equality test.",
           hit: "examples/trivial2.py:10:    if user.id == user.id:"
         )
+      end
+    end
+
+    context "rule misconfigured" do
+      it "should output misconfig reason" do
+        repo = Salus::Repo.new("spec/fixtures/semgrep")
+        config = {
+          "matches" => [
+            {
+              "config" => "semgrep-misconfig.yml", # 1 rule missing id
+              "forbidden" => true
+            }
+          ]
+        }
+        scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
+        scanner.run
+
+        errors = scanner.report.to_h.fetch(:errors)
+        expect(errors.size).to eq(1)
+        error = errors[0]
+        expect(error[:message]).to eq("Call to semgrep failed")
+        expect(error[:stderr]).to include("semgrep-misconfig.yml:2-7 Invalid rule schema "\
+                                          "One of these properties is missing: 'id'")
+        expect(error[:stderr]).to include("invalid configuration file found")
       end
     end
 
@@ -655,7 +791,7 @@ describe Salus::Scanners::Semgrep do
 
         errors = scanner.report.to_h.fetch(:errors)
         expect(errors.size).to eq(1)
-        expect(errors[0][:status]).to eq(4)
+        expect(errors[0][:status]).to eq(2)
         expect(errors[0][:stderr].downcase).to include("error")
         expect(errors[0][:message]).to eq("Call to semgrep failed")
 
@@ -685,7 +821,7 @@ describe Salus::Scanners::Semgrep do
         expect(errors.size).to eq(1)
         expect(errors[0][:status]).to eq(3) # semgrep exit code documentation
         expect(errors[0][:stderr]).to match(
-          /Could not parse unparsable_py\.py as python \(warn\)\n\t.+?unparsable_py\.py:3-3/
+          /`print\(\"foo\"` was unexpected \(warn\)\n\t.+?unparsable_py\.py:3-3/
         )
         expect(errors[0][:message]).to eq("Call to semgrep failed")
 
@@ -717,7 +853,8 @@ describe Salus::Scanners::Semgrep do
           [
             {
               level: "warn",
-              message: "Could not parse unparsable_js.js as javascript",
+              message: "Syntax error at line /home/spec/fixtures/semgrep/invalid/"\
+              "unparsable_js.js:3:\n `cosnt` was unexpected",
               spans:
               [
                 {
@@ -734,10 +871,29 @@ describe Salus::Scanners::Semgrep do
                     }
                 }
               ],
-              type: "SourceParseError"
+              type: "Syntax error"
             }
           ]
         )
+      end
+
+      it "should not record syntax error if show_syntax_errors=false" do
+        base = "spec/fixtures/semgrep/invalid"
+        repo = Salus::Repo.new(base)
+        config = {
+          "show_syntax_errors" => false,
+          "matches" => [
+            {
+              "pattern" => "$X",
+              "language" => "js"
+            }
+          ]
+        }
+        scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
+        scanner.run
+
+        warnings = scanner.report.to_h.fetch(:warn)
+        expect(warnings).to be_empty
       end
     end
 
@@ -761,7 +917,7 @@ describe Salus::Scanners::Semgrep do
         expect(errors.size).to eq(1)
         expect(errors[0][:status]).to eq(3) # semgrep exit code documentation
         expect(errors[0][:stderr]).to match(
-          /Could not parse unparsable_js\.js as javascript \(warn\)\n\t.+?unparsable_js\.js:3-3/
+          /\(warn\)\n\t.+?unparsable_js\.js:3-3/
         )
         expect(errors[0][:message]).to eq("Call to semgrep failed")
 
@@ -777,6 +933,37 @@ describe Salus::Scanners::Semgrep do
       repo = Salus::Repo.new("spec/fixtures/blank_repository")
       scanner = Salus::Scanners::Semgrep.new(repository: repo, config: {})
       expect(scanner.should_run?).to eq(true)
+    end
+  end
+
+  describe '#build_command_and_message' do
+    let(:scanner) { Salus::Scanners::Semgrep.new(repository: Salus::Repo.new(''), config: {}) }
+
+    it 'config for relative path' do
+      match = { "config" => "myrules.yaml", "forbidden" => true, "required" => false,
+                "strict" => false, "message" => "" }
+      cmd = scanner.build_command_and_message(match, false, '/home/repo', nil)[0]
+      expected_cmd = ["semgrep", "--json", "--disable-version-check",
+                      "--config", "/home/repo/myrules.yaml", "/home/repo"]
+      expect(cmd).to eq(expected_cmd)
+    end
+
+    it 'config for url' do
+      match = { "config" => "https://localhost/rules", "forbidden" => true, "required" => false,
+                "strict" => false, "message" => "" }
+      cmd = scanner.build_command_and_message(match, false, '/home/repo', nil)[0]
+      expected_cmd = ["semgrep", "--json", "--disable-version-check",
+                      "--config", "https://localhost/rules", "/home/repo"]
+      expect(cmd).to eq(expected_cmd)
+    end
+
+    it 'config for absolute path' do
+      match = { "config" => "/home/semgrep_rules", "forbidden" => true, "required" => false,
+                "strict" => false, "message" => "" }
+      cmd = scanner.build_command_and_message(match, false, '/home/repo', nil)[0]
+      expected_cmd = ["semgrep", "--json", "--disable-version-check",
+                      "--config", "/home/semgrep_rules", "/home/repo"]
+      expect(cmd).to eq(expected_cmd)
     end
   end
 

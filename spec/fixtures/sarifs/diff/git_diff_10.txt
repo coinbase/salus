@@ -1,0 +1,8 @@
+diff --git a/spec/fixtures/secrets/url.txt b/spec/fixtures/secrets/url.txt
+index 050d41c2..114ee95f 100644
+--- a/spec/fixtures/secrets/url.txt
++++ b/spec/fixtures/secrets/url.txt
+@@ -1,2 +1,4 @@
+ Hello world
++jdbc:postgresql://localhost:2345/test?user=test&password=DCBA&loggerLevel=DEBUG&&&loggerFile=./blah.jsp
++Hello world again

@@ -1,11 +1,11 @@
-require 'salus/scanners/base'
 require 'uri'
 require 'net/http'
+require 'salus/scanners/report_base'
 
 # Report python library usage
 
 module Salus::Scanners
-  class ReportPythonModules < Base
+  class ReportPythonModules < ReportBase
     class PyPiApiError < StandardError; end
     class ApiTooManyRequestsError < StandardError; end
 

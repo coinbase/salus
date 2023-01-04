@@ -20,7 +20,7 @@ In adddition, simple rules can be specified directly in salus.yaml.
 
 In salus.yaml, you can specify a set of semgrep rules with a path to a [Semgrep config file](https://github.com/returntocorp/semgrep/blob/develop/docs/configuration-files.md).  You **must** specify
 
-* `config` - a full Semgrep config file
+* `config` - a full Semgrep config file/directory. This config can either be nested inside the repo, or start with `/` if the path also contains `semgrep`.
 * Either `required: true` or `forbidden: true`
   - If a found pattern is forbidden or if a not found pattern is required, then the scanner will fail and the `message` will be show to the developer in the report.
 
@@ -73,6 +73,7 @@ Each simple rule in salus.yaml **must** include
 * `pattern` - the single pattern
 * `forbidden: true` or `required: true
 * `language`- Any of: c, go, java, javascript, or python
+* `sub-dir` - this pattern will apply only to the sub-dir listed. This should be a valid sub-directory under the directory defined by "directories" under "recursion" config
 
 The user can **optionally** provide
 * `exclude` - Skip any file or directory that matches this pattern
@@ -107,7 +108,20 @@ scanner_configs:
 
 ## Whitelisting Findings
 
-Please see [semgrep's ignoring findings documentation](https://github.com/returntocorp/semgrep/blob/develop/docs/configuration-files.md#ignoring-findings).
+Please see [semgrep's documentation on how to use an inline comment to allowlist findings](https://semgrep.dev/docs/ignoring-files-folders-code/#reference-summary).
+
+You can also whitelist all findings for specific ids in the salus config, like
+```yaml
+scanner_configs:
+  Semgrep:
+    exceptions:
+      - advisory_id: myid1
+        changed_by: engineer1
+        notes: false positive because ...
+      - advisory_id: myid2
+        changed_by: engineer2
+        notes: false positive because ...
+```
 
 ## Limitations of Semgrep
 

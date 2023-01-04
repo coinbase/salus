@@ -1,15 +1,10 @@
-require 'salus/scanners/base'
+require 'salus/scanners/report_base'
 
 # Report Swift usage
 
 module Salus::Scanners
-  class ReportSwiftDeps < Base
+  class ReportSwiftDeps < ReportBase
     class ReportSwiftDepsError < StandardError; end
-
-    def self.scanner_type
-      Salus::ScannerTypes::SBOM_REPORT
-    end
-
     def run
       shell_return =
         run_shell(

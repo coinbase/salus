@@ -24,7 +24,7 @@ describe Sarif::SemgrepSarif do
         result = sarif_report["runs"][0]["results"]
 
         expect(result).to include({
-          "ruleId": "Forbidden Pattern Found",
+          "ruleId": "11d6bdec931137a1063338f1f80a631f5b1f2fc2",
           "ruleIndex": 0,
           "level": "error",
           "message": {
@@ -47,8 +47,46 @@ describe Sarif::SemgrepSarif do
               }
             }
           ],
-          "properties": { "severity": "HIGH" }
+          "properties": { "severity": "ERROR" }
         }.deep_stringify_keys)
+
+        expect(result).to include({
+                                    "level" => "error",
+          "locations" => [
+            { "physicalLocation" => { "artifactLocation" =>
+              { "uri" =>
+               "/home/spec/fixtures/semgrep/invalid/unparsable_py.py",
+               "uriBaseId" => "%SRCROOT%" }, "region" => {
+                 "startColumn" => 1, "startLine" => 3
+               } } }
+          ],
+          "message" => { "text" =>
+                         "Syntax error at line "\
+                         "/home/spec/fixtures/semgrep/invalid/unparsable_py.py:3:"\
+                         "\n `print(\"foo\"` was unexpected" },
+          "ruleId" => "SAL002", "ruleIndex" => 1
+                                  })
+      end
+
+      it 'vulnerabilities found in report have user specified id' do
+        repo = Salus::Repo.new("spec/fixtures/semgrep")
+        config = {
+          "matches" => [
+            {
+              "config" => "semgrep-config.yml",
+              "forbidden" => true
+            }
+          ]
+        }
+        scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
+        scanner.run
+        report = Salus::Report.new(project_name: "Neon Genesis")
+        report.add_scan_report(scanner.report, required: true)
+        sarif_report = JSON.parse(report.to_sarif)
+        result = sarif_report["runs"][0]["results"]
+        # semgrep-eqeq-test is the user-specified id in the semgrep config
+        matches = result.select { |r| r["ruleId"] == "semgrep-eqeq-test" }
+        expect(matches.size).to eq(3)
       end
 
       it 'contains info about missing required vulnerabilities' do
@@ -98,6 +136,55 @@ describe Sarif::SemgrepSarif do
             "locations" => []
           }
         )
+      end
+
+      it 'sarif contains correct code snippet' do
+        config = {
+          "matches" => [
+            {
+              "pattern" => "foo(...)",
+              "language" => "ruby",
+              "message" => "My msg",
+              "forbidden" => true
+            }
+          ]
+        }
+        repo = Salus::Repo.new("spec/fixtures/semgrep")
+        scanner = Salus::Scanners::Semgrep.new(repository: repo, config: config)
+        scanner.run
+        report = Salus::Report.new(project_name: "Neon Genesis")
+        report.add_scan_report(scanner.report, required: true)
+        sarif_report = JSON.parse(report.to_sarif)
+        result_loc = sarif_report["runs"][0]["results"][0]["locations"][0]
+        code_snippet = result_loc["physicalLocation"]["region"]["snippet"]["text"]
+        expect(code_snippet).to eq("foo('a:b', 'a:b:c:d')")
+      end
+    end
+  end
+
+  describe 'sarif diff' do
+    context 'git diff support' do
+      let(:git_diff) { File.read('spec/fixtures/sarifs/diff/git_diff_9.txt') }
+
+      it 'should find code in git diff if snippet' do
+        snippet = "      bar()"
+        new_lines_in_git_diff = Sarif::BaseSarif.new_lines_in_git_diff(git_diff)
+        r = Sarif::SemgrepSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
+        expect(r).to be true
+      end
+
+      it 'should find code in git diff if snippet has multiple lines' do
+        snippet = "      if x ==\n         x"
+        new_lines_in_git_diff = Sarif::BaseSarif.new_lines_in_git_diff(git_diff)
+        r = Sarif::SemgrepSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
+        expect(r).to be true
+      end
+
+      it 'should not find code in git diff if snippet not in git diff' do
+        snippet = "hello_world()"
+        new_lines_in_git_diff = Sarif::BaseSarif.new_lines_in_git_diff(git_diff)
+        r = Sarif::SemgrepSarif.snippet_possibly_in_git_diff?(snippet, new_lines_in_git_diff)
+        expect(r).to be false
       end
     end
   end

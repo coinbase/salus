@@ -6,13 +6,14 @@
       "tool": {
         "driver": {
           "name": "Brakeman",
-          "version": "5.3.0",
+          "version": "5.3.1",
           "informationUri": "https://github.com/presidentbeef/brakeman",
           "rules": [
 
           ],
           "properties": {
-            "salusEnforced": true
+            "salusEnforced": true,
+            "salusWarnMessage": false
           }
         }
       },
@@ -80,7 +81,8 @@
             }
           ],
           "properties": {
-            "salusEnforced": true
+            "salusEnforced": true,
+            "salusWarnMessage": false
           }
         }
       },
@@ -131,7 +133,8 @@
 
           ],
           "properties": {
-            "salusEnforced": true
+            "salusEnforced": true,
+            "salusWarnMessage": false
           }
         }
       },
@@ -162,7 +165,8 @@
 
           ],
           "properties": {
-            "salusEnforced": true
+            "salusEnforced": true,
+            "salusWarnMessage": false
           }
         }
       },
@@ -193,7 +197,8 @@
 
           ],
           "properties": {
-            "salusEnforced": false
+            "salusEnforced": false,
+            "salusWarnMessage": false
           }
         }
       },
@@ -234,7 +239,8 @@
 
           ],
           "properties": {
-            "salusEnforced": true
+            "salusEnforced": true,
+            "salusWarnMessage": false
           }
         }
       },
