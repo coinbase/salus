@@ -7,6 +7,9 @@ RSpec::Matchers.define :match_report_json do |expected|
     json['scans'].each do |scanner, _|
       json['scans'][scanner].delete(key)
     end
+    # Trufflehog outputs the newest available version, even if
+    # it is not the installed version, so just don't compare Trufflehog version
+    json['scans']['Trufflehog']&.delete('version')
 
     return json if json.dig('config', 'report_uris').nil?
 
@@ -292,7 +295,6 @@ describe Salus::Processor do
         processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/local_uri')
         processor.scan_project
         processor.export_report
-
         expect(File.read(local_uri)).to match_report_json(expected_report, true)
 
         # remove report file that was generated from Salus execution
