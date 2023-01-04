@@ -31,7 +31,7 @@ module Salus::Scanners::LanguageVersion
       if max_version && (version > max_version)
         error_msg = "Repository language version (#{version}) is greater " \
                     "than maximum configured version (#{max_version}). " \
-                    "Please downgrapde the language version."
+                    "Please downgrade the language version."
         report_error(error_msg)
         return report_failure
       end
