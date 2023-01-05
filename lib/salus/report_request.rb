@@ -9,7 +9,8 @@ module Salus
       'sarif' => 'application/json',
       'sarif_diff' => 'application/json',
       'sarif_diff_full' => 'application/json',
-      'cyclonedx-json' => 'application/json'
+      'cyclonedx-json' => 'application/json',
+      'auto_fix' => 'application/json'
     }.freeze
 
     FORMAT_SARIF_DIFF = "sarif_diff".freeze
