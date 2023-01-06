@@ -161,7 +161,7 @@ module Salus
           cls = scanner_class
           scanner_group = cls.block_scanner_group? ? cls.scanner_type : default_group
           scanning_thread_groups[scanner_group] ||= []
-          scanning_thread_groups[scanner_group].concat(scanner_threads)
+          scanning_thread_groups[scanner_group].concat(scanning_threads)
 
           files_copied.concat(copied)
         end
