@@ -150,7 +150,7 @@ module Salus
             Salus::PluginManager.send_event(:skip_scanner, scanner_name)
             next
           end
-
+          # run_scanner while spin up threads as needed
           scanning_threads, copied = run_scanner(config, scanner_class, scanner_name)
 
           # Let's group our threads.  This allows us to fire off events as various threads
@@ -159,9 +159,14 @@ module Salus
           # of their scan group useful if you have a scanner that want's to wait on
           # other scanners to finish from the same group
           cls = scanner_class
+
           scanner_group = cls.block_scanner_group? ? cls.scanner_type : default_group
-          scanning_thread_groups[scanner_group] ||= []
-          scanning_thread_groups[scanner_group].concat(scanning_threads)
+
+          scanning_thread_groups[scanner_group] ||= {}
+          scanning_thread_groups[scanner_group]['threads'] ||= []
+          scanning_thread_groups[scanner_group]['scanner_names'] ||= []
+          scanning_thread_groups[scanner_group]['threads'].concat(scanning_threads)
+          scanning_thread_groups[scanner_group]['scanner_names'].push(scanner_name)
 
           files_copied.concat(copied)
         end
@@ -171,10 +176,15 @@ module Salus
         [Salus::ScannerTypes::SBOM_REPORT, Salus::ScannerTypes::LICENSE,
          Salus::ScannerTypes::DEPENDENCY, Salus::ScannerTypes::SAST,
          Salus::ScannerTypes::DYNAMIC, default_group].each do |scanner_type|
-          scanning_thread_groups[scanner_type]&.each(&:join)
+          # We are sending events for each group including empty ones
+          group = scanning_thread_groups[scanner_type]
+          scanner_names = group.nil? ? [] : group['scanner_names']
+          # Wait for the threads in this group to finish
+          group['threads']&.each(&:join) unless group.nil?
+
           Salus::PluginManager.send_event(:scanning_group_completed,
                                           scanner_type,
-                                          @scanners_ran,
+                                          scanner_names,
                                           @report)
         end
 

@@ -80,7 +80,7 @@ Events are published, plugins can register listeners for events.
 `Event :scanning_group_completed`
 
 - scanning_group_completed is fired after a group of scanners has completed scanning.  Groups: Salus::ScannerTypes::SBOM_REPORT, Salus::ScannerTypes::LICENSE, Salus::ScannerTypes::DEPENDENCY, Salus::ScannerTypes::SAST, Salus::ScannerTypes::DYNAMIC, 'default'.
-The event is passed three parameters, the scanning group, the list of scanners ran and the scanning report.
+The event is passed three parameters, the scanning group, the list of scanners ran (array of strings) and the scanning report object.
 
 `Event :run_shell`
 
