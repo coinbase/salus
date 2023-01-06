@@ -21,6 +21,7 @@ module Salus::Scanners
     YARN_VERSION_COMMAND = 'yarn --version'.freeze
     BREAKING_VERSION = "2.0.0".freeze
     YARN_COMMAND = 'yarn'.freeze
+    YARN_INSTALL = 'yarn install'.freeze
 
     def should_run?
       @repository.yarn_lock_present?
@@ -129,11 +130,11 @@ module Salus::Scanners
 
       Salus::YarnLock.new(File.join(chdir, 'yarn.lock')).add_line_number(vulns)
 
-      auto_fix = @config.fetch("auto_fix", false)
-      if auto_fix
-        auto_fix_v2 = Salus::Autofix::YarnAuditV2.new(@repository.path_to_repo)
+      auto_fix_config = @config.fetch("auto_fix", nil)
+      unless auto_fix_config.nil?
+        auto_fix_v2 = Salus::Autofix::YarnAuditV2.new(@repository.path_to_repo, 
+          auto_fix_config, @repository.yarn_lock_path)
         auto_fix_v2.run_auto_fix
-        run_shell(YARN_COMMAND)
       end
 
       vulns = combine_vulns(vulns)

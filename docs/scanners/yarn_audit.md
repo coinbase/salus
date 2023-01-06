@@ -31,7 +31,9 @@ If you want salus to autofix the yarn dependency files, then set `auto_fix: true
 ```yaml
 scanner_configs:
   YarnAudit:
-    auto_fix: true
+    auto_fix:
+      run: true
+      registry: <url>
 ```
 
 If you only want to scan production-related dependencies, then you want the following:

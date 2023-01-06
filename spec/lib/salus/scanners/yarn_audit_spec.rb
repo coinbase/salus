@@ -187,7 +187,8 @@ describe Salus::Scanners::YarnAudit do
       expect(vulns.size).to eq(61)
 
       auto_fix_scanner = Salus::Scanners::YarnAudit.new(repository: repo,
-        config: { 'auto_fix' => true })
+        config: {'auto_fix' => {'run' => 'true' }}
+        )
       auto_fix_scanner.run
 
       after_fix_scan = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
