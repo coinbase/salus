@@ -342,6 +342,24 @@ describe Salus::Processor do
         processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/multiple_endpoints')
         processor.scan_project
       end
+
+      it 'should Recieve scanning_group_completed event with scanning context' do
+        Salus::PluginManager.register_listener(listener)
+
+        [Salus::ScannerTypes::SBOM_REPORT, Salus::ScannerTypes::LICENSE,
+         Salus::ScannerTypes::DEPENDENCY, Salus::ScannerTypes::SAST,
+         Salus::ScannerTypes::DYNAMIC, 'default'].each do |scanner_type|
+          # We expect to receive events in the listed order
+          expect(listener).to receive(:scanning_group_completed).with(
+            scanner_type,
+            anything,
+            anything
+          )
+        end
+
+        processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/multiple_endpoints')
+        processor.scan_project
+      end
     end
 
     context 'remote URI headers verbs' do
