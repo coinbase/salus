@@ -331,12 +331,12 @@ describe Salus::Processor do
       let(:remote_uri_two) { 'https://nerv.tk3/salus-report' }
       let(:listener) { Object.new }
       before(:each) do
-        def listener.scanning_group_completed(_event_name, data)
-          data
+        def listener.scanning_group_completed(_scanner_type, _scanners_ran, report)
+          report
         end
       end
 
-      it 'should Recieve reporting_scanners_ran event' do
+      it 'should Recieve scanning_group_completed event' do
         Salus::PluginManager.register_listener(listener)
         expect(listener).to receive(:scanning_group_completed)
 
