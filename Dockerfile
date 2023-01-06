@@ -32,14 +32,14 @@ RUN wget https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_
 RUN tar xvf /tmp/openjdk-11.0.2_linux-x64_bin.tar.gz -C /
 
 ### Gradle 7
-RUN wget https://services.gradle.org/distributions/gradle-7.3.3-bin.zip -P /tmp
+RUN wget https://services.gradle.org/distributions/gradle-7.5.1-bin.zip -P /tmp
 RUN unzip -d /opt/gradle /tmp/gradle-*.zip
 
 ### Gradle 6
 RUN wget https://services.gradle.org/distributions/gradle-6.9.2-bin.zip -P /tmp2
 RUN unzip -d /opt/gradle /tmp2/gradle-*.zip
 
-ENV GRADLE_HOME="/opt/gradle/gradle-7.3.3"
+ENV GRADLE_HOME="/opt/gradle/gradle-7.5.1"
 ENV PATH="${GRADLE_HOME}/bin:${PATH}"
 
 ### Rust
@@ -112,6 +112,18 @@ ENV SIFT_VERSION v0.9.0
 
 RUN go install github.com/svent/sift@${SIFT_VERSION}
 
+### truffle hog
+
+ENV TRUFFLEHOG_VERSION 3.19.0
+ENV TRUFFLEHOG_TARBALL trufflehog_${TRUFFLEHOG_VERSION}_linux_amd64.tar.gz
+ENV TRUFFLEHOG_DOWNLOAD_URL https://github.com/trufflesecurity/trufflehog/releases/download/v${TRUFFLEHOG_VERSION}/${TRUFFLEHOG_TARBALL}
+ENV TRUFFLEHOG_DOWNLOAD_SHA c481e856e90af1a19ee847838adaa15220c3b0cf147ba940f88c23fb067bdcf3
+
+RUN mkdir /root/trufflehog_files
+RUN curl -fsSL "$TRUFFLEHOG_DOWNLOAD_URL" -o trufflehog.tar.gz \
+  && echo "$TRUFFLEHOG_DOWNLOAD_SHA trufflehog.tar.gz" | sha256sum -c - \
+  && tar -C /root/trufflehog_files -xzf trufflehog.tar.gz \
+  && ln -sf /root/trufflehog_files/trufflehog /usr/local/bin
 
 ### semgrep
 # https://semgrep.dev
@@ -178,6 +190,7 @@ RUN curl -fsSL "$NODE_DOWNLOAD_URL" -o node.tar.gz \
 ENV PIP_VERSION 18.1
 COPY --from=builder /root/go/bin/sift /usr/local/bin
 COPY --from=builder /root/gosec/gosec /usr/local/bin
+COPY --from=builder /root/trufflehog_files/trufflehog /usr/local/bin
 COPY --from=builder /usr/local/bin/cargo /usr/local/bin
 COPY --from=builder /root/vendor /home/vendor
 COPY --from=builder /root/.local /root/.local
@@ -186,8 +199,8 @@ COPY --from=builder /usr/local/go /usr/local/go
 COPY --from=builder /usr/bin/rg /usr/bin/rg
 COPY --from=builder /jdk-11.0.2 /jdk-11.0.2
 ENV JAVA_HOME /jdk-11.0.2
-COPY --from=builder /opt/gradle/gradle-7.3.3 /opt/gradle/gradle-7.3.3
-ENV PATH="/opt/gradle/gradle-7.3.3/bin:${PATH}"
+COPY --from=builder /opt/gradle/gradle-7.5.1 /opt/gradle/gradle-7.5.1
+ENV PATH="/opt/gradle/gradle-7.5.1/bin:${PATH}"
 
 COPY --from=builder /opt/gradle/gradle-6.9.2 /opt/gradle/gradle-6.9.2
 

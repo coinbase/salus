@@ -270,6 +270,17 @@ module Salus
       bugsnag_notify(e.class.to_s + " " + e.message + "\nBuild Info:" + @builds.to_s)
     end
 
+    def to_auto_fix
+      auto_fixes = {}
+      file_names = ["yarn.lock", "package.json"]
+      file_names.each do |file_name|
+        if File.exist?("/home/repo/#{file_name}")
+          auto_fixes[file_name] = File.read("/home/repo/#{file_name}")
+        end
+      end
+      JSON.pretty_generate(auto_fixes)
+    end
+
     def publish_report(directive)
       # First create the string for the report.
       uri = directive['uri']
@@ -283,6 +294,7 @@ module Salus
                       when 'sarif_diff' then to_sarif_diff
                       when 'sarif_diff_full' then to_full_sarif_diff
                       when 'cyclonedx-json' then to_cyclonedx(directive['cyclonedx_options'] || {})
+                      when 'auto_fix' then to_auto_fix
                       else
                         raise ExportReportError, "unknown report format #{directive['format']}"
                       end
@@ -405,9 +417,13 @@ module Salus
                to_full_sarif_diff
              when 'cyclonedx-json'
                to_cyclonedx(config['cyclonedx_options'] || {})
+             when 'auto_fix'
+               to_auto_fix
              end
 
-      if %w[json sarif sarif_diff sarif_diff_full cyclonedx-json].include?(config['format'])
+      if %w[json sarif sarif_diff sarif_diff_full cyclonedx-json auto_fix].include?(
+        config['format']
+      )
         body = JSON.parse(body)
         return JSON.pretty_generate(report_body_hash(config, body))
       end

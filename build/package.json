@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "@yarnpkg/lockfile": "^1.0.1"
+    "@yarnpkg/lockfile": "^1.0.1",
+    "yarn-audit-fix": "9.3.7"
   }
 }
