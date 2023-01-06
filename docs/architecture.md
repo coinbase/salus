@@ -89,4 +89,3 @@ The event is passed three parameters, the scanning group, the list of scanners r
 `Event :report_warn`
 
 - report_warn will be invoked during scans if a scanner has determined a warning is necessary.  The data payload will be the type of warning and corresponding message.
-
