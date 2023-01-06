@@ -57,6 +57,8 @@ module Salus::Scanners
       raise NoMethodError, 'implement in subclass'
     end
 
+    # By default we want the class to be blocking for it's group
+    # See scanning_group_completed event for details
     def self.block_scanner_group?
       true
     end
