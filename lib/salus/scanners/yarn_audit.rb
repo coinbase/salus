@@ -132,8 +132,9 @@ module Salus::Scanners
 
       auto_fix_config = @config.fetch("auto_fix", nil)
       unless auto_fix_config.nil?
-        auto_fix_v2 = Salus::Autofix::YarnAuditV2.new(@repository.path_to_repo, 
-          auto_fix_config, @repository.yarn_lock_path)
+        auto_fix_v2 = Salus::Autofix::YarnAuditV2.new(
+          @repository.path_to_repo, auto_fix_config, @repository.yarn_lock_path
+        )
         auto_fix_v2.run_auto_fix
       end
 

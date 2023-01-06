@@ -20,10 +20,10 @@ module Salus::Autofix
         cmd += REGISTRY_STRING + @config.fetch("registry") if @config.fetch("registry", nil)
         shell_return = run_shell(cmd, chdir: @path_to_repo)
         write_auto_fix_files(@path_to_repo, 'yarn-autofix.lock', File.read(@yarn_path))
-        
+
         return true if shell_return.stdout.include?("success Saved lockfile.")
       end
-      
+
       false
     end
   end
