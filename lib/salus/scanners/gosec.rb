@@ -12,8 +12,9 @@ module Salus::Scanners
 
     def run
       @filter_errors = Set.new
-      if @config['filter_errors'].is_a?(Array) && @config['filter_errors'].size.positive?
-        @filter_errors = Set.new(@config['filter_errors'])
+      config_filter_errors = @config['filter_errors']
+      if config_filter_errors.is_a?(Array) && config_filter_errors.size.positive?
+        @filter_errors = Set.new(config_filter_errors)
       end
 
       # 'run_from_dirs' specifies a list of subdirs to run salus from
