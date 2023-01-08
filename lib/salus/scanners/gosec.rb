@@ -11,6 +11,11 @@ module Salus::Scanners
     end
 
     def run
+      @filter_errors = Set.new
+      if @config['filter_errors'].is_a?(Array) && @config['filter_errors'].size.positive?
+        @filter_errors = Set.new(@config['filter_errors'])
+      end
+
       # 'run_from_dirs' specifies a list of subdirs to run salus from
       # if not specified, then run_from_dir will mimic the original gosec 'run' behavior
       return run_from_dir if @config['run_from_dirs'].nil?
@@ -48,6 +53,7 @@ module Salus::Scanners
     end
 
     # rubocop:disable Style/IfInsideElse
+    # rubocop:disable Metrics/AbcSize
     def run_from_dir(dir = nil)
       # Shell Instructions:
       #   - -fmt=json for JSON output
@@ -86,6 +92,16 @@ module Salus::Scanners
       num_found = shell_return_json['Stats']['found'] # number found
       golang_errors = shell_return_json['Golang errors'] # a hash of compile errors
       found_issues = shell_return_json['Issues'] # a list of found issues
+
+      if @filter_errors.size.positive?
+        remove_errors(golang_errors)
+        if golang_errors.empty? && found_issues.empty?
+          shell_return.instance_variable_set(:@status, 0)
+          shell_return.instance_variable_set(:@success, true)
+        end
+        new_stdout = JSON.pretty_generate(shell_return_json)
+        shell_return.instance_variable_set(:@stdout, new_stdout)
+      end
 
       # Gosec's Logging Behavior:
       #   - no vulns found - status 0, logs to STDERR and STDOUT
@@ -152,6 +168,7 @@ module Salus::Scanners
     end
 
     # rubocop:enable Style/IfInsideElse
+    # rubocop:enable Metrics/AbcSize
 
     def version
       shell_return = run_shell('gosec --version')
@@ -212,6 +229,27 @@ module Salus::Scanners
 
     def go_file?
       !Dir.glob("#{@repository.path_to_repo}/**/*.go").first.nil?
+    end
+
+    private
+
+    def remove_errors(golang_errors)
+      to_delete = {}
+      golang_errors.each do |filename, data_maps|
+        data_maps.each_with_index do |d, i|
+          if d['error'].to_s != '' && @filter_errors.include?(d['error'])
+            to_delete[filename] = [] if to_delete[filename].nil?
+            to_delete[filename].push i
+          end
+        end
+      end
+      to_delete.each do |filename, indexes|
+        rindexes = indexes.reverse
+        rindexes.each do |i|
+          golang_errors[filename].delete_at(i)
+          golang_errors.delete(filename) if golang_errors[filename].size.zero?
+        end
+      end
     end
   end
 end
