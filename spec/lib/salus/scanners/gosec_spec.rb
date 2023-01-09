@@ -84,6 +84,7 @@ describe Salus::Scanners::Gosec do
         config = { 'filter_errors' => ['Pintl not declared by package fmt'] }
         scanner = Salus::Scanners::Gosec.new(repository: repo, config: config)
         scanner.run
+
         expect(scanner.report.passed?).to eq(true)
         report_data = scanner.report.to_h
         expect(report_data[:errors]).to be_empty
@@ -96,6 +97,7 @@ describe Salus::Scanners::Gosec do
                                        'Foo not declared by package fmt'] }
         scanner = Salus::Scanners::Gosec.new(repository: repo, config: config)
         scanner.run
+
         expect(scanner.report.passed?).to eq(false)
         report_data = scanner.report.to_h
         expect(report_data[:errors]).to be_empty
@@ -108,6 +110,7 @@ describe Salus::Scanners::Gosec do
         config = { 'filter_errors' => ['Foo not declared by package fmt'] }
         scanner = Salus::Scanners::Gosec.new(repository: repo, config: config)
         scanner.run
+
         expect(scanner.report.passed?).to eq(false)
         report_data = scanner.report.to_h
         expect(report_data[:errors]).to be_empty

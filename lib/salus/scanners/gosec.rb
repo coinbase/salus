@@ -13,6 +13,7 @@ module Salus::Scanners
     def run
       @filter_errors = Set.new
       config_filter_errors = @config['filter_errors']
+
       if config_filter_errors.is_a?(Array) && config_filter_errors.size.positive?
         @filter_errors = Set.new(config_filter_errors)
       end
@@ -96,10 +97,12 @@ module Salus::Scanners
 
       if @filter_errors.size.positive?
         remove_errors(golang_errors)
+
         if golang_errors.empty? && found_issues.empty?
           shell_return.instance_variable_set(:@status, 0)
           shell_return.instance_variable_set(:@success, true)
         end
+
         new_stdout = JSON.pretty_generate(shell_return_json)
         shell_return.instance_variable_set(:@stdout, new_stdout)
       end
@@ -236,6 +239,7 @@ module Salus::Scanners
 
     def remove_errors(golang_errors)
       to_delete = {}
+
       golang_errors.each do |filename, data_maps|
         data_maps.each_with_index do |d, i|
           if d['error'].to_s != '' && @filter_errors.include?(d['error'])
@@ -244,6 +248,7 @@ module Salus::Scanners
           end
         end
       end
+
       to_delete.each do |filename, indexes|
         rindexes = indexes.reverse
         rindexes.each do |i|
