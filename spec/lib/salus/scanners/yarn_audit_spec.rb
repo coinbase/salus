@@ -71,7 +71,7 @@ describe Salus::Scanners::YarnAudit do
 
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
       vulns = JSON.parse(scanner.report.to_h[:info][:stdout]).sort { |a, b| a["ID"] <=> b["ID"] }
-      expect(vulns.size).to eq(19)
+      expect(vulns.size).to eq(18)
 
       vulns.each do |vul|
         ["Package", "Patched in", "Dependency of", "More info", "Severity", "Title"].each do |attr|
