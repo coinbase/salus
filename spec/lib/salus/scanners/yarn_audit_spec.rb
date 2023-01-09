@@ -176,6 +176,27 @@ describe Salus::Scanners::YarnAudit do
   end
 
   describe '#autofix' do
+    it 'should not apply auto fixes resulting in same vulns present' do
+      repo_path = 'spec/fixtures/yarn_audit/auto-fix'
+      repo = Salus::Repo.new(repo_path)
+
+      scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
+      scanner.run
+      expect(scanner.report.to_h.fetch(:passed)).to eq(false)
+      vulns = JSON.parse(scanner.report.to_h[:info][:stdout])
+      expect(vulns.size).to eq(61)
+
+      auto_fix_scanner = Salus::Scanners::YarnAudit.new(repository: repo,
+        config: { 'auto_fix' => { 'run' => false } })
+      auto_fix_scanner.run
+
+      after_fix_scan = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
+      after_fix_scan.run
+      expect(after_fix_scan.report.to_h.fetch(:passed)).to eq(false)
+      after_fix_vulns = JSON.parse(after_fix_scan.report.to_h[:info][:stdout])
+      expect(after_fix_vulns.size).to eq(61)
+    end
+
     it 'should apply auto fixes resulting in reduced vulns' do
       repo_path = 'spec/fixtures/yarn_audit/auto-fix'
       repo = Salus::Repo.new(repo_path)
@@ -187,7 +208,7 @@ describe Salus::Scanners::YarnAudit do
       expect(vulns.size).to eq(61)
 
       auto_fix_scanner = Salus::Scanners::YarnAudit.new(repository: repo,
-        config: { 'auto_fix' => true })
+        config: { 'auto_fix' => { 'run' => true } })
       auto_fix_scanner.run
 
       after_fix_scan = Salus::Scanners::YarnAudit.new(repository: repo, config: {})

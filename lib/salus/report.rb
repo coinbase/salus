@@ -272,10 +272,12 @@ module Salus
 
     def to_auto_fix
       auto_fixes = {}
-      file_names = ["yarn.lock", "package.json"]
-      file_names.each do |file_name|
-        if File.exist?("/home/repo/#{file_name}")
-          auto_fixes[file_name] = File.read("/home/repo/#{file_name}")
+      file_names = {
+        "yarn.lock": "yarn-autofix.lock"
+      }
+      file_names.each do |file_name, file_value|
+        if File.exist?("/home/repo/#{file_value}")
+          auto_fixes[file_name] = File.read("/home/repo/#{file_value}")
         end
       end
       JSON.pretty_generate(auto_fixes)
