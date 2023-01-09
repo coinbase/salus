@@ -81,20 +81,20 @@ describe Salus::Scanners::YarnAudit do
         expect(vul["ID"]).to be_kind_of(Integer)
       end
 
-      id_vuls = vulns.select { |v| v['ID'] == 1_070_415 }
+      id_vuls = vulns.select { |v| v['ID'] == 1_085_945 }
       expect(id_vuls.size).to eq(1)
       # vul has two merged dependdency of
       expected_vul = { "Package" => "nth-check",
                       "Patched in" => ">=2.0.1",
                       "Dependency of" => "rollup-plugin-postcss",
-                      "More info" => "https://www.npmjs.com/advisories/1070415",
+                      "More info" => "https://www.npmjs.com/advisories/1085945",
                       "Severity" => "high",
                       "Title" => "Inefficient Regular Expression Complexity in nth-check",
-                      "ID" => 1_070_415 }
+                      "ID" => 1_085_945 }
       expect(id_vuls[0]).to eq(expected_vul)
 
       id_vuls_w_paths = scanner.instance_variable_get(:@vulns_w_paths)
-        .select { |v| v['ID'] == 1_070_415 }
+        .select { |v| v['ID'] == 1_085_945 }
       expect(id_vuls.size).to eq(1)
       expected_vul['Path'] = "rollup-plugin-postcss > cssnano > cssnano-preset-default > "\
                              "postcss-svgo > svgo > css-select > nth-check"

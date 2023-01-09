@@ -1,0 +1,1613 @@
+
+Cyclonedx::ReportRubyGems
+  to_cyclonedx schema validation
+    succeeds if generated cyclonedx format is correct
+    succeeds if generated cyclonedx format is correct
+    succeeds if generated cyclonedx version is empty
+    succeeds if scan_reports contain duplicate reports
+    fails if generated cyclonedx report is not valid
+  to_cyclonedx spec version validation
+    cylonedx spec version 1.2 does not include properties field
+    cylonedx spec version 1.3 does include properties field
+    fails if provided cylonedx spec version is unsupported
+
+Cyclonedx::PackageUrl
+  purl format matches expected
+    purl format is correct with no special characters
+    purl format is correct with no version
+    purl format is correct with percent encoded strings
+    purl format removes leading and trailing / from namespace
+
+Cyclonedx::ReportGoDep
+  #run
+    should report all the deps using go.sum if available
+    should report all the deps in the Gopkg.lock if present
+    should report warning and send event if no Gopkg.lock/go.sumavailable and return empty build
+
+Cyclonedx::ReportGradleDeps
+  #run
+    should report all the deps in the build.gradle
+    should produce valid CycloneDX under normal conditions
+
+Cyclonedx::ReportNodeModules
+  #run
+    should report all the deps in the package.json if both\
+        package-lock.json and yarn.lock files do not exist
+    should report all the deps in the package-lock.json if present
+    should report all the deps in the yarn.lock if present
+    should report all the deps in the bower.json if present
+    should produce valid CycloneDX for bower.json
+    should produce valid CycloneDX for including dev deps package-lock.json
+    should produce valid CycloneDX for excluding dev deps package-lock.json
+
+Cyclonedx::ReportPodfileLock
+  #run
+    should report all the deps in the Podfile.lock
+    should produce valid CycloneDX under normal conditions
+    should produce valid CycloneDX when an unparseable file is found
+
+Cyclonedx::ReportPomXml
+  #run
+    should report all the deps in the pom.xml
+    should produce valid CycloneDX under normal conditions
+
+Cyclonedx::ReportPythonModules
+  #run
+    should report all the deps in the unpinned requirements.txt
+    should report all the deps in the pinned requirements.txt
+    should report all the deps in the semi-pinned requirements.txt
+
+Cyclonedx::ReportRubyGems
+  #run
+    should report all the deps in the Gemfile if Gemfile.lock is absent in cyclonedx
+    should report all deps in Gemfile.lock in cyclonedx
+    should report all deps from multiple sources in Gemfile.lock in cyclonedx
+
+Cyclonedx::ReportRustCrates
+  #run
+    should report all the deps in the Cargo.lock if manifest is absent in cyclonedx
+    should calculate and report all the dependencies in the manifest if Cargo.lock is absent
+    should prefer the Cargo.lock over the manifest when both available
+
+Cyclonedx::ReportSwiftDeps
+  #run
+    should report all the deps in the Package.resolved
+    should produce valid CycloneDX under normal conditions
+    should produce valid CycloneDX when an unparseable file is found
+
+MergeUtil
+  deep_merge
+    should overwite arrays by default
+    should overwrite arrays when combine is false
+    should concat arrays when combine is true
+
+Salus::CLI
+  returns non-zero exit when invalid params are passed
+
+Salus::ConfigException
+  #initialize
+    should support initializing from a hash
+    should create an invalid exception if no params are passed
+  validation
+    should require the expected fields
+  active?
+    should return true if no expiration was given
+    should return true if empty expiration was given
+    should return false for past dates
+    should return true for current date
+    should return true for future dates
+
+Salus::Config
+  #initialize
+    should accept custom_info hashes
+    should accept custom_info strings
+    should deep merge config files
+    should replace arrays by default
+    should replace arrays when configured
+    should combine arrays when configured
+    should apply default scanner config for each scanner
+    should merge all NodeAudit related configuration
+    should merge arrays in all NodeAudit related configuration
+    no initialization file given
+      should use the default config file
+    project names
+      should not accept project names with invalid chars
+      should accept project names with valid chars
+    files given as source
+      should use the YAML files as config with ordered priority
+    bad files given as source
+      should ignore bad files
+    files point to envars that need to be interpolated
+      should replace references to envars with the envar values
+  #scanner_active?
+    should correctly answer if a scanner is active
+  #scanner_enforced?
+    should correctly answer if the current configuration has enforced scanning
+
+Salus::DiceCoefficient
+  should return 1.0 if two strings are same
+  should return 0.0 if two strings are completely different
+  should return higher value if two strings are very similar
+  should return lower value if two strings are less similar
+
+Salus::FileCopier
+  copy_files
+    should ignore existing files
+    should gracefully handle empty file list
+    should copy files not present
+    should clean up after itself
+    should attempt to clean up when exceptions are thrown
+
+Salus::Formatting
+  prettify_json_string
+    returns pretty json from valid json string
+    returns input string if json parse fails
+
+Salus::PathValidator
+  local_to_base?
+    should return false for files outside parent directory
+    should return false for folders outside parent directory
+
+Salus::PluginManager
+  apply_filter
+    applies the filter
+    does not apply filter from a different context
+  send_event
+    sends the event
+
+Salus::Processor
+  #initialize
+    explicit sources of config given files given
+      should load the config from the given file and URI sources and add them to the report
+
+
+Failed to load file:///salus.yaml
+
+      should expand the repo path provided
+
+
+Failed to load file:///salus.yaml
+
+
+
+Failed to load file:///salus.yaml
+
+      fetch_config_file should return nil if file content is not hash
+
+
+Failed to load file:///namewithtypo.yaml
+
+      should not use config files when they do not exist
+    implicitly look for file
+      should load the default config from the salus.yaml and add to report
+  #scan_project
+BundleAudit is scanning...
+Brakeman is scanning...
+RepoNotEmpty is scanning...
+RepoNotEmpty has finished
+ReportRubyGems is scanning...
+RubyPackageScanner is scanning...
+RubyPackageScanner has finished
+PatternSearch is scanning...
+PatternSearch has finished
+ReportRubyGems has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+Brakeman has finished
+BundleAudit has finished
+Trufflehog has finished
+    should scan the project given by a particular path
+Brakeman is scanning...
+NPMAudit is scanning...
+Brakeman has finished
+NPMAudit has finished
+    should override the configured active scanners when they're provided via command line
+Brakeman is scanning...
+NPMAudit is scanning...
+Brakeman has finished
+NPMAudit has finished
+    should scan the project using only scanners provided from the command line
+Brakeman is scanning...
+Brakeman is scanning...
+NPMAudit is scanning...
+Brakeman has finished
+Brakeman has finished
+NPMAudit has finished
+    should recurse when configured
+  #passed?
+BundleAudit is scanning...
+RepoNotEmpty is scanning...
+ReportRubyGems is scanning...
+RubyPackageScanner is scanning...
+RubyPackageScanner has finished
+RepoNotEmpty has finished
+PatternSearch is scanning...
+PatternSearch has finished
+ReportRubyGems has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+BundleAudit has finished
+Trufflehog has finished
+    should return false if the overall scan did not pass
+BundleAudit is scanning...
+RepoNotEmpty is scanning...
+ReportRubyGems is scanning...
+ReportRubyGems has finished
+RubyPackageScanner is scanning...
+RubyPackageScanner has finished
+PatternSearch is scanning...
+PatternSearch has finished
+RepoNotEmpty has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+BundleAudit has finished
+Trufflehog has finished
+    should return true if the overall scan passed
+  #export_report
+    remote URI
+RepoNotEmpty is scanning...
+PatternSearch is scanning...
+RepoNotEmpty has finished
+PatternSearch has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+Trufflehog has finished
+      should send the report to the remote URI
+      Expect 0 report_uris for report_filter set to none
+    local URI
+RepoNotEmpty is scanning...
+RepoNotEmpty has finished
+PatternSearch is scanning...
+PatternSearch has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+Trufflehog has finished
+      should write the report to the local file system based on a path in the given repo
+    multiple URIs
+RepoNotEmpty is scanning...
+RepoNotEmpty has finished
+PatternSearch is scanning...
+PatternSearch has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+Trufflehog has finished
+      should still send the 2nd report to the remote URI
+    Registering to reporting Scanners finished event
+RepoNotEmpty is scanning...
+RepoNotEmpty has finished
+PatternSearch is scanning...
+PatternSearch has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+Trufflehog has finished
+      should Recieve reporting_scanners_ran event
+    remote URI headers verbs
+RepoNotEmpty is scanning...
+RepoNotEmpty has finished
+PatternSearch is scanning...
+PatternSearch has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+Trufflehog has finished
+      should send the report to the remote URI with correct headers and verb
+
+Salus::RepoSearcher
+  dependencies
+    should have access to ripgrep
+  matching_repos
+    should return project repo if not set to recurse
+    should not implicity include project repo when supplied with recursion settings
+    should support static directories
+    should fitler out unsafe directories
+    should allow relative references that resolve to repo path
+    should support dynamic directories via content and filename
+    should support dynamic directories via content only
+    should support dynamic directories via filename only
+    should  filter out exclusions
+    should support temporal static files
+
+Salus::Repo
+  IMPORTANT_FILES runtime defined functions
+    should create a getter and presence check method for special files
+    should create a getter and search for files marked with wildcard
+
+Salus::Report
+  #to_s
+    should merge runs from the same scanner
+  #to_h and miscellaneous reporting methods
+    emits the expected reporting data via the #to_h method
+    should apply filters for to_h
+    should apply filters for to_sarif
+    does not include project_name/custom_info/config if not given
+    should merge multilpe scans from a given scanner, failing if any failed
+  #passed?
+    returns true if and only if all required scans passed
+  #export_report
+    HTTP report URI given
+      should make a call to send the report for http URI
+      should raise if there is an error with sending the report to a HTTP endpoint
+    HTTP report URI given with request parameters
+      should make a call to send the json report for http URI
+      should make a call to send the yaml report for http URI
+      should make a call to send the txt report for http URI
+      should make a call to send the sarif report for http URI
+      should make a call to send the sarif_diff_full report for http URI
+    local file report URI given
+      should save to the given directory for a local file uri
+      should raise if it tries to write a file report to a non-existent directory
+    x-scanner type
+      should get the correct x-scanner based on format
+  merge_reports
+    should merge reports from the same scanner when configured
+    should not merge reports from the same scanner by default
+  #satisfies_filter
+    runs all reports when `all` filter is provided
+    doesnt run any reports when `none` filter is provided
+    runs only `good-name` reports when `name:good-name` filter is provided
+    runs only yaml-formatted reports when `format:yaml` filter is provided
+    runs only reports with `name` keys when `name:*` filter is provided
+  #deep_sort
+    for salus outputs
+      should deepsort json output format
+      should deepsort sarif output
+      should deepsort YAML output
+      should deepsort cyclonedx output
+
+Salus::ScanReport
+  merge!
+    should combine fields
+    should apply the custom fail message
+    will raise when combine reports from different scanners
+  #to_s
+    not verbose and passed
+      includes all relevant important in string form
+    not verbose and failed
+      includes all relevant important in string form
+    verbose and passed
+      includes all relevant important in string form
+    not verbose
+      includes all relevant important in string form
+
+Salus::Scanners::Bandit
+  #should_run?
+    no requirements.txt nor setup.cfg
+      should return false
+    requirements.txt present but no setup.cfg
+      should return true
+    setup.cfg present but no requirements.txt
+      should return true
+    py files present but not requirements.txt/setup.cfg
+      should return true
+  #run
+    non-bandit project
+      should record 0 line of code scanned if no code
+    python project with insecure code
+      should record failure and record the STDOUT from bandit
+    python project with insecure code in a nested folder
+      should record failure and record the STDOUT from bandit
+    python project with no known vulnerabilities
+      should report a passing scan
+    python project with unknown skip
+      should report a failing scan
+  #config_options
+    when using aggregate
+      and aggregate by filename
+      and aggregate by vuln
+    when using configfile
+      if no configfile baseline - results include test_id B301
+      and configfile says skip test_id B301
+    when listing exceptions
+      should allow exception entries
+      should support expirations
+    when using profile
+      if no profile baseline - results test names include multiple items
+      and profile says include only one test name
+    when using tests
+      and tests only B301
+      and test B105 and B301
+      and test B105, B301, B403
+    when using skip
+      and skip B301
+      and skip B301, B403
+    when using baseline file
+      if no baseline, then results include two files
+      and using main.py as baseline
+    when using ini file
+      ini file option should work
+    when using ignore nosec
+      if ignore nosec is false then report passes
+      and ignore nosec
+    when using exclude path
+      if not using exclude path baseline
+      and exclude main.py, then only main2.py will be scanned
+      and exclude both main.py and main2.py
+    when using confidence
+      and confidence level is MEDIUM
+      and confidence level is HIGH
+    using severity level
+      and severity level is LOW
+      and severity level is MEDIUM
+      and severity level is HIGH
+  #version_valid?
+    scanner version is valid
+      should return true
+  #supported_languages
+    should return supported languages
+      should return python
+
+Salus::Scanners::Base
+  run!
+    should catch exceptions from scanners and record the error
+    should catch exceptions and fail the build if pass_on_raise false
+    should catch exceptions and fail the build if pass_on_raise false
+    should time out when execution time exceeds configured timeout
+  #run
+    should raise an exception since this is an abstract function
+  #should_run?
+    should raise an exception since this is an abstract function
+  #run_shell
+    should execute a shell command and yield a ShellResult with appropriate values
+  #report_success
+    should log to the report that the scan passed
+  #report_failure
+    should log to the report that the scan failed
+  #report_info
+    should store some info indexed by scanner and info type
+  #report_stdout
+    should store the stdout of the scanner
+  #report_stderr
+    should store the stderr of the scanner
+  #build_options
+    should build the options correctly based on a hash
+
+Salus::Scanners::Brakeman
+  #run
+    runs cleanly against a project bundled with Bundler 2
+    non-rails project
+      should record the STDERR of brakeman
+    brakeman configs
+      should error if no top-level app dir and no user defined app path
+      should respect the config for user defined app path if no top-level app dir
+      should respect brakeman.ignore files
+      should respect expirations from brakeman.ignore files
+      should support exceptions
+      should report an error if unable to create temporary ignore
+      should support expirations in exceptions
+      should support merging exceptions with brakeman.ignore files
+      should respect the config for user defined app path
+      should respect the config for all checks
+      should respect the config for running only a subset of checks
+      should respect the config excluding some checks
+      should respect the config supressing warning levels
+      should respect the config for ignoring files
+      should respect the config for only scanning certain files
+    brakeman warnings or errors
+      should fail if a potential vulnerability is detected in the repo
+      should fail if brakeman encounters a parse error
+  #should_run?
+    no Gemfile nor Rails gem
+      should return false
+    Gemfile present but no rails gem
+      should return false
+    Gemfile present with rails gem
+      should return true
+    Gemfile present with rails gem but no rails app
+      should return false
+  #version_valid?
+    scanner version is valid
+      should return true
+  #supported_languages
+    should return supported languages
+      should return ruby
+
+Bugsnag
+  #run
+    blank directory
+      bugsnag should receiev error
+
+Salus::Scanners::BundleAudit
+  #run
+    should check for updates to the CVE DB
+    runs cleanly against a project bundled with Bundler 2
+    CVEs in Gemfile.lock
+      should record failure and record the STDOUT from bundle-audit
+    insecure sources in Gemfile
+      should record failure and report results
+    no CVEs in Gemfile.lock
+      should report success
+    no CVEs in Gemfile.lock when ignoring CVEs
+      should record success and report on the ignored CVEs
+    exceptions with expirations
+      should apply active exceptions
+      should not apply expired exceptions
+      should record success and report on the ignored CVEs
+    with local db
+      should report vulns from both local db and ruby advisory db
+  #should_run?
+    should return false if Gemfile.lock not present
+    should return true if Gemfile.lock is present
+  #version_valid?
+    scanner version is valid
+      should return true
+  #supported_languages
+    should return supported languages
+      should return ruby
+  #valid_local_db?
+    should detect valid/invalid local dbs
+
+Salus::Scanners::CargoAudit
+  #should_run?
+    should return false in the absence of Cargo.lock
+    should return true if Cargo.lock is present
+  #run
+    should pass when there are no vulnerabilities
+    should fail when there are missing dependencies
+    should fail when there are vulnerabilities
+    should elevate warnings as errors
+    should ignore warnings if disabled in the config
+    should honor exceptions in the config
+    should honor exception expirations
+    should send the audit log as json
+    should log pretty json
+    should report error if there were issues in running cargo audit
+  #version_valid?
+    scanner version is valid
+      should return true
+  #supported_languages
+    should return supported languages
+      should return rust
+
+Salus::Scanners::Gosec
+  #run
+    non-go project
+      should record the STDERR of gosec
+    go project with vulnerabilities
+      should record failure and record the STDOUT from gosec
+    go project with vulnerabilities in a nested folder
+      should record failure and record the STDOUT from gosec
+    go project with no known vulnerabilities
+      should report a passing scan
+    go project with malformed go
+      should report a failing scan
+  #run from multiple subdirs
+    go project with multiple sub-projects
+      should report failures in both sub-projects
+  #should_run?
+    behaves like when go file types are present
+      returns true
+    behaves like when go file types are present
+      returns true
+    behaves like when go file types are present
+      returns true
+    behaves like when go file types are present
+      returns true
+    when go file types are missing
+      returns false
+  #config_options
+    when using nosec
+      and nosec is set to true
+        disables nosec comments
+      and nosec is set to false
+        enables nosec comments
+      and nosec is not set to a boolean
+        warns when not provided a valid options
+    when using nosec-tag
+      and a valid tag
+        respects nosec-tag over nosec
+        and disabling nosec
+          respects nosec settings also
+      and an invalid tag
+        warns when not provided a valid option
+    when including rules
+      actually includes only the given rules
+      and when using nosec flag
+        only scans for included rules even if issue is whitelisted
+    when excluding rules
+      actually excludes only the given rules
+      and when using nosec flag
+        only scans for included rules even if issue is whitelisted
+    active exceptions
+      should honor active exceptions
+    expired exceptions
+      should ignore expired exceptions
+    when sorting by severity
+      is sorted in the report
+    when filtering by severity
+      is filtered by severity
+    when filtering by confidence
+      filtered by confidence
+    when the scan should be forced to pass
+      always passes
+    when scanning tests
+      scans for issues in test files
+    when excluding directories
+      and is a real directory
+        ignores directories
+      and is not a real directory
+        issues a warning
+  #version_valid?
+    scanner version is valid
+      should return true
+  #supported_languages
+    should return supported languages
+      should return go
+
+Salus::Scanners::LanguageVersion::GoVersionScanner
+  #run
+    with non-go project
+      should record error to scanner report
+    with go project
+      for valid version
+        should check the version successfully if the version is within the range
+        should check the version successfully if the version is min_version
+      for invalid version
+        should record an error if go version is less than min_version
+        should record an error if go version is greater than max_version
+        should not run if min_version and max_version are not configured
+
+Salus::Scanners::LanguageVersion::RubyVersionScanner
+  #run
+    with non-ruby project
+      should record error to scanner report
+    with ruby project
+      should pass successfully for valid version
+      for invalid version
+        should record an error if ruby version is less than min_version
+        should record an error if ruby version is greater than max_version
+        should record an error if only Gemfile is present
+        should record an error if only Gemfile is present
+        should not run if min_version and max_version are not configured
+
+Salus::Scanners::NodeAudit
+  #run NPMAudit
+    CVEs in package.json
+      should fail, recording advisory ids and npm output
+      should fail, recording advisory ids and npm output
+    no CVEs in package.json
+      should record success
+    no CVEs in package.json when ignoring CVEs
+      should record success and report on the ignored CVEs
+    exception expirations
+      should record success and when expiration is future
+      should record success and when expiration is future for yarn v3
+      should record failure and when expiration is past
+      should support integer ids
+      should support integer ids for yarn v3
+  #run YarnAudit
+    CVEs in package.json
+      should fail, recording advisory ids and npm output
+      should fail, recording advisory ids and npm output
+    no CVEs in package.json
+      should record success
+    no CVEs in package.json when ignoring CVEs
+      should record success and report on the ignored CVEs
+    exception expirations
+      should record success and when expiration is future
+      should record success and when expiration is future for yarn v3
+      should record failure and when expiration is past
+      should support integer ids
+      should support integer ids for yarn v3
+
+Salus::Scanners::NPMAudit
+  #should_run?
+    should return false in the absence of package.json and friends
+    should return true if package.json is present
+  #version_valid?
+    scanner version is valid
+      should return true
+  #audit_command_with_options
+    should return default audit command if no options have been provided
+    should return audit command with configured options
+  #supported_languages
+    should return supported languages
+      should return javascript
+
+Salus::Scanners::OSV::GoOSV
+  #run
+    with non-go project
+      should record an error to scanner report
+    with vulnerable go project
+      should fail when vulnerable dependencies are found in go.sum
+      should pass when vulnerable dependencies found in go.sum have exceptions configured
+      should fail when no dependencies are found in go.sum
+      should fail when OSV returns error
+      should fail when OSV returns empty data
+    with non vulnerable go project
+      should pass when no vulnerabilities are found in go.sum
+
+Salus::Scanners::OSV::GradleOSV
+  #run
+    with non-gradle project
+      should record an error to scanner report
+    with vulnerable gradle project
+      should fail when vulnerable dependencies are found in build.gradle
+      should fail when vulnerable dependencies are found in multi build project
+      should pass when vulnerable dependencies found in build.gradle have exceptions configured
+      should pass when resolved dependencies are found in build.gradle
+      should fail when no dependencies are found in build.gradle
+      should fail when OSV returns error
+      should fail when OSV returns empty data
+    with non vulnerable go project
+      should pass when no vulnerabilities are found in build.gradle
+    when given different gradle versions
+      runs gradle version 7 successfully
+      runs gradle version 6 successfully
+      reports errors for unsupported gradle versions
+
+Salus::Scanners::OSV::MavenOSV
+  #run
+    with non-maven project
+      should record an error to scanner report
+    with vulnerable maven project
+      should fail when vulnerable dependencies are found in pom.xml
+      should pass when vulnerable dependencies found in pom.xml have exceptions configured
+      should fail when no dependencies are found in pom.xml
+      should fail when OSV returns error
+      should fail when OSV returns empty data
+    with non vulnerable go project
+      should pass when no vulnerabilities are found in pom.xml
+
+Salus::Scanners::PackageVersion::GoPackageScanner
+  #should_run?
+    should return false when go.sum file is absent
+    should return true if go.sum is present
+  #run
+    go.sum file present
+      should fail when package in repo does not fall within the specified package range
+      should fail when package in repo matched blocked range
+      should pass when go.sum file exists and nothing is configured for the scanner
+      should pass when package falls within specified package range
+
+Salus::Scanners::PackageVersion::NPMPackageScanner
+  #should_run?
+    should return false when package lock file is absent
+    should return true if package lock is present
+    should return true if package lock has empty dependencies
+  #run
+    package-lock file present
+      should fail when package in repo does not fall within the specified package range
+      should fail when package in repo matched blocked range
+      should pass when package-lock file exists and nothing is configured for the scanner
+      should pass when package falls within specified package range
+      should pass when package-lock file exists and nothing is configured for any package
+
+Salus::Scanners::PackageVersion::RubyPackageScanner
+  #should_run?
+    should return false when Gemfile.lock file is absent
+    should return true if Gemfile.lock is present
+  #run
+    Gemfile.lock file present
+      should fail when package in repo does not fall within the specified package range
+      should fail when package in repo matched blocked range
+      should pass when Gemfile.lock file exists and nothing is configured for the scanner
+      should pass when package falls within specified package range
+
+Salus::Scanners::PatternSearch
+  #run
+    no forbidden regex
+      should report matches
+      should report matches with a message
+    some regex hits are forbidden
+      should report matches
+    some regex hits are required
+      should pass the scan if a required patterns are found
+      should failed the scan if a required pattern is not found
+    global exclusions are given
+      should not search through excluded material
+    local exclusions are given
+      should not search through excluded material
+      should not search through excluded extensions
+    global inclusions are given
+      should search only through included material
+    local inclusions are given
+      should only search through included material
+      should not search through extensions not explicitly included
+      should coexist with exclusions
+      should handle conflicting local exclusions
+      should handle conflicting global exclusions
+    not_followed_within is used
+      not_followed_within should filter out files when possible
+    --files is used
+      results should only include files matching --files
+      --exclude_filepaths should work with --files
+    exclude filepaths are given
+      files specified with exclude_filepaths at the match level  should be excluded
+      exclude_paths of the match should override global exclude_filepaths
+      files specified with global exclude_filepaths should be excluded
+      exclude_filepaths, exclude_directory, and exclude_extension can be used together
+    invalid regex or settings which causes error
+      should record the STDERR of bundle-audit
+    special chars should not be escaped
+      quotes should not be consumed by shell
+  #should_run?
+    should return true
+  #version_valid?
+    scanner version is valid
+      should return true
+  #supported_languages
+    should return supported languages
+      should return expected langs
+
+Salus::Scanners::RepoNotEmpty
+  #run
+    non blank directory
+      should be a simple pass
+    blank directory
+      should be a simple pass
+  #version_valid?
+    scanner version is valid
+      should return true
+  #supported_languages
+    should return supported languages
+      should return expected langs
+
+Salus::Scanners::ReportGoDep
+  #run
+    should return nothing if no go.mod, go.sum, or Gopkg.lock is present
+    should report on all the dependencies in the Gopkg.lock file
+  #record_dep_from_go_sum
+    should report on all the dependencies in the go.sum file
+  #record_dep_from_go_mod
+    should send an event and report warning
+  #should_run?
+    should return false if Gopkg.lock is absent
+    should return true if Gopkg.lock is present
+  #version_valid?
+    scanner version is valid
+      should return true
+  #supported_languages
+    should return supported languages
+      should return expected langs
+
+Salus::Scanners::ReportGradleDeps
+  should report modules from build.gradle
+  should report an error when a file with no parseable dependencies is found
+  #should_run?
+    should return false in the absence of build.gradle
+    should return true if build.gradle is present
+  #version_valid?
+    scanner version is valid
+      should return true
+  #supported_languages
+    should return supported languages
+      should return expected langs
+
+Salus::Scanners::ReportNodeModules
+  should report all deps from package-lock.json excluding deps,if present
+  #run
+    should throw an error if package.json and friends are absent
+    should report all the deps in package.json file in the absence of a lockfile
+    should report all deps from package-lock.json,if present
+    should report all deps from yarn.lock,if present
+    should report all deps from latest yarn.lock,if present
+    should report all the deps in bower.json,if present
+    should report all deps from package-lock.json including deps,if present
+  #should_run?
+    no relevant node dependency files present
+      should return false
+    package.json is present
+      should return true
+    package.json and package-lock.json are present
+      should return true
+    package.json and yarn.lock are present
+      should return true
+  #version_valid?
+    scanner version is valid
+      should return true
+  #supported_languages
+    should return supported languages
+      should return expected langs
+
+Salus::Scanners::ReportPodfileLock
+  should report modules from Podfile.lock
+  should report an error when an unparseable file is found
+  should report an error when an unparseable file is found
+  #should_run?
+    should return false in the absence of Podfile.lock
+    should return true if Podfile.lock is present
+  #version_valid?
+    scanner version is valid
+      should return true
+  #supported_languages
+    should return supported languages
+      should return expected langs
+
+Salus::Scanners::ReportPomXml
+  should report modules from pom.xml
+  should report an error when a dependency is missing required values
+  should report an error when an unparseable file is found
+  #should_run?
+    should return false in the absence of pom.xml
+    should return true if pom.xml is present
+  #version_valid?
+    scanner version is valid
+      should return true
+  #supported_languages
+    should return supported languages
+      should return expected langs
+
+Salus::Scanners::ReportPythonModules
+  should report modules from requirements.txt
+  #should_run?
+    should return false in the absence of requirements.txt
+    should return true if requirements.txt is present
+  #version_valid?
+    scanner version is valid
+      should return true
+  #supported_languages
+    should return supported languages
+      should return expected langs
+
+Salus::Scanners::ReportRubyGems
+  #run
+    should throw an error in the absence of Gemfile/Gemfile.lock
+    should report all the deps in the Gemfile if Gemfile.lock is absent
+    should report all deps in Gemfile.lock
+  #find_licenses_for
+    should return an empty array if there occurs too many requests
+    should return an empty array if the gem does not exist
+    should return an empty array if there is an error in the api call to rubygems.org
+    should return an empty array if there is an error
+    should return an empty array if there exists no license for the gem
+    with successful request
+      should return a list of valid licenses
+      should return an empty array if there exists no license
+  #spdx_license_for
+    should return a valid spdx formatted license for a given license
+  #should_run?
+    no Gemfile or Gemfile.lock present
+      should return false
+    Gemfile is present
+      should return true
+    Gemfile.lock is present
+      should return true
+  #version_valid?
+    scanner version is valid
+      should return true
+  #supported_languages
+    should return supported languages
+      should return expected langs
+
+Salus::Scanners::ReportRustCrates
+  #run
+    should throw an error in the absence of Create.toml
+    should calculate and report all the dependencies in the manifest if lock is absent
+    should raise an error when unable to generate the .lock file
+    should report all deps in lock
+    should prefer the lock over the manifest
+  #should_run?
+    no manifest or lock present
+      should return false
+    manifest is present
+      should return true
+    lock is present
+      should return true
+  #version_valid?
+    scanner version is valid
+      should return true
+  #supported_languages
+    should return supported languages
+      should return expected langs
+
+Salus::Scanners::ReportSwiftDeps
+  should report modules from Package.resolved
+  should report an error when an unparseable file is found
+  #should_run?
+    should return false in the absence of Package.resolved
+    should return true if Package.resolved is present
+  #version_valid?
+    scanner version is valid
+      should return true
+  #supported_languages
+    should return supported languages
+      should return expected langs
+
+Salus::Scanners::Semgrep
+  #run
+    no forbidden semgrep
+      should report matches
+      should report matches with a message
+      external config
+        should not allow pattern defined in both salus config and external config
+        should report matches
+        should report not report findings that have been allowlisted
+        should report forbidden matches
+        should report required matches
+        should report required matches
+        should report matches with pattern-not
+    some semgrep hits are forbidden
+      should report matches
+    some semgrep hits are required
+      should pass the scan if a required patterns are found
+      should failed the scan if a required pattern is not found
+    global exclusions are given
+      should not search through excluded material
+    global exclusions are given
+      should not search through excluded material
+    local exclusions are given
+      should not search through excluded material
+    local exclusions are given
+      should not search through excluded material
+    rule misconfigured
+      should output misconfig reason
+    invalid pattern or settings which causes error
+      should record the STDERR of semgrep
+    unparsable python code causes error
+      should record the STDERR of semgrep
+    unparsable code causes warning
+      should record semgrep warning
+      should not record syntax error if show_syntax_errors=false
+    unparsable javascript code causes error with strict
+      should record the STDERR of semgrep
+  #should_run?
+    should return true
+  #build_command_and_message
+    config for relative path
+    config for url
+    config for absolute path
+  #version_valid?
+    scanner version is valid
+      should return true
+  #supported_languages
+    should return supported languages
+      should return expected langs
+
+Salus::Scanners::Trufflehog
+  should return true with non empty directory
+  #should_run?
+    should return true with empty directory
+  #run
+    should pass when there are no secrets
+    should pass when there are secrets and --only-verified is true
+    should fail when there are secrets and not --only-verified is false
+    should honor exceptions in the config to eliminate one of the findings
+    should honor exceptions in the config to eliminate all findings
+  #version_valid?
+    scanner version is valid
+      should return true
+  #supported_languages
+    should return supported languages
+      should return *
+
+Salus::Scanners::YarnAudit
+  #should_run?
+    should return false in the absence of package.json and friends
+    should return true if package.json is present
+  #run
+    should fail when there are CVEs
+Found
+{"Package"=>"minimist", "Patched in"=>">=1.2.6", "Dependency of"=>"gulp-cssmin", "More info"=>"https://www.npmjs.com/advisories/1067342", "Severity"=>"critical", "Title"=>"Prototype Pollution in minimist", "ID"=>1067342}
+{"Package"=>"glob-parent", "Patched in"=>">=5.1.2", "Dependency of"=>"chokidar, gulp", "More info"=>"https://www.npmjs.com/advisories/1081884", "Severity"=>"high", "Title"=>"glob-parent before 5.1.2 vulnerable to Regular Expression Denial of Service in enclosure regex", "ID"=>1081884}
+{"Package"=>"lodash", "Patched in"=>">=4.17.21", "Dependency of"=>"gulp-modify-file", "More info"=>"https://www.npmjs.com/advisories/1084491", "Severity"=>"high", "Title"=>"Command Injection in lodash", "ID"=>1084491}
+{"Package"=>"lodash", "Patched in"=>">=4.17.21", "Dependency of"=>"gulp-modify-file", "More info"=>"https://www.npmjs.com/advisories/1084498", "Severity"=>"moderate", "Title"=>"Regular Expression Denial of Service (ReDoS) in lodash", "ID"=>1084498}
+{"Package"=>"yargs-parser", "Patched in"=>">=13.1.2", "Dependency of"=>"concurrently", "More info"=>"https://www.npmjs.com/advisories/1084989", "Severity"=>"moderate", "Title"=>"yargs-parser Vulnerable to Prototype Pollution", "ID"=>1084989}
+{"Package"=>"trim-newlines", "Patched in"=>">=3.0.1", "Dependency of"=>"gulp-cssmin", "More info"=>"https://www.npmjs.com/advisories/1085555", "Severity"=>"high", "Title"=>"Uncontrolled Resource Consumption in trim-newlines", "ID"=>1085555}
+{"Package"=>"lodash", "Patched in"=>">=4.17.12", "Dependency of"=>"gulp-modify-file", "More info"=>"https://www.npmjs.com/advisories/1085631", "Severity"=>"critical", "Title"=>"Prototype Pollution in lodash", "ID"=>1085631}
+{"Package"=>"lodash", "Patched in"=>">=4.17.11", "Dependency of"=>"gulp-modify-file", "More info"=>"https://www.npmjs.com/advisories/1085674", "Severity"=>"moderate", "Title"=>"Regular Expression Denial of Service (ReDoS) in lodash", "ID"=>1085674}
+{"Package"=>"lodash.template", "Patched in"=>">=4.5.0", "Dependency of"=>"gulp-cssmin, gulp-modify-file", "More info"=>"https://www.npmjs.com/advisories/1085682", "Severity"=>"critical", "Title"=>"Prototype Pollution in lodash", "ID"=>1085682}
+{"Package"=>"clean-css", "Patched in"=>">=4.1.11", "Dependency of"=>"gulp-cssmin", "More info"=>"https://www.npmjs.com/advisories/1085719", "Severity"=>"low", "Title"=>"Regular Expression Denial of Service in clean-css", "ID"=>1085719}
+{"Package"=>"minimatch", "Patched in"=>">=3.0.5", "Dependency of"=>"gulp-modify-file", "More info"=>"https://www.npmjs.com/advisories/1085778", "Severity"=>"high", "Title"=>"minimatch ReDoS vulnerability", "ID"=>1085778}
+{"Package"=>"lodash", "Patched in"=>">=4.17.20", "Dependency of"=>"gulp-modify-file", "More info"=>"https://www.npmjs.com/advisories/1085805", "Severity"=>"high", "Title"=>"Prototype Pollution in lodash", "ID"=>1085805}
+{"Package"=>"postcss", "Patched in"=>">=7.0.36", "Dependency of"=>"postcss-comment, rollup-plugin-postcss", "More info"=>"https://www.npmjs.com/advisories/1085808", "Severity"=>"moderate", "Title"=>"Regular Expression Denial of Service in postcss", "ID"=>1085808}
+{"Package"=>"nth-check", "Patched in"=>">=2.0.1", "Dependency of"=>"rollup-plugin-postcss", "More info"=>"https://www.npmjs.com/advisories/1085945", "Severity"=>"high", "Title"=>"Inefficient Regular Expression Complexity in nth-check", "ID"=>1085945}
+{"Package"=>"url-regex", "Patched in"=>"No patch available", "Dependency of"=>"@arshaw/postcss-custom-properties", "More info"=>"https://www.npmjs.com/advisories/1087482", "Severity"=>"high", "Title"=>"Regular expression denial of service in url-regex", "ID"=>1087482}
+{"Package"=>"lodash", "Patched in"=>">=4.17.11", "Dependency of"=>"gulp-modify-file", "More info"=>"https://www.npmjs.com/advisories/1087627", "Severity"=>"high", "Title"=>"Prototype Pollution in lodash", "ID"=>1087627}
+{"Package"=>"lodash", "Patched in"=>">=4.17.5", "Dependency of"=>"gulp-modify-file", "More info"=>"https://www.npmjs.com/advisories/1087663", "Severity"=>"low", "Title"=>"Prototype Pollution in lodash", "ID"=>1087663}
+{"Package"=>"minimatch", "Patched in"=>">=3.0.2", "Dependency of"=>"gulp-modify-file", "More info"=>"https://www.npmjs.com/advisories/1087733", "Severity"=>"high", "Title"=>"Regular Expression Denial of Service in minimatch", "ID"=>1087733}
+{"Package"=>"luxon", "Patched in"=>">=1.38.1", "Dependency of"=>"luxon", "More info"=>"https://www.npmjs.com/advisories/1087851", "Severity"=>"high", "Title"=>"Luxon Inefficient Regular Expression Complexity vulnerability", "ID"=>1087851}
+    should fail with the correct attr values
+    should fail with error if there are errors
+    should pass if vulnerable devDependencies are excluded
+    should warn if only optionalDependencies are scanned
+    should error if all 3 groups are excluded
+  #autofix
+    should not apply auto fixes resulting in same vulns present
+    should apply auto fixes resulting in reduced vulns
+  #version_valid?
+    scanner version is valid
+      should return true
+  #supported_languages
+    should return supported languages
+      should return javascript
+
+Salus::SemanticVersion
+  select_upgrade_version
+    does not exceed the recommended major version
+    returns nil if no provided versions satisfy the patch range
+    correctly handles ">" ranges
+    correctly handles "<" ranges
+    correctly handles ">=" ranges
+    correctly handles ">=" ranges
+    correctly handles exact versions
+  select_max_version
+    gets the max of two semvers via the major version
+    gets the max of two semvers via the minor version
+    gets the max of two semvers via the patch version
+    gets the value of both arguments if they are equal
+    returns nil if either argument is not a three-part semantic version
+
+Salus::CLI
+  #scan
+    without configuration arguments or envars
+
+
+Failed to load file:///salus.yaml
+
+RepoNotEmpty is scanning...
+PatternSearch is scanning...
+RepoNotEmpty has finished
+PatternSearch has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+Trufflehog has finished
+      runs without error
+    with default configuration of local salus.yaml file
+RepoNotEmpty is scanning...
+RepoNotEmpty has finished
+PatternSearch is scanning...
+PatternSearch has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+Trufflehog has finished
+      runs and exits failure since the overall scan failed
+    with configuration argument
+RepoNotEmpty is scanning...
+RepoNotEmpty has finished
+PatternSearch is scanning...
+PatternSearch has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+Trufflehog has finished
+      runs and exits failure since the overall scan failed
+    with configuration envars
+RepoNotEmpty is scanning...
+PatternSearch is scanning...
+RepoNotEmpty has finished
+PatternSearch has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+Trufflehog has finished
+      runs and exits failure since the overall scan failed
+    With heartbeat set
+      outputs a heartbeat
+    With no heartbeat set
+      does not produce a heartbeat when quiet is enabled
+      does not produce a heartbeat when heartbeat is disabled
+      does not produce a heartbeat when quiet is enabled and heartbeat is disabled
+    Hard errors
+BundleAudit is scanning...
+BundleAudit has finished
+      Should exit with Salus::EXIT_HARD_ERROR with hard error even if pass_on_raise=true
+BundleAudit is scanning...
+BundleAudit has finished
+      Should exit with Salus::EXIT_HARD_ERROR with hard error even if pass_on_raise=false
+    local_uri paths
+RepoNotEmpty is scanning...
+RepoNotEmpty has finished
+PatternSearch is scanning...
+PatternSearch has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+Trufflehog has finished
+RepoNotEmpty is scanning...
+RepoNotEmpty has finished
+PatternSearch is scanning...
+PatternSearch has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+Trufflehog has finished
+RepoNotEmpty is scanning...
+RepoNotEmpty has finished
+PatternSearch is scanning...
+PatternSearch has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+Trufflehog has finished
+      should not write local report bad file path
+RepoNotEmpty is scanning...
+RepoNotEmpty has finished
+PatternSearch is scanning...
+PatternSearch has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+Trufflehog has finished
+RepoNotEmpty is scanning...
+RepoNotEmpty has finished
+PatternSearch is scanning...
+PatternSearch has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+Trufflehog has finished
+      should write to local report if good file path
+    With --sarif_diff_full
+
+Creating full sarif diff report from sarif_1.json and sarif_2.json
+      Should ouput full sarif diff of two files
+
+Creating full sarif diff report from sarif_1.json and 
+
+Creating full sarif diff report from sarif_1.json and ../sarif_2.json
+      Should report error if invalid arguments used for option
+
+Creating full sarif diff report from v3.json and v4.json
+- Sarif diff contains vulnerabilities
+      Vuls should have appropriate rule indexes
+    With --sarif_diff_full and --git_diff
+
+Creating full sarif diff report from v2.json and v1.json
+- Sarif diff contains vulnerabilities
+      Should still only output new vuls if --git-diff not used
+
+Creating full sarif diff report from v2.json and v1.json with git diff v1_diff.txt
+- Sarif diff contains vulnerabilities
+      Should output new vuls that are in git diff
+
+Creating full sarif diff report from report_sarif_pr.json and report_sarif_master.json with git diff git_diff_master_pr.txt
+- Sarif diff contains vulnerabilities
+      Should work with vuls from different scanners
+
+Creating full sarif diff report from report_sarif_pr.json and report_sarif_master.json with git diff git_diff_master_pr.txt
+- Sarif diff contains vulnerabilities
+      Should not output vulns caused by added comment
+    With --filter_sarif
+Gosec is scanning...
+Gosec has finished
+      Should ouput filtered vulnerabilities
+    With --ignore_config_id
+RepoNotEmpty is scanning...
+RepoNotEmpty has finished
+PatternSearch is scanning...
+PatternSearch has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+Trufflehog has finished
+RepoNotEmpty is scanning...
+PatternSearch is scanning...
+PatternSearch has finished
+RepoNotEmpty has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+Trufflehog has finished
+RepoNotEmpty is scanning...
+RepoNotEmpty has finished
+PatternSearch is scanning...
+PatternSearch has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+Trufflehog has finished
+      Should filter out report ids
+    With plugins
+
+
+Failed to load file:///multiple_reports3.yaml
+
+RepoNotEmpty is scanning...
+RepoNotEmpty has finished
+PatternSearch is scanning...
+PatternSearch has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+Trufflehog has finished
+      should send scan event
+RepoNotEmpty is scanning...
+RepoNotEmpty has finished
+PatternSearch is scanning...
+PatternSearch has finished
+Trufflehog is scanning...
+Semgrep is scanning...
+Semgrep has finished
+Trufflehog has finished
+      Should update config based on plugin
+
+Sarif::BanditSarif
+  #parse_issue
+    scan report with logged vulnerabilites
+      parses information correctly
+      dont have duplicate entries
+  #sarif_level
+    Bandit Severities
+      are mapped to the right sarif levels
+  #sarif_report
+    non python project
+      reports an error for non python projects
+    python project with no vulnerabilities
+      should have an empty sarif report for successful scans
+    python project with empty report containing whitespace
+      should handle empty reports with whitespace
+    python project with vulnerabilities
+      should record 0 line of code scanned if no code
+  sarif diff
+    git diff support
+      should find code in git diff
+
+Sarif::BaseSarif
+  uri_info
+    should populate SRCROOT
+  tool_info
+    returns the runs object for an unsupported scanner
+  conversion
+    returns the conversion object for the converter (Salus)
+  sarif_report
+    returns
+  #build_runs_object
+    results object
+      has suppressions objects for suppressed results
+      does not contain suppressed object when suppressed key is not present
+      does not contain suppressed object when include_suppressed config is false
+      does contain suppressed object when include_suppressed config is true
+      has salusEnforced false when supported scanner is not enforced
+      has salusEnforced true when supported scanner is enforced
+      contains active scanner results when include_non_enforced is true
+      does not contain active scanner results when include_non_enforced is false
+      contains active scanner results when include_non_enforced is not present
+      includes originalUriBaseIds
+  salus_passed?
+    salus_passed? should return false if enforced scanner failed
+    salus_passed? should return true if non-enforced scanner failed
+    salus_passed? should return true if all scanners passed
+  full sarif diff
+    diff should have 0 vul with exec success if old sarif includes all vuls in new sarif
+    diff should include vuls in new sarif that are not in old sarif
+    diff should be sarif with no vuls if new sarif == old sarif and old sarif has vuls
+    diff should be same as new sarif if new sarif == old sarif and old sarif has no vuls
+    diff should be same as new sarif if everything passed in new sarif
+    diff should include vuls with same id but different artifact locations
+
+Sarif::BrakemanSarif
+  #parse_issue
+    scan report with logged vulnerabilites
+      parses information correctly
+      should parse brakeman errors
+  #build_result
+    rails project with vulnerabilities
+      should generate valid result for a brakeman warning with no code snippets
+      should generate valid result for a brakeman warning with code snippets
+  #sarif_level
+    should map brakeman severity/confidence levels to sarif_levels
+  #sarif_report
+    non rails project
+      should handle generated error
+    rails project with no vulnerabilities
+      should generate an empty sarif report
+    python project with empty report containing whitespace
+      should handle empty reports with whitespace
+    rails project with vulnerabilities
+      should generate the right results and rules
+
+Sarif::BundleAuditSarif
+  #parse_issue
+    scan report with logged vulnerabilities
+      updates ids accordingly
+      parses information correctly
+  sarif_report
+    ruby project with no vulnerabilities
+      is expected to eq true
+    ruby project with vulnerabilities
+      should return valid sarif report
+  #sarif_level
+    Bundler audit severities
+      should be mapped to the right sarif level
+  sarif diff
+    git diff support
+      should find code in git diff
+      should not match part of the package name
+      should not match package that was in git diff but not added with this commit
+
+Sarif::CargoAuditSarif
+  #parse_issue
+    scan report with logged vulnerabilites
+      parses information correctly
+  #sarif_report
+    non rust project
+      should handle generated error
+    rust project with no vulnerabilities
+      should generate an empty sarif report
+    rust project with empty report containing whitespace
+      should handle empty reports with whitespace
+    rust project with vulnerabilities
+      should generate the right results and rules
+  #sarif_level
+    parses cargo severity levels to sarif levels
+
+Sarif::GosecSarif
+  #parse_issue
+    scan report with duplicate vulnerabilities
+      should not include duplicate result entries
+      should not include duplicate rules
+    #sarif_level
+      gosec severities
+        are mapped to sarif levels
+    scan report with logged vulnerabilites
+      parses information correctly
+  #sarif_report
+    non go project
+      should handle generated error
+    go project with no vulnerabilities
+      should generate an empty sarif report
+    go project with empty report containing whitespace
+      should handle empty reports with whitespace
+    go project with errors
+      should parse golang errors
+    go project with vulnerabilities
+      should generate the right results and rules
+  sarif diff
+    git diff support
+      should find code in git diff
+
+Sarif::GoVersionScannerSarif
+  behaves like language version scanner sarif
+    #build_runs_object
+      version mismatch found in project
+        creates valid sarif report with results populated
+        creates a sarif report that follows the schema
+      no vulnerabilites found in project
+        does not find any version mismatch for valid repository
+
+Sarif::RubyVersionScannerSarif
+  behaves like language version scanner sarif
+    #build_runs_object
+      version mismatch found in project
+        creates valid sarif report with results populated
+        creates a sarif report that follows the schema
+      no vulnerabilites found in project
+        does not find any version mismatch for valid repository
+
+Sarif::NPMAuditSarif
+  #parse_issue
+    scan report with logged vulnerabilites
+      parses information correctly
+    Duplicate advisories
+      should be parsed once
+  #sarif_level
+    NPM severities
+      should be mapped to the right sarif levels
+  #sarif_report
+    npm file with errors
+      should generate error in report
+    npm file with no vulnerabilities
+      should generate an empty sarif report
+    npm project with vulnerabilities
+      should generate the right results and rules
+    npm project with exceptions
+      does not contain excluded cves
+  #to_sarif
+    Should generate report when parse error is generated
+      should be parsed once
+  sarif diff
+    git diff support
+      should find code in git diff
+      should not match part of the package name
+      should not match package that was in git diff but not added with this commit
+
+Sarif::GoOSVSarif
+  with vulnerable go project
+    should generate report with logged vulnerabilities
+  with vulnerable go project but exceptions configured
+    should generate an empty sarif report
+  with non vulnerable go project
+    should generate an empty sarif report
+
+Sarif::GradleOSVSarif
+  with vulnerable gradle project
+    should generate report with logged vulnerabilities
+  with vulnerable gradle project but exceptions configured
+    should generate an empty sarif report
+  with non vulnerable gradle project
+    should generate an empty sarif report
+
+Sarif::MavenOSVSarif
+  with vulnerable maven project
+    should generate report with logged vulnerabilities
+  with vulnerable maven project but exceptions configured
+    should generate an empty sarif report
+  with non vulnerable maven project
+    should generate an empty sarif report
+
+Sarif::PythonOSVSarif
+  with vulnerable go project
+    should generate report with logged vulnerabilities
+  with vulnerable go project but exceptions configured
+    should generate an empty sarif report
+  with non vulnerable go project
+    should generate an empty sarif report
+
+Sarif::GoPackageScannerSarif
+  go package version mismatch
+    should generate error in report
+
+Sarif::NPMPackageScannerSarif
+  npm package version mismatch
+    should generate error in report
+
+Sarif::RubyPackageScannerSarif
+  ruby package version mismatch
+    should generate error in report
+
+Sarif::PatternSearchSarif
+  #parse_issue
+    doesnt add duplicates to the report
+  #build_runs_object
+    vulnerabilites found in project
+      creates valid sarif report with results populated
+  sarif diff
+    git diff support
+      should find code in git diff
+
+Sarif::RepoNotEmptySarif
+  #build_runs_object
+    vulnerabilites found in project
+      creates valid sarif report with results populated
+      creates a sarif report that follows the schema
+    no vulnerabilites found in project
+      does not create sarif report for non-empty repo
+
+Sarif::SarifReport
+  to_sarif
+    fails if generated sarif format is incorrect
+    contains the right scanners
+
+Sarif::SemgrepSarif
+  #to_sarif
+    generates a valid sarif report
+      contains vulnerabilities found in report
+      vulnerabilities found in report have user specified id
+      contains info about missing required vulnerabilities
+      sarif contains correct code snippet
+  sarif diff
+    git diff support
+      should find code in git diff if snippet
+      should find code in git diff if snippet has multiple lines
+      should not find code in git diff if snippet not in git diff
+
+Sarif::TrufflehogSarif
+  #to_sarif
+    generates correct sarif
+      contains vulnerabilities found in report
+      sarif has no vulnerabilities in results if exectuion successful
+
+Sarif::YarnAuditSarif
+  #parse_issue
+    scan report with logged vulnerabilites
+      parses information correctly
+  #sarif_report
+    Yarn file with errors
+      should generate error in report
+    Yarn file with no vulnerabilities
+      should generate an empty sarif report
+    yarn project with vulnerabilities
+      should generate the right results and rules
+    yarn.lock file with vulnerabilities having the same ID
+      should generate all identified vulnerabilities
+  #sarif_level
+    maps severities to the right sarif level
+  sarif diff
+    git diff support
+      should find code in git diff
+      should not match part of the package name
+      should not match package that was in git diff but not added with this commit
+
+Finished in 7 minutes 13 seconds (files took 1.95 seconds to load)
+686 examples, 0 failures
+
+Coverage report generated for RSpec to /home/coverage. 3935 / 4391 LOC (89.62%) covered.
