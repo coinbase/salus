@@ -38,8 +38,8 @@ The [Gosec Scanner](https://github.com/securego/gosec) is a static analysis tool
           notes: Currently no patch exists and determined that this vulnerability is not exploitable.
           expiration: "2021-04-27"
       filter_errors:                     # filter out golang errors that match the messages
-        - error message 1
-        - error message 2
+        - error message 1                # Use with caution! It is unclear whether filtering out certain
+        - error message 2                # errors instead of fixing them could hide vulnerabilities.
 ```
 ## Exceptions
 
