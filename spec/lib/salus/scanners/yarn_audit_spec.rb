@@ -81,7 +81,7 @@ describe Salus::Scanners::YarnAudit do
         expect(vul["ID"]).to be_kind_of(Integer)
       end
 
-      id_vuls = vulns.select { |v| v['ID'] == 1085945 }
+      id_vuls = vulns.select { |v| v['ID'] == 1_085_945 }
       expect(id_vuls.size).to eq(1)
       # vul has two merged dependdency of
       expected_vul = { "Package" => "nth-check",
