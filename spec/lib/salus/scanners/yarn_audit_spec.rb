@@ -82,7 +82,7 @@ describe Salus::Scanners::YarnAudit do
       end
 
       id_vuls = vulns.select { |v| v['ID'] == 1_085_945 }
-      expect(id_vuls.size).to eq(0)
+      expect(id_vuls.size).to eq(1)
       # vul has two merged dependdency of
       expected_vul = { "Package" => "nth-check",
                       "Patched in" => ">=2.0.1",
