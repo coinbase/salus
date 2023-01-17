@@ -81,7 +81,7 @@ describe Salus::Scanners::YarnAudit do
         expect(vul["ID"]).to be_kind_of(Integer)
       end
 
-      id_vuls = vulns.select { |v| v['ID'] == 1_085_945 }
+      id_vuls = vulns.select { |v| v['Package'] == "nth-check" }
       expect(id_vuls.size).to eq(1)
       # vul has two merged dependdency of
       expected_vul = { "Package" => "nth-check",
@@ -94,7 +94,7 @@ describe Salus::Scanners::YarnAudit do
       expect(id_vuls[0]).to eq(expected_vul)
 
       id_vuls_w_paths = scanner.instance_variable_get(:@vulns_w_paths)
-        .select { |v| v['ID'] == 1_085_945 }
+        .select { |v| v['Package'] == "nth-check" }
       expect(id_vuls.size).to eq(1)
       expected_vul['Path'] = "rollup-plugin-postcss > cssnano > cssnano-preset-default > "\
                              "postcss-svgo > svgo > css-select > nth-check"
