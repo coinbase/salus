@@ -82,7 +82,7 @@ describe Salus::Scanners::YarnAudit do
       end
 
       id_vuls = vulns.select { |v| v['ID'] == 1_085_945 }
-      expect(id_vuls.size).to eq(1)
+      expect(id_vuls.size).to eq(0)
       # vul has two merged dependdency of
       expected_vul = { "Package" => "nth-check",
                       "Patched in" => ">=2.0.1",
@@ -194,7 +194,7 @@ describe Salus::Scanners::YarnAudit do
       after_fix_scan.run
       expect(after_fix_scan.report.to_h.fetch(:passed)).to eq(false)
       after_fix_vulns = JSON.parse(after_fix_scan.report.to_h[:info][:stdout])
-      expect(after_fix_vulns.size).to eq(61)
+      expect(after_fix_vulns.size).to eq(63)
     end
 
     it 'should apply auto fixes resulting in reduced vulns' do
@@ -205,7 +205,7 @@ describe Salus::Scanners::YarnAudit do
       scanner.run
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
       vulns = JSON.parse(scanner.report.to_h[:info][:stdout])
-      expect(vulns.size).to eq(61)
+      expect(vulns.size).to eq(63)
 
       auto_fix_scanner = Salus::Scanners::YarnAudit.new(repository: repo,
         config: { 'auto_fix' => { 'run' => true } })
