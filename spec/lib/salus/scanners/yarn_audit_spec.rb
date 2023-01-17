@@ -68,7 +68,7 @@ describe Salus::Scanners::YarnAudit do
         'salus.yaml')
       scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: config_data)
       scanner.run
-      puts JSON.parse(scanner.report.to_h[:info][:stdout])
+
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
       vulns = JSON.parse(scanner.report.to_h[:info][:stdout]).sort { |a, b| a["ID"] <=> b["ID"] }
       expect(vulns.size).to eq(18)
