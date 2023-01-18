@@ -331,16 +331,57 @@ describe Salus::Processor do
       let(:remote_uri_two) { 'https://nerv.tk3/salus-report' }
       let(:listener) { Object.new }
       before(:each) do
-        def listener.reporting_scanners_ran(_event_name, data)
-          data
+        def listener.scanning_group_completed(_scanner_type, _scanners_ran, report)
+          report
         end
       end
 
-      it 'should Recieve reporting_scanners_ran event' do
+      it 'should Recieve scanning_group_completed event' do
+        Salus::PluginManager.register_listener(listener)
+        expect(listener).to receive(:scanning_group_completed).at_least(1).times
+        processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/multiple_endpoints')
+        processor.scan_project
+      end
+
+      it 'should Recieve scanning_group_completed event with scanning context' do
         Salus::PluginManager.register_listener(listener)
 
-        expect(listener).to receive(:reporting_scanners_ran)
+        [Salus::ScannerTypes::SBOM_REPORT, Salus::ScannerTypes::LICENSE,
+         Salus::ScannerTypes::DEPENDENCY, Salus::ScannerTypes::SAST,
+         Salus::ScannerTypes::DYNAMIC, 'default'].each do |scanner_type|
+          # We expect to receive events in the listed order
+          expect(listener).to receive(:scanning_group_completed).with(
+            scanner_type,
+            anything,
+            anything
+          )
+        end
 
+        processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/multiple_endpoints')
+        processor.scan_project
+      end
+
+      it 'should honor block scanner group' do
+        Salus::PluginManager.register_listener(listener)
+        # Override our default to false.  This should result in all of our scanner groups
+        # being empty WITH THE EXCEPTION of 'default'.
+        expect(Salus::Scanners::Base).to receive(:block_scanner_group?).at_least(:once)
+          .and_return(false)
+
+        [Salus::ScannerTypes::SBOM_REPORT, Salus::ScannerTypes::LICENSE,
+         Salus::ScannerTypes::DEPENDENCY, Salus::ScannerTypes::SAST,
+         Salus::ScannerTypes::DYNAMIC].each do |scanner_type|
+          # We expect to receive events in the listed order
+          expect(listener).to receive(:scanning_group_completed).with(
+            scanner_type,
+            [], # We expect an empty array as we've overriden the block_scanner_group to false
+            anything
+          )
+        end
+
+        # Default should run - and should include a non-empty array
+        expect(listener).to receive(:scanning_group_completed)
+          .with('default', array_including("BundleAudit"), anything)
         processor = Salus::Processor.new(repo_path: 'spec/fixtures/processor/multiple_endpoints')
         processor.scan_project
       end

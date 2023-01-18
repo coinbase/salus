@@ -131,7 +131,9 @@ module Salus
 
     def scan_project
       # Record overall running time of the scan
-      reporting_threads = []
+      scanning_thread_groups = {}
+      default_group =  'default'
+
       scanning_threads = []
       files_copied = []
       @scanners_ran = []
@@ -148,20 +150,44 @@ module Salus
             Salus::PluginManager.send_event(:skip_scanner, scanner_name)
             next
           end
+          # run_scanner while spin up threads as needed
+          scanning_threads, copied = run_scanner(config, scanner_class, scanner_name)
 
-          scanner_threads, copied = run_scanner(config, scanner_class, scanner_name)
-          if scanner_class.scanner_type == Salus::ScannerTypes::SBOM_REPORT
-            reporting_threads.concat(scanner_threads)
-          else
-            scanning_threads.concat(scanner_threads)
-          end
+          # Let's group our threads.  This allows us to fire off events as various threads
+          # groups finish their scanning
+          # the blocking_scanner? allows a scanner to opt of the blocking beahvior
+          # of their scan group useful if you have a scanner that want's to wait on
+          # other scanners to finish from the same group
+          cls = scanner_class
+
+          scanner_group = cls.block_scanner_group? ? cls.scanner_type : default_group
+
+          scanning_thread_groups[scanner_group] ||= {}
+          scanning_thread_groups[scanner_group]['threads'] ||= []
+          scanning_thread_groups[scanner_group]['scanner_names'] ||= []
+          scanning_thread_groups[scanner_group]['threads'].concat(scanning_threads)
+          scanning_thread_groups[scanner_group]['scanner_names'].push(scanner_name)
+
           files_copied.concat(copied)
         end
 
-        reporting_threads.each(&:join)
-        Salus::PluginManager.send_event(:reporting_scanners_ran, @scanners_ran, @report)
+        # Manually calling out each scanner type to ensure the order in which these
+        # are published is defined
+        [Salus::ScannerTypes::SBOM_REPORT, Salus::ScannerTypes::LICENSE,
+         Salus::ScannerTypes::DEPENDENCY, Salus::ScannerTypes::SAST,
+         Salus::ScannerTypes::DYNAMIC, default_group].each do |scanner_type|
+          # We are sending events for each group including empty ones
+          group = scanning_thread_groups[scanner_type]
+          scanner_names = group.nil? ? [] : group['scanner_names']
+          # Wait for the threads in this group to finish
+          group['threads']&.each(&:join) unless group.nil?
 
-        scanning_threads.each(&:join)
+          Salus::PluginManager.send_event(:scanning_group_completed,
+                                          scanner_type,
+                                          scanner_names,
+                                          @report)
+        end
+
         cleanup(files_copied.uniq)
 
         Salus::PluginManager.send_event(:scanners_ran, @scanners_ran, @report)

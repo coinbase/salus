@@ -77,6 +77,11 @@ Events are published, plugins can register listeners for events.
 
 - scanners_ran will be invoked after all scanners have ran.  The data playload will be an array of scanners ran and a second parameter for the SalusReport object
 
+`Event :scanning_group_completed`
+
+- scanning_group_completed is fired after a group of scanners has completed scanning.  Groups: Salus::ScannerTypes::SBOM_REPORT, Salus::ScannerTypes::LICENSE, Salus::ScannerTypes::DEPENDENCY, Salus::ScannerTypes::SAST, Salus::ScannerTypes::DYNAMIC, 'default'.
+The event is passed three parameters, the scanning group, the list of scanners ran (array of strings) and the scanning report object.
+
 `Event :run_shell`
 
 - run_shell is called when a scanner executes a shell command to run a native scanner.  The data payload will be the array of arguments.
