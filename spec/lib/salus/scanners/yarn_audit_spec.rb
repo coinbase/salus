@@ -81,42 +81,22 @@ describe Salus::Scanners::YarnAudit do
         expect(vul["ID"]).to be_kind_of(Integer)
       end
 
-      id_vuls = vulns.select { |v| v['ID'] == 1_070_415 }
-      expect(id_vuls.size).to eq(1)
-      # vul has two merged dependdency of
-      expected_vul = { "Package" => "nth-check",
-                      "Patched in" => ">=2.0.1",
-                      "Dependency of" => "rollup-plugin-postcss",
-                      "More info" => "https://www.npmjs.com/advisories/1070415",
-                      "Severity" => "high",
-                      "Title" => "Inefficient Regular Expression Complexity in nth-check",
-                      "ID" => 1_070_415 }
-      expect(id_vuls[0]).to eq(expected_vul)
-
-      id_vuls_w_paths = scanner.instance_variable_get(:@vulns_w_paths)
-        .select { |v| v['ID'] == 1_070_415 }
-      expect(id_vuls.size).to eq(1)
-      expected_vul['Path'] = "rollup-plugin-postcss > cssnano > cssnano-preset-default > "\
-                             "postcss-svgo > svgo > css-select > nth-check"
-      expect(id_vuls_w_paths[0]).to eq(expected_vul)
-
-      id_vuls = vulns.select { |v| v['ID'] == 1_067_342 }
-      expect(id_vuls.size).to eq(1)
+      id_vuls = vulns.find { |v| v['ID'] == 1_085_631 }
       # vul has 1 dependency of
-      expected_vul = { "Package" => "minimist",
-                      "Patched in" => ">=1.2.6",
-                      "Dependency of" => "gulp-cssmin",
-                      "More info" => "https://www.npmjs.com/advisories/1067342",
+      expected_vul = { "Package" => "lodash",
+                      "Patched in" => ">=4.17.12",
+                      "Dependency of" => "gulp-modify-file",
+                      "More info" => "https://www.npmjs.com/advisories/1085631",
                       "Severity" => "critical",
-                      "Title" => "Prototype Pollution in minimist",
-                      "ID" => 1_067_342 }
-      expect(id_vuls[0]).to eq(expected_vul)
+                      "Title" => "Prototype Pollution in lodash",
+                      "ID" => 1_085_631 }
+      expect(id_vuls).to eq(expected_vul)
 
       id_vuls_w_paths = scanner.instance_variable_get(:@vulns_w_paths)
-        .select { |v| v['ID'] == 1_067_342 }
-      expect(id_vuls.size).to eq(1)
-      expected_vul['Path'] = "gulp-cssmin > gulp-util > minimist"
-      expect(id_vuls_w_paths[0]).to eq(expected_vul)
+        .find { |v| v['ID'] == 1_085_631 }
+      expected_vul['Path'] = "gulp-modify-file > gulp > vinyl-fs > "\
+        "glob-watcher > gaze > globule > lodash"
+      expect(id_vuls_w_paths).to eq(expected_vul)
     end
 
     it 'should fail with error if there are errors' do
@@ -176,6 +156,27 @@ describe Salus::Scanners::YarnAudit do
   end
 
   describe '#autofix' do
+    it 'should not apply auto fixes resulting in same vulns present' do
+      repo_path = 'spec/fixtures/yarn_audit/auto-fix'
+      repo = Salus::Repo.new(repo_path)
+
+      scanner = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
+      scanner.run
+      expect(scanner.report.to_h.fetch(:passed)).to eq(false)
+      vulns = JSON.parse(scanner.report.to_h[:info][:stdout])
+      expect(vulns.size).to eq(63)
+
+      auto_fix_scanner = Salus::Scanners::YarnAudit.new(repository: repo,
+        config: { 'auto_fix' => { 'run' => false } })
+      auto_fix_scanner.run
+
+      after_fix_scan = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
+      after_fix_scan.run
+      expect(after_fix_scan.report.to_h.fetch(:passed)).to eq(false)
+      after_fix_vulns = JSON.parse(after_fix_scan.report.to_h[:info][:stdout])
+      expect(after_fix_vulns.size).to eq(63)
+    end
+
     it 'should apply auto fixes resulting in reduced vulns' do
       repo_path = 'spec/fixtures/yarn_audit/auto-fix'
       repo = Salus::Repo.new(repo_path)
@@ -184,17 +185,17 @@ describe Salus::Scanners::YarnAudit do
       scanner.run
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
       vulns = JSON.parse(scanner.report.to_h[:info][:stdout])
-      expect(vulns.size).to eq(61)
+      expect(vulns.size).to eq(63)
 
       auto_fix_scanner = Salus::Scanners::YarnAudit.new(repository: repo,
-        config: { 'auto_fix' => true })
+        config: { 'auto_fix' => { 'run' => true } })
       auto_fix_scanner.run
 
       after_fix_scan = Salus::Scanners::YarnAudit.new(repository: repo, config: {})
       after_fix_scan.run
       expect(after_fix_scan.report.to_h.fetch(:passed)).to eq(false)
       after_fix_vulns = JSON.parse(after_fix_scan.report.to_h[:info][:stdout])
-      expect(after_fix_vulns.size).to eq(24)
+      expect(after_fix_vulns.size).to eq(22)
     end
   end
 

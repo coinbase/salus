@@ -77,6 +77,52 @@ describe Salus::Scanners::Gosec do
     end
   end
 
+  describe '#run with filter_errors' do
+    context 'filter_errors' do
+      it 'repo has 1 error, 0 vul. filter_error should remove error and pass scanner' do
+        repo = Salus::Repo.new('spec/fixtures/gosec/malformed_goapp')
+        config = { 'filter_errors' => ['Pintl not declared by package fmt'] }
+        scanner = Salus::Scanners::Gosec.new(repository: repo, config: config)
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(true)
+        report_data = scanner.report.to_h
+        expect(report_data[:errors]).to be_empty
+        expect(report_data[:logs]).to be_nil
+      end
+
+      it 'repo has 2 errors, 1 vul. If 2 errors filtered, scanner still fails' do
+        repo = Salus::Repo.new('spec/fixtures/gosec/malformed_goapp2')
+        config = { 'filter_errors' => ['Pintl not declared by package fmt',
+                                       'Foo not declared by package fmt'] }
+        scanner = Salus::Scanners::Gosec.new(repository: repo, config: config)
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(false)
+        report_data = scanner.report.to_h
+        expect(report_data[:errors]).to be_empty
+        logs = JSON.parse(report_data[:logs])
+        expect(logs['Golang errors']).to be_empty
+      end
+
+      it 'repo has 2 errors, 1 vul. If 1 error filtered, 1 error/vul remain' do
+        repo = Salus::Repo.new('spec/fixtures/gosec/malformed_goapp2')
+        config = { 'filter_errors' => ['Foo not declared by package fmt'] }
+        scanner = Salus::Scanners::Gosec.new(repository: repo, config: config)
+        scanner.run
+
+        expect(scanner.report.passed?).to eq(false)
+        report_data = scanner.report.to_h
+        expect(report_data[:errors]).to be_empty
+        logs = JSON.parse(report_data[:logs])
+        expected_err = { "/home/spec/fixtures/gosec/malformed_goapp2/hello.go" =>
+                        [{ "line" => 8, "column" => 6,
+                          "error" => "Pintl not declared by package fmt" }] }
+        expect(logs['Golang errors']).to eq(expected_err)
+      end
+    end
+  end
+
   describe '#run from multiple subdirs' do
     context 'go project with multiple sub-projects' do
       let(:repo) { 'spec/fixtures/gosec/multi_goapps' }
