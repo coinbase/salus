@@ -38,7 +38,7 @@ describe Sarif::NPMAuditSarif do
                             "vulnerable_versions": { "text": "<2.1.1" } },
           help_url: "https://github.com/advisories/GHSA-7wpw-2hjm-89gp",
           uri: "package-lock.json",
-          properties: { severity: "high" },
+          properties: { severity: "high", detected_versions: ["1.2.0"] },
           start_line: 23,
           start_column: 1,
           suppressed: false
