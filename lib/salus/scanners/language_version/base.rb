@@ -5,6 +5,11 @@ module Salus::Scanners::LanguageVersion
   class Base < Salus::Scanners::Base
     class SemVersion < Gem::Version; end
 
+    INFO = "info".freeze
+    BLOCK = "block".freeze
+    MIN = "min".freeze
+    MAX = "max".freeze
+
     def self.scanner_type
       Salus::ScannerTypes::SAST
     end
@@ -16,9 +21,8 @@ module Salus::Scanners::LanguageVersion
         return report_error(error_msg)
       end
       results = block = info = []
-      info = handle_language_version_rules(@config["info"], "info") if @config.key?("info")
-      block = handle_language_version_rules(@config["block"], "block") if @config.key?("block")
-
+      info = handle_language_version_rules(@config[INFO], INFO) if @config.key?(INFO)
+      block = handle_language_version_rules(@config[BLOCK], BLOCK) if @config.key?(BLOCK)
       results.concat(info)
       results.concat(block)
 
@@ -36,17 +40,17 @@ module Salus::Scanners::LanguageVersion
 
       violations += [
         if min_version && (version < min_version)
-          if type == "info"
-            info_message(version, min_version, "min")
-          elsif type == "block"
-            block_message(version, min_version, "min")
+          if type == INFO
+            info_message(version, min_version, MIN)
+          elsif type == BLOCK
+            block_message(version, min_version, MIN)
           end
         end,
         if max_version && (version > max_version)
-          if type == "info"
-            info_message(version, min_version, "max")
-          elsif type == "block"
-            block_message(version, min_version, "max")
+          if type == INFO
+            info_message(version, min_version, MAX)
+          elsif type == BLOCK
+            block_message(version, min_version, MAX)
           end
         end
       ]
