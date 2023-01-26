@@ -5,8 +5,8 @@ module Salus::Scanners::LanguageVersion
   class Base < Salus::Scanners::Base
     class SemVersion < Gem::Version; end
 
-    INFO = "warn".freeze
-    BLOCK = "error".freeze
+    WARN = "warn".freeze
+    ERROR = "error".freeze
     MIN = "min".freeze
     MAX = "max".freeze
 
@@ -20,13 +20,13 @@ module Salus::Scanners::LanguageVersion
                     "#{self.class.supported_languages[0]} application"
         return report_error(error_msg)
       end
-      results = block = info = []
-      info = handle_language_version_rules(@config[INFO], INFO) if @config.key?(INFO)
-      block = handle_language_version_rules(@config[BLOCK], BLOCK) if @config.key?(BLOCK)
-      results.concat(info)
-      results.concat(block)
+      results = errors = warns = []
+      warns = handle_language_version_rules(@config[WARN], WARN) if @config.key?(WARN)
+      errors = handle_language_version_rules(@config[ERROR], ERROR) if @config.key?(ERROR)
+      results.concat(warns)
+      results.concat(errors)
 
-      return report_success if block.empty?
+      return report_success if errors.empty?
 
       report_failure
       log(JSON.pretty_generate(results))
@@ -40,25 +40,25 @@ module Salus::Scanners::LanguageVersion
 
       violations += [
         if min_version && (version < min_version)
-          if type == INFO
-            info_message(version, min_version, MIN)
-          elsif type == BLOCK
-            block_message(version, min_version, MIN)
+          if type == WARN
+            warn_message(version, min_version, MIN)
+          elsif type == ERROR
+            error_message(version, min_version, MIN)
           end
         end,
         if max_version && (version > max_version)
-          if type == INFO
-            info_message(version, min_version, MAX)
-          elsif type == BLOCK
-            block_message(version, min_version, MAX)
+          if type == WARN
+            warn_message(version, min_version, MAX)
+          elsif type == ERROR
+            error_message(version, min_version, MAX)
           end
         end
       ]
       violations.compact
     end
 
-    def info_message(version, target, type)
-      if type == "min"
+    def warn_message(version, target, type)
+      if type == MIN
         "Info: Repository language version (#{version}) is less " \
           "than minimum recommended version (#{target}). " \
           "It is recommended to upgrade the language version."
@@ -69,8 +69,8 @@ module Salus::Scanners::LanguageVersion
       end
     end
 
-    def block_message(version, target, type)
-      if type == "min"
+    def error_message(version, target, type)
+      if type == MIN
         "Blocked: Repository language version (#{version}) is less " \
           "than minimum recommended version (#{target}). " \
           "Please upgrade the language version."
