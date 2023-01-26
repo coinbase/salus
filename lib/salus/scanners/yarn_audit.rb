@@ -70,18 +70,25 @@ module Salus::Scanners
       data["advisories"].each do |advisory_id, advisory|
         if excpts.exclude?(advisory_id)
           dependency_of = advisory["findings"]&.first&.[]("paths")
+
+          versions = nil
+          if advisory["findings"]&.all? { |v| Gem::Version.correct?(v["version"]) }
+            versions = advisory["findings"].map { |v| Gem::Version.new(v["version"]).to_s }
+          end
+
           vulns.append({
                          "Package" => advisory.dig("module_name"),
-                         "Patched in" => advisory.dig("patched_versions"),
-                         "More info" => advisory.dig("url"),
-                         "Severity" => advisory.dig("severity"),
-                         "Title" => advisory.dig("title"),
-                         "ID" => advisory_id.to_i,
-                         "Dependency of" => if dependency_of.nil?
-                                              advisory.dig("module_name")
-                                            else
-                                              dependency_of.join("")
-                                            end
+                           "Patched in" => advisory.dig("patched_versions"),
+                           "More info" => advisory.dig("url"),
+                           "Severity" => advisory.dig("severity"),
+                           "Title" => advisory.dig("title"),
+                           "ID" => advisory_id.to_i,
+                           "DectectedVersions" => versions,
+                           "Dependency of" => if dependency_of.nil?
+                                                advisory.dig("module_name")
+                                              else
+                                                dependency_of.join("")
+                                              end
                        })
         end
       end

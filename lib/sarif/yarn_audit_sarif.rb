@@ -36,10 +36,8 @@ module Sarif
         uri: "yarn.lock",
         help_url: issue['More info']
       }
-
-      if issue[:findings]&.all? { |v| Gem::Version.correct?(v[:version]) }
-        versions = issue[:findings].map { |v| Gem::Version.new(v[:version]).to_s }
-        parsed_issue[:properties][:detected_versions] = versions
+      unless issue['DectectedVersions'].nil?
+        parsed_issue[:properties][:detected_versions] = issue['DectectedVersions']
       end
 
       if issue.key?("Line number")
