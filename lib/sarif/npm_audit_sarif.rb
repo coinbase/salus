@@ -36,11 +36,16 @@ module Sarif
                          "cwe": { "text": (issue[:cwe]).to_s },
                          "recommendation": { "text": (issue[:recommendation]).to_s },
                          "vulnerable_versions": { "text": (issue[:vulnerable_versions]).to_s } },
-        properties: { 'severity': (issue[:severity]).to_s },
+        properties: { 'severity': (issue[:severity]).to_s},
         uri: "package-lock.json",
         help_url: issue[:url],
         suppressed: @exceptions.include?(id)
       }
+
+      if issue[:findings].all? { |v| Gem::Version.correct?(v[:version]) }
+        versions = issue[:findings].map { |v| Gem::Version.new(v[:version]) }.min.to_s
+        parsed_issue[:properties][:detected_versions] = versions
+      end
 
       if issue[:line_number]
         parsed_issue[:start_line] = issue[:line_number]
