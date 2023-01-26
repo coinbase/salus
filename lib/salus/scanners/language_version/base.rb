@@ -9,34 +9,75 @@ module Salus::Scanners::LanguageVersion
       Salus::ScannerTypes::SAST
     end
 
-    def run
+    def run 
       if lang_version.nil?
         error_msg = "Please supply the path to a " \
                     "#{self.class.supported_languages[0]} application"
         return report_error(error_msg)
       end
+      results = block = info = []
+      if @config.key?("info")
+        info = handle_language_version_rules(@config["info"], "info")
+      end
+      if @config.key?("block")
+        block = handle_language_version_rules(@config["block"], "block")
+      end
 
+      results.concat(info)
+      results.concat(block)
+
+      return report_success if block.empty?
+      report_failure
+      log(JSON.pretty_generate(results))
+    end
+
+    def handle_language_version_rules(rule, type)
+      violations = []
       version = SemVersion.new(lang_version)
-      min_version = SemVersion.new(@config['min_version']) if @config['min_version']
-      max_version = SemVersion.new(@config['max_version']) if @config['max_version']
+      min_version = SemVersion.new(rule['min_version']) if rule['min_version']
+      max_version = SemVersion.new(rule['max_version']) if rule['max_version']
 
-      if min_version && (version < min_version)
-        error_msg = "Repository language version (#{version}) is less " \
-                    "than minimum configured version (#{min_version}). " \
-                    "Please upgrade the language version."
-        report_error(error_msg)
-        return report_failure
+      violations += [
+        if min_version && (version < min_version)
+          if type == "info"
+            info_message(version, min_version, "min")
+          elsif type == "block"
+            block_message(version, min_version, "min")
+          end
+        end,
+        if max_version && (version > max_version)
+          if type == "info"
+            info_message(version, min_version, "max")
+          elsif type == "block"
+            block_message(version, min_version, "max")
+          end
+        end
+      ]
+      violations.compact
+    end
+
+    def info_message(version, target, type)
+      if type == "min"
+        "Info: Repository language version (#{version}) is less " \
+          "than minimum recommended version (#{target}). " \
+          "It is recommended to upgrade the language version."
+      else
+        "Info: Repository language version (#{version}) is greater " \
+          "than maximum recommended version (#{target}). " \
+          "It is recommended to downgrade the language version."
       end
+    end
 
-      if max_version && (version > max_version)
-        error_msg = "Repository language version (#{version}) is greater " \
-                    "than maximum configured version (#{max_version}). " \
-                    "Please downgrade the language version."
-        report_error(error_msg)
-        return report_failure
+    def block_message(version, target, type)
+      if type == "min"
+        "Blocked: Repository language version (#{version}) is less " \
+          "than minimum recommended version (#{target}). " \
+          "Please upgrade the language version."
+      else
+        "Blocked: Repository language version (#{version}) is greater " \
+          "than maximum recommended version (#{target}). " \
+          "Please downgrade the language version."
       end
-
-      report_success
     end
 
     def name
@@ -44,8 +85,9 @@ module Salus::Scanners::LanguageVersion
     end
 
     def should_run?
-      configured_version_present = !@config['min_version'].nil? || !@config['max_version'].nil?
-      configured_version_present && run_version_scan?
+      # info_configured_version_present = !@config['info']['min_version'].nil? || !@config['info']['max_version'].nil?
+      # block_configured_version_present = !@config['block']['min_version'].nil? || !@config['block']['max_version'].nil?
+      run_version_scan?
     end
 
     private
