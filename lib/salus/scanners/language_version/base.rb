@@ -20,9 +20,22 @@ module Salus::Scanners::LanguageVersion
                     "#{self.class.supported_languages[0]} application"
         return report_error(error_msg)
       end
-      results = errors = warns = []
+
+      # check for valid configuration
+      valid = @config[WARN]&.[]("min_version") || 
+              @config[WARN]&.[]("max_version") ||
+              @config[ERROR]&.[]("min_version") ||
+              @config[ERROR]&.[]("max_version")
+      unless valid
+        error_msg = "Incorect configuration found for scanner."
+        return report_error(error_msg)
+      end
+      errors = []
+      warns = []
       warns = handle_language_version_rules(@config[WARN], WARN) if @config.key?(WARN)
       errors = handle_language_version_rules(@config[ERROR], ERROR) if @config.key?(ERROR)
+      
+      results = []
       results.concat(warns)
       results.concat(errors)
 
@@ -59,11 +72,11 @@ module Salus::Scanners::LanguageVersion
 
     def warn_message(version, target, type)
       if type == MIN
-        "Info: Repository language version (#{version}) is less " \
+        "Warn: Repository language version (#{version}) is less " \
           "than minimum recommended version (#{target}). " \
           "It is recommended to upgrade the language version."
       else
-        "Info: Repository language version (#{version}) is greater " \
+        "Warn: Repository language version (#{version}) is greater " \
           "than maximum recommended version (#{target}). " \
           "It is recommended to downgrade the language version."
       end
@@ -71,11 +84,11 @@ module Salus::Scanners::LanguageVersion
 
     def error_message(version, target, type)
       if type == MIN
-        "Blocked: Repository language version (#{version}) is less " \
+        "Error: Repository language version (#{version}) is less " \
           "than minimum recommended version (#{target}). " \
           "Please upgrade the language version."
       else
-        "Blocked: Repository language version (#{version}) is greater " \
+        "Error: Repository language version (#{version}) is greater " \
           "than maximum recommended version (#{target}). " \
           "Please downgrade the language version."
       end
