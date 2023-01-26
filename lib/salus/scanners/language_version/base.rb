@@ -5,8 +5,8 @@ module Salus::Scanners::LanguageVersion
   class Base < Salus::Scanners::Base
     class SemVersion < Gem::Version; end
 
-    INFO = "info".freeze
-    BLOCK = "block".freeze
+    INFO = "warn".freeze
+    BLOCK = "error".freeze
     MIN = "min".freeze
     MAX = "max".freeze
 

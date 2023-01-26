@@ -7,10 +7,10 @@ Following is an example of how the user can provide version configuration in `sa
 ```sh
 scanner_configs:
   GoVersionScanner:
-    info:
+    warn:
       min_version: '1.20.0'
       max_version: '1.25.0'
-    block:
+    error:
       min_version: '1.18.0'
 ```
 
