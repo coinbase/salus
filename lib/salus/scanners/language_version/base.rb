@@ -9,6 +9,8 @@ module Salus::Scanners::LanguageVersion
     ERROR = "error".freeze
     MIN = "min".freeze
     MAX = "max".freeze
+    MIN_VERSION = "min_version".freeze
+    MAX_VERSION = "max_verison".freeze
 
     def self.scanner_type
       Salus::ScannerTypes::SAST
@@ -23,10 +25,10 @@ module Salus::Scanners::LanguageVersion
       end
 
       # return error if invalid configuration
-      valid = @config[WARN]&.[]("min_version") || 
-              @config[WARN]&.[]("max_version") ||
-              @config[ERROR]&.[]("min_version") ||
-              @config[ERROR]&.[]("max_version")
+      valid = @config[WARN]&.[](MIN_VERSION) ||
+        @config[WARN]&.[](MAX_VERSION) ||
+        @config[ERROR]&.[](MIN_VERSION) ||
+        @config[ERROR]&.[](MAX_VERSION)
       unless valid
         error_msg = "Incorect configuration found for scanner."
         return report_error(error_msg)
@@ -37,7 +39,8 @@ module Salus::Scanners::LanguageVersion
       warns = []
       warns = handle_language_version_rules(@config[WARN], WARN) if @config.key?(WARN)
       errors = handle_language_version_rules(@config[ERROR], ERROR) if @config.key?(ERROR)
-      
+
+      # combine warns and errors
       results = []
       results.concat(warns)
       results.concat(errors)
@@ -51,8 +54,8 @@ module Salus::Scanners::LanguageVersion
     def handle_language_version_rules(rule, type)
       violations = []
       version = SemVersion.new(lang_version)
-      min_version = SemVersion.new(rule['min_version']) if rule['min_version']
-      max_version = SemVersion.new(rule['max_version']) if rule['max_version']
+      min_version = SemVersion.new(rule[MIN_VERSION]) if rule[MIN_VERSION]
+      max_version = SemVersion.new(rule[MAX_VERSION]) if rule[MAX_VERSION]
 
       violations += [
         if min_version && (version < min_version)
