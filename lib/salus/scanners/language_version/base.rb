@@ -9,24 +9,21 @@ module Salus::Scanners::LanguageVersion
       Salus::ScannerTypes::SAST
     end
 
-    def run 
+    def run
       if lang_version.nil?
         error_msg = "Please supply the path to a " \
                     "#{self.class.supported_languages[0]} application"
         return report_error(error_msg)
       end
       results = block = info = []
-      if @config.key?("info")
-        info = handle_language_version_rules(@config["info"], "info")
-      end
-      if @config.key?("block")
-        block = handle_language_version_rules(@config["block"], "block")
-      end
+      info = handle_language_version_rules(@config["info"], "info") if @config.key?("info")
+      block = handle_language_version_rules(@config["block"], "block") if @config.key?("block")
 
       results.concat(info)
       results.concat(block)
 
       return report_success if block.empty?
+
       report_failure
       log(JSON.pretty_generate(results))
     end
@@ -85,8 +82,6 @@ module Salus::Scanners::LanguageVersion
     end
 
     def should_run?
-      # info_configured_version_present = !@config['info']['min_version'].nil? || !@config['info']['max_version'].nil?
-      # block_configured_version_present = !@config['block']['min_version'].nil? || !@config['block']['max_version'].nil?
       run_version_scan?
     end
 
