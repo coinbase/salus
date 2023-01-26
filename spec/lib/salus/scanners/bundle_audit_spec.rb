@@ -74,7 +74,7 @@ describe Salus::Scanners::BundleAudit do
         repo = Salus::Repo.new('spec/fixtures/bundle_audit/passes_with_ignores')
         scanner = Salus::Scanners::BundleAudit.new(
           repository: repo,
-          config: { 'ignore' => %w[CVE-2012-3464 CVE-2015-3227 CVE-2020-8165] }
+          config: { 'ignore' => %w[CVE-2012-3464 CVE-2015-3227 CVE-2020-8165 CVE-2023-22796] }
         )
 
         scanner.run
@@ -82,7 +82,9 @@ describe Salus::Scanners::BundleAudit do
         expect(scanner.report.passed?).to eq(true)
 
         info = scanner.report.to_h.fetch(:info)
-        expect(info[:ignored_cves]).to eq(%w[CVE-2012-3464 CVE-2015-3227 CVE-2020-8165])
+        expect(info[:ignored_cves]).to eq(
+          %w[CVE-2012-3464 CVE-2015-3227 CVE-2020-8165 CVE-2023-22796]
+        )
       end
     end
 
@@ -100,14 +102,17 @@ describe Salus::Scanners::BundleAudit do
             { 'advisory_id' => "CVE-2012-3464", 'expiration' => '2022-12-31',
               'changed_by' => 'appsec', 'notes' => 'foo' },
             { 'advisory_id' => "CVE-2015-3227", 'changed_by' => 'appsec', 'notes' => 'foo' },
-            { 'advisory_id' => "CVE-2020-8165", 'changed_by' => 'appsec', 'notes' => 'foo' }
+            { 'advisory_id' => "CVE-2020-8165", 'changed_by' => 'appsec', 'notes' => 'foo' },
+            { 'advisory_id' => "CVE-2023-22796", 'changed_by' => 'appsec', 'notes' => 'foo' }
           ] }
         )
 
         scanner.run
         expect(scanner.report.passed?).to eq(true)
         info = scanner.report.to_h.fetch(:info)
-        expect(info[:ignored_cves]).to eq(%w[CVE-2012-3464 CVE-2015-3227 CVE-2020-8165])
+        expect(info[:ignored_cves]).to eq(
+          %w[CVE-2012-3464 CVE-2015-3227 CVE-2020-8165 CVE-2023-22796]
+        )
       end
 
       it 'should not apply expired exceptions' do
@@ -134,7 +139,7 @@ describe Salus::Scanners::BundleAudit do
         repo = Salus::Repo.new('spec/fixtures/bundle_audit/passes_with_ignores')
         scanner = Salus::Scanners::BundleAudit.new(
           repository: repo,
-          config: { 'ignore' => %w[CVE-2012-3464 CVE-2015-3227 CVE-2020-8165] }
+          config: { 'ignore' => %w[CVE-2012-3464 CVE-2015-3227 CVE-2020-8165 CVE-2023-22796] }
         )
 
         scanner.run
@@ -142,7 +147,9 @@ describe Salus::Scanners::BundleAudit do
         expect(scanner.report.passed?).to eq(true)
 
         info = scanner.report.to_h.fetch(:info)
-        expect(info[:ignored_cves]).to eq(%w[CVE-2012-3464 CVE-2015-3227 CVE-2020-8165])
+        expect(info[:ignored_cves]).to eq(
+          %w[CVE-2012-3464 CVE-2015-3227 CVE-2020-8165 CVE-2023-22796]
+        )
       end
     end
 
