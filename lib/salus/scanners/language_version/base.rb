@@ -15,13 +15,14 @@ module Salus::Scanners::LanguageVersion
     end
 
     def run
+      # return error if language version not found
       if lang_version.nil?
         error_msg = "Please supply the path to a " \
                     "#{self.class.supported_languages[0]} application"
         return report_error(error_msg)
       end
 
-      # check for valid configuration
+      # return error if invalid configuration
       valid = @config[WARN]&.[]("min_version") || 
               @config[WARN]&.[]("max_version") ||
               @config[ERROR]&.[]("min_version") ||
@@ -30,6 +31,8 @@ module Salus::Scanners::LanguageVersion
         error_msg = "Incorect configuration found for scanner."
         return report_error(error_msg)
       end
+
+      # check rules
       errors = []
       warns = []
       warns = handle_language_version_rules(@config[WARN], WARN) if @config.key?(WARN)
