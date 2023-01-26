@@ -109,6 +109,7 @@ module Salus::Scanners::OSV
         flattened_doc = affected.merge(doc)
         flattened_results.append(flattened_doc)
       end
+      puts flattened_results
       flattened_results
     end
 

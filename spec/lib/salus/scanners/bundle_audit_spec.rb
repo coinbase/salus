@@ -82,7 +82,9 @@ describe Salus::Scanners::BundleAudit do
         expect(scanner.report.passed?).to eq(true)
 
         info = scanner.report.to_h.fetch(:info)
-        expect(info[:ignored_cves]).to eq(%w[CVE-2012-3464 CVE-2015-3227 CVE-2020-8165 CVE-2023-22796])
+        expect(info[:ignored_cves]).to eq(
+          %w[CVE-2012-3464 CVE-2015-3227 CVE-2020-8165 CVE-2023-22796]
+        )
       end
     end
 
@@ -108,7 +110,9 @@ describe Salus::Scanners::BundleAudit do
         scanner.run
         expect(scanner.report.passed?).to eq(true)
         info = scanner.report.to_h.fetch(:info)
-        expect(info[:ignored_cves]).to eq(%w[CVE-2012-3464 CVE-2015-3227 CVE-2020-8165 CVE-2023-22796])
+        expect(info[:ignored_cves]).to eq(
+          %w[CVE-2012-3464 CVE-2015-3227 CVE-2020-8165 CVE-2023-22796]
+        )
       end
 
       it 'should not apply expired exceptions' do
@@ -143,7 +147,9 @@ describe Salus::Scanners::BundleAudit do
         expect(scanner.report.passed?).to eq(true)
 
         info = scanner.report.to_h.fetch(:info)
-        expect(info[:ignored_cves]).to eq(%w[CVE-2012-3464 CVE-2015-3227 CVE-2020-8165 CVE-2023-22796])
+        expect(info[:ignored_cves]).to eq(
+          %w[CVE-2012-3464 CVE-2015-3227 CVE-2020-8165 CVE-2023-22796]
+        )
       end
     end
 
