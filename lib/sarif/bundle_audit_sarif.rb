@@ -39,6 +39,11 @@ module Sarif
         result[:details] = "Type: #{issue[:type]}\nSource: #{issue[:source]}"
       end
 
+      version = issue.dig(:version)
+      if !version.nil? && Gem::Version.correct?(version)
+        result[:properties][:detected_versions] = [version]
+      end
+
       result
     end
 

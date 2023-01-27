@@ -62,6 +62,12 @@ module Sarif
         uri: 'Cargo.lock',
         help_url: issue['advisory']['url']
       }
+
+      version = issue.dig('package', 'version')
+      if !version.nil? && Gem::Version.correct?(version)
+        parsed_issue[:properties][:detected_versions] = [version]
+      end
+
       if issue['kind'] == 'unmaintained'
         parsed_issue[:level] = 'LOW'
         parsed_issue[:details] << "\nKind: unmaintained"

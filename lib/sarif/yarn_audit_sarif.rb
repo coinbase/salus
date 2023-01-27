@@ -36,6 +36,9 @@ module Sarif
         uri: "yarn.lock",
         help_url: issue['More info']
       }
+      unless issue['DectectedVersions'].nil?
+        parsed_issue[:properties][:detected_versions] = issue['DectectedVersions']
+      end
 
       if issue.key?("Line number")
         parsed_issue[:start_line] = issue['Line number']

@@ -60,7 +60,8 @@ describe Sarif::BundleAuditSarif do
             uri: "Gemfile.lock",
             start_line: 8,
             start_column: 1,
-            code: 'actionpack'
+            code: 'actionpack',
+            properties: { severity: "", detected_versions: ["4.1.15"] }
           )
         else
           details = 'There is a possible DoS vulnerability in the Token Authentication logic in'

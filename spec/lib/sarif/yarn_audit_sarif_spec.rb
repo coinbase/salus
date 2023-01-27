@@ -17,6 +17,44 @@ describe Sarif::YarnAuditSarif do
     let(:scanner) { Salus::Scanners::YarnAudit.new(repository: repo, config: {}) }
     let(:error_id_fail_2) { "1002899" } # was 39 before the great yarn advisory reshuffling of '21
 
+    context 'scan report with logged from newer yarn' do
+      let(:stub_yarn_stdout_latest) do
+        File.read('spec/fixtures/yarn_audit/success_with_exceptions/stub_stdout_latest.json')
+      end
+      let(:path) { 'spec/fixtures/yarn_audit/success_with_exceptions' }
+      let(:repo) { Salus::Repo.new(path) }
+
+      it 'parses information correctly' do
+        status = ProcessStatusDouble.new(stub_status_failure_2)
+        stub_ret = Salus::ShellResult.new(stub_yarn_stdout_latest, stub_yarn_stdout_latest, status)
+        allow(scanner).to receive(:version).and_return('2.0.0')
+        allow(scanner).to receive(:run_shell).and_return(stub_ret)
+
+        scanner.run
+
+        issue = JSON.parse(scanner.report.to_h[:info][:stdout])[0]
+        yarn_sarif = Sarif::YarnAuditSarif.new(scanner.report, path)
+
+        expect(yarn_sarif.parse_issue(issue)).to include(
+          details: "Renderers can obtain access to random bluetooth device without permission "\
+          "in Electron, Dependency of: uglify-js",
+          help_url: "https://github.com/advisories/GHSA-3p22-ghq8-v749",
+          id: "1006709",
+          level: "LOW",
+          messageStrings: {
+            dependency_of: { text: "uglify-js" },
+            package: { text: "uglify-js" },
+            patched_versions: { text: ">=13.6.6" },
+            severity: { text: "low" }
+          },
+          name: "Renderers can obtain access to random bluetooth device without "\
+          "permission in Electron",
+          properties: { detected_versions: ["11.5.0"], severity: "low" },
+          uri: "yarn.lock"
+        )
+      end
+    end
+
     context 'scan report with logged vulnerabilites' do
       let(:path) { 'spec/fixtures/yarn_audit/failure-2' }
       let(:repo) { Salus::Repo.new(path) }
