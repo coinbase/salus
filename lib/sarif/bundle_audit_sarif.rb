@@ -39,7 +39,7 @@ module Sarif
         result[:details] = "Type: #{issue[:type]}\nSource: #{issue[:source]}"
       end
 
-      version = issue.dig('version')
+      version = issue.dig(:version)
       result[:properties][:detected_versions] = [version] unless version.nil?
 
       result

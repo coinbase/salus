@@ -12,7 +12,7 @@ describe Sarif::CargoAuditSarif do
       it 'parses information correctly' do
         x = JSON.parse(scanner.report.to_h.fetch(:logs))
         cargo_sarif = Sarif::CargoAuditSarif.new(scanner.report, path)
-
+        severity = "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
         issue = x['vulnerabilities']['list'][0]
 
         expect(cargo_sarif.parse_issue(issue)).to include(
@@ -37,7 +37,8 @@ describe Sarif::CargoAuditSarif do
                           "patched_versions": { "text": "[\">=0.1.25\"]" },
                           "unaffected_versions": { "text": "[\"<0.1.14\"]" } },
           help_url: "https://github.com/sile/libflate/issues/35",
-          uri: "Cargo.lock"
+          uri: "Cargo.lock",
+          properties: { severity: severity, detected_versions: ["0.1.19"] }
         )
       end
     end
