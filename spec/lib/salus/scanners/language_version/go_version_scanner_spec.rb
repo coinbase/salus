@@ -89,7 +89,6 @@ describe Salus::Scanners::LanguageVersion::GoVersionScanner do
           expect(scanner.should_run?).to eq(true)
 
           scanner.run
-          logs = scanner.report.to_h[:logs]
 
           expect(scanner.report.passed?).to eq(true)
         end
