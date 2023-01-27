@@ -1,5 +1,6 @@
 scanner_configs:
   RubyVersionScanner:
-    min_version: '2.6.0'
-    max_version: '2.7.6'
+    error:
+      min_version: '2.6.0'
+      max_version: '2.7.6'
 

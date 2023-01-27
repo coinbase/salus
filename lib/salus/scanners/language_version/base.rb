@@ -10,7 +10,7 @@ module Salus::Scanners::LanguageVersion
     MIN = "min".freeze
     MAX = "max".freeze
     MIN_VERSION = "min_version".freeze
-    MAX_VERSION = "max_verison".freeze
+    MAX_VERSION = "max_version".freeze
 
     def self.scanner_type
       Salus::ScannerTypes::SAST
@@ -24,21 +24,26 @@ module Salus::Scanners::LanguageVersion
         return report_error(error_msg)
       end
 
-      # return error if invalid configuration
-      valid = @config[WARN]&.[](MIN_VERSION) ||
-        @config[WARN]&.[](MAX_VERSION) ||
-        @config[ERROR]&.[](MIN_VERSION) ||
-        @config[ERROR]&.[](MAX_VERSION)
-      unless valid
-        error_msg = "Incorect configuration found for scanner."
+      if !(@config.key?(WARN) || @config.key?(ERROR))
+        error_msg = "Incorrect #{WARN} or #{ERROR} configuration found for scanner."
         return report_error(error_msg)
+      elsif @config.dig(WARN)
+        unless !@config.dig(WARN, MIN_VERSION).nil? || !@config.dig(WARN, MAX_VERSION).nil?
+          error_msg = "Incorrect #{WARN} configuration found for scanner."
+          return report_error(error_msg)
+        end
+      elsif @config.dig(ERROR)
+        unless !@config.dig(ERROR, MIN_VERSION).nil? || !@config.dig(ERROR, MAX_VERSION).nil?
+          error_msg = "Incorrect #{ERROR} configuration found for scanner."
+          return report_error(error_msg)
+        end
       end
 
       # check rules
       errors = []
       warns = []
-      warns = handle_language_version_rules(@config[WARN], WARN) if @config.key?(WARN)
-      errors = handle_language_version_rules(@config[ERROR], ERROR) if @config.key?(ERROR)
+      warns = check_rules(@config[WARN], WARN) if @config.key?(WARN)
+      errors = check_rules(@config[ERROR], ERROR) if @config.key?(ERROR)
 
       # combine warns and errors
       results = []
@@ -51,29 +56,23 @@ module Salus::Scanners::LanguageVersion
       log(JSON.pretty_generate(results))
     end
 
-    def handle_language_version_rules(rule, type)
+    def check_rules(config, type)
       violations = []
       version = SemVersion.new(lang_version)
-      min_version = SemVersion.new(rule[MIN_VERSION]) if rule[MIN_VERSION]
-      max_version = SemVersion.new(rule[MAX_VERSION]) if rule[MAX_VERSION]
+      min_version = SemVersion.new(config[MIN_VERSION]) if config[MIN_VERSION]
+      max_version = SemVersion.new(config[MAX_VERSION]) if config[MAX_VERSION]
 
-      violations += [
-        if min_version && (version < min_version)
-          if type == WARN
-            warn_message(version, min_version, MIN)
-          elsif type == ERROR
-            error_message(version, min_version, MIN)
-          end
-        end,
-        if max_version && (version > max_version)
-          if type == WARN
-            warn_message(version, min_version, MAX)
-          elsif type == ERROR
-            error_message(version, min_version, MAX)
-          end
-        end
-      ]
-      violations.compact
+      if min_version && (version < min_version)
+        violations.append(warn_message(version, min_version, MIN)) if type == WARN
+        violations.append(error_message(version, min_version, MIN)) if type == ERROR
+      end
+
+      if max_version && (version > max_version)
+        violations.append(warn_message(version, max_version, MAX)) if type == WARN
+        violations.append(error_message(version, max_version, MAX)) if type == ERROR
+      end
+
+      violations
     end
 
     def warn_message(version, target, type)

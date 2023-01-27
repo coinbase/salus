@@ -18,14 +18,20 @@ module Sarif::LanguageVersion
     end
 
     def parse_scan_report!
-      @scan_report.errors
+      logs = @scan_report.log('')
+      return [] if logs.strip.empty?
+
+      JSON.parse(@scan_report.to_h.dig(:logs))
+    rescue JSON::ParserError => e
+      bugsnag_notify(e.message)
+      []
     end
 
     def parse_issue(issue)
       {
         id: LANGUAGE_VERSION_MISMATCH,
         name: "LanguageVersion",
-        details: issue[:message],
+        details: issue,
         level: SEVERITY,
         uri: "",
         help_url: LANGUAGE_VERSION_DOC_URI,

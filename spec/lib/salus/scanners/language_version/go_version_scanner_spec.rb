@@ -69,12 +69,13 @@ describe Salus::Scanners::LanguageVersion::GoVersionScanner do
           expect(scanner.should_run?).to eq(true)
 
           scanner.run
+          logs = scanner.report.to_h[:logs]
 
           expect(scanner.report.passed?).to eq(false)
-          msg = "Repository language version (1.14) " \
-                       "is less than minimum configured version (1.15.0)"
-
-          expect(scanner.report.to_h.fetch(:errors).first.fetch(:message)).to include(msg)
+          msg = ["Error: Repository language version (1.14) "\
+            "is less than minimum recommended version (1.15.0). "\
+            "Please upgrade the language version."]
+          expect(JSON.parse(logs)).to eq(msg)
         end
 
         # go 1.21 vs config of min_version: '1.15.0', max_version: '1.20.3'
@@ -89,18 +90,19 @@ describe Salus::Scanners::LanguageVersion::GoVersionScanner do
           expect(scanner.should_run?).to eq(true)
 
           scanner.run
+          logs = scanner.report.to_h[:logs]
 
           expect(scanner.report.passed?).to eq(false)
-          msg = "Repository language version (1.21) " \
-                       "is greater than maximum configured version (1.20.3)"
-
-          expect(scanner.report.to_h.fetch(:errors).first.fetch(:message)).to include(msg)
+          msg = ["Error: Repository language version (1.21) "\
+            "is greater than maximum recommended version (1.20.3). "\
+          "Please downgrade the language version."]
+          expect(JSON.parse(logs)).to eq(msg)
         end
 
-        it 'should not run if min_version and max_version are not configured' do
+        it 'should fail if min_version and max_version are not configured' do
           repo = Salus::Repo.new(File.join(fixture_path, 'valid_version'))
           scanner = described_class.new(repository: repo, config: {})
-          expect(scanner.should_run?).to eq(false)
+          expect(scanner.report.passed?).to eq(false)
         end
       end
     end

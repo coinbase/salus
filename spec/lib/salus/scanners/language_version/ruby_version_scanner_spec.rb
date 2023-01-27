@@ -51,12 +51,13 @@ describe Salus::Scanners::LanguageVersion::RubyVersionScanner do
           expect(scanner.should_run?).to eq(true)
 
           scanner.run
+          logs = scanner.report.to_h[:logs]
 
           expect(scanner.report.passed?).to eq(false)
-          msg = "Repository language version (2.1.0) " \
-                       "is less than minimum configured version (2.6.0)"
-
-          expect(scanner.report.to_h.fetch(:errors).first.fetch(:message)).to include(msg)
+          msg = ["Error: Repository language version (2.1.0) "\
+            "is less than minimum recommended version (2.6.0). "\
+            "Please upgrade the language version."]
+          expect(JSON.parse(logs)).to eq(msg)
         end
 
         # ruby 2.8.4 vs config of min_version: '2.6.0', max_version: '2.7.6'
@@ -71,12 +72,13 @@ describe Salus::Scanners::LanguageVersion::RubyVersionScanner do
           expect(scanner.should_run?).to eq(true)
 
           scanner.run
+          logs = scanner.report.to_h[:logs]
 
           expect(scanner.report.passed?).to eq(false)
-          msg = "Repository language version (2.8.4) " \
-                       "is greater than maximum configured version (2.7.6)"
-
-          expect(scanner.report.to_h.fetch(:errors).first.fetch(:message)).to include(msg)
+          msg = ["Error: Repository language version (2.8.4) "\
+            "is greater than maximum recommended version (2.7.6). "\
+            "Please downgrade the language version."]
+          expect(JSON.parse(logs)).to eq(msg)
         end
 
         # ruby 2.5.4 vs config of min_version: '2.7.3', max_version: '2.8.6'
@@ -91,12 +93,13 @@ describe Salus::Scanners::LanguageVersion::RubyVersionScanner do
           expect(scanner.should_run?).to eq(true)
 
           scanner.run
+          logs = scanner.report.to_h[:logs]
 
           expect(scanner.report.passed?).to eq(false)
-          msg = "Repository language version (2.5.4) " \
-                       "is less than minimum configured version (2.7.3)"
-
-          expect(scanner.report.to_h.fetch(:errors).first.fetch(:message)).to include(msg)
+          msg = ["Error: Repository language version (2.5.4) "\
+            "is less than minimum recommended version (2.7.3). "\
+            "Please upgrade the language version."]
+          expect(JSON.parse(logs)).to eq(msg)
         end
 
         # ruby 2.7.2p83 vs config of min_version: '2.7.3', max_version: '2.8.6'
@@ -111,18 +114,19 @@ describe Salus::Scanners::LanguageVersion::RubyVersionScanner do
           expect(scanner.should_run?).to eq(true)
 
           scanner.run
+          logs = scanner.report.to_h[:logs]
 
           expect(scanner.report.passed?).to eq(false)
-          msg = "Repository language version (2.7.2p83) " \
-                       "is less than minimum configured version (2.7.3)"
-
-          expect(scanner.report.to_h.fetch(:errors).first.fetch(:message)).to include(msg)
+          msg = ["Error: Repository language version (2.7.2p83) "\
+            "is less than minimum recommended version (2.7.3). "\
+            "Please upgrade the language version."]
+          expect(JSON.parse(logs)).to eq(msg)
         end
 
         it 'should not run if min_version and max_version are not configured' do
           repo = Salus::Repo.new(File.join(fixture_path, 'valid_version'))
           scanner = described_class.new(repository: repo, config: {})
-          expect(scanner.should_run?).to eq(false)
+          expect(scanner.report.passed?).to eq(false)
         end
       end
     end
