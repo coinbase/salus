@@ -78,6 +78,22 @@ describe Salus::Scanners::LanguageVersion::GoVersionScanner do
           expect(JSON.parse(logs)).to eq(msg)
         end
 
+        it 'should warn if go version is less than min_version for for warn and block config' do
+          repo = Salus::Repo.new(File.join(fixture_path, 'warn_and_error'))
+
+          config_file = YAML.load_file(File.join(fixture_path, 'warn_and_error/salus.yml'))
+          scanner = described_class.new(
+            repository: repo, config: config_file['scanner_configs']['GoVersionScanner']
+          )
+
+          expect(scanner.should_run?).to eq(true)
+
+          scanner.run
+          logs = scanner.report.to_h[:logs]
+
+          expect(scanner.report.passed?).to eq(true)
+        end
+
         # go 1.21 vs config of min_version: '1.15.0', max_version: '1.20.3'
         it 'should record an error if go version is greater than max_version' do
           repo = Salus::Repo.new(File.join(fixture_path, 'invalid_version_2'))

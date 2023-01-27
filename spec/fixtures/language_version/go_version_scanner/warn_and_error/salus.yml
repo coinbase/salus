@@ -1,0 +1,8 @@
+scanner_configs:
+  GoVersionScanner:
+    warn:
+      min_version: '1.19.0'
+      max_version: '1.25.0'
+    error:
+      min_version: '1.16.0'
+
