@@ -8,8 +8,8 @@ describe Sarif::GoVersionScannerSarif do
   invalid_version_repo_path = 'spec/fixtures/language_version/'\
                       'go_version_scanner/invalid_version_1'
 
-  error_msg = 'Repository language version (1.14) is less '\
-              'than minimum configured version (1.15.0). '\
+  error_msg = 'Error: Repository language version (1.14) is less '\
+              'than minimum recommended version (1.15.0). '\
               'Please upgrade the language version.'
 
   it_behaves_like "language version scanner sarif",
