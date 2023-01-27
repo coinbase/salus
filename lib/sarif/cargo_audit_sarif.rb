@@ -64,7 +64,9 @@ module Sarif
       }
 
       version = issue.dig('package', 'version')
-      parsed_issue[:properties][:detected_versions] = [version] unless version.nil?
+      if !version.nil? && Gem::Version.correct?(version)
+        result[:properties][:detected_versions] = [version]
+      end
 
       if issue['kind'] == 'unmaintained'
         parsed_issue[:level] = 'LOW'

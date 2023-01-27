@@ -40,7 +40,9 @@ module Sarif
       end
 
       version = issue.dig(:version)
-      result[:properties][:detected_versions] = [version] unless version.nil?
+      if !version.nil? && Gem::Version.correct?(version)
+        result[:properties][:detected_versions] = [version]
+      end
 
       result
     end
