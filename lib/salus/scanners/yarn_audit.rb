@@ -14,6 +14,7 @@ module Salus::Scanners
     class ExportReportError < StandardError; end
     # the command was previously 'yarn audit --json', which had memory allocation issues
     # see https://github.com/yarnpkg/yarn/issues/7404
+    LEGACY_YARN_AUDIT_COMMAND_JSON = 'yarn audit --json'.freeze
     LEGACY_YARN_AUDIT_COMMAND = 'yarn audit --no-color'.freeze
     LATEST_YARN_AUDIT_ALL_COMMAND = 'yarn npm audit --json'.freeze
     LATEST_YARN_AUDIT_PROD_COMMAND = 'yarn npm audit --environment'\
@@ -145,6 +146,8 @@ module Salus::Scanners
         auto_fix_v2.run_auto_fix
       end
 
+      path_version_map = find_detected_versions
+      vulns = populate_detected_versions(path_version_map, vulns)
       vulns = combine_vulns(vulns)
       log(format_vulns(vulns))
       report_stdout(vulns.to_json)
@@ -300,6 +303,37 @@ module Salus::Scanners
         vuln_list.push vt
       end
       vuln_list
+    end
+
+    def find_detected_versions
+      path_to_version = {}
+      shell_return = run_shell(LEGACY_YARN_AUDIT_COMMAND_JSON)
+      shell_return.stdout.each_line do |line|
+        # puts line
+        data = JSON.parse(line)
+        advisories = data["data"]["advisory"]
+        unless advisories.nil?
+          advisories["findings"].each do |finding|
+            version = finding["version"]
+            paths = finding["paths"]
+            paths.each do |path|
+              path_to_version[path] = version
+            end
+          end
+        end
+      end
+      path_to_version
+    end
+
+    def populate_detected_versions(path_version_map, vulns)
+      @vulns_w_paths.each do |v|
+        id = v["ID"]
+        path = v["Path"].gsub(" > ", ">")
+        vulns.each do |vuln|
+          vuln["DectectedVersions"] = [path_version_map[path]] if vuln["ID"] == id
+        end
+      end
+      vulns
     end
 
     def format_vulns(vulns)
