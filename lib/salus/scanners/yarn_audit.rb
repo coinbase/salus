@@ -84,7 +84,7 @@ module Salus::Scanners
                            "Severity" => advisory.dig("severity"),
                            "Title" => advisory.dig("title"),
                            "ID" => advisory_id.to_i,
-                           "DectectedVersions" => versions,
+                           "DetectedVersions" => versions,
                            "Dependency of" => if dependency_of.nil?
                                                 advisory.dig("module_name")
                                               else
@@ -309,15 +309,16 @@ module Salus::Scanners
       path_to_version = {}
       shell_return = run_shell(LEGACY_YARN_AUDIT_COMMAND_JSON)
       shell_return.stdout.each_line do |line|
-        # puts line
-        data = JSON.parse(line)
-        advisories = data["data"]["advisory"]
-        unless advisories.nil?
-          advisories["findings"].each do |finding|
-            version = finding["version"]
-            paths = finding["paths"]
-            paths.each do |path|
-              path_to_version[path] = version
+        if line.include? ('{"type":"auditAdvisory"')
+          data = JSON.parse(line)
+          advisories = data["data"]["advisory"]
+          unless advisories.nil?
+            advisories["findings"].each do |finding|
+              version = finding["version"]
+              paths = finding["paths"]
+              paths.each do |path|
+                path_to_version[path] = version
+              end
             end
           end
         end
@@ -330,7 +331,7 @@ module Salus::Scanners
         id = v["ID"]
         path = v["Path"].gsub(" > ", ">")
         vulns.each do |vuln|
-          vuln["DectectedVersions"] = [path_version_map[path]] if vuln["ID"] == id
+          vuln["DetectedVersions"] = [path_version_map[path]] if vuln["ID"] == id
         end
       end
       vulns

@@ -68,6 +68,7 @@ describe Sarif::YarnAuditSarif do
         issue = JSON.parse(scanner.report.to_h[:info][:stdout])[0]
         yarn_sarif = Sarif::YarnAuditSarif.new(scanner.report, path)
 
+
         expect(yarn_sarif.parse_issue(issue)).to include(
           id: "1005415",
           name: "Prototype Pollution in merge",
@@ -83,7 +84,7 @@ describe Sarif::YarnAuditSarif do
           help_url: "https://www.npmjs.com/advisories/1005415",
           start_line: 21,
           start_column: 1,
-          properties: { severity: "high" }
+          properties: { severity: "high", detected_versions: [nil] }
         )
       end
     end

@@ -81,19 +81,20 @@ describe Salus::Scanners::YarnAudit do
         expect(vul["ID"]).to be_kind_of(Integer)
       end
 
-      id_vuls = vulns.find { |v| v['ID'] == 1_085_631 }
+      id_vuls = vulns.find { |v| v['ID'] == 1_090_101 }
       # vul has 1 dependency of
       expected_vul = { "Package" => "lodash",
                       "Patched in" => ">=4.17.12",
                       "Dependency of" => "gulp-modify-file",
-                      "More info" => "https://www.npmjs.com/advisories/1085631",
+                      "More info" => "https://www.npmjs.com/advisories/1090101",
                       "Severity" => "critical",
                       "Title" => "Prototype Pollution in lodash",
-                      "ID" => 1_085_631 }
+                      "DetectedVersions" => ["1.0.2"],
+                      "ID" => 1_090_101 }
       expect(id_vuls).to eq(expected_vul)
 
       id_vuls_w_paths = scanner.instance_variable_get(:@vulns_w_paths)
-        .find { |v| v['ID'] == 1_085_631 }
+        .find { |v| v['ID'] == 1_090_101 }
       expected_vul['Path'] = "gulp-modify-file > gulp > vinyl-fs > "\
         "glob-watcher > gaze > globule > lodash"
       expect(id_vuls_w_paths).to eq(expected_vul)
@@ -195,7 +196,7 @@ describe Salus::Scanners::YarnAudit do
       after_fix_scan.run
       expect(after_fix_scan.report.to_h.fetch(:passed)).to eq(false)
       after_fix_vulns = JSON.parse(after_fix_scan.report.to_h[:info][:stdout])
-      expect(after_fix_vulns.size).to eq(22)
+      expect(after_fix_vulns.size).to eq(23)
     end
   end
 
