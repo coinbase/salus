@@ -89,7 +89,6 @@ describe Salus::Scanners::YarnAudit do
                       "More info" => "https://www.npmjs.com/advisories/1090101",
                       "Severity" => "critical",
                       "Title" => "Prototype Pollution in lodash",
-                      "DetectedVersions" => ["1.0.2"],
                       "ID" => 1_090_101 }
       expect(id_vuls).to eq(expected_vul)
 
