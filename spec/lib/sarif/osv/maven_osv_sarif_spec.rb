@@ -85,7 +85,7 @@ describe Sarif::MavenOSVSarif do
               "text" => "Denial of Service in Spring Framework"
             },
             "properties" => {
-              "severity" => "HIGH"
+              "severity" => "HIGH", "detected_versions"=>["3.2.9.RELEASE"]
             },
             "ruleId" => "CVE-2018-15756",
             "ruleIndex" => 5

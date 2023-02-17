@@ -83,7 +83,7 @@ describe Sarif::PythonOSVSarif do
               "text" => "Regular expression deinal of service in py"
             },
             "properties" => {
-              "severity" => "HIGH"
+              "severity" => "HIGH", "detected_versions"=>["1.5.2"],
             },
             "ruleId" => "CVE-2020-29651",
             "ruleIndex" => 0

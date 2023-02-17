@@ -85,7 +85,7 @@ describe Sarif::GradleOSVSarif do
               "text" => "Information Disclosure in Guava"
             },
             "properties" => {
-              "severity" =>  "LOW"
+              "severity" =>  "LOW", "detected_versions" => ["30.1"]
             },
             "ruleId" => "CVE-2020-8908",
             "ruleIndex" => 0
