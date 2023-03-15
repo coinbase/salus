@@ -11,3 +11,32 @@ jobs:
       uses: federacy/scan-action@0.1.4
       env:
         SALUS_CONFIGURATION: "file://../salus.yaml"
+
+  rubocop:
+    needs: bundle_install
+    runs-on: ubuntu-22.04
+
+    container: cimg/ruby:3.1.2-node
+    env:
+      BUNDLE_PATH: vendor/bundle
+      GEM_HOME: vendor/bundle
+      BUNDLE_JOBS: 3
+      BUNDLE_RETRY: 3
+      RAILS_ENV: test
+
+    steps:
+    - name: Setup file system permissions
+      run: sudo chmod -R 777 $GITHUB_WORKSPACE /github /__w/_temp
+    - name: Get repository's content
+      uses: actions/download-artifact@v3
+      with:
+        name: repo
+    - uses: actions/cache@v3
+      with:
+        path: vendor/bundle
+        key: bundle-${{ hashFiles('**/Gemfile.lock') }}
+        restore-keys: |
+          bundle-${{ hashFiles('**/Gemfile.lock') }}
+          bundle-
+    - name: Rubocop
+      run: bundle exec rubocop --fail-level E
