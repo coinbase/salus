@@ -1,6 +1,11 @@
 scanner_configs:
+  Codeql:
+      languages-configured:
+              - ruby
   Gosec:
     exclude-dir:
+      - spec/fixtures
+      - github/workspace/spec
       - spec/fixtures/gosec/buildtags_goapp # cannot be correctly built by gosec at this time
       - spec/fixtures/gosec/malformed_goapp # knowingly malformed anc can't be built
       - spec/fixtures/gosec/nosec-tag
