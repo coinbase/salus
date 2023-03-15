@@ -4,7 +4,7 @@ on:
 jobs:
   salus_scan_job:
     runs-on: ubuntu-latest
-    name: Salus Security Scan Example
+    name: Salus Security Scan
     steps:
       - uses: actions/checkout@v1
       - name: Salus Scan

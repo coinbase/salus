@@ -4,7 +4,7 @@ on:
 jobs:
   tests_job:
     runs-on: ubuntu-latest
-    name: Salus Security Scan Example
+    name: Automated Tests
     steps:
       - uses: actions/checkout@v1
       - name: Build Salus
