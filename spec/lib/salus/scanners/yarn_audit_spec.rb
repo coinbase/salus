@@ -71,7 +71,7 @@ describe Salus::Scanners::YarnAudit do
 
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
       vulns = JSON.parse(scanner.report.to_h[:info][:stdout]).sort { |a, b| a["ID"] <=> b["ID"] }
-      expect(vulns.size).to eq(18)
+      expect(vulns.size).to eq(17)
 
       vulns.each do |vul|
         ["Package", "Patched in", "Dependency of", "More info", "Severity", "Title"].each do |attr|
@@ -164,7 +164,7 @@ describe Salus::Scanners::YarnAudit do
       scanner.run
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
       vulns = JSON.parse(scanner.report.to_h[:info][:stdout])
-      expect(vulns.size).to eq(63)
+      expect(vulns.size).to eq(64)
 
       auto_fix_scanner = Salus::Scanners::YarnAudit.new(repository: repo,
         config: { 'auto_fix' => { 'run' => false } })
@@ -185,7 +185,7 @@ describe Salus::Scanners::YarnAudit do
       scanner.run
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
       vulns = JSON.parse(scanner.report.to_h[:info][:stdout])
-      expect(vulns.size).to eq(63)
+      expect(vulns.size).to eq(64)
 
       auto_fix_scanner = Salus::Scanners::YarnAudit.new(repository: repo,
         config: { 'auto_fix' => { 'run' => true } })
