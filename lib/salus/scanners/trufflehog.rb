@@ -27,7 +27,7 @@ module Salus::Scanners
     end
 
     def command
-      cmd = "trufflehog filesystem --json --no-update ."
+      cmd = "trufflehog filesystem --directory=. --json --no-update"
       # default to true
       if @config['only-verified'].to_s == 'true' || @config['only-verified'].to_s == ''
         cmd += ' --only-verified'

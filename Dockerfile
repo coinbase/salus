@@ -161,6 +161,7 @@ RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get inst
   python3-setuptools \
   curl \
   git \
+  vim \
   && rm -rf /var/lib/apt/lists/*
 
 
