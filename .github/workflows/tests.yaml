@@ -6,6 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Salus Security Scan Example
     steps:
+      - uses: actions/checkout@v1
       - name: Build Salus
         run: docker build -t salus-local .
       - name: Build Tests
