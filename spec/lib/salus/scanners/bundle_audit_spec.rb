@@ -74,7 +74,9 @@ describe Salus::Scanners::BundleAudit do
         repo = Salus::Repo.new('spec/fixtures/bundle_audit/passes_with_ignores')
         scanner = Salus::Scanners::BundleAudit.new(
           repository: repo,
-          config: { 'ignore' => %w[CVE-2012-3464 CVE-2015-3227 CVE-2020-8165 CVE-2023-22796 CVE-2023-28120] }
+          config: { 
+            'ignore' => %w[CVE-2012-3464 CVE-2015-3227 CVE-2020-8165 CVE-2023-22796 CVE-2023-28120] 
+          }
         )
 
         scanner.run
@@ -140,7 +142,9 @@ describe Salus::Scanners::BundleAudit do
         repo = Salus::Repo.new('spec/fixtures/bundle_audit/passes_with_ignores')
         scanner = Salus::Scanners::BundleAudit.new(
           repository: repo,
-          config: { 'ignore' => %w[CVE-2012-3464 CVE-2015-3227 CVE-2020-8165 CVE-2023-22796 CVE-2023-28120] }
+          config: { 
+            'ignore' => %w[CVE-2012-3464 CVE-2015-3227 CVE-2020-8165 CVE-2023-22796 CVE-2023-28120] 
+          }
         )
 
         scanner.run

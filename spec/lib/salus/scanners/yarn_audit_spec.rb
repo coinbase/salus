@@ -83,13 +83,13 @@ describe Salus::Scanners::YarnAudit do
 
       id_vuls = vulns.find { |v| v['ID'] == 1_091_360 }
       # vul has 1 dependency of
-      expected_vul = { "Package"=>"trim-newlines",
-                       "Patched in"=>">=3.0.1",
-                       "Dependency of"=>"gulp-cssmin",
-                       "More info"=>"https://www.npmjs.com/advisories/1091360",
-                       "Severity"=>"high",
-                       "Title"=>"Uncontrolled Resource Consumption in trim-newlines",
-                       "ID"=>1_091_360 }
+      expected_vul = { "Package" => "trim-newlines",
+                       "Patched in" => ">=3.0.1",
+                       "Dependency of" => "gulp-cssmin",
+                       "More info" => "https://www.npmjs.com/advisories/1091360",
+                       "Severity" => "high",
+                       "Title" => "Uncontrolled Resource Consumption in trim-newlines",
+                       "ID" => 1_091_360 }
       expect(id_vuls).to eq(expected_vul)
 
       id_vuls_w_paths = scanner.instance_variable_get(:@vulns_w_paths)
@@ -165,7 +165,7 @@ describe Salus::Scanners::YarnAudit do
       scanner.run
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
       vulns = JSON.parse(scanner.report.to_h[:info][:stdout])
-      expect(vulns.size).to eq(25)
+      expect(vulns.size).to eq(64)
 
       auto_fix_scanner = Salus::Scanners::YarnAudit.new(repository: repo,
         config: { 'auto_fix' => { 'run' => false } })
@@ -186,7 +186,7 @@ describe Salus::Scanners::YarnAudit do
       scanner.run
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
       vulns = JSON.parse(scanner.report.to_h[:info][:stdout])
-      expect(vulns.size).to eq(25)
+      expect(vulns.size).to eq(64)
 
       auto_fix_scanner = Salus::Scanners::YarnAudit.new(repository: repo,
         config: { 'auto_fix' => { 'run' => true } })
