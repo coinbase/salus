@@ -1,12 +1,12 @@
 source 'https://rubygems.org'
 
-ruby '2.7.2'
+ruby '3.2.1'
 
 gem 'activemodel', '~> 6.1.7.3'
 gem 'activesupport', '~> 6.1.7.3'
 gem 'bugsnag', '~> 6.19.0'
 gem 'bundler', '= 2.3.1'
-gem 'cocoapods', '~> 1.11.3'
+gem 'cocoapods', '~> 1.12.0'
 gem 'deepsort', '~> 0.4.5'
 gem 'faraday', '~> 1.3'
 gem 'github-linguist', '~> 7.13.0'
@@ -17,6 +17,7 @@ gem 'rubyzip', '~> 2.3.2'
 gem 'safe_yaml', '~> 1.0'
 gem 'thor', '~> 1.1.0'
 gem 'toml', '~> 0.3.0'
+gem 'rugged', '~> 1.5.1'
 
 group :scanners do
   gem 'brakeman', '5.3.1'
