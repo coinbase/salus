@@ -1,0 +1,19 @@
+---
+on:
+  - push
+jobs:
+  tests_job:
+    runs-on: ubuntu-latest
+    name: Automated Tests
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build Salus
+        run: docker build -t salus-local .
+      - name: Run salus
+        run: docker run --rm -t -v $(pwd):/home/repo salus-local 
+      - name: Build Tests
+        run: docker build -f Dockerfile.tests -t salus-tests .
+      - name: Run tests
+        run: docker run salus-tests
+      - name: Run integration
+        run: bin/integration_test

@@ -11,3 +11,13 @@ scanner_configs:
                 changed_by: "ryan.sears",
                 notes: "See https://www.npmjs.com/advisories/48. We're not vulnerable to this because this is a regex dos and we have nothing that puts user input into it. The impact is also minimal.",
               }
+            - {
+                advisory_id: "1091017",
+                changed_by: "joshua.ostrom",
+                notes: "See https://www.npmjs.com/advisories/48. We're not vulnerable to this because this is a regex dos and we have nothing that puts user input into it. The impact is also minimal.",
+              }
+            - {
+                advisory_id: "1091018",
+                changed_by: "joshua.ostrom",
+                notes: "See https://www.npmjs.com/advisories/48. We're not vulnerable to this because this is a regex dos and we have nothing that puts user input into it. The impact is also minimal.",
+              }

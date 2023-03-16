@@ -1,0 +1,20 @@
+on:
+  - push
+jobs:
+  rubocop:
+    runs-on: ubuntu-latest
+    name: Ruby ${{ matrix.ruby }} Rubocop
+    strategy:
+      matrix:
+        ruby: ['2.7.2']
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+        bundler-cache: true
+
+    - name: Run rubocop
+      run: bundle exec rubocop
