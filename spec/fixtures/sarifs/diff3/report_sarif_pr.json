@@ -6,7 +6,7 @@
       "tool": {
         "driver": {
           "name": "Bandit",
-          "version": "1.6.2",
+          "version": "1.7.5",
           "informationUri": "https://github.com/PyCQA/bandit",
           "rules": [
 

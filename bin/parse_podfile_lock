@@ -5,7 +5,8 @@ require 'yaml'
 require 'cocoapods'
 
 podfile_lock = begin
-  YAML.safe_load(File.read(ARGV[0]), [Symbol])
+  data = File.read(ARGV[0])
+  YAML.safe_load(data, permitted_classes: [Symbol])
                rescue StandardError
                  warn 'Unable to parse Podfile.lock file'
                  exit(1)

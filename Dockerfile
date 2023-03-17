@@ -1,4 +1,4 @@
-FROM ruby:2.7.2@sha256:0fee695f3bf397bb521d8ced9e30963835fac44bc27f46393a5b91941c8a40aa as builder
+FROM ruby:3.2.1@sha256:b4a140656b0c5d26c0a80559b228b4d343f3fdbf56682fcbe88f6db1fa9afa6b as builder
 MAINTAINER security@coinbase.com
 
 RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get install -y --no-install-recommends \
@@ -9,15 +9,10 @@ RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get inst
   pkg-config \
   curl \
   git  \
-  python \
   python3 \
-  python-pip \
   python3-pip \
-  python-setuptools \
   python3-setuptools \
-  python-dev \
   python3-dev \
-  libpython-dev \
   libpython3-dev \
   libicu-dev \
   cmake \
@@ -60,15 +55,13 @@ RUN curl -fsSL "$RUST_DOWNLOAD_URL" -o rust.tar.gz \
 
 ### Python
 # Install bandit, python static code scanner
-ENV BANDIT_VERSION 1.6.2
+ENV BANDIT_VERSION 1.7.5
 
+# /root/.local/bin/bandit
 # added pip3 install --user importlib_metadata==4.7.1
 # because the newer version causes a bandit error that is only reproducible with circle ci
 # "No such file or directory: '/root/.cache/python-entrypoints/"
-RUN pip install wheel \
-  && pip3 install wheel \
-  && pip install --user bandit==${BANDIT_VERSION} \
-  && mv .local/bin/bandit .local/bin/bandit2 \
+RUN pip3 install wheel \
   && pip3 install --user bandit==${BANDIT_VERSION} \
   && pip3 install --user importlib_metadata==4.7.1
 
@@ -80,7 +73,6 @@ RUN cd /home \
   && gem update --system \
   && bundle install --deployment --no-cache --clean --with scanners \
   && bundle exec bundle audit update
-
 
 ### Golang
 # required for sift and gosec
@@ -106,7 +98,6 @@ RUN curl -fsSL "$GOSEC_DOWNLOAD_URL" -o gosec.tar.gz \
   && echo "$GOSEC_DOWNLOAD_SHA256 gosec.tar.gz" | sha256sum -c - \
   && mkdir gosec && tar -C gosec -zxf gosec.tar.gz
 
-
 ### sift
 ENV SIFT_VERSION v0.9.0
 
@@ -131,7 +122,6 @@ ENV SEMGREP_VERSION 1.0.0
 
 RUN pip3 install --user --no-cache-dir semgrep==${SEMGREP_VERSION}
 
-
 ### Ruby
 COPY Gemfile Gemfile.lock ./
 RUN bundle install --deployment --without development:test
@@ -140,8 +130,7 @@ RUN bundle install --deployment --without development:test
 RUN curl -LO https://github.com/BurntSushi/ripgrep/releases/download/13.0.0/ripgrep_13.0.0_amd64.deb
 RUN dpkg -i ripgrep_13.0.0_amd64.deb
 
-
-FROM ruby:2.7.2-slim@sha256:b9eebc5a6956f1def4698fac0930e7a1398a50c4198313fe87af0402cab8d149
+FROM ruby:3.2.1-slim@sha256:e799a6b57cfe691741744373cae0aea1b34b99d00a607a76c8dc7d3055bf85dd
 
 ENV PATH="/root/.cargo/bin:/root/.local/bin:${PATH}"
 
@@ -155,16 +144,13 @@ RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get inst
   cmake \
   g++ \
   gcc \
-  python-minimal \
-  python-setuptools \
   python3-minimal \
   python3-setuptools \
+  python3-pip \
   curl \
   git \
   vim \
   && rm -rf /var/lib/apt/lists/*
-
-
 
 ### JS + Node
 ENV NODE_VERSION 16.15.1
@@ -184,7 +170,6 @@ RUN curl -fsSL "$NODE_DOWNLOAD_URL" -o node.tar.gz \
   && cd /home \
   && yarn install \
   && rm -rf /node.tar.gz package.json yarn.lock /tmp/* ~/.npm
-
 
 ### Copy tools built in the previous
 ### `builder` stage into this image
@@ -206,8 +191,6 @@ ENV PATH="/opt/gradle/gradle-7.5.1/bin:${PATH}"
 COPY --from=builder /opt/gradle/gradle-6.9.2 /opt/gradle/gradle-6.9.2
 
 RUN ln -sf /usr/local/go/bin/go /usr/local/bin
-RUN python -m easy_install pip==${PIP_VERSION} \
-  && python3 -m easy_install pip==${PIP_VERSION}
 
 ### Salus
 WORKDIR /home

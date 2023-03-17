@@ -341,6 +341,13 @@ describe Salus::Scanners::Bandit do
       end
 
       it 'and using main.py as baseline' do
+        # Bandit allows specifying the path of a baseline report to compare against
+        # using the base line argument (i.e. -b BASELINE or --baseline BASELINE).
+        # bandit -b BASELINE
+        # This is useful for ignoring known vulnerabilities that you believe are
+        # non-issues (e.g. a cleartext password in a unit test). To generate a baseline
+        # report simply run Bandit with the output format set to json (only JSON-formatted files
+        # are accepted as a baseline) and output file path specified
         config_file = "#{py_dir}/salus_configs/baseline.yaml"
         configs = Salus::Config.new([File.read(config_file)]).scanner_configs['Bandit']
         scanner = Salus::Scanners::Bandit.new(repository: repo, config: configs)
