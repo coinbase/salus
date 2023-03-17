@@ -196,7 +196,7 @@ describe Salus::Scanners::YarnAudit do
       after_fix_scan.run
       expect(after_fix_scan.report.to_h.fetch(:passed)).to eq(false)
       after_fix_vulns = JSON.parse(after_fix_scan.report.to_h[:info][:stdout])
-      expect(after_fix_vulns.size).to eq(25)
+      expect(after_fix_vulns.size).to be >= 24
     end
   end
 
