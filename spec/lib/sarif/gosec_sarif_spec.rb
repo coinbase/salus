@@ -12,7 +12,7 @@ describe Sarif::GosecSarif do
       let(:repo) { Salus::Repo.new(path) }
       let(:path) { 'spec/fixtures/gosec/duplicate_entries' }
       it 'should not include duplicate result entries' do
-        scan_report = Salus::ScanReport.new(scanner_name: "Gosec")
+        scan_report = Salus::ScanReport.new("Gosec")
         f = File.read("#{path}/report.json")
         scan_report.log(f.to_s)
         adapter = Sarif::GosecSarif.new(scan_report, path)
@@ -26,7 +26,7 @@ describe Sarif::GosecSarif do
       end
 
       it 'should not include duplicate rules' do
-        scan_report = Salus::ScanReport.new(scanner_name: "Gosec")
+        scan_report = Salus::ScanReport.new("Gosec")
         f = File.read('spec/fixtures/gosec/duplicate_entries/report.json')
         scan_report.log(f.to_s)
         adapter = Sarif::GosecSarif.new(scan_report, 'spec/fixtures/gosec/duplicate_entries')
@@ -45,7 +45,7 @@ describe Sarif::GosecSarif do
         let(:path) { 'spec/fixtures/gosec/safe_goapp' }
         let(:repo) { Salus::Repo.new(path) }
         it 'are mapped to sarif levels' do
-          scan_report = Salus::ScanReport.new(scanner_name: "Gosec")
+          scan_report = Salus::ScanReport.new("Gosec")
           adapter = Sarif::GosecSarif.new(scan_report, path)
           expect(adapter.sarif_level("MEDIUM")).to eq("error")
           expect(adapter.sarif_level("HIGH")).to eq("error")
