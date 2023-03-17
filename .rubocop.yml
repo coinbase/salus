@@ -1,9 +1,10 @@
 AllCops:
-  TargetRubyVersion: 2.7.0
+  TargetRubyVersion: 3.0
   Exclude:
     - 'spec/fixtures/**/*'
     - 'vendor/**/*'
-
+    - 'lib/salus/package_utils.rb' # Rubo is exploding on this file
+    - 'spec/lib/sarif/language_version/language_version_scanner_sarif_spec.rb' # Rubo is exploding on this file
 Style/Documentation:
   Enabled: false
 
