@@ -14,10 +14,10 @@ gem 'nokogiri', '~> 1.13.6'
 gem 'parser', '~> 3.1.3'
 gem 'rgl', '~> 0.5.9'
 gem 'rubyzip', '~> 2.3.2'
+gem 'rugged', '~> 1.5.1'
 gem 'safe_yaml', '~> 1.0'
 gem 'thor', '~> 1.1.0'
 gem 'toml', '~> 0.3.0'
-gem 'rugged', '~> 1.5.1'
 
 group :scanners do
   gem 'brakeman', '5.3.1'
