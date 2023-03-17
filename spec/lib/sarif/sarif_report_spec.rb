@@ -3,7 +3,7 @@ require 'json'
 require 'json-schema'
 
 describe Sarif::SarifReport do
-  let(:scan_report1) { Salus::ScanReport.new(name: 'Unsupported_Scanner') }
+  let(:scan_report1) { Salus::ScanReport.new('Unsupported_Scanner') }
   let(:scan_report2) { Salus::ScanReport.new('Neon_Scanner') }
   let(:scan_reports) { [scan_report1, scan_report2] }
 
@@ -26,12 +26,10 @@ describe Sarif::SarifReport do
       scanner = Salus::Scanners::RepoNotEmpty.new(repository: repo, config: {})
       scanner.run
       report.add_scan_report(scanner.report, required: false)
-      expect(report).to receive(:bugsnag_notify).with(
-        "Sarif::SarifReport::SarifInvalidFormatError Incorrect Sarif Output: [\"The property "\
-        "'#/runs/0/tool/driver/name' of type object did not match the following type: string "\
-        "in schema https://raw.githubusercontent.com/schemastore/schemastore/master/src"\
-        "/schemas/json/sarif-2.1.0-rtm.5.json#\"]\nBuild Info:{:url=>\"https://github.com\"}"
-      )
+      expect(report).to receive(:bugsnag_notify).with("Sarif::SarifReport::SarifInvalidFormatError Incorrect Sarif Output: foo\nBuild Info:{:url=>\"https://github.com\"}")
+      expect(JSON::Validator).to receive(:validate).and_return(false)
+      expect(JSON::Validator).to receive(:fully_validate).and_return("foo")
+
       report.to_sarif
     end
 

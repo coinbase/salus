@@ -1,114 +1,152 @@
 {
   "errors": [],
-  "generated_at": "2020-05-09T07:15:13Z",
+  "generated_at": "2023-03-17T03:24:09Z",
   "metrics": {
-    "./main2.py": {
-      "CONFIDENCE.HIGH": 5.0,
-      "CONFIDENCE.LOW": 0.0,
-      "CONFIDENCE.MEDIUM": 1.0,
-      "CONFIDENCE.UNDEFINED": 0.0,
-      "SEVERITY.HIGH": 0.0,
-      "SEVERITY.LOW": 3.0,
-      "SEVERITY.MEDIUM": 3.0,
-      "SEVERITY.UNDEFINED": 0.0,
-      "loc": 14,
-      "nosec": 0
-    },
     "_totals": {
-      "CONFIDENCE.HIGH": 5.0,
-      "CONFIDENCE.LOW": 0.0,
-      "CONFIDENCE.MEDIUM": 1.0,
-      "CONFIDENCE.UNDEFINED": 0.0,
-      "SEVERITY.HIGH": 0.0,
-      "SEVERITY.LOW": 3.0,
-      "SEVERITY.MEDIUM": 3.0,
-      "SEVERITY.UNDEFINED": 0.0,
+      "CONFIDENCE.HIGH": 5,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 2,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 4,
+      "SEVERITY.MEDIUM": 3,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 17,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "./main2.py": {
+      "CONFIDENCE.HIGH": 5,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 3,
+      "SEVERITY.MEDIUM": 3,
+      "SEVERITY.UNDEFINED": 0,
       "loc": 14,
-      "nosec": 0
+      "nosec": 0,
+      "skipped_tests": 0
     }
   },
   "results": [
     {
       "code": "1 import cPickle\n2 import pickle\n3 import StringIO\n",
+      "col_offset": 0,
+      "end_col_offset": 14,
       "filename": "./main2.py",
       "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 502,
+        "link": "https://cwe.mitre.org/data/definitions/502.html"
+      },
       "issue_severity": "LOW",
       "issue_text": "Consider possible security implications associated with cPickle module.",
       "line_number": 1,
       "line_range": [
         1
       ],
-      "more_info": "https://bandit.readthedocs.io/en/latest/blacklists/blacklist_imports.html#b403-import-pickle",
+      "more_info": "https://bandit.readthedocs.io/en/1.7.5/blacklists/blacklist_imports.html#b403-import-pickle",
       "test_id": "B403",
       "test_name": "blacklist"
     },
     {
       "code": "1 import cPickle\n2 import pickle\n3 import StringIO\n",
+      "col_offset": 0,
+      "end_col_offset": 13,
       "filename": "./main2.py",
       "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 502,
+        "link": "https://cwe.mitre.org/data/definitions/502.html"
+      },
       "issue_severity": "LOW",
       "issue_text": "Consider possible security implications associated with pickle module.",
       "line_number": 2,
       "line_range": [
         2
       ],
-      "more_info": "https://bandit.readthedocs.io/en/latest/blacklists/blacklist_imports.html#b403-import-pickle",
+      "more_info": "https://bandit.readthedocs.io/en/1.7.5/blacklists/blacklist_imports.html#b403-import-pickle",
       "test_id": "B403",
       "test_name": "blacklist"
     },
     {
       "code": "6 pick = pickle.dumps({'a': 'b', 'c': 'd'})\n7 print(pickle.loads(pick))\n8 \n",
+      "col_offset": 6,
+      "end_col_offset": 24,
       "filename": "./main2.py",
       "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 502,
+        "link": "https://cwe.mitre.org/data/definitions/502.html"
+      },
       "issue_severity": "MEDIUM",
       "issue_text": "Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue.",
       "line_number": 7,
       "line_range": [
         7
       ],
-      "more_info": "https://bandit.readthedocs.io/en/latest/blacklists/blacklist_calls.html#b301-pickle",
+      "more_info": "https://bandit.readthedocs.io/en/1.7.5/blacklists/blacklist_calls.html#b301-pickle",
       "test_id": "B301",
       "test_name": "blacklist"
     },
     {
       "code": "11 file_obj.seek(0)\n12 print(pickle.load(file_obj))\n13 \n",
+      "col_offset": 6,
+      "end_col_offset": 27,
       "filename": "./main2.py",
       "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 502,
+        "link": "https://cwe.mitre.org/data/definitions/502.html"
+      },
       "issue_severity": "MEDIUM",
       "issue_text": "Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue.",
       "line_number": 12,
       "line_range": [
         12
       ],
-      "more_info": "https://bandit.readthedocs.io/en/latest/blacklists/blacklist_calls.html#b301-pickle",
+      "more_info": "https://bandit.readthedocs.io/en/1.7.5/blacklists/blacklist_calls.html#b301-pickle",
       "test_id": "B301",
       "test_name": "blacklist"
     },
     {
       "code": "14 file_obj.seek(0)\n15 print(pickle.Unpickler(file_obj).load())\n16 \n",
+      "col_offset": 6,
+      "end_col_offset": 32,
       "filename": "./main2.py",
       "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 502,
+        "link": "https://cwe.mitre.org/data/definitions/502.html"
+      },
       "issue_severity": "MEDIUM",
       "issue_text": "Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue.",
       "line_number": 15,
       "line_range": [
         15
       ],
-      "more_info": "https://bandit.readthedocs.io/en/latest/blacklists/blacklist_calls.html#b301-pickle",
+      "more_info": "https://bandit.readthedocs.io/en/1.7.5/blacklists/blacklist_calls.html#b301-pickle",
       "test_id": "B301",
       "test_name": "blacklist"
     },
     {
       "code": "17 def foo(password):\n18     if password == \"1234\":\n19         return 0\n",
+      "col_offset": 19,
+      "end_col_offset": 25,
       "filename": "./main2.py",
       "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 259,
+        "link": "https://cwe.mitre.org/data/definitions/259.html"
+      },
       "issue_severity": "LOW",
       "issue_text": "Possible hardcoded password: '1234'",
       "line_number": 18,
       "line_range": [
         18
       ],
-      "more_info": "https://bandit.readthedocs.io/en/latest/plugins/b105_hardcoded_password_string.html",
+      "more_info": "https://bandit.readthedocs.io/en/1.7.5/plugins/b105_hardcoded_password_string.html",
       "test_id": "B105",
       "test_name": "hardcoded_password_string"
     }

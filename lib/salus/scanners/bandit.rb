@@ -13,15 +13,15 @@ module Salus::Scanners
       # bandit compiled with python3
       copts = config_options
 
-      shell_return = run_shell("bandit #{copts} -r -f json .")
+      shell_return = run_shell("bandit #{copts} -r -f json .", chdir: @repository.path_to_repo)
 
       # if python3 couldn't parse files, then try bandit compiled with python2
-      if !shell_return.stdout.empty?
-        errs = JSON.parse(shell_return.stdout)['errors']
-        if errs.any? { |ei| ei['reason'] == 'syntax error while parsing AST from file' }
-          shell_return = run_shell("bandit2 #{copts} -r -f json .")
-        end
-      end
+      # if !shell_return.stdout.empty?
+      #  errs = JSON.parse(shell_return.stdout)['errors']
+      #  if errs.any? { |ei| ei['reason'] == 'syntax error while parsing AST from file' }
+      #    shell_return = run_shell("bandit2 #{copts} -r -f json .")
+      #  end
+      #end
 
       # From the Bandit docs:
       #

@@ -11,7 +11,6 @@ RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get inst
   git  \
   python3 \
   python3-pip \
-  python-setuptools \
   python3-setuptools \
   python3-dev \
   libpython3-dev \
@@ -22,6 +21,12 @@ RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get inst
   unzip
 
 WORKDIR /root
+
+
+# TODO install JDK 17 instead
+### RUN apt-get update; \
+###    apt-get install -y openjdk-17 apt-transport-https && \
+###    apt-get update
 
 ### JDK
 RUN wget https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz -P /tmp
@@ -56,15 +61,13 @@ RUN curl -fsSL "$RUST_DOWNLOAD_URL" -o rust.tar.gz \
 
 ### Python
 # Install bandit, python static code scanner
-ENV BANDIT_VERSION 1.6.2
+ENV BANDIT_VERSION 1.7.5
 
+# /root/.local/bin/bandit
 # added pip3 install --user importlib_metadata==4.7.1
 # because the newer version causes a bandit error that is only reproducible with circle ci
 # "No such file or directory: '/root/.cache/python-entrypoints/"
-RUN pip install wheel \
-  && pip3 install wheel \
-  && pip install --user bandit==${BANDIT_VERSION} \
-  && mv .local/bin/bandit .local/bin/bandit2 \
+RUN pip3 install wheel \
   && pip3 install --user bandit==${BANDIT_VERSION} \
   && pip3 install --user importlib_metadata==4.7.1
 
@@ -153,6 +156,7 @@ RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get inst
   gcc \
   python3-minimal \
   python3-setuptools \
+  python3-pip \
   curl \
   git \
   vim \
@@ -200,7 +204,6 @@ ENV PATH="/opt/gradle/gradle-7.5.1/bin:${PATH}"
 COPY --from=builder /opt/gradle/gradle-6.9.2 /opt/gradle/gradle-6.9.2
 
 RUN ln -sf /usr/local/go/bin/go /usr/local/bin
-# RUN python3 -m easy_install pip==${PIP_VERSION}
 
 ### Salus
 WORKDIR /home
@@ -221,3 +224,6 @@ RUN gem install bundler -v'2.3.1' \
 
 # run the salus scan when this docker container is run
 ENTRYPOINT ["bundle", "exec", "./bin/salus", "scan"]
+
+
+

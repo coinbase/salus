@@ -25,7 +25,7 @@ describe Sarif::BanditSarif do
           properties: { "severity": "LOW" },
           start_line: 1,
           start_column: 1,
-          help_url: "https://bandit.readthedocs.io/en/latest/blacklists/blacklist_imports.html"\
+          help_url: "https://bandit.readthedocs.io/en/1.7.5/blacklists/blacklist_imports.html"\
           "#b403-import-pickle",
           code: expected
         )
@@ -115,7 +115,7 @@ describe Sarif::BanditSarif do
         expect(rules[0]['name']).to eq('blacklist')
         expect(rules[0]['fullDescription']['text']).to include("Consider possible security"\
           " implications associated with cPickle module.")
-        expect(rules[0]['helpUri']).to eq("https://bandit.readthedocs.io/en/latest/"\
+        expect(rules[0]['helpUri']).to eq("https://bandit.readthedocs.io/en/1.7.5/"\
           "blacklists/blacklist_imports.html#b403-import-pickle")
 
         # Check result info

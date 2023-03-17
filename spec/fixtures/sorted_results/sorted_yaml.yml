@@ -7,7 +7,7 @@
     :info: {}
     :passed: true
     :scanner_name: Bandit
-    :version: 1.6.2
+    :version: 1.7.5
     :warn: {}
   BundleAudit:
     :errors: []
