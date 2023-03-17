@@ -25,6 +25,8 @@ dependencies = {}
 for dependency in deps:
     dep = str(dependency.requirement)
     result = re.search(r"(\w+)([=<>~]+.*)", dep)
-    dependencies[result.group(1)] = result.group(2)
+    lib = dep if result is None else result.group(1)
+    version = "" if result is None else result.group(2)
+    dependencies[lib] = version
 
 print(json.dumps(dependencies))
