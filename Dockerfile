@@ -22,12 +22,6 @@ RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get inst
 
 WORKDIR /root
 
-
-# TODO install JDK 17 instead
-### RUN apt-get update; \
-###    apt-get install -y openjdk-17 apt-transport-https && \
-###    apt-get update
-
 ### JDK
 RUN wget https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz -P /tmp
 RUN tar xvf /tmp/openjdk-11.0.2_linux-x64_bin.tar.gz -C /
@@ -80,7 +74,6 @@ RUN cd /home \
   && bundle install --deployment --no-cache --clean --with scanners \
   && bundle exec bundle audit update
 
-
 ### Golang
 # required for sift and gosec
 
@@ -104,7 +97,6 @@ RUN curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz \
 RUN curl -fsSL "$GOSEC_DOWNLOAD_URL" -o gosec.tar.gz \
   && echo "$GOSEC_DOWNLOAD_SHA256 gosec.tar.gz" | sha256sum -c - \
   && mkdir gosec && tar -C gosec -zxf gosec.tar.gz
-
 
 ### sift
 ENV SIFT_VERSION v0.9.0
@@ -130,7 +122,6 @@ ENV SEMGREP_VERSION 1.0.0
 
 RUN pip3 install --user --no-cache-dir semgrep==${SEMGREP_VERSION}
 
-
 ### Ruby
 COPY Gemfile Gemfile.lock ./
 RUN bundle install --deployment --without development:test
@@ -138,7 +129,6 @@ RUN bundle install --deployment --without development:test
 # RipGrep - Used for recusive searches
 RUN curl -LO https://github.com/BurntSushi/ripgrep/releases/download/13.0.0/ripgrep_13.0.0_amd64.deb
 RUN dpkg -i ripgrep_13.0.0_amd64.deb
-
 
 FROM ruby:3.2.1-slim@sha256:e799a6b57cfe691741744373cae0aea1b34b99d00a607a76c8dc7d3055bf85dd
 
@@ -162,8 +152,6 @@ RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get inst
   vim \
   && rm -rf /var/lib/apt/lists/*
 
-
-
 ### JS + Node
 ENV NODE_VERSION 16.15.1
 ENV NODE_TARBALL_FILE node-v${NODE_VERSION}-linux-x64.tar.gz
@@ -182,7 +170,6 @@ RUN curl -fsSL "$NODE_DOWNLOAD_URL" -o node.tar.gz \
   && cd /home \
   && yarn install \
   && rm -rf /node.tar.gz package.json yarn.lock /tmp/* ~/.npm
-
 
 ### Copy tools built in the previous
 ### `builder` stage into this image
@@ -224,6 +211,3 @@ RUN gem install bundler -v'2.3.1' \
 
 # run the salus scan when this docker container is run
 ENTRYPOINT ["bundle", "exec", "./bin/salus", "scan"]
-
-
-

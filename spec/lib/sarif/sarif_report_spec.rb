@@ -26,7 +26,9 @@ describe Sarif::SarifReport do
       scanner = Salus::Scanners::RepoNotEmpty.new(repository: repo, config: {})
       scanner.run
       report.add_scan_report(scanner.report, required: false)
-      expect(report).to receive(:bugsnag_notify).with("Sarif::SarifReport::SarifInvalidFormatError Incorrect Sarif Output: foo\nBuild Info:{:url=>\"https://github.com\"}")
+      err = "Sarif::SarifReport::SarifInvalidFormatError Incorrect Sarif Output: foo" \
+        "\nBuild Info:{:url=>\"https://github.com\"}"
+      expect(report).to receive(:bugsnag_notify).with(err)
       expect(JSON::Validator).to receive(:validate).and_return(false)
       expect(JSON::Validator).to receive(:fully_validate).and_return("foo")
 

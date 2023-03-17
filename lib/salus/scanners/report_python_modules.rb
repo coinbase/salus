@@ -7,6 +7,7 @@ module Salus::Scanners
     def run
       shell_return = run_shell(['bin/report_python_modules',
                                 @repository.path_to_repo], chdir: nil)
+
       if !shell_return.success?
         report_error(shell_return.stderr)
         return

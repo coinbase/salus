@@ -10,8 +10,6 @@ import pdb
 # ./requirements.txt; given an argument, enumerate the dependencies listed in
 # the requirements.txt in that directory
 
-# ParsedRequirement' object has no attribute 'req
-
 path = 'requirements.txt'
 if len(argv) > 1:
     path = os.path.join(argv[1], 'requirements.txt')

@@ -7,7 +7,6 @@ module Salus::Scanners
     class ReportPodfileLockError < StandardError; end
 
     def run
-
       shell_return =
         run_shell("bundle exec bin/parse_podfile_lock #{@repository.podfile_lock_path}", chdir: nil)
 
