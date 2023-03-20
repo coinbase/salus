@@ -71,8 +71,8 @@ describe Salus::Scanners::Gosec do
         info = scanner.report.to_h.fetch(:info)
         logs = scanner.report.to_h.fetch(:logs)
 
-        expect(info[:stdout]).to include('Golang errors', 'Pintl not declared by package fmt')
-        expect(logs).to include('Golang errors', 'Pintl not declared by package fmt')
+        expect(info[:stdout]).to include('Golang errors', 'hello.go:8:6: undefined: fmt.Pint')
+        expect(logs).to include('Golang errors', 'hello.go:8:6: undefined: fmt.Pint')
       end
     end
   end
@@ -81,7 +81,7 @@ describe Salus::Scanners::Gosec do
     context 'filter_errors' do
       it 'repo has 1 error, 0 vul. filter_error should remove error and pass scanner' do
         repo = Salus::Repo.new('spec/fixtures/gosec/malformed_goapp')
-        config = { 'filter_errors' => ['Pintl not declared by package fmt'] }
+        config = { 'filter_errors' => ['undefined: fmt.Pintl'] }
         scanner = Salus::Scanners::Gosec.new(repository: repo, config: config)
         scanner.run
 
@@ -93,7 +93,8 @@ describe Salus::Scanners::Gosec do
 
       it 'repo has 2 errors, 1 vul. If 2 errors filtered, scanner still fails' do
         repo = Salus::Repo.new('spec/fixtures/gosec/malformed_goapp2')
-        config = { 'filter_errors' => ['Pintl not declared by package fmt',
+        config = { 'filter_errors' => ['undefined: fmt.Pintl',
+                                       'undefined: fmt.Foo',
                                        'Foo not declared by package fmt'] }
         scanner = Salus::Scanners::Gosec.new(repository: repo, config: config)
         scanner.run
@@ -116,8 +117,9 @@ describe Salus::Scanners::Gosec do
         expect(report_data[:errors]).to be_empty
         logs = JSON.parse(report_data[:logs])
         expected_err = { "/home/spec/fixtures/gosec/malformed_goapp2/hello.go" =>
-                        [{ "line" => 8, "column" => 6,
-                          "error" => "Pintl not declared by package fmt" }] }
+                        [{ "column" => 6, "error" => "undefined: fmt.Pintl", "line" => 8 },
+                         { "column" => 6, "error" => "undefined: fmt.Foo", "line" => 9 }] }
+
         expect(logs['Golang errors']).to eq(expected_err)
       end
     end

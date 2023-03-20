@@ -142,9 +142,10 @@ describe Sarif::GosecSarif do
 
         expect(result['ruleId']).to eq('SAL002')
         expect(result['ruleIndex']).to eq(0)
-        expect(result['message']['text']).to eq('Pintl not declared by package fmt')
+        msg = "# command-line-arguments\n./hello.go:8:6: undefined: fmt.Pintl"
+        expect(result['message']['text']).to eq(msg)
         expect(result['level']).to eq('note')
-        expect(result['locations'][0]['physicalLocation']['region']['startLine']).to eq(8)
+        expect(result['locations'][0]['physicalLocation']['region']['startLine']).to eq(1)
       end
     end
 
