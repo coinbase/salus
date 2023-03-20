@@ -69,7 +69,7 @@ RUN pip3 install wheel \
 # ruby gems
 COPY Gemfile Gemfile.lock /home/
 RUN cd /home \
-  && gem install bundler -v '2.3.1' \
+  && gem install bundler -v '2.4.8' \
   && gem update --system \
   && bundle install --deployment --no-cache --clean --with scanners \
   && bundle exec bundle audit update
@@ -205,7 +205,7 @@ COPY lib /home/lib
 COPY salus-default.yaml /home/
 
 # install salus dependencies
-RUN gem install bundler -v'2.3.1' \
+RUN gem install bundler -v'2.4.8' \
   && bundle config --local path vendor/bundle \
   && bundle config --local without development:test
 
