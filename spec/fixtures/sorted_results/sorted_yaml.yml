@@ -16,7 +16,7 @@
       :vulnerabilities: []
     :passed: true
     :scanner_name: BundleAudit
-    :version: 0.8.0
+    :version: 0.9.1
     :warn: {}
   Semgrep:
     :errors: []
@@ -33,7 +33,7 @@
       pattern \"1 == $X\" was not found - Useless equality test."
     :passed: false
     :scanner_name: Semgrep
-    :version: 1.0.0
+    :version: 1.15.0
     :warn:
       :semgrep_non_fatal:
       - :level: warn

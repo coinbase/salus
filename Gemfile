@@ -20,8 +20,8 @@ gem 'thor', '~> 1.1.0'
 gem 'toml', '~> 0.3.0'
 
 group :scanners do
-  gem 'brakeman', '5.3.1'
-  gem 'bundler-audit', '~> 0.8.0'
+  gem 'brakeman', '5.4.1'
+  gem 'bundler-audit', '~> 0.9.1'
 end
 
 group :test, :development do

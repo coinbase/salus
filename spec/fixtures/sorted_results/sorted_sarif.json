@@ -94,7 +94,7 @@
               "name": "Syntax error"
             }
           ],
-          "version": "1.0.0"
+          "version": "1.15.0"
         }
       }
     },
@@ -132,7 +132,7 @@
           "rules": [
 
           ],
-          "version": "0.8.0"
+          "version": "0.9.1"
         }
       }
     },

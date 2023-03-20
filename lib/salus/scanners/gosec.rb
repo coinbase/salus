@@ -93,6 +93,7 @@ module Salus::Scanners
       num_nosec = shell_return_json['Stats']['nosec'] # number of nosec
       num_found = shell_return_json['Stats']['found'] # number found
       golang_errors = shell_return_json['Golang errors'] # a hash of compile errors
+      golang_errors&.select! { |key, _value| key != "" } # remove repeated errors lacking filename
       found_issues = shell_return_json['Issues'] # a list of found issues
 
       if @filter_errors.size.positive?
