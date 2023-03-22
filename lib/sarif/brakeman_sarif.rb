@@ -54,6 +54,8 @@ module Sarif
       # "confidence"=>"High",
       # "cwe_id"=>[913, 95]}
 
+      cwes = issue.fetch('cwe_id', []).map { |cwe| "CWE-#{cwe}" }
+
       return parse_error(issue) if issue.key?('error')
 
       {
@@ -63,7 +65,8 @@ module Sarif
         details: (issue['message']).to_s,
         messageStrings: { "title": { "text": (issue['check_name']).to_s },
                           "type": { "text": (issue['warning_type']).to_s },
-                          "warning_code": { "text": (issue['warning_code']).to_s } },
+                          "warning_code": { "text": (issue['warning_code']).to_s },
+                          "cwe": { "text": cwes.to_s } },
         properties: { 'fingerprint': issue['fingerprint'].to_s,
                       'confidence': issue['confidence'].to_s,
                       'severity': "",

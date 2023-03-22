@@ -19,6 +19,9 @@ module Sarif
       # OSV example
       # {:osvdb=>"osvd value", :url=>"3", :line_number=>789}
 
+      # !!!! Note CVEs are not CWEs but we lack a mapping to CWE
+      cves = [issue.fetch(:cve, "")]
+
       result = {
         id: issue[:cve] || issue[:osvdb].to_s,
         name: issue[:advisory_title],
@@ -30,6 +33,7 @@ module Sarif
                          "unaffected_versions": { "text": (issue[:unaffected_versions]).to_s },
                          "title": { "text": (issue[:advisory_title]).to_s },
                          "osvdb": { "text": (issue[:osdvb]).to_s },
+                         "cwe": { "text": cves.to_s },
                          "type": { "text": (issue[:type]).to_s },
                          "version": { "text": (issue[:version]).to_s } },
         properties: { 'severity': (issue[:cvss]).to_s },

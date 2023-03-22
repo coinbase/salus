@@ -82,6 +82,10 @@ module Sarif
 
       # rubocop:enable Layout/LineLength
 
+      # !!!! Note CVEs are not CWEs but we lack a mapping to CWE
+      cves = issue.dig('advisory', 'aliases')
+      cves = [] if cves.nil?
+
       @issues.add(issue.dig('advisory', 'id'))
       advisory = issue['advisory'] || {}
       parsed_issue = {
@@ -92,6 +96,7 @@ module Sarif
         messageStrings: { "package": { "text": (advisory['package']).to_s },
                          "title": { "text": (advisory['title']).to_s },
                          "severity": { "text": (advisory['cvss']).to_s },
+                         "cwe": { "text": cves.to_s },
                          "patched_versions": { "text": issue.dig('versions', 'patched').to_s },
                          "unaffected_versions": { "text": issue.dig('versions',
                                                                     'unaffected').to_s } },

@@ -92,16 +92,17 @@ module Sarif
                 filepath.relative_path_from(base_path).to_s
               end
 
+        cwe = "CWE-#{id}"
         @issues.add(id)
         {
           id: issue['rule_id'],
-          name: "CWE-#{id}",
+          name: cwe,
           level: issue['severity'],
           details: "#{issue['details']} \nSeverity: #{issue['severity']}\nConfidence:"\
           " #{issue['confidence']}\nCWE: #{url}",
           messageStrings: { "severity": { "text": (issue['severity']).to_s },
                            "confidence": { "text": (issue['confidence']).to_s },
-                           "cwe": { "text": url.to_s } },
+                           "cwe": { "text": [cwe].to_s } },
           properties: { 'severity': (issue['severity']).to_s },
           start_line: issue['line'].to_i,
           start_column: issue['column'].to_i,

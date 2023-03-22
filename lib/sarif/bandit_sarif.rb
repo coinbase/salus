@@ -58,6 +58,9 @@ module Sarif
       key = issue["filename"] + ' ' + issue["line_number"].to_s + ' ' + issue['issue_text']
       return nil if @issues.include? key
 
+      cwe = issue.dig('issue_cwe', 'id')
+      cwe = cwe.nil? ? '' : "CWE-#{cwe}"
+
       @issues.add(key)
       endline = issue['line_range'][issue['line_range'].size - 1]
       {
@@ -66,7 +69,8 @@ module Sarif
         level: issue['issue_severity'],
         details: (issue['issue_text']).to_s,
         messageStrings: { "confidence": { "text": (issue['issue_severity']).to_s },
-                         "severity": { "text": (issue['issue_severity']).to_s } },
+                         "severity": { "text": (issue['issue_severity']).to_s },
+                         "cwe": { "text": [cwe].to_s } },
         properties: { 'severity': issue['issue_severity'].to_s },
         start_line: issue["line_number"].to_i,
         end_line: endline,
