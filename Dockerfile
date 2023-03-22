@@ -38,12 +38,13 @@ ENV GRADLE_HOME="/opt/gradle/gradle-7.5.1"
 ENV PATH="${GRADLE_HOME}/bin:${PATH}"
 
 ### Rust
-ENV RUST_VERSION 1.58.1
+ENV RUST_VERSION 1.68.0
 # Add a .sha256 to the rust download URL to get this sha
-ENV RUST_VERSION_SHA256 4fac6df9ea49447682c333e57945bebf4f9f45ec7b08849e507a64b2ccd5f8fb
+ENV RUST_VERSION_SHA256 7be1acdac656d0b0b7e909e5c0d4ddf61c755c203ec26ebafbd306322335b361
 ENV RUST_TARBALL_FILE rust-${RUST_VERSION}-x86_64-unknown-linux-gnu.tar.gz
 ENV RUST_DOWNLOAD_URL https://static.rust-lang.org/dist/${RUST_TARBALL_FILE}
-ENV CARGO_AUDIT_VERSION 0.14.0
+ENV CARGO_AUDIT_VERSION 0.17.4
+
 
 # Download manually and verify the hash
 RUN curl -fsSL "$RUST_DOWNLOAD_URL" -o rust.tar.gz \
@@ -105,10 +106,10 @@ RUN go install github.com/svent/sift@${SIFT_VERSION}
 
 ### truffle hog
 
-ENV TRUFFLEHOG_VERSION 3.19.0
+ENV TRUFFLEHOG_VERSION 3.29.1
 ENV TRUFFLEHOG_TARBALL trufflehog_${TRUFFLEHOG_VERSION}_linux_amd64.tar.gz
 ENV TRUFFLEHOG_DOWNLOAD_URL https://github.com/trufflesecurity/trufflehog/releases/download/v${TRUFFLEHOG_VERSION}/${TRUFFLEHOG_TARBALL}
-ENV TRUFFLEHOG_DOWNLOAD_SHA c481e856e90af1a19ee847838adaa15220c3b0cf147ba940f88c23fb067bdcf3
+ENV TRUFFLEHOG_DOWNLOAD_SHA 7baf586edb3fda4954366afa121290a40f1cc60bef48d1deeff40a5415cdb6e9
 
 RUN mkdir /root/trufflehog_files
 RUN curl -fsSL "$TRUFFLEHOG_DOWNLOAD_URL" -o trufflehog.tar.gz \
