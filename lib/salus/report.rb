@@ -336,15 +336,16 @@ module Salus
 
       @report_uris.each do |directive|
         if @report_filter == 'all' || satisfies_filter?(directive, filter_key, filter_value)
+          puts "Publishing to #{directive['uri']}"
           publish_report(directive)
         end
-      end
-    rescue StandardError => e
-      raise e if ENV['RUNNING_SALUS_TESTS']
+      rescue StandardError => e
+        raise e if ENV['RUNNING_SALUS_TESTS']
 
-      puts "Could not send Salus report: (#{e.class}: #{e.message}), #{e.backtrace}"
-      e = "Could not send Salus report. Exception: #{e}, Build info: #{builds}, #{e.backtrace}"
-      bugsnag_notify(e)
+        puts "Could not send Salus report: (#{e.class}: #{e.message}), #{e.backtrace}"
+        e = "Could not send Salus report. Exception: #{e}, Build info: #{builds}, #{e.backtrace}"
+        bugsnag_notify(e)
+      end
     end
 
     def safe_local_report_path?(path)
