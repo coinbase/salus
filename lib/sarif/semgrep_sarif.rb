@@ -74,6 +74,11 @@ module Sarif
     def parse_hit(hit)
       return nil if !hit[:forbidden]
 
+      # Example hit
+      # {:id=>"11d6bdec931137a1063338f1f80a631f5b1f2fc2", :pattern=>"$X == $X", :config=>nil,
+      # :forbidden=>true, :required=>false, :msg=>"Useless equality test.",
+      # :hit=>"examples/trivial2.py:10:    if user.id == user.id:", :severity=>"ERROR"}
+
       location = hit[:hit].split(":") # [file_name, line, code_preview]
       # location looks like "file.js:123:my_function()"
       code = if location.size > 3 # code itself has :, like "abc: [xyz]"

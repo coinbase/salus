@@ -52,6 +52,7 @@ describe Sarif::BundleAuditSarif do
           details = 'There is a possible information disclosure / unintended method'
           expect(expected_details).to include(details)
 
+          # rubocop:disable Layout/LineLength
           expect(bundle_audit_sarif.parse_issue(issue)).to include(
             id: "CVE-2021-22885",
             name: "Possible Information Disclosure / Unintended Method Execution in Action Pack",
@@ -61,8 +62,16 @@ describe Sarif::BundleAuditSarif do
             start_line: 8,
             start_column: 1,
             code: 'actionpack',
-            properties: { severity: "", detected_versions: ["4.1.15"] }
+            properties: { severity: "", detected_versions: ["4.1.15"] },
+            messageStrings: { cwe: { text: "[\"CVE-2021-22885\"]" }, osvdb: { text: "" },
+            package_name: { text: "actionpack" },
+            patched_versions: { text: "[\"~> 5.2.4.6\", \"~> 5.2.6\", \"~> 6.0.3, >= 6.0.3.7\", \">= 6.1.3.2\"]" },
+            severity: { text: "" },
+            title: { text: "Possible Information Disclosure / Unintended Method Execution in Action Pack" },
+            type: { text: "UnpatchedGem" }, unaffected_versions: { text: "[\"< 2.0.0\"]" },
+            version: { text: "4.1.15" } }
           )
+          # rubocop:enable Layout/LineLength
         else
           details = 'There is a possible DoS vulnerability in the Token Authentication logic in'
           expect(expected_details).to include(details)

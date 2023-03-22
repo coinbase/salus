@@ -62,6 +62,21 @@ module Sarif
       if issue[:id] == SCANNER_ERROR
         issue
       else
+        # rubocop:disable Layout/LineLength
+
+        # Example issue
+        # {"severity"=>"MEDIUM",
+        # "confidence"=>"HIGH",
+        # "cwe"=>{"ID"=>"78", "URL"=>"https://cwe.mitre.org/data/definitions/78.html"},
+        # "rule_id"=>"G204",
+        # "details"=>"Subprocess launched with variable",
+        # "file"=>"parser.go",
+        # "code"=>"37: \tbuf := bytes.NewReader(b)\n38: \tcmd := exec.Command(path, \"--format\", \"json\", \"--type\", \"ast\")\n39: \tcmd.Stdin = buf\n",
+        # "line"=>"38",
+        # "column"=>"9"}
+
+        # rubocop:enable Layout/LineLength
+
         id = issue['details'] + ' ' + issue['file'] + ' ' + issue['line']
         return nil if @issues.include?(id)
 
@@ -77,16 +92,17 @@ module Sarif
                 filepath.relative_path_from(base_path).to_s
               end
 
+        cwe = "CWE-#{id}"
         @issues.add(id)
         {
           id: issue['rule_id'],
-          name: "CWE-#{id}",
+          name: cwe,
           level: issue['severity'],
           details: "#{issue['details']} \nSeverity: #{issue['severity']}\nConfidence:"\
           " #{issue['confidence']}\nCWE: #{url}",
           messageStrings: { "severity": { "text": (issue['severity']).to_s },
                            "confidence": { "text": (issue['confidence']).to_s },
-                           "cwe": { "text": url.to_s } },
+                           "cwe": { "text": [cwe].to_s } },
           properties: { 'severity': (issue['severity']).to_s },
           start_line: issue['line'].to_i,
           start_column: issue['column'].to_i,

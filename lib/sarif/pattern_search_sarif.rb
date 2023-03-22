@@ -72,6 +72,10 @@ module Sarif
       return nil if issue[:required]
       return nil if !issue[:forbidden]
 
+      # Example issue
+      # {:regex=>"Nerv", :forbidden=>true, :required=>false, :msg=>"not important string",
+      # :hit=>"lance.txt:3:Nerv housed the lance."}
+
       url_info = issue[:hit].split(':')
 
       {

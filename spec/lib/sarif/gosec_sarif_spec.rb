@@ -72,7 +72,7 @@ describe Sarif::GosecSarif do
           "https://cwe.mitre.org/data/definitions/798.html",
           messageStrings: { "severity": { "text": "HIGH" },
                            "confidence": { "text": "LOW" },
-                           "cwe": { "text": "https://cwe.mitre.org/data/definitions/798.html" } },
+                           "cwe": { "text": "[\"CWE-798\"]" } },
           start_line: 8,
           start_column: 2,
           help_url: "https://cwe.mitre.org/data/definitions/798.html",

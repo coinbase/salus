@@ -34,6 +34,7 @@ describe Sarif::CargoAuditSarif do
                           "title": { "text": "MultiDecoder::read() drops uninitialized memory of"\
                           " arbitrary type on panic in client code" },
                           "severity": { "text": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H" },
+                          "cwe": { "text": "[\"CVE-2019-15552\"]" },
                           "patched_versions": { "text": "[\">=0.1.25\"]" },
                           "unaffected_versions": { "text": "[\"<0.1.14\"]" } },
           help_url: "https://github.com/sile/libflate/issues/35",

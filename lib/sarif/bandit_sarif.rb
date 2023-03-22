@@ -38,10 +38,28 @@ module Sarif
     end
 
     def parse_issue(issue)
+      # Example issue
+      # {"code"=>"1 import cPickle\n2 import pickle\n3 import StringIO\n",
+      # "col_offset"=>0,
+      # "end_col_offset"=>14,
+      # "filename"=>"./main.py",
+      # "issue_confidence"=>"HIGH",
+      # "issue_cwe"=>{"id"=>502, "link"=>"https://cwe.mitre.org/data/definitions/502.html"},
+      # "issue_severity"=>"LOW",
+      # "issue_text"=>"Consider possible security implications associated with cPickle module.",
+      # "line_number"=>1,
+      # "line_range"=>[1],
+      # "more_info"=>"https://bandit.readthedocs.io/en/1.7.5/...",
+      # "test_id"=>"B403",
+      # "test_name"=>"blacklist"}
+
       return parse_error(issue) if !issue.key?('issue_text')
 
       key = issue["filename"] + ' ' + issue["line_number"].to_s + ' ' + issue['issue_text']
       return nil if @issues.include? key
+
+      cwe = issue.dig('issue_cwe', 'id')
+      cwe = cwe.nil? ? '' : "CWE-#{cwe}"
 
       @issues.add(key)
       endline = issue['line_range'][issue['line_range'].size - 1]
@@ -51,7 +69,8 @@ module Sarif
         level: issue['issue_severity'],
         details: (issue['issue_text']).to_s,
         messageStrings: { "confidence": { "text": (issue['issue_severity']).to_s },
-                         "severity": { "text": (issue['issue_severity']).to_s } },
+                         "severity": { "text": (issue['issue_severity']).to_s },
+                         "cwe": { "text": [cwe].to_s } },
         properties: { 'severity': issue['issue_severity'].to_s },
         start_line: issue["line_number"].to_i,
         end_line: endline,

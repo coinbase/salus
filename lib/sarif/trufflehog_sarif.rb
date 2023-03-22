@@ -40,6 +40,10 @@ module Sarif
     def parse_issue(issue)
       return parse_error(issue) if issue[:scanner_err]
 
+      # Example issue
+      # {"SHA256 of Leaked Credential"=>"REDACTED-SHA",
+      # "File"=>"url.txt", "Line Num"=>1, "ID"=>"JDBC-PLAIN", "Verified"=>false}
+
       {
         id: issue['ID'],
           name: "Leaked credential",

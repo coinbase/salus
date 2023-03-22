@@ -46,6 +46,9 @@ describe Sarif::GoOSVSarif do
           "helpUri" => "https://osv.dev/list",
           "id" => "CVE-2021-21404",
           "messageStrings" => {
+            "cwe" => {
+              "text" => "[\"CVE-2021-21404\"]"
+            },
             "package" => {
               "text" => "github.com/syncthing/syncthing"
             },
