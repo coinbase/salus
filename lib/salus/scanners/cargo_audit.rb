@@ -62,7 +62,7 @@ module Salus::Scanners
     end
 
     def version
-      shell_return = run_shell('cargo audit --version')
+      shell_return = run_shell('cargo-audit --version')
       # stdout looks like "cargo-audit 0.12.0\n"
       shell_return.stdout&.split&.dig(1)
     end
@@ -110,7 +110,7 @@ module Salus::Scanners
       opts << "-c never" # to prevent color chars in stderr upon failure
       opts += fetch_exception_ids.map { |id| "--ignore #{id}" }
 
-      "cargo audit #{opts.join(' ')}"
+      "cargo-audit audit #{opts.join(' ')}"
     end
   end
 end

@@ -122,8 +122,8 @@ describe Salus::Scanners::CargoAudit do
       expect(scanner).not_to receive(:report_stdout)
       expect(scanner).not_to receive(:log)
       expect(scanner).to receive(:report_error).and_call_original
-      error = "error: Couldn't load Cargo.lock: I/O error: I/O operation failed: " \
-              "couldn't open Cargo.lock: No such file or directory (os error 2)\n"
+      error = "error: not found: Couldn't load Cargo.lock: I/O operation failed: " \
+              "I/O operation failed: NotFound\n"
       expect(scanner).to receive(:report_stderr).with(error)
 
       scanner.run
