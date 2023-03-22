@@ -48,6 +48,9 @@ describe Sarif::GradleOSVSarif do
             "helpUri" => "https://osv.dev/list",
             "id" => "CVE-2020-8908",
             "messageStrings" => {
+              "cwe" => {
+                "text" => "[\"CVE-2020-8908\"]"
+              },
               "package" => {
                 "text" => "com.google.guava:guava"
               },

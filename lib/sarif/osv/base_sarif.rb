@@ -25,6 +25,19 @@ module Sarif::OSV
     end
 
     def parse_issue(issue)
+      # Example issue
+      # {"Package"=>"github.com/syncthing/syncthing",
+      # "Vulnerable Version"=>"0",
+      # "Version Detected"=>"1.14.0",
+      # "Patched Version"=>"1.15.0",
+      # "ID"=>"CVE-2021-21404",
+      # "Database"=>"Github Advisory Database",
+      # "Summary"=>"Crash due to malformed relay protocol message",
+      # "References"=>
+      #  "https://github.com/advisories/GHSA-x462-89pf-6r5h, https://nvd.nist.gov...",
+      # "Source"=>"https://osv.dev/list",
+      # "Severity"=>"LOW"}
+
       parsed_issue = {
         id: issue['ID'],
           name: SCANNER_NAME,
@@ -33,6 +46,7 @@ module Sarif::OSV
           messageStrings: { "package": { "text": issue['Package'].to_s },
                            "title": { "text": issue['Summary'].to_s },
                            "severity": { "text": issue['Severity'].to_s },
+                           "cwe": { "text": [issue['ID']].to_s },
                            "patched_versions": { "text": issue['Patched Version'].to_s },
                            "vulnerable_versions": {
                              "text": issue['Vulnerable Version'].to_s

@@ -48,6 +48,9 @@ describe Sarif::MavenOSVSarif do
               "helpUri" => "https://osv.dev/list",
               "id" => "CVE-2018-15756",
               "messageStrings" => {
+                "cwe" => {
+                  "text" => "[\"CVE-2018-15756\"]"
+                },
                 "package" => {
                   "text" => "org.springframework:spring-core"
                 },

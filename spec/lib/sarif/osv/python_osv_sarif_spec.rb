@@ -46,6 +46,9 @@ describe Sarif::PythonOSVSarif do
             "helpUri" => "https://osv.dev/list",
             "id" => "CVE-2020-29651",
             "messageStrings" => {
+              "cwe" => {
+                "text" => "[\"CVE-2020-29651\"]"
+              },
               "package" => {
                 "text" => "py"
               },
