@@ -62,6 +62,21 @@ module Sarif
       if issue[:id] == SCANNER_ERROR
         issue
       else
+        # rubocop:disable Layout/LineLength
+
+        # Example issue
+        # {"severity"=>"MEDIUM",
+        # "confidence"=>"HIGH",
+        # "cwe"=>{"ID"=>"78", "URL"=>"https://cwe.mitre.org/data/definitions/78.html"},
+        # "rule_id"=>"G204",
+        # "details"=>"Subprocess launched with variable",
+        # "file"=>"parser.go",
+        # "code"=>"37: \tbuf := bytes.NewReader(b)\n38: \tcmd := exec.Command(path, \"--format\", \"json\", \"--type\", \"ast\")\n39: \tcmd.Stdin = buf\n",
+        # "line"=>"38",
+        # "column"=>"9"}
+
+        # rubocop:enable Layout/LineLength
+
         id = issue['details'] + ' ' + issue['file'] + ' ' + issue['line']
         return nil if @issues.include?(id)
 

@@ -45,6 +45,43 @@ module Sarif
       return parse_yanked(issue) if issue['kind'] == 'yanked'
       return nil if @issues.include?(issue.dig('advisory', 'id'))
 
+      # rubocop:disable Layout/LineLength
+
+      # Example issue
+      # {"advisory"=>
+      # {"id"=>"RUSTSEC-2019-0010",
+      # "package"=>"libflate",
+      # "title"=>"MultiDecoder::read() drops uninitialized memory of ...",
+      # "description"=>
+      #  "Affected versions of libflate have set a field of an internalnd revert ...",
+      # "date"=>"2019-07-04",
+      # "aliases"=>["CVE-2019-15552"],
+      # "related"=>[],
+      # "collection"=>"crates",
+      # "categories"=>[],
+      # "keywords"=>["drop", "use-after-free"],
+      # "cvss"=>"CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+      # "informational"=>nil,
+      # "references"=>[],
+      # "source"=>nil,
+      # "url"=>"https://github.com/sile/libflate/issues/35",
+      # "withdrawn"=>nil},
+      # "versions"=>{"patched"=>[">=0.1.25"], "unaffected"=>["<0.1.14"]},
+      # "affected"=>{"arch"=>[], "os"=>[], "functions"=>{"libflate::gzip::MultiDecoder::read"=>["<0.1.25, >=0.1.14"]}},
+      # "package"=>
+      # {"name"=>"libflate",
+      # "version"=>"0.1.19",
+      # "source"=>"registry+https://github.com/rust-lang/crates.io-index",
+      # "checksum"=>nil,
+      # "dependencies"=>
+      #  [{"name"=>"adler32", "version"=>"1.1.0", "source"=>"registry+https://github.com/rust-lang/crates.io-index"},
+      #   {"name"=>"crc32fast", "version"=>"1.2.0", "source"=>"registry+https://github.com/rust-lang/crates.io-index"},
+      #   {"name"=>"rle-decode-fast", "version"=>"1.0.1", "source"=>"registry+https://github.com/rust-lang/crates.io-index"},
+      #   {"name"=>"take_mut", "version"=>"0.2.2", "source"=>"registry+https://github.com/rust-lang/crates.io-index"}],
+      # "replace"=>nil}}
+
+      # rubocop:enable Layout/LineLength
+
       @issues.add(issue.dig('advisory', 'id'))
       advisory = issue['advisory'] || {}
       parsed_issue = {

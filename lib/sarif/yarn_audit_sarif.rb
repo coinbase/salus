@@ -23,6 +23,17 @@ module Sarif
       return nil if @issues.include?(id)
 
       @issues.add(id)
+
+      # Example issue
+      # {"Package"=>"uglify-js",
+      # "Patched in"=>">=13.6.6",
+      # "More info"=>"https://github.com/advisories/GHSA-3p22-ghq8-v749",
+      # "Severity"=>"low",
+      # "Title"=>"Renderers can obtain access to random bluetooth device without ...",
+      # "ID"=>1006709,
+      # "DectectedVersions"=>["11.5.0"],
+      # "Dependency of"=>"uglify-js"}
+
       parsed_issue = {
         id: issue['ID'].to_s,
         name: issue['Title'],

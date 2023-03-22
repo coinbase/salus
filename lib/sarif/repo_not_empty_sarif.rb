@@ -19,6 +19,9 @@ module Sarif
     end
 
     def parse_issue(issue)
+      # Example issue
+      # {:message=>"Salus was run on a blank directory. This ..."}
+
       {
         id: "RNE0001",
         name: "RepositoryIsEmpty",

@@ -10,6 +10,15 @@ module Sarif
     end
 
     def parse_issue(issue)
+      # Example issue
+      # {:type=>"InsecureSource", :source=>"http://rubygems.org/", :line_number=>123}
+
+      # Another example:
+      # {:type=>"UnpatchedGem", :cve=>"CVE1234", :url=>"1", :line_number=>456, :name=>"boo"}
+
+      # OSV example
+      # {:osvdb=>"osvd value", :url=>"3", :line_number=>789}
+
       result = {
         id: issue[:cve] || issue[:osvdb].to_s,
         name: issue[:advisory_title],

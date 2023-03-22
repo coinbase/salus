@@ -38,6 +38,22 @@ module Sarif
     end
 
     def parse_issue(issue)
+      # Example issue
+      # {"warning_type"=>"Dangerous Eval",
+      # "warning_code"=>13,
+      # "fingerprint"=>"b16e1cd0d952433f80b0403b6a74aab0e98792ea015cc1b1fa5c003cbe7d56eb",
+      # "check_name"=>"Evaluation",
+      # "message"=>"User input in eval",
+      # "file"=>"app/controllers/static_controller_controller.rb",
+      # "line"=>3,
+      # "link"=>"https://brakemanscanner.org/docs/warning_types/dangerous_eval/",
+      # "code"=>"eval(params[:evil])",
+      # "render_path"=>nil,
+      # "location"=>{"type"=>"method", "class"=>"StaticControllerController", "method"=>"index"},
+      # "user_input"=>"params[:evil]",
+      # "confidence"=>"High",
+      # "cwe_id"=>[913, 95]}
+
       return parse_error(issue) if issue.key?('error')
 
       {

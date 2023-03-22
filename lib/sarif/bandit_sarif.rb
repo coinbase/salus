@@ -38,6 +38,21 @@ module Sarif
     end
 
     def parse_issue(issue)
+      # Example issue
+      # {"code"=>"1 import cPickle\n2 import pickle\n3 import StringIO\n",
+      # "col_offset"=>0,
+      # "end_col_offset"=>14,
+      # "filename"=>"./main.py",
+      # "issue_confidence"=>"HIGH",
+      # "issue_cwe"=>{"id"=>502, "link"=>"https://cwe.mitre.org/data/definitions/502.html"},
+      # "issue_severity"=>"LOW",
+      # "issue_text"=>"Consider possible security implications associated with cPickle module.",
+      # "line_number"=>1,
+      # "line_range"=>[1],
+      # "more_info"=>"https://bandit.readthedocs.io/en/1.7.5/...",
+      # "test_id"=>"B403",
+      # "test_name"=>"blacklist"}
+
       return parse_error(issue) if !issue.key?('issue_text')
 
       key = issue["filename"] + ' ' + issue["line_number"].to_s + ' ' + issue['issue_text']
