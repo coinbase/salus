@@ -190,7 +190,7 @@ describe Salus::Report do
   describe '#export_report' do
     def build_report(report_uri)
       report = Salus::Report.new(
-        report_uris: [report_uri],
+        report_uris: report_uri.is_a?(Array) ? report_uri : [report_uri],
         project_name: 'eva00',
         custom_info: 'test unit'
       )
@@ -230,6 +230,7 @@ describe Salus::Report do
 
       it 'should raise if there is an error with sending the report to a HTTP endpoint' do
         url = 'https://nerv.tk3/salus-report'
+
         directive = { 'uri' => url, 'format' => 'json' }
         report = build_report(directive)
 
@@ -239,8 +240,51 @@ describe Salus::Report do
 
         expect { report.export_report }.to raise_error(
           Salus::Report::ExportReportError,
-          'Salus report to https://nerv.tk3/salus-report had response status 404.'
+          "Salus report to #{url} had response status 404."
         )
+      end
+
+      context 'failsafe' do
+        before do
+          ENV['RUNNING_SALUS_TESTS'] = nil
+        end
+
+        after do
+          ENV['RUNNING_SALUS_TESTS'] = 'true'
+        end
+
+        it 'should continue sending reports on failure' do
+          url = 'https://nerv.tk3/salus-report'
+          url2 = "#{url}2"
+          directives = [{ 'uri' => url, 'format' => 'json' }, { 'uri' => url2, 'format' => 'json' }]
+          report = build_report(directives)
+
+          stub_request(:post, url)
+            .with(headers: { 'Content-Type' => 'application/json' }, body: report.to_json)
+            .to_return(status: 404)
+
+          stub_request(:post, url2)
+            .with(headers: { 'Content-Type' => 'application/json' }, body: report.to_json)
+            .to_return(status: 404)
+
+          expect { report.export_report }.not_to raise_error
+
+          assert_requested(
+            :post,
+            url,
+            headers: { 'Content-Type' => 'application/json' },
+            body: report.to_json,
+            times: 1
+          )
+
+          assert_requested(
+            :post,
+            url2,
+            headers: { 'Content-Type' => 'application/json' },
+            body: report.to_json,
+            times: 1
+          )
+        end
       end
     end
 
