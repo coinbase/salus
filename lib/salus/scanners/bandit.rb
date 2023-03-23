@@ -9,11 +9,23 @@ module Salus::Scanners
       Salus::ScannerTypes::SAST
     end
 
+    def clean_output(str)
+      encoding_options = {
+        :invalid           => :replace,  # Replace invalid byte sequences
+        :undef             => :replace,  # Replace anything not defined in ASCII
+        :replace           => '',        # Use a blank for those replacements
+        :universal_newline => true       # Always break lines with \n
+      }
+
+      str.encode(Encoding.find('ASCII'), **encoding_options)
+    end
+
     def run
       # bandit compiled with python3
       copts = config_options
 
       shell_return = run_shell("bandit #{copts} -r -f json .", chdir: @repository.path_to_repo)
+
 
       # From the Bandit docs:
       #
@@ -23,17 +35,17 @@ module Salus::Scanners
       #   - bandit internal error    - exit 2 and log to STDERR
 
       if shell_return.success?
-        errs = JSON.parse(shell_return.stdout)['errors']
+        errs = JSON.parse(clean_output(shell_return.stdout))['errors']
         if !errs.empty?
           report_error(errs, status: shell_return.status)
           report_stderr(errs)
           return report_failure
-        elsif JSON.parse(shell_return.stdout)['metrics']['_totals']['loc'].zero?
+        elsif JSON.parse(clean_output(shell_return.stdout))['metrics']['_totals']['loc'].zero?
           report_error(
             '0 lines of code were scanned',
             status: shell_return.status
           )
-          report_stderr(shell_return.stderr)
+          report_stderr(clean_output(shell_return.stderr))
           return report_failure
         else
           return report_success
@@ -41,15 +53,16 @@ module Salus::Scanners
       end
 
       if shell_return.status == 1
+        cleaned = clean_output(shell_return.stdout)
         report_failure
-        report_stdout(shell_return.stdout)
-        log(shell_return.stdout)
+        report_stdout(cleaned)
+        log(cleaned)
       else
         report_error(
           "bandit exited with an unexpected exit status, #{shell_return.stderr}",
           status: shell_return.status
         )
-        report_stderr(shell_return.stderr)
+        report_stderr(clean_output(shell_return.stderr))
       end
     end
 
