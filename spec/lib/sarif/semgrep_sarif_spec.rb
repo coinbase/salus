@@ -87,6 +87,23 @@ describe Sarif::SemgrepSarif do
         # semgrep-eqeq-test is the user-specified id in the semgrep config
         matches = result.select { |r| r["ruleId"] == "semgrep-eqeq-test" }
         expect(matches.size).to eq(3)
+
+        rules = sarif_report['runs'][0]['tool']['driver']['rules']
+
+        # rubocop:disable Layout/LineLength
+        expect(rules).to eq([{ "fullDescription" => { "text" => "errors reported by scanner" },
+          "help" => { "markdown" => "[More info](https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md).", "text" => "More info: https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md" },
+          "helpUri" => "https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md",
+          "id" => "SAL002",
+          "messageStrings" => {},
+          "name" => "Syntax error" },
+                             { "fullDescription" => { "text" => "user.id == user.id is always true\n\trule_id: semgrep-eqeq-test. Pattern in semgrep-config.yml is forbidden." },
+                              "help" => { "markdown" => "[More info](https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md).", "text" => "More info: https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md" },
+                              "helpUri" => "https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md",
+                              "id" => "semgrep-eqeq-test",
+                              "messageStrings" => { "cwe" => { "text" => "[\"CWE-676: Use of Potentially Dangerous Function\"]" } },
+                              "name" => " / user.id == user.id is always true\n\trule_id: semgrep-eqeq-test Forbidden Pattern Found" }])
+        # rubocop:enable Layout/LineLength
       end
 
       it 'contains info about missing required vulnerabilities' do

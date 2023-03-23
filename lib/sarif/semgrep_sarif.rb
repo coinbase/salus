@@ -86,6 +86,7 @@ module Sarif
              else
                location[2]
              end
+      cwes = hit.fetch(:cwes, [])
       {
         id: hit[:id],
         name: "#{hit[:pattern]} / #{hit[:msg]} Forbidden Pattern Found",
@@ -97,7 +98,8 @@ module Sarif
         help_url: SEMGREP_URI,
         code: code,
         rule: "Pattern: #{hit[:pattern]}\nMessage: #{hit[:msg]}",
-        properties: { 'severity': hit[:severity] }
+        properties: { 'severity': hit[:severity] },
+        messageStrings: { "cwe": { "text": cwes.to_s } }
       }
     rescue StandardError => e
       bugsnag_notify(e.message)
