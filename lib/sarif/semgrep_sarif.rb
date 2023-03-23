@@ -99,7 +99,8 @@ module Sarif
         code: code,
         rule: "Pattern: #{hit[:pattern]}\nMessage: #{hit[:msg]}",
         properties: { 'severity': hit[:severity] },
-        messageStrings: { "cwe": { "text": cwes.to_s } }
+        messageStrings: { "cwe": { "text": cwes.to_s },
+                          "severity": { "text": hit[:severity].to_s } }
       }
     rescue StandardError => e
       bugsnag_notify(e.message)

@@ -101,7 +101,8 @@ describe Sarif::SemgrepSarif do
                               "help" => { "markdown" => "[More info](https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md).", "text" => "More info: https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md" },
                               "helpUri" => "https://github.com/coinbase/salus/blob/master/docs/scanners/semgrep.md",
                               "id" => "semgrep-eqeq-test",
-                              "messageStrings" => { "cwe" => { "text" => "[\"CWE-676: Use of Potentially Dangerous Function\"]" } },
+                              "messageStrings" => { "cwe" => { "text" => "[\"CWE-676: Use of Potentially Dangerous Function\"]" },
+                              "severity" => { "text" => "WARNING" } },
                               "name" => " / user.id == user.id is always true\n\trule_id: semgrep-eqeq-test Forbidden Pattern Found" }])
         # rubocop:enable Layout/LineLength
       end

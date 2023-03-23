@@ -40,6 +40,7 @@ describe Sarif::PatternSearchSarif do
         report = adapter.build_runs_object(true)
         rules = report['tool'][:driver]['rules']
         results = report['results']
+
         expect(results).to include(
           {
             "ruleId": "Forbidden Pattern Found",
@@ -69,14 +70,15 @@ describe Sarif::PatternSearchSarif do
           }
         )
         doc = "https://github.com/coinbase/salus/blob/master/docs/scanners/pattern_search.md"
+
         expect(rules).to include(
           {
             "id": "Forbidden Pattern Found",
             "name": "Forbidden Pattern Found",
+            "messageStrings": { "severity": { "text": "HIGH" } },
             "fullDescription": {
               "text": "not important string. Pattern Nerv is forbidden."
             },
-            "messageStrings": {},
             "helpUri": doc,
             "help": {
               "text": "More info: #{doc}",
