@@ -5,3 +5,6 @@ rules:
       message: $X == $X is always true
       languages: [python]
       severity: WARNING
+      metadata:
+        cwe:
+          - "CWE-676: Use of Potentially Dangerous Function"

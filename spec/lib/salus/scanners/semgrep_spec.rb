@@ -29,7 +29,8 @@ describe Salus::Scanners::Semgrep do
           forbidden: false,
           required: false,
           msg: "",
-          hit: "trivial.py:3:if 3 == 3:"
+          hit: "trivial.py:3:if 3 == 3:",
+          cwes: []
         )
 
         expect(info[:hits]).to include(
@@ -40,7 +41,8 @@ describe Salus::Scanners::Semgrep do
           forbidden: false,
           required: false,
           msg: "",
-          hit: "examples/trivial2.py:10:    if user.id == user.id:"
+          hit: "examples/trivial2.py:10:    if user.id == user.id:",
+          cwes: []
         )
 
         expect(info[:hits]).to include(
@@ -51,7 +53,8 @@ describe Salus::Scanners::Semgrep do
           forbidden: false,
           required: false,
           msg: "",
-          hit: "vendor/trivial2.py:10:    if user.id == user.id:"
+          hit: "vendor/trivial2.py:10:    if user.id == user.id:",
+          cwes: []
         )
 
         expect(info[:misses]).to be_empty
@@ -103,7 +106,8 @@ describe Salus::Scanners::Semgrep do
             forbidden: false,
             required: false,
             msg: "3 == 3 is always true\n\trule_id: semgrep-eqeq-test",
-            hit: "trivial.py:3:if 3 == 3:"
+            hit: "trivial.py:3:if 3 == 3:",
+            cwes: ["CWE-676: Use of Potentially Dangerous Function"]
           )
 
           expect(info[:hits]).to include(
@@ -114,7 +118,8 @@ describe Salus::Scanners::Semgrep do
             forbidden: false,
             required: false,
             msg: "user.id == user.id is always true\n\trule_id: semgrep-eqeq-test",
-            hit: "examples/trivial2.py:10:    if user.id == user.id:"
+            hit: "examples/trivial2.py:10:    if user.id == user.id:",
+            cwes: ["CWE-676: Use of Potentially Dangerous Function"]
           )
 
           expect(info[:hits]).to include(
@@ -125,7 +130,8 @@ describe Salus::Scanners::Semgrep do
             forbidden: false,
             required: false,
             msg: "user.id == user.id is always true\n\trule_id: semgrep-eqeq-test",
-            hit: "vendor/trivial2.py:10:    if user.id == user.id:"
+            hit: "vendor/trivial2.py:10:    if user.id == user.id:",
+            cwes: ["CWE-676: Use of Potentially Dangerous Function"]
           )
 
           expect(info[:misses]).to be_empty
@@ -183,7 +189,8 @@ describe Salus::Scanners::Semgrep do
             forbidden: true,
             required: false,
             msg: "3 == 3 is always true\n\trule_id: semgrep-eqeq-test",
-            hit: "trivial.py:3:if 3 == 3:"
+            hit: "trivial.py:3:if 3 == 3:",
+            cwes: ["CWE-676: Use of Potentially Dangerous Function"]
           )
 
           expect(info[:hits]).to include(
@@ -194,7 +201,8 @@ describe Salus::Scanners::Semgrep do
             forbidden: true,
             required: false,
             msg: "user.id == user.id is always true\n\trule_id: semgrep-eqeq-test",
-            hit: "examples/trivial2.py:10:    if user.id == user.id:"
+            hit: "examples/trivial2.py:10:    if user.id == user.id:",
+            cwes: ["CWE-676: Use of Potentially Dangerous Function"]
           )
 
           expect(info[:hits]).to include(
@@ -205,7 +213,8 @@ describe Salus::Scanners::Semgrep do
             forbidden: true,
             required: false,
             msg: "user.id == user.id is always true\n\trule_id: semgrep-eqeq-test",
-            hit: "vendor/trivial2.py:10:    if user.id == user.id:"
+            hit: "vendor/trivial2.py:10:    if user.id == user.id:",
+            cwes: ["CWE-676: Use of Potentially Dangerous Function"]
           )
 
           expect(info[:misses]).to be_empty
@@ -236,7 +245,8 @@ describe Salus::Scanners::Semgrep do
             forbidden: false,
             required: true,
             msg: "3 == 3 is always true\n\trule_id: semgrep-eqeq-test",
-            hit: "trivial.py:3:if 3 == 3:"
+            hit: "trivial.py:3:if 3 == 3:",
+            cwes: ["CWE-676: Use of Potentially Dangerous Function"]
           )
 
           expect(info[:hits]).to include(
@@ -247,7 +257,8 @@ describe Salus::Scanners::Semgrep do
             forbidden: false,
             required: true,
             msg: "user.id == user.id is always true\n\trule_id: semgrep-eqeq-test",
-            hit: "examples/trivial2.py:10:    if user.id == user.id:"
+            hit: "examples/trivial2.py:10:    if user.id == user.id:",
+            cwes: ["CWE-676: Use of Potentially Dangerous Function"]
           )
 
           expect(info[:hits]).to include(
@@ -258,7 +269,8 @@ describe Salus::Scanners::Semgrep do
             forbidden: false,
             required: true,
             msg: "user.id == user.id is always true\n\trule_id: semgrep-eqeq-test",
-            hit: "vendor/trivial2.py:10:    if user.id == user.id:"
+            hit: "vendor/trivial2.py:10:    if user.id == user.id:",
+            cwes: ["CWE-676: Use of Potentially Dangerous Function"]
           )
 
           expect(info[:misses]).to be_empty
@@ -321,7 +333,8 @@ describe Salus::Scanners::Semgrep do
             forbidden: false,
             required: false,
             msg: "Found unverified db query\n\trule_id: unverified-db-query",
-            hit: "pattern-not/test.py:2:db_query(\"SELECT * FROM ...\")"
+            hit: "pattern-not/test.py:2:db_query(\"SELECT * FROM ...\")",
+            cwes: []
           )
 
           expect(info[:misses]).to be_empty
@@ -356,7 +369,8 @@ describe Salus::Scanners::Semgrep do
           forbidden: false,
           required: false,
           msg: "Useless equality test.",
-          hit: "trivial.py:3:if 3 == 3:"
+          hit: "trivial.py:3:if 3 == 3:",
+          cwes: []
         )
 
         expect(info[:hits]).to include(
@@ -367,7 +381,8 @@ describe Salus::Scanners::Semgrep do
           forbidden: false,
           required: false,
           msg: "Useless equality test.",
-          hit: "examples/trivial2.py:10:    if user.id == user.id:"
+          hit: "examples/trivial2.py:10:    if user.id == user.id:",
+          cwes: []
         )
 
         expect(info[:hits]).to include(
@@ -378,7 +393,8 @@ describe Salus::Scanners::Semgrep do
           forbidden: false,
           required: false,
           msg: "Useless equality test.",
-          hit: "vendor/trivial2.py:10:    if user.id == user.id:"
+          hit: "vendor/trivial2.py:10:    if user.id == user.id:",
+          cwes: []
         )
 
         expect(info[:misses]).to be_empty
@@ -412,7 +428,8 @@ describe Salus::Scanners::Semgrep do
           forbidden: true,
           required: false,
           msg: "",
-          hit: "trivial.py:3:if 3 == 3:"
+          hit: "trivial.py:3:if 3 == 3:",
+          cwes: []
         )
 
         expect(info[:hits]).to include(
@@ -423,7 +440,8 @@ describe Salus::Scanners::Semgrep do
           forbidden: true,
           required: false,
           msg: "",
-          hit: "examples/trivial2.py:10:    if user.id == user.id:"
+          hit: "examples/trivial2.py:10:    if user.id == user.id:",
+          cwes: []
         )
 
         expect(info[:hits]).to include(
@@ -434,7 +452,8 @@ describe Salus::Scanners::Semgrep do
           forbidden: true,
           required: false,
           msg: "",
-          hit: "vendor/trivial2.py:10:    if user.id == user.id:"
+          hit: "vendor/trivial2.py:10:    if user.id == user.id:",
+          cwes: []
         )
 
         expect(info[:misses]).to be_empty
@@ -470,7 +489,8 @@ describe Salus::Scanners::Semgrep do
           forbidden: false,
           required: true,
           msg: "Useless equality test.",
-          hit: "trivial.py:3:if 3 == 3:"
+          hit: "trivial.py:3:if 3 == 3:",
+          cwes: []
         )
 
         expect(info[:hits]).to include(
@@ -481,7 +501,8 @@ describe Salus::Scanners::Semgrep do
           forbidden: false,
           required: true,
           msg: "Useless equality test.",
-          hit: "examples/trivial2.py:10:    if user.id == user.id:"
+          hit: "examples/trivial2.py:10:    if user.id == user.id:",
+          cwes: []
         )
 
         expect(info[:hits]).to include(
@@ -492,7 +513,8 @@ describe Salus::Scanners::Semgrep do
           forbidden: false,
           required: true,
           msg: "Useless equality test.",
-          hit: "vendor/trivial2.py:10:    if user.id == user.id:"
+          hit: "vendor/trivial2.py:10:    if user.id == user.id:",
+          cwes: []
         )
 
         expect(info[:misses]).to be_empty
@@ -564,7 +586,8 @@ describe Salus::Scanners::Semgrep do
           forbidden: true,
           required: false,
           msg: "Useless equality test.",
-          hit: "trivial.py:3:if 3 == 3:"
+          hit: "trivial.py:3:if 3 == 3:",
+          cwes: []
         )
 
         expect(info[:hits]).to include(
@@ -575,7 +598,8 @@ describe Salus::Scanners::Semgrep do
           forbidden: true,
           required: false,
           msg: "Useless equality test.",
-          hit: "vendor/trivial2.py:10:    if user.id == user.id:"
+          hit: "vendor/trivial2.py:10:    if user.id == user.id:",
+          cwes: []
         )
 
         expect(info[:hits]).not_to include(
@@ -586,7 +610,8 @@ describe Salus::Scanners::Semgrep do
           forbidden: true,
           required: false,
           msg: "Useless equality test.",
-          hit: "examples/trivial2.py:10:    if user.id == user.id:"
+          hit: "examples/trivial2.py:10:    if user.id == user.id:",
+          cwes: []
         )
       end
     end
@@ -621,7 +646,8 @@ describe Salus::Scanners::Semgrep do
           forbidden: true,
           required: false,
           msg: "Useless equality test.",
-          hit: "trivial.py:3:if 3 == 3:"
+          hit: "trivial.py:3:if 3 == 3:",
+          cwes: []
         )
 
         expect(info[:hits]).not_to include(
@@ -632,7 +658,8 @@ describe Salus::Scanners::Semgrep do
           forbidden: true,
           required: false,
           msg: "Useless equality test.",
-          hit: "vendor/trivial2.py:10:    if user.id == user.id:"
+          hit: "vendor/trivial2.py:10:    if user.id == user.id:",
+          cwes: []
         )
 
         expect(info[:hits]).not_to include(
@@ -643,7 +670,8 @@ describe Salus::Scanners::Semgrep do
           forbidden: true,
           required: false,
           msg: "Useless equality test.",
-          hit: "examples/trivial2.py:10:    if user.id == user.id:"
+          hit: "examples/trivial2.py:10:    if user.id == user.id:",
+          cwes: []
         )
       end
     end
@@ -678,7 +706,8 @@ describe Salus::Scanners::Semgrep do
           forbidden: true,
           required: false,
           msg: "Useless equality test.",
-          hit: "trivial.py:3:if 3 == 3:"
+          hit: "trivial.py:3:if 3 == 3:",
+          cwes: []
         )
 
         expect(info[:hits]).to include(
@@ -689,7 +718,8 @@ describe Salus::Scanners::Semgrep do
           forbidden: true,
           required: false,
           msg: "Useless equality test.",
-          hit: "vendor/trivial2.py:10:    if user.id == user.id:"
+          hit: "vendor/trivial2.py:10:    if user.id == user.id:",
+          cwes: []
         )
 
         expect(info[:hits]).not_to include(
@@ -700,7 +730,8 @@ describe Salus::Scanners::Semgrep do
           forbidden: true,
           required: false,
           msg: "Useless equality test.",
-          hit: "examples/trivial2.py:10:    if user.id == user.id:"
+          hit: "examples/trivial2.py:10:    if user.id == user.id:",
+          cwes: []
         )
       end
     end
@@ -735,7 +766,8 @@ describe Salus::Scanners::Semgrep do
           forbidden: true,
           required: false,
           msg: "Useless equality test.",
-          hit: "trivial.py:3:if 3 == 3:"
+          hit: "trivial.py:3:if 3 == 3:",
+          cwes: []
         )
 
         expect(info[:hits]).not_to include(
@@ -745,7 +777,8 @@ describe Salus::Scanners::Semgrep do
           forbidden: true,
           required: false,
           msg: "Useless equality test.",
-          hit: "examples/trivial2.py:10:    if user.id == user.id:"
+          hit: "examples/trivial2.py:10:    if user.id == user.id:",
+          cwes: []
         )
       end
     end

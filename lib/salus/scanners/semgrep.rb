@@ -127,6 +127,9 @@ module Salus::Scanners
                        else # id specified by user
                          hit['check_id']
                        end
+
+              cwes = hit.dig('extra', 'metadata', 'cwe')
+              cwes = [] if cwes.nil?
               all_hits << {
                 id: hit_id,
                 pattern: match['pattern'],
@@ -135,7 +138,8 @@ module Salus::Scanners
                 required: match["required"],
                 msg: msg,
                 hit: hit_to_string(hit, base_path),
-                severity: hit['extra']['severity']
+                severity: hit['extra']['severity'],
+                cwes: cwes
               }
             end
           end
