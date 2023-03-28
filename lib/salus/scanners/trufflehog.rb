@@ -32,6 +32,16 @@ module Salus::Scanners
       if @config['only-verified'].to_s == 'true' || @config['only-verified'].to_s == ''
         cmd += ' --only-verified'
       end
+
+      # fetch exclusions
+      if @config.fetch('exclude', [])
+        cmd += ' -x'
+        excludes = @config.fetch('exclude', [])
+        excludes.each do |exclude|
+          cmd += ' ' + exclude 
+        end
+      end
+      
       cmd
     end
 
