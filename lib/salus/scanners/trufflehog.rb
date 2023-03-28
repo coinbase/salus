@@ -38,10 +38,10 @@ module Salus::Scanners
         cmd += ' -x'
         excludes = @config.fetch('exclude', [])
         excludes.each do |exclude|
-          cmd += ' ' + exclude 
+          cmd += ' ' + exclude
         end
       end
-      
+
       cmd
     end
 
