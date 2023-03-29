@@ -7,7 +7,7 @@ require 'salus/scanners/base'
 
 module Salus::Scanners
   class Trufflehog < Base
-    FILTER_FILE = 'filter.txt'
+    FILTER_FILE = 'filter.txt'.freeze
 
     def should_run?
       true
@@ -42,8 +42,8 @@ module Salus::Scanners
         exclusions.each do |exclude|
           exclusion_content += exclude + "\n"
         end
-        File.open("#{@repository.path_to_repo}/#{FILTER_FILE}", "w") do |f|     
-          f.write(exclusion_content)   
+        File.open("#{@repository.path_to_repo}/#{FILTER_FILE}", "w") do |f|
+          f.write(exclusion_content)
         end
         cmd += ' -x ' + "#{@repository.path_to_repo}/#{FILTER_FILE}"
       end
