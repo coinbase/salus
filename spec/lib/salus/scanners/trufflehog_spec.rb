@@ -129,8 +129,9 @@ describe Salus::Scanners::Trufflehog do
 
     it 'should honor exclude in the config to ignore findings and pass' do
       repo = Salus::Repo.new('spec/fixtures/secrets')
-      config = { "exclude_files" => ["url.txt", "logins.txt" ] }
-      scanner = Salus::Scanners::Trufflehog.new(repository: repo, config: config)
+      config_data = YAML.load_file('spec/fixtures/secrets/salus.yaml')
+      
+      scanner = Salus::Scanners::Trufflehog.new(repository: repo, config: config_data)
       scanner.run
 
       report_h = scanner.report.to_h
