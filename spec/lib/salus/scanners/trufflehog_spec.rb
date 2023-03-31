@@ -130,7 +130,7 @@ describe Salus::Scanners::Trufflehog do
     it 'should honor exclude in the config to ignore findings and pass' do
       repo = Salus::Repo.new('spec/fixtures/secrets')
       config_data = YAML.load_file('spec/fixtures/secrets/salus.yaml')
-      
+
       scanner = Salus::Scanners::Trufflehog.new(repository: repo, config: config_data)
       scanner.run
 
@@ -152,8 +152,6 @@ describe Salus::Scanners::Trufflehog do
       expect(report_h[:passed]).to eq(false)
     end
   end
-
-  
 
   describe '#version_valid?' do
     context 'scanner version is valid' do
