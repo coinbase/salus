@@ -18,9 +18,9 @@ module Salus
         @@listners << listener
       end
 
-      def apply_filter(filter_family, filter_method, data)
+      def apply_filter(filter_family, filter_method, *data)
         @@filters[filter_family]&.each do |f|
-          data = f.__send__(filter_method, data) if f.respond_to?(filter_method)
+          data = f.__send__(filter_method, *data) if f.respond_to?(filter_method)
         end
         data
       end

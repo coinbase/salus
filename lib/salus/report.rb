@@ -2,6 +2,7 @@ require 'json'
 require 'deepsort'
 require 'salus/formatting'
 require 'salus/bugsnag'
+require 'zlib'
 
 # Adding aliases to prevent deep_sort from failing when comparing symbols and strings
 class Symbol
@@ -63,8 +64,8 @@ module Salus
       Salus::PluginManager.apply_filter(:salus_report, :filter_report_hash, report_hash)
     end
 
-    def apply_report_sarif_filters(sarif_json)
-      Salus::PluginManager.apply_filter(:salus_report, :filter_report_sarif, sarif_json)
+    def apply_report_sarif_filters(sarif_json, config)
+      Salus::PluginManager.apply_filter(:salus_report, :filter_report_sarif, sarif_json, config)
     end
 
     # Syntatical sugar register salus_report filters
@@ -197,6 +198,7 @@ module Salus
     def to_sarif(config = {})
       sarif_json = Sarif::SarifReport.new(@scan_reports, config, @repo_path, @config).to_sarif
       begin
+        # This is dangerous in salus as rule mappings
         sorted_sarif = JSON.parse(sarif_json).deep_sort
       rescue StandardError => e
         bugsnag_notify(e.inspect + "\n" + e.message + "\nResult String: " + to_h.to_s)
@@ -205,7 +207,7 @@ module Salus
       # We will validate to ensure the applied filter
       # doesn't produce any invalid SARIF
       sarif_json = JSON.pretty_generate(sorted_sarif)
-      Sarif::SarifReport.validate_sarif(apply_report_sarif_filters(sarif_json))
+      Sarif::SarifReport.validate_sarif(apply_report_sarif_filters(sarif_json, config))
     rescue StandardError => e
       bugsnag_notify(e.class.to_s + " " + e.message + "\nBuild Info:" + @builds.to_s)
     end
@@ -300,6 +302,7 @@ module Salus
                       else
                         raise ExportReportError, "unknown report format #{directive['format']}"
                       end
+
       if Salus::Config::REMOTE_URI_SCHEME_REGEX.match?(URI(uri).scheme)
         Salus::ReportRequest.send_report(directive, report_body(directive), uri)
       else
@@ -395,11 +398,18 @@ module Salus
             "Cannot write file #{report_file_path} - #{e.class}: #{e.message}"
     end
 
+    def compress(data)
+       Base64.strict_encode64(Zlib::Deflate.deflate(data))
+    end
+
     def report_body_hash(config, data)
       return data unless config&.key?('post') && config['post'].present?
 
       body_hash = config['post']['additional_params'] || {}
       return body_hash unless config['post']['salus_report_param_name']
+
+      compress_sarif = config.dig('post', 'salus_report_options', 'gzip-base64')
+      data = compress(data) if compress_sarif
 
       body_hash[config['post']['salus_report_param_name']] = data
       body_hash
