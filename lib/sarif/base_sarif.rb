@@ -1,6 +1,7 @@
 require 'json'
 require 'set'
 require 'sarif/shared_objects'
+require 'deepsort'
 
 module Sarif
   class BaseSarif
@@ -83,7 +84,7 @@ module Sarif
     def build_result(parsed_issue)
       result = {
         "ruleId": parsed_issue[:id],
-        "ruleIndex": @mapped_rules[parsed_issue[:id]],
+        "ruleIndex": @mapped_rules[parsed_issue[:id]], # this is wrong
         "level": sarif_level(parsed_issue[:level]),
         "message": {
           "text": parsed_issue[:details]
@@ -115,6 +116,7 @@ module Sarif
     def build_rule(parsed_issue)
       # only include one entry per rule id
       if !@mapped_rules.include?(parsed_issue[:id])
+        # puts "mapped rules #{@mapped_rules.keys} do not include #{parsed_issue[:id]}"
         rule = {
           "id": parsed_issue[:id],
           "name": parsed_issue[:name],
@@ -128,6 +130,7 @@ module Sarif
             "markdown": "[More info](#{parsed_issue[:help_url]})."
           }
         }
+        # puts "Setting @mapped_rules[#{parsed_issue[:id]}] to @rule_index (#{@rule_index}) vs #{@mapped_rules.size}"
         @mapped_rules[parsed_issue[:id]] = @rule_index
         @rule_index += 1
         rule[:fullDescription][:text] = "errors reported by scanner" if rule[:id] == SCANNER_ERROR
@@ -152,6 +155,7 @@ module Sarif
 
         rule = build_rule(parsed_issue)
         rules << rule if rule
+
         result = build_result(parsed_issue)
 
         # Add suppresion object for suppressed results
@@ -168,13 +172,22 @@ module Sarif
 
       # Salus::ScanReport
       invocation = build_invocations(@scan_report, supported)
-      {
-        "tool" => build_tool(rules: rules),
+      runs_object = {
+        "tool" => build_tool(rules: rules.deep_sort),
         "conversion" => build_conversion,
         "results" => results,
         "invocations" => [invocation],
         "originalUriBaseIds" => uri_info
       }
+      remap_rule_ids(runs_object)
+    end
+
+    def remap_rule_ids(run)
+      rules = run['tool'][:driver]['rules']
+      run['results'].each do |r|
+        r['ruleIndex'] = rules.index { |rule| rule[:id] == r[:ruleId] }
+      end
+      run
     end
 
     # Returns the conversion object for the SARIF report

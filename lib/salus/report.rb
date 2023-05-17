@@ -198,7 +198,8 @@ module Salus
     def to_sarif(config = {})
       sarif_json = Sarif::SarifReport.new(@scan_reports, config, @repo_path, @config).to_sarif
       begin
-        # This is dangerous in salus as rule mappings
+        # This is dangerous in salus as rule mappings use the ruleIndex
+        # which can change when a deep sort is executed
         sorted_sarif = JSON.parse(sarif_json).deep_sort
       rescue StandardError => e
         bugsnag_notify(e.inspect + "\n" + e.message + "\nResult String: " + to_h.to_s)
@@ -399,7 +400,7 @@ module Salus
     end
 
     def compress(data)
-       Base64.strict_encode64(Zlib::Deflate.deflate(data))
+      Base64.strict_encode64(Zlib::Deflate.deflate(data))
     end
 
     def report_body_hash(config, data)
