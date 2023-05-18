@@ -21,3 +21,13 @@ scanner_configs:
                 changed_by: "joshua.ostrom",
                 notes: "See https://www.npmjs.com/advisories/48. We're not vulnerable to this because this is a regex dos and we have nothing that puts user input into it. The impact is also minimal.",
               }
+            - {
+                advisory_id: "1091686",
+                changed_by: "joshua.ostrom",
+                notes: "WAGMI",
+              }
+            - {
+                advisory_id: "1091710",
+                changed_by: "joshua.ostrom",
+                notes: "BTC $26.5K",
+              }

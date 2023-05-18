@@ -44,7 +44,7 @@ describe Sarif::PatternSearchSarif do
         expect(results).to include(
           {
             "ruleId": "Forbidden Pattern Found",
-            "ruleIndex": 0,
+            "ruleIndex": 1,
             "level": "error",
             "message": {
               "text": "not important string. Pattern Nerv is forbidden."

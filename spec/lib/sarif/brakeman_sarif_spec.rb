@@ -186,7 +186,7 @@ describe Sarif::BrakemanSarif do
 
         # Check result info
         expect(result['ruleId']).to eq('13')
-        expect(result['ruleIndex']).to eq(0)
+        expect(result['ruleIndex']).to eq(2)
         expect(result['level']).to eq('error')
         expect(result['locations'][0]['physicalLocation']['region']['startLine']).to eq(3)
         snippet = result['locations'][0]['physicalLocation']['region']['snippet']['text'].to_s

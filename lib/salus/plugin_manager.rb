@@ -19,10 +19,11 @@ module Salus
       end
 
       def apply_filter(filter_family, filter_method, *data)
+        result = data&.first
         @@filters[filter_family]&.each do |f|
-          data = f.__send__(filter_method, *data) if f.respond_to?(filter_method)
+          result = f.__send__(filter_method, *data) if f.respond_to?(filter_method)
         end
-        data
+        result
       end
 
       def send_event(event_name, *data)

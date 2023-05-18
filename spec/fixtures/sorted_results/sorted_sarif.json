@@ -31,7 +31,7 @@
             "text": "Useless equality test.. Pattern 1 == $X is required but not found."
           },
           "ruleId": "Required Pattern Not Found",
-          "ruleIndex": 1
+          "ruleIndex": 0
         },
         {
           "level": "error",
@@ -53,7 +53,7 @@
             "text": "Syntax error at line /home/spec/fixtures/semgrep/invalid/unparsable_py.py:3:\n `print(\"foo\"` was unexpected"
           },
           "ruleId": "SAL002",
-          "ruleIndex": 0
+          "ruleIndex": 1
         }
       ],
       "tool": {

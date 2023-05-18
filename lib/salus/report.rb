@@ -64,7 +64,7 @@ module Salus
       Salus::PluginManager.apply_filter(:salus_report, :filter_report_hash, report_hash)
     end
 
-    def apply_report_sarif_filters(sarif_json, config)
+    def apply_report_sarif_filters(sarif_json, config = nil)
       Salus::PluginManager.apply_filter(:salus_report, :filter_report_sarif, sarif_json, config)
     end
 
@@ -210,6 +210,7 @@ module Salus
       sarif_json = JSON.pretty_generate(sorted_sarif)
       Sarif::SarifReport.validate_sarif(apply_report_sarif_filters(sarif_json, config))
     rescue StandardError => e
+      puts "Failure in validing SARIF"
       bugsnag_notify(e.class.to_s + " " + e.message + "\nBuild Info:" + @builds.to_s)
     end
 
@@ -410,7 +411,7 @@ module Salus
       return body_hash unless config['post']['salus_report_param_name']
 
       compress_sarif = config.dig('post', 'salus_report_options', 'gzip-base64')
-      data = compress(data) if compress_sarif
+      data = compress(JSON.pretty_generate(data)) if ["true", true].include?(compress_sarif)
 
       body_hash[config['post']['salus_report_param_name']] = data
       body_hash

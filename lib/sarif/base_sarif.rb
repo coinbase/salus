@@ -185,7 +185,7 @@ module Sarif
     def remap_rule_ids(run)
       rules = run['tool'][:driver]['rules']
       run['results'].each do |r|
-        r['ruleIndex'] = rules.index { |rule| rule[:id] == r[:ruleId] }
+        r[:ruleIndex] = rules.index { |rule| rule[:id] == r[:ruleId] }
       end
       run
     end
