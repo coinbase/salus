@@ -2,8 +2,8 @@ source 'https://rubygems.org'
 
 ruby '3.2.1'
 
-gem 'activemodel', '~> 6.1.7.3'
-gem 'activesupport', '~> 6.1.7.3'
+gem 'activemodel', '~> 7.0.7.2'
+gem 'activesupport', '~> 7.0.7.2'
 gem 'bugsnag', '~> 6.19.0'
 gem 'bundler', '= 2.4.8'
 gem 'cocoapods', '~> 1.12.0'
