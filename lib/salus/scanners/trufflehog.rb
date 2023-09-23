@@ -7,6 +7,8 @@ require 'salus/scanners/base'
 
 module Salus::Scanners
   class Trufflehog < Base
+    FILTER_FILE = 'filter.txt'.freeze
+
     def should_run?
       true
     end
@@ -32,6 +34,20 @@ module Salus::Scanners
       if @config['only-verified'].to_s == 'true' || @config['only-verified'].to_s == ''
         cmd += ' --only-verified'
       end
+
+      # fetch exclusions
+      if @config.fetch('exclude_files', false)
+        exclusion_content = ""
+        exclusions = @config.fetch('exclude_files', [])
+        exclusions.each do |exclude|
+          exclusion_content += exclude + "\n"
+        end
+        File.open("#{@repository.path_to_repo}/#{FILTER_FILE}", "w") do |f|
+          f.write(exclusion_content)
+        end
+        cmd += ' -x ' + "#{@repository.path_to_repo}/#{FILTER_FILE}"
+      end
+
       cmd
     end
 

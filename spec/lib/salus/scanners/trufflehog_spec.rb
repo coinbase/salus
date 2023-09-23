@@ -126,6 +126,31 @@ describe Salus::Scanners::Trufflehog do
       expect(report_h[:info]).to eq({})
       expect(report_h[:errors]).to eq([])
     end
+
+    it 'should honor exclude in the config to ignore findings and pass' do
+      repo = Salus::Repo.new('spec/fixtures/secrets')
+      config_data = YAML.load_file('spec/fixtures/secrets/salus.yaml')
+
+      scanner = Salus::Scanners::Trufflehog.new(repository: repo, config: config_data)
+      scanner.run
+
+      report_h = scanner.report.to_h
+      expect(report_h[:passed]).to eq(true)
+      expect(report_h[:logs]).to be_nil
+      expect(report_h[:warn]).to eq({})
+      expect(report_h[:info]).to eq({})
+      expect(report_h[:errors]).to eq([])
+    end
+
+    it 'should honor exclude in the config to ignore findings and fail' do
+      repo = Salus::Repo.new('spec/fixtures/secrets')
+      config = { "exclude_files" => ["url.txt"] }
+      scanner = Salus::Scanners::Trufflehog.new(repository: repo, config: config)
+      scanner.run
+
+      report_h = scanner.report.to_h
+      expect(report_h[:passed]).to eq(false)
+    end
   end
 
   describe '#version_valid?' do
