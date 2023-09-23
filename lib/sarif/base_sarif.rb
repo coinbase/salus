@@ -1,6 +1,7 @@
 require 'json'
 require 'set'
 require 'sarif/shared_objects'
+require 'deepsort'
 
 module Sarif
   class BaseSarif
@@ -168,13 +169,25 @@ module Sarif
 
       # Salus::ScanReport
       invocation = build_invocations(@scan_report, supported)
-      {
-        "tool" => build_tool(rules: rules),
+      runs_object = {
+        "tool" => build_tool(rules: rules.deep_sort), # we deep sort here as
+        # our SARIF needs to be deep sorted for easier comparisions
         "conversion" => build_conversion,
         "results" => results,
         "invocations" => [invocation],
         "originalUriBaseIds" => uri_info
       }
+      # Ensure our ruleIndex values are correct after the
+      # prior deep sorting
+      remap_rule_ids(runs_object)
+    end
+
+    def remap_rule_ids(run)
+      rules = run['tool'][:driver]['rules']
+      run['results'].each do |r|
+        r[:ruleIndex] = rules.index { |rule| rule[:id] == r[:ruleId] }
+      end
+      run
     end
 
     # Returns the conversion object for the SARIF report

@@ -27,7 +27,7 @@ describe Sarif::TrufflehogSarif do
                           } }],
                           "message" => { "text" => "Leaked credential detected" },
                           "properties" => { "severity" => "high" },
-                          "ruleId" => "FlatIO-PLAIN", "ruleIndex" => 1 }
+                          "ruleId" => "FlatIO-PLAIN", "ruleIndex" => 0 }
         expected_vul1 = { "level" => "error",
                           "locations" => [{ "physicalLocation" => {
                             "artifactLocation" => { "uri" => "url.txt",
@@ -40,7 +40,7 @@ describe Sarif::TrufflehogSarif do
                           } }],
                           "message" => { "text" => "Leaked credential detected" },
                           "properties" => { "severity" => "high" },
-                          "ruleId" => "JDBC-PLAIN", "ruleIndex" => 0 }
+                          "ruleId" => "JDBC-PLAIN", "ruleIndex" => 1 }
         expected_vul2 = { "level" => "error",
                           "locations" => [{ "physicalLocation" => {
                             "artifactLocation" => { "uri" => "url.txt",
@@ -53,7 +53,7 @@ describe Sarif::TrufflehogSarif do
                           } }],
                           "message" => { "text" => "Leaked credential detected" },
                           "properties" => { "severity" => "high" },
-                          "ruleId" => "JDBC-PLAIN", "ruleIndex" => 0 }
+                          "ruleId" => "JDBC-PLAIN", "ruleIndex" => 1 }
         expect(result.size).to eq(3)
         [expected_vul0, expected_vul1, expected_vul2].each { |v| expect(result).to include(v) }
       end

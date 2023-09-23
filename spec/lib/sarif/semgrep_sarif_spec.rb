@@ -146,7 +146,7 @@ describe Sarif::SemgrepSarif do
         expect(result).to include(
           {
             "ruleId" => "Required Pattern Not Found",
-            "ruleIndex" => 1,
+            "ruleIndex" => 0,
             "level" => "error",
             "message" => {
               "text" => "Useless equality test.. Pattern 1 == $X is required but not found."

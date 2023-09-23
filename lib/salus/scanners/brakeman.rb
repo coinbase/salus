@@ -114,6 +114,8 @@ module Salus::Scanners
     def ignore_list
       return [] unless user_supplied_ignore?
 
+      return [] unless File.exist?(@config['ignore'])
+
       data = JSON.parse(File.read(@config['ignore']))
       return [] unless data.key?('ignored_warnings')
 
