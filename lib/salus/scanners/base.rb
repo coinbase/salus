@@ -532,19 +532,6 @@ module Salus::Scanners
                        join_by: join_by,
                        regex: type_value
                      )
-                     # In new versions of gosec, nosec-tag matches the exact string
-                     # For example, In previous versions;
-                     #  - running the command `gosec -nosec-tag=falsepositive .`
-                     #    would match all occurrences of /* #falsepositive */ in go files
-                     # In current versions:
-                     #  - running the command `gosec -nosec-tag=falsepositive .`
-                     #    would match only match /* falsepositive */ in go files
-                     #  - you would have to modify your string to match #falsepositive
-                     #    running the command `gosec -nosec-tag=#falsepositive .`
-                     #    would match all occurrences of /* #falsepositive */ in go files
-                     # To prevent salus functionality from changing, this line adds a pound
-                     # sign to alternative nosec string
-                     result = "-nosec-tag=##{config_value} " if result.include? "-nosec-tag="
                      result
                    else
                      warning = "Could not interpolate config for #{keyword} "\
