@@ -159,7 +159,7 @@ GEM
     ruby-progressbar (1.10.1)
     ruby2_keywords (0.0.4)
     rubyzip (2.3.2)
-    rugged (1.5.1)
+    rugged (1.7.1)
     safe_yaml (1.0.5)
     simplecov (0.21.2)
       docile (~> 1.1)
@@ -213,7 +213,7 @@ DEPENDENCIES
   rspec_junit_formatter
   rubocop (~> 0.93)
   rubyzip (~> 2.3.2)
-  rugged (~> 1.5.1)
+  rugged (~> 1.7.1)
   safe_yaml (~> 1.0)
   simplecov (~> 0.21.2)
   thor (~> 1.1.0)
