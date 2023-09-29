@@ -71,7 +71,7 @@ describe Salus::Scanners::YarnAudit do
 
       expect(scanner.report.to_h.fetch(:passed)).to eq(false)
       vulns = JSON.parse(scanner.report.to_h[:info][:stdout]).sort { |a, b| a["ID"] <=> b["ID"] }
-      expect(vulns.size).to eq(17)
+      expect(vulns.size).to eq(18)
 
       vulns.each do |vul|
         ["Package", "Patched in", "Dependency of", "More info", "Severity", "Title"].each do |attr|
@@ -81,22 +81,24 @@ describe Salus::Scanners::YarnAudit do
         expect(vul["ID"]).to be_kind_of(Integer)
       end
 
-      id_vuls = vulns.find { |v| v['ID'] == 1_091_360 }
+      id_vuls = vulns.find { |v| v['ID'] == 1_091_832 }
+
       # vul has 1 dependency of
-      expected_vul = { "Package" => "trim-newlines",
-                       "Patched in" => ">=3.0.1",
-                       "Dependency of" => "gulp-cssmin",
-                       "More info" => "https://www.npmjs.com/advisories/1091360",
+      expected_vul = { "Package" => "lodash",
+                       "Patched in" => ">=4.17.21",
+                       "Dependency of" => "gulp-modify-file",
+                       "More info" => "https://www.npmjs.com/advisories/1091832",
                        "Severity" => "high",
-                       "Title" => "Uncontrolled Resource Consumption in trim-newlines",
-                       "ID" => 1_091_360 }
+                       "Title" => "Command Injection in lodash",
+                       "ID" => 1_091_832 }
+
       expect(id_vuls).to eq(expected_vul)
 
       id_vuls_w_paths = scanner.instance_variable_get(:@vulns_w_paths)
-        .find { |v| v['ID'] == 1_091_360 }
+        .find { |v| v['ID'] == 1_091_832 }
 
-      expected_vul['Path'] = "gulp-cssmin > gulp-util > "\
-        "dateformat > meow > trim-newlines"
+      expected_vul['Path'] = "gulp-modify-file > gulp > "\
+        "vinyl-fs > glob-watcher > gaze > globule > lodash"
       expect(id_vuls_w_paths).to eq(expected_vul)
     end
 
