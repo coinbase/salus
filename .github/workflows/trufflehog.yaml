@@ -26,13 +26,13 @@ jobs:
 
       - name: TruffleHog OSS
         id: trufflehog
-        uses: trufflesecurity/trufflehog@main
+        uses: trufflesecurity/trufflehog@1cc41e2c757017b55e447c015485e166486376c1 #v3.63.7
         continue-on-error: true
         with:
           path: ./
           base: "${{ github.event.repository.default_branch }}"
           head: HEAD
-          extra_args: --only-verified
+          extra_args: --only-verified --no-update
 
       - name: Scan Results Status
         if: steps.trufflehog.outcome == 'failure'
