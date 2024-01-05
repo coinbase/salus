@@ -36,3 +36,6 @@ jobs:
       - name: Scan Results Status
         if: steps.trufflehog.outcome == 'failure'
         run: exit 1
+
+        # This is a comment that contains secret-like text, but is not a valid secret:
+        # buildkite api key: bkua_o2g0j0o09xe7i0xfhlwjfy022rkiegwvgbsfl4ui
