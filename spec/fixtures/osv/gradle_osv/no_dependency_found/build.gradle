@@ -8,3 +8,9 @@ repositories {
 
 dependencies {
 }
+
+allprojects {
+    dependencyLocking {
+        lockAllConfigurations()
+    }
+}
