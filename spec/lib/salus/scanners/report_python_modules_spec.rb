@@ -1,6 +1,10 @@
 require_relative '../../../spec_helper.rb'
 
 describe Salus::Scanners::ReportPythonModules do
+  before do
+    allow_any_instance_of(described_class).to receive(:find_licenses_for).and_return(['MIT'])
+  end
+
   describe '#should_run?' do
     it 'should return false in the absence of requirements.txt' do
       repo = Salus::Repo.new('spec/fixtures/blank_repository')
@@ -29,19 +33,22 @@ describe Salus::Scanners::ReportPythonModules do
           dependency_file: 'requirements.txt',
           name: 'requests',
           version: '>=2.5',
-          type: 'pypi'
+          type: 'pypi',
+          licenses: ['MIT']
         },
         {
           dependency_file: 'requirements.txt',
           name: 'six',
           version: '>=1.9',
-          type: 'pypi'
+          type: 'pypi',
+          licenses: ['MIT']
         },
         {
           dependency_file: 'requirements.txt',
           name: 'pycryptodome',
           version: '>=3.4.11',
-          type: 'pypi'
+          type: 'pypi',
+          licenses: ['MIT']
         }
       ]
     )

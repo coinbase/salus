@@ -2,6 +2,12 @@ require_relative '../../spec_helper'
 require 'json'
 
 describe Cyclonedx::ReportPythonModules do
+  before do
+    allow_any_instance_of(Salus::Scanners::ReportPythonModules)
+      .to receive(:find_licenses_for)
+      .and_return(['MIT'])
+  end
+
   describe "#run" do
     it 'should report all the deps in the unpinned requirements.txt' do
       repo = Salus::Repo.new('spec/fixtures/python/requirements_unpinned')
@@ -13,6 +19,7 @@ describe Cyclonedx::ReportPythonModules do
         {
           "type": "library",
           "group": "",
+          "licenses": [{ "license": { "id" => "MIT" } }],
           "name": "requests",
           "version": ">=2.5",
           "purl": "pkg:pypi/requests"
@@ -20,6 +27,7 @@ describe Cyclonedx::ReportPythonModules do
         {
           "type": "library",
           "group": "",
+            "licenses": [{ "license": { "id" => "MIT" } }],
             "name": "six",
             "version": ">=1.9",
             "purl": "pkg:pypi/six"
@@ -27,6 +35,7 @@ describe Cyclonedx::ReportPythonModules do
         {
           "type": "library",
           "group": "",
+            "licenses": [{ "license": { "id" => "MIT" } }],
             "name": "pycryptodome",
             "version": ">=3.4.11",
             "purl": "pkg:pypi/pycryptodome"
@@ -45,6 +54,7 @@ describe Cyclonedx::ReportPythonModules do
         {
           "type": "library",
           "group": "",
+          "licenses": [{ "license": { "id" => "MIT" } }],
           "name": "amqp",
           "version": "2.2.2",
           "purl": "pkg:pypi/amqp@2.2.2"
@@ -52,6 +62,7 @@ describe Cyclonedx::ReportPythonModules do
         {
           "type": "library",
           "group": "",
+          "licenses": [{ "license": { "id" => "MIT" } }],
           "name": "billiard",
           "version": "3.5.0.3",
           "purl": "pkg:pypi/billiard@3.5.0.3"
@@ -59,6 +70,7 @@ describe Cyclonedx::ReportPythonModules do
         {
           "type": "library",
           "group": "",
+          "licenses": [{ "license": { "id" => "MIT" } }],
           "name": "celery",
           "version": "4.1.0",
           "purl": "pkg:pypi/celery@4.1.0"
@@ -77,6 +89,7 @@ describe Cyclonedx::ReportPythonModules do
         {
           "type": "library",
           "group": "",
+          "licenses": [{ "license": { "id" => "MIT" } }],
           "name": "six",
           "version": ">=1.9",
           "purl": "pkg:pypi/six"
@@ -84,6 +97,7 @@ describe Cyclonedx::ReportPythonModules do
         {
           "type": "library",
           "group": "",
+          "licenses": [{ "license": { "id" => "MIT" } }],
           "name": "pycryptodome",
           "version": ">=3.4.11",
           "purl": "pkg:pypi/pycryptodome"
@@ -91,6 +105,7 @@ describe Cyclonedx::ReportPythonModules do
         {
           "type": "library",
           "group": "",
+          "licenses": [{ "license": { "id" => "MIT" } }],
           "name": "celery",
           "version": "4.0.0",
           "purl": "pkg:pypi/celery@4.0.0"
@@ -98,6 +113,7 @@ describe Cyclonedx::ReportPythonModules do
         {
           "type": "library",
           "group": "",
+          "licenses": [{ "license": { "id" => "MIT" } }],
           "name": "Jinja2",
           "version": "2.10",
           "purl": "pkg:pypi/Jinja2@2.10"
@@ -105,6 +121,7 @@ describe Cyclonedx::ReportPythonModules do
         {
           "type": "library",
           "group": "",
+          "licenses": [{ "license": { "id" => "MIT" } }],
           "name": "itsdangerous",
           "version": "0.24",
           "purl": "pkg:pypi/itsdangerous@0.24"
@@ -112,6 +129,7 @@ describe Cyclonedx::ReportPythonModules do
         {
           "type": "library",
           "group": "",
+          "licenses": [{ "license": { "id" => "MIT" } }],
           "name": "idna",
           "version": "2.6",
           "purl": "pkg:pypi/idna@2.6"
