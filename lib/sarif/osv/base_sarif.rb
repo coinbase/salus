@@ -51,7 +51,7 @@ module Sarif::OSV
                            "vulnerable_versions": {
                              "text": issue['Vulnerable Version'].to_s
                            } },
-          properties: { 'severity': issue['Severity'] },
+          properties: { 'severity': issue['Severity'], 'detected_versions': issue['DectectedVersions'] },
           uri: OSV_URI.to_s,
           help_url: issue["Source"].to_s
       }

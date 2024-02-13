@@ -78,7 +78,7 @@ describe Sarif::GoOSVSarif do
           ],
             "message" => { "text" =>
               "Crash due to malformed relay protocol message" },
-            "properties" => { "severity" => "LOW" },
+            "properties" => { "severity" => "LOW", "detected_versions"=>["1.14.0"] },
             "ruleId" => "CVE-2021-21404",
             "ruleIndex" => 0 }
       )

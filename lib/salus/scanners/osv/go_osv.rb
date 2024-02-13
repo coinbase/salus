@@ -97,7 +97,7 @@ module Salus::Scanners::OSV
       {
         "Package": match.dig("package", "name"),
         "Vulnerable Version": introduced,
-        "Version Detected": version,
+        "DectectedVersions": [version],
         "Patched Version": fixed,
         "ID": match.fetch("aliases", [match.fetch("id", [])])[0],
         "Database": match.fetch("database"),
