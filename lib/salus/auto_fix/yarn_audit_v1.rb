@@ -79,7 +79,7 @@ module Salus::Autofix
             updated_resolved = "resolved " + '"' + fixed_package_info["data"]["dist"]["tarball"] \
               + "#" + fixed_package_info["data"]["dist"]["shasum"] + '"'
             updated_integrity = "integrity " + fixed_package_info['data']['dist']['integrity']
-            updated_name = package_name + "@^" + version_to_update_to
+            updated_name = package_name + "@^" + versions.first[:patch].tr(">=", "").tr(">", "")
 
             parts.each_with_index do |part, index|
               current_v = parts[index].match(/(("|)version("|).*)/)
@@ -160,7 +160,7 @@ module Salus::Autofix
             if part.include?(source) && !match.nil? && !is_major_bump(
               match.to_s.split(" ").last, version_to_update_to
             )
-              replace = target + ' "^' + version_to_update_to + '"'
+              replace = target + ' "^' + patch.first[:patch].tr(">=", "").tr(">", "") + '"'
               part.sub!(/("|)(!:|#{target})("| ).*/, replace)
               parts[index] = part
             end
