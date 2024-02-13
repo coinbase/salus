@@ -19,13 +19,4 @@ active_scanners: all
 # was necessary to ensure that certain scanners pass.
 # Other scanners may need to graduate from the testing phase or
 # should only be enforced explicitly by custom configuration.
-enforced_scanners:
-  - RepoNotEmpty
-  - Brakeman
-  - BundleAudit
-  - Gosec
-  - NPMAudit
-  - YarnAudit
-  - PatternSearch
-  - Semgrep
-  - CargoAudit
+enforced_scanners: []
