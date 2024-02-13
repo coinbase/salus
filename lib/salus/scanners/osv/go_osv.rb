@@ -1,4 +1,5 @@
 require 'salus/scanners/osv/base'
+require 'salus/rules_evaluation'
 
 module Salus::Scanners::OSV
   class GoOSV < Base
@@ -9,6 +10,7 @@ module Salus::Scanners::OSV
     DEFAULT_SEVERITY = "MODERATE".freeze
     GITHUB_DATABASE_STRING = "Github Advisory Database".freeze
     GO_OSV_ADVISORY_URL = "https://osv-vulnerabilities.storage.googleapis.com/Go/all.zip".freeze
+    CLASS_NAME = self.class.name.split("::").last.freeze
 
     def should_run?
       @repository.go_sum_present?
@@ -46,7 +48,7 @@ module Salus::Scanners::OSV
       # Match and Report scanner status
       vulnerabilities_found = match_vulnerable_dependencies(dependencies)
       results = group_vulnerable_dependencies(vulnerabilities_found)
-      return report_success if results.empty?
+      return report_success if Salus::RulesEvaluation.evaluate_rules(@config, results, CLASS_NAME)
 
       report_failure
       log(JSON.pretty_generate(results))

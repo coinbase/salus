@@ -249,7 +249,7 @@
       "passed": true,
       "running_time": 1.45,
       "scanner_name": "Trufflehog",
-      "version": "3.19.0",
+      "version": "3.21.0",
       "warn": {
       }
     }
