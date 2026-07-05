@@ -2,7 +2,7 @@
 
 [`semgrep`](https://semgrep.dev) (syntactic grep) is an open-source tool for finding patterns in code. It's useful for preventing the use of known anti-patterns in a codebase or enforcing the correct use of secure-by-default frameworks (e.g. always use a project's sanitization method on user-provided data).
 
-semgrep is fast and powerful; it's grep-esque patterns are lifted into AST matchers. Compared to regexes these patterns aren’t affected by whitespaces, comments, newlines, the order of keyword arguments, variable renaming, and other language nuances.
+semgrep is fast and powerful; its grep-esque patterns are lifted into AST matchers. Compared to regexes these patterns aren’t affected by whitespaces, comments, newlines, the order of keyword arguments, variable renaming, and other language nuances.
 
 Currently, the supported languages are: C, Go, Java, JavaScript, and Python.
 
@@ -22,7 +22,7 @@ In salus.yaml, you can specify a set of semgrep rules with a path to a [Semgrep 
 
 * `config` - a full Semgrep config file/directory. This config can either be nested inside the repo, or start with `/` if the path also contains `semgrep`.
 * Either `required: true` or `forbidden: true`
-  - If a found pattern is forbidden or if a not found pattern is required, then the scanner will fail and the `message` will be show to the developer in the report.
+  - If a found pattern is forbidden or if a not found pattern is required, then the scanner will fail and the `message` will be shown to the developer in the report.
 
 In addition, you can **optionally** specify
 
@@ -89,7 +89,7 @@ scanner_configs:
   Semgrep:
     matches:
       - pattern: $X == $X
-        message: Useless equlity check
+        message: Useless equality check
         language: python
         forbidden: true
         exclude:

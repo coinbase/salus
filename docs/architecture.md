@@ -4,17 +4,17 @@ Salus is a docker container. Installed into the container are security scanners 
 
 ![Salus Architecture Diagram](salus_architecture.png)
 
-The source code being scanned is volumed into the container and Salus expects to find this code at the internal path `/home/repo`. While the Salus application is written in Ruby, other languages are installed in the container as required for each scanners.
+The source code being scanned is volumed into the container and Salus expects to find this code at the internal path `/home/repo`. While the Salus application is written in Ruby, other languages are installed in the container as required for each scanner.
 
 ## Ruby Objects
 
   - [`Salus`](../lib/salus.rb): the primary class of the application.
   - [`Salus::CLI`](../lib/salus/cli.rb): command line wrapper to run Salus.
   - [`Salus::Config`](../lib/salus/config.rb): object that maintains Salus' configuration.
-  - [`Salus::Processor`](../lib/salus/processor.rb): runs each scanners against the repo.
+  - [`Salus::Processor`](../lib/salus/processor.rb): runs each scanner against the repo.
   - [`Salus::Repo`](../lib/salus/repo.rb): representation of the repository being scanned.
   - [`Salus::Report`](../lib/salus/report.rb): object that collects data about scans and compiles a report.
-  - [`Salus::Scanners::<name>`](../lib/salus/scanners): scanner objects that can determine if a scanner should run, runs the scanner and collect the results.
+  - [`Salus::Scanners::<name>`](../lib/salus/scanners): scanner objects that can determine if a scanner should run, runs the scanner and collects the results.
 
 # Plugins
 
@@ -59,28 +59,28 @@ Events are published, plugins can register listeners for events.
 `Event :cli_scan`
 `Salus::PluginManager.send_event(:cli_scan, options)`
 
-- cli_csan is called once the cli begins the scan,  The CLI options are passed as the data to the event
+- cli_scan is called once the cli begins the scan,  The CLI options are passed as the data to the event
 
 `Event :salus_scan`
 
-- salus scan. This event will be called with the Salus scan has begun.  The data playload will be the params passed to the Salus.scan method
+- salus scan. This event will be called with the Salus scan has begun.  The data payload will be the params passed to the Salus.scan method
 
 `Event: skip_scanner`
 
-- skip_scanner will be called if the scanner is determined to be non-active or not relevant for the codebase. The data playoad is the scanner name string.
+- skip_scanner will be called if the scanner is determined to be non-active or not relevant for the codebase. The data payload is the scanner name string.
 
 `Event: run_scanner`
 
-- run_scanner is called immediately before running the scanner.  Only scanners that have been determined relevant for the codebase will trigger this event.  The data playoad is the scanner name string.
+- run_scanner is called immediately before running the scanner.  Only scanners that have been determined relevant for the codebase will trigger this event.  The data payload is the scanner name string.
 
 `Event: scanners_ran `
 
-- scanners_ran will be invoked after all scanners have ran.  The data playload will be an array of scanners ran and a second parameter for the SalusReport object
+- scanners_ran will be invoked after all scanners have run.  The data payload will be an array of scanners run and a second parameter for the SalusReport object
 
 `Event :scanning_group_completed`
 
 - scanning_group_completed is fired after a group of scanners has completed scanning.  Groups: Salus::ScannerTypes::SBOM_REPORT, Salus::ScannerTypes::LICENSE, Salus::ScannerTypes::DEPENDENCY, Salus::ScannerTypes::SAST, Salus::ScannerTypes::DYNAMIC, 'default'.
-The event is passed three parameters, the scanning group, the list of scanners ran (array of strings) and the scanning report object.
+The event is passed three parameters, the scanning group, the list of scanners run (array of strings) and the scanning report object.
 
 `Event :run_shell`
 

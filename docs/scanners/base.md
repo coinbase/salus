@@ -6,9 +6,9 @@ The parent class of all scanners. Contains methods useful for executing scanners
 
 #### Pass on Raise
 
-Some scanners are very resilient and it's rare for them to throw exceptions. Usually this is for good reason, like a malformed file is unparsable by the scanner and so this warrants breaking the project's build. By default, if a scanner raises an exception for whatever reason, then the scanner is conidered _failed_ as if it found an actual security issue.
+Some scanners are very resilient and it's rare for them to throw exceptions. Usually this is for good reason, like a malformed file is unparsable by the scanner and so this warrants breaking the project's build. By default, if a scanner raises an exception for whatever reason, then the scanner is considered _failed_ as if it found an actual security issue.
 
-However, some scanner fail frequently for reasons out of the developer's control. For example, a CVE registry might be down which means that a CVE scanner cannot update it's local DB and this causes it to raise an error. In that scenario, you might decide that Salus's overall status, and therefore the CI/CD pipeline should not fail. To allow for a scanner to be considered a _pass_ when it raises an exception, you can provide the value `true` for the directive `pass_on_raise`. For example:
+However, some scanner fail frequently for reasons out of the developer's control. For example, a CVE registry might be down which means that a CVE scanner cannot update its local DB and this causes it to raise an error. In that scenario, you might decide that Salus's overall status, and therefore the CI/CD pipeline should not fail. To allow for a scanner to be considered a _pass_ when it raises an exception, you can provide the value `true` for the directive `pass_on_raise`. For example:
 
 ```yaml
 scanner_configs:
@@ -49,7 +49,7 @@ scanner_configs:
 
 ## Override salusWarnMessage flag
 
-Currently, we support two types of scanners - Active / Enforced. We want allow for more customization where we want the scanner to be Active but still warn end users about the risks, so to handle that case we are adding a new field in SARIF called ```salusWarnMessage```. By default it will be set to False and can be changed using the scanner_configs.
+Currently, we support two types of scanners - Active / Enforced. We want to allow for more customization where we want the scanner to be Active but still warn end users about the risks, so to handle that case we are adding a new field in SARIF called ```salusWarnMessage```. By default it will be set to False and can be changed using the scanner_configs.
 
 ```yaml
 scanner_configs:

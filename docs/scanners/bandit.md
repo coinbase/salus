@@ -36,7 +36,7 @@ For more information on Bandit configs, see [Bandit Usage](https://pypi.org/proj
           expiration: "2021-04-27"
 ```
 
-The following Bandt config options are currently NOT supported.
+The following Bandit config options are currently NOT supported.
 ```yaml
 -n CONTEXT_LINES   # maximum number of code lines to output for each issue
 --format {csv,custom,html,screen,txt,xml,yaml}   # salus always writes output to json
